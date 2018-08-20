@@ -1,20 +1,21 @@
-import { iccHcpartyApi } from "../icc-api/iccApi";
+import { iccHcpartyApi } from "../icc-api/iccApi"
 
-import * as i18n from './rsrc/contact.i18n';
+import { XHR } from "../icc-api/api/XHR"
 
-import * as _ from 'lodash';
-
-
+// noinspection JSUnusedGlobalSymbols
 export class IccHcpartyXApi extends iccHcpartyApi {
+  hcPartyKeysCache: { [key: string]: string } = {}
 
-    hcPartyKeysCache: Object = {};
+  constructor(host: string, headers: Array<XHR.Header>) {
+    super(host, headers)
+  }
 
-    constructor(host, headers) {
-        super(host, headers);
-    }
-
-    getHcPartyKeysForDelegate(healthcarePartyId) {
-        const cached = this.hcPartyKeysCache[healthcarePartyId];
-        return cached ? Promise.resolve(cached) : super.getHcPartyKeysForDelegate(healthcarePartyId).then(r => this.hcPartyKeysCache[healthcarePartyId] = r);
-    }
+  getHcPartyKeysForDelegate(healthcarePartyId: string) {
+    const cached = this.hcPartyKeysCache[healthcarePartyId]
+    return cached
+      ? Promise.resolve(cached)
+      : super
+          .getHcPartyKeysForDelegate(healthcarePartyId)
+          .then(r => (this.hcPartyKeysCache[healthcarePartyId] = r))
+  }
 }
