@@ -1,13 +1,11 @@
 import { iccInvoiceApi } from "../icc-api/iccApi"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 
-import i18n from "./rsrc/contact.i18n"
 import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
 import { XHR } from "../icc-api/api/XHR"
 
 export class iccInvoiceXApi extends iccInvoiceApi {
-  i18n: any = i18n
   crypto: IccCryptoXApi
 
   constructor(host: string, headers: Array<XHR.Header>, crypto: IccCryptoXApi) {
@@ -18,8 +16,8 @@ export class iccInvoiceXApi extends iccInvoiceApi {
   newInstance(
     user: models.UserDto,
     patient: models.PatientDto,
-    inv: any
-  ): Promise<models.ContactDto> {
+    inv?: any
+  ): Promise<models.InvoiceDto> {
     const invoice = new models.InvoiceDto(
       _.extend(
         {
@@ -74,10 +72,10 @@ export class iccInvoiceXApi extends iccInvoiceApi {
           : []
         ).forEach(
           delegateId =>
-            (promise = promise.then(contact =>
+            (promise = promise.then(invoice =>
               this.crypto.addDelegationsAndEncryptionKeys(
                 patient,
-                contact,
+                invoice,
                 user.healthcarePartyId!,
                 delegateId,
                 dels.secretId,
@@ -97,11 +95,11 @@ export class iccInvoiceXApi extends iccInvoiceApi {
         : []
       ).forEach(
         delegateId =>
-          (promise = promise.then(contact =>
+          (promise = promise.then(invoice =>
             this.crypto
-              .appendEncryptionKeys(contact, user.healthcarePartyId!, eks.secretId)
+              .appendEncryptionKeys(invoice, user.healthcarePartyId!, eks.secretId)
               .then(extraEks => {
-                return _.extend(contact, {
+                return _.extend(invoice, {
                   encryptionKeys: extraEks.encryptionKeys
                 })
               })
@@ -119,7 +117,7 @@ export class iccInvoiceXApi extends iccInvoiceApi {
    *      3.2.  if it doesn't exist in the cache, it has to be loaded from Browser Local store, and then import it to WebCrypto
    * 4. Obtain the array of delegations which are delegated to his ID (hcpartyId) in this patient
    * 5. Decrypt and collect all keys (secretForeignKeys) within delegations of previous step (with obtained AES key of step 4)
-   * 6. Do the REST call to get all contacts with (allSecretForeignKeysDelimitedByComa, hcpartyId)
+   * 6. Do the REST call to get all invoices with (allSecretForeignKeysDelimitedByComa, hcpartyId)
    *
    * After these painful steps, you have the invoices of the patient.
    *
@@ -133,8 +131,8 @@ export class iccInvoiceXApi extends iccInvoiceApi {
         this.findByHCPartyPatientSecretFKeys(hcpartyId, secretForeignKeys.join(","))
       )
       .then(invoices => this.decrypt(hcpartyId, invoices))
-      .then(function(decryptedContacts) {
-        return decryptedContacts
+      .then(function(decryptedInvoices) {
+        return decryptedInvoices
       })
   }
 

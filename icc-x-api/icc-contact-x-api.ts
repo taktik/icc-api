@@ -53,7 +53,7 @@ export class IccContactXApi extends iccContactApi {
     user: models.UserDto,
     patient: models.PatientDto,
     contact: models.ContactDto
-  ): Promise<models.ContactDto> {
+  ): Promise<models.InvoiceDto> {
     return this.crypto
       .extractDelegationsSFKs(patient, user.healthcarePartyId!)
       .then(secretForeignKeys =>
