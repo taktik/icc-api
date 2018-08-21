@@ -71,7 +71,7 @@ export class iccBedrugsApi {
   getCheapAlternativesBasedOnAtc(
     medecinePackageId: string,
     lang: string
-  ): Promise<Array<models.MpPreview> | any> {
+  ): Promise<Array<models.MppPreview> | any> {
     let _body = null
 
     const _url =
@@ -83,7 +83,7 @@ export class iccBedrugsApi {
       new Date().getTime()
 
     return XHR.sendCommand("GET", _url, this.headers, _body)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.MpPreview(it)))
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.MppPreview(it)))
       .catch(err => this.handleError(err))
   }
   getCheapAlternativesBasedOnInn(
