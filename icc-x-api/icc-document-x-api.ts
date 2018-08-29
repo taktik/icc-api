@@ -452,7 +452,7 @@ export class IccDocumentXApi extends iccDocumentApi {
   }
 
   // noinspection JSUnusedGlobalSymbols
-  newInstance(user: models.UserDto, patient: models.PatientDto, c: any) {
+  newInstance(user: models.UserDto, message: models.MessageDto, c: any) {
     const document = _.extend(
       {
         id: this.crypto.randomUuid(),
@@ -467,82 +467,82 @@ export class IccDocumentXApi extends iccDocumentApi {
       c || {}
     )
 
-    return patient
-      ? this.crypto
-          .extractDelegationsSFKs(patient, user.healthcarePartyId!)
-          .then(secretForeignKeys =>
-            this.crypto
-              .initObjectDelegations(patient, null, user.healthcarePartyId!, null)
-              .then(initData => {
-                _.extend(patient, { delegations: initData.delegations })
-
-                let promise = Promise.resolve(patient)
-                ;(user.autoDelegations
-                  ? (user.autoDelegations.all || []).concat(
-                      user.autoDelegations.medicalInformation || []
-                    )
-                  : []
-                ).forEach(
-                  delegateId =>
-                    (promise = promise
-                      .then(patient =>
-                        this.crypto.appendObjectDelegations(
-                          patient,
-                          null,
-                          user.healthcarePartyId!,
-                          delegateId,
-                          initData.secretId
-                        )
-                      )
-                      .then(extraData => _.extend(patient, { delegations: extraData.delegations })))
-                )
-                return promise
-              })
-          )
-          .then(initData => {
-            return initData
-          })
-      : this.crypto
-          .initObjectDelegations(document, null, user.healthcarePartyId!, null)
-          .then(initData => _.extend(document, { delegations: initData.delegations }))
+    return this.initDelegationsAndEncryptionKeys(user, message, document)
   }
 
-  // noinspection JSUnusedLocalSymbols
-  findByHCPartyPatientSecretFKeys(
-    hcpartyId: string,
-    secretForeignKeys: string
-  ): Promise<Array<models.DocumentDto>> {
-    return new Promise(function(resolve, reject) {
-      reject(console.log("findByHCPartyPatientSecretFKeys not implemented in document API!"))
-    })
-  }
-
-  // noinspection JSUnusedGlobalSymbols
-  /**
-   * 1. Check whether there is a delegation with 'hcpartyId' or not.
-   * 2. 'fetchHcParty[hcpartyId][1]': is encrypted AES exchange key by RSA public key of him.
-   * 3. Obtain the AES exchange key, by decrypting the previous step value with hcparty private key
-   *      3.1.  KeyPair should be fetch from cache (in jwk)
-   *      3.2.  if it doesn't exist in the cache, it has to be loaded from Browser Local store, and then import it to WebCrypto
-   * 4. Obtain the array of delegations which are delegated to his ID (hcpartyId) in this patient
-   * 5. Decrypt and collect all keys (secretForeignKeys) within delegations of previous step (with obtained AES key of step 4)
-   * 6. Do the REST call to get all contacts with (allSecretForeignKeysDelimitedByComa, hcpartyId)
-   *
-   * After these painful steps, you have the contacts of the patient.
-   *
-   * @param hcpartyId
-   * @param patient (Promise)
-   */
-  findByPatient(hcpartyId: string, patient: models.PatientDto) {
+  private initDelegationsAndEncryptionKeys(
+    user: models.UserDto,
+    message: models.MessageDto,
+    document: models.DocumentDto
+  ): Promise<models.DocumentDto> {
     return this.crypto
-      .extractDelegationsSFKs(patient, hcpartyId)
+      .extractDelegationsSFKs(message, user.healthcarePartyId!)
       .then(secretForeignKeys =>
-        this.findByHCPartyPatientSecretFKeys(hcpartyId, secretForeignKeys.join(","))
+        Promise.all([
+          this.crypto.initObjectDelegations(
+            document,
+            message,
+            user.healthcarePartyId!,
+            secretForeignKeys[0]
+          ),
+          this.crypto.initEncryptionKeys(document, user.healthcarePartyId!)
+        ])
       )
-      .then(documents => this.decrypt(hcpartyId, documents))
-      .then(function(decryptedForms) {
-        return decryptedForms
+      .then(initData => {
+        const dels = initData[0]
+        const eks = initData[1]
+        _.extend(document, {
+          delegations: dels.delegations,
+          cryptedForeignKeys: dels.cryptedForeignKeys,
+          secretForeignKeys: dels.secretForeignKeys,
+          encryptionKeys: eks.encryptionKeys
+        })
+
+        let promise = Promise.resolve(document)
+        ;(user.autoDelegations
+          ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
+          : []
+        ).forEach(
+          delegateId =>
+            (promise = promise.then(contact =>
+              this.crypto.addDelegationsAndEncryptionKeys(
+                message,
+                contact,
+                user.healthcarePartyId!,
+                delegateId,
+                dels.secretId,
+                eks.secretId
+              )
+            ))
+        )
+        return promise
       })
+  }
+
+  initEncryptionKeys(user: models.UserDto, document: models.DocumentDto) {
+    return this.crypto.initEncryptionKeys(document, user.healthcarePartyId!).then(eks => {
+      let promise = Promise.resolve(
+        _.extend(document, {
+          encryptionKeys: eks.encryptionKeys
+        })
+      )
+      ;(user.autoDelegations
+        ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
+        : []
+      ).forEach(
+        delegateId =>
+          (promise = promise.then(contact =>
+            this.crypto
+              .appendEncryptionKeys(contact, user.healthcarePartyId!, eks.secretId)
+              .then(extraEks => {
+                return _.extend(contact, {
+                  encryptionKeys: extraEks.encryptionKeys
+                })
+              })
+          ))
+      )
+      return promise
+    })
   }
 
   // noinspection JSUnusedGlobalSymbols
