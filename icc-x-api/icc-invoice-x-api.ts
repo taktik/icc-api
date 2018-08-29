@@ -16,8 +16,8 @@ export class iccInvoiceXApi extends iccInvoiceApi {
   newInstance(
     user: models.UserDto,
     patient: models.PatientDto,
-    inv: any
-  ): Promise<models.ContactDto> {
+    inv?: any
+  ): Promise<models.InvoiceDto> {
     const invoice = new models.InvoiceDto(
       _.extend(
         {
@@ -135,8 +135,8 @@ export class iccInvoiceXApi extends iccInvoiceApi {
         this.findByHCPartyPatientSecretFKeys(hcpartyId, secretForeignKeys.join(","))
       )
       .then(invoices => this.decrypt(hcpartyId, invoices))
-      .then(function(decryptedContacts) {
-        return decryptedContacts
+      .then(function(decryptedInvoices) {
+        return decryptedInvoices
       })
   }
 
