@@ -25,7 +25,7 @@ export class RSAUtils {
     var keyUsages = ["decrypt", "encrypt"]
 
     return new Promise((resolve: (value: CryptoKey | CryptoKeyPair) => any, reject) => {
-      ;(window || self).crypto.subtle
+      ;(typeof window === "undefined" ? self : window).crypto.subtle
         .generateKey(this.rsaHashedParams, extractable, keyUsages)
         .then(resolve, reject)
     })
@@ -47,8 +47,14 @@ export class RSAUtils {
     privKeyFormat: string,
     pubKeyFormat: string
   ) {
-    var pubPromise = (window || self).crypto.subtle.exportKey(pubKeyFormat, keyPair.publicKey)
-    var privPromise = (window || self).crypto.subtle.exportKey(privKeyFormat, keyPair.privateKey)
+    var pubPromise = (typeof window === "undefined" ? self : window).crypto.subtle.exportKey(
+      pubKeyFormat,
+      keyPair.publicKey
+    )
+    var privPromise = (typeof window === "undefined" ? self : window).crypto.subtle.exportKey(
+      privKeyFormat,
+      keyPair.privateKey
+    )
 
     return Promise.all([pubPromise, privPromise]).then(function(results) {
       return {
@@ -71,7 +77,9 @@ export class RSAUtils {
    */
   exportKey(cryptoKey: CryptoKey, format: string) {
     return new Promise((resolve: (value: JsonWebKey | ArrayBuffer) => any, reject) => {
-      ;(window || self).crypto.subtle.exportKey(format, cryptoKey).then(resolve, reject)
+      ;(typeof window === "undefined" ? self : window).crypto.subtle
+        .exportKey(format, cryptoKey)
+        .then(resolve, reject)
     })
   }
 
@@ -82,7 +90,7 @@ export class RSAUtils {
    */
   encrypt(publicKey: CryptoKey, plainData: Uint8Array) {
     return new Promise((resolve: (value: ArrayBuffer) => any, reject) => {
-      ;(window || self).crypto.subtle
+      ;(typeof window === "undefined" ? self : window).crypto.subtle
         .encrypt(this.rsaParams, publicKey, plainData)
         .then(resolve, reject)
     })
@@ -95,7 +103,7 @@ export class RSAUtils {
    */
   decrypt(privateKey: CryptoKey, encryptedData: Uint8Array): Promise<ArrayBuffer> {
     return new Promise((resolve: (value: ArrayBuffer) => any, reject) => {
-      ;(window || self).crypto.subtle
+      ;(typeof window === "undefined" ? self : window).crypto.subtle
         .decrypt(this.rsaParams, privateKey, encryptedData)
         .then(resolve, reject)
     })
@@ -111,7 +119,7 @@ export class RSAUtils {
   importKey(format: string, keydata: JsonWebKey | ArrayBuffer, keyUsages: Array<string>) {
     var extractable = true
     return new Promise((resolve: (value: CryptoKey) => any, reject) => {
-      ;(window || self).crypto.subtle
+      ;(typeof window === "undefined" ? self : window).crypto.subtle
         .importKey(format, keydata, this.rsaHashedParams, extractable, keyUsages)
         .then(resolve, reject)
     })
@@ -126,7 +134,7 @@ export class RSAUtils {
   importPrivateKey(format: string, keydata: JsonWebKey | ArrayBuffer) {
     var extractable = true
     return new Promise((resolve: (value: CryptoKey) => any, reject) => {
-      ;(window || self).crypto.subtle
+      ;(typeof window === "undefined" ? self : window).crypto.subtle
         .importKey(format, keydata, this.rsaHashedParams, extractable, ["decrypt"])
         .then(resolve, reject)
     })
@@ -147,14 +155,14 @@ export class RSAUtils {
     publicKeyData: JsonWebKey | ArrayBuffer
   ) {
     var extractable = true
-    var privPromise = (window || self).crypto.subtle.importKey(
+    var privPromise = (typeof window === "undefined" ? self : window).crypto.subtle.importKey(
       privateKeyFormat,
       privateKeydata,
       this.rsaHashedParams,
       extractable,
       ["decrypt"]
     )
-    var pubPromise = (window || self).crypto.subtle.importKey(
+    var pubPromise = (typeof window === "undefined" ? self : window).crypto.subtle.importKey(
       publicKeyFormat,
       publicKeyData,
       this.rsaHashedParams,
