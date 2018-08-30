@@ -21,8 +21,9 @@ export class AESUtils {
       const aesAlgorithmEncrypt = {
         name: this.aesAlgorithmEncryptName,
         iv: this.generateIV(this.ivLength)
-      }(window || self)
-        .crypto.subtle.encrypt(aesAlgorithmEncrypt, cryptoKey, plainData)
+      }
+      ;(window || self).crypto.subtle
+        .encrypt(aesAlgorithmEncrypt, cryptoKey, plainData)
         .then(
           cipherData =>
             resolve(utils.appendBuffer(aesAlgorithmEncrypt.iv!.buffer! as ArrayBuffer, cipherData)),
@@ -67,8 +68,9 @@ export class AESUtils {
     * }
     * var delegateHcPartyKey = hcparty.hcPartyKeys[delegatorId][1];
     */
-      }(window || self)
-        .crypto.subtle.decrypt(
+      }
+      ;(window || self).crypto.subtle
+        .decrypt(
           aesAlgorithmEncrypt,
           cryptoKey,
           encryptedDataUnit8.subarray(this.ivLength, encryptedDataUnit8.length)
