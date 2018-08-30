@@ -49,11 +49,11 @@ export class IccCryptoXApi {
       return Promise.resolve(res)
     } else {
       const keyPair = this.RSA.rsaKeyPairs[hcPartyKeyOwner]
-      return (
-        Promise.resolve(keyPair) ||
-        Promise.resolve(this.RSA.loadKeyPairNotImported(hcPartyKeyOwner)).then(keyPairInJwk =>
-          this.cacheKeyPair(keyPairInJwk, hcPartyKeyOwner)
-        )
+      return (keyPair
+        ? Promise.resolve(keyPair)
+        : Promise.resolve(this.RSA.loadKeyPairNotImported(hcPartyKeyOwner)).then(keyPairInJwk =>
+            this.cacheKeyPair(keyPairInJwk, hcPartyKeyOwner)
+          )
       )
         .then(keyPair =>
           this.RSA.decrypt(keyPair.privateKey, this.utils.hex2ua(encryptedHcPartyKey))
