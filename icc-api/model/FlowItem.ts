@@ -27,6 +27,10 @@ export class FlowItem {
 
   status?: string;
 
+  type?: string;
+
+  emergency?: boolean;
+
   cancellationReason?: string;
 
   cancellationNote?: string;
