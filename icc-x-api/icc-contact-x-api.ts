@@ -702,23 +702,23 @@ export class IccContactXApi extends iccContactApi {
       aftermeal: 20000
     }
 
-    const self = {
+    const myself = {
       medicationNameToString: function(m: any): string {
         return m.compoundPrescription
           ? m.compoundPrescription
           : m.substanceProduct
-            ? self.productToString(m.substanceProduct)
-            : self.productToString(m.medicinalProduct)
+            ? myself.productToString(m.substanceProduct)
+            : myself.productToString(m.medicinalProduct)
       },
       medicationToString: (m: any, lang: string) => {
-        let res = `${self.medicationNameToString(m)}, ${self.posologyToString(m, lang)}`
+        let res = `${myself.medicationNameToString(m)}, ${myself.posologyToString(m, lang)}`
         res = m.numberOfPackages
           ? `${m.numberOfPackages} ${
               m.numberOfPackages > 1 ? this.i18n[lang].packagesOf : this.i18n[lang].packageOf
             } ${res}`
           : res
         res = m.duration
-          ? `${res} ${this.i18n[lang].during} ${self.durationToString(m.duration, lang)}`
+          ? `${res} ${this.i18n[lang].during} ${myself.durationToString(m.duration, lang)}`
           : res
         return res
       },
@@ -781,7 +781,8 @@ export class IccContactXApi extends iccContactApi {
                 : 0)
         )
           .map(
-            r => (cplxRegimen ? self.regimenToExtString(r, lang) : self.regimenToString(r, lang))
+            r =>
+              cplxRegimen ? myself.regimenToExtString(r, lang) : myself.regimenToString(r, lang)
           )
           .join(", ")}`
       },
@@ -789,7 +790,7 @@ export class IccContactXApi extends iccContactApi {
         return d.value ? `${d.value} ${this.localize(d.unit!.label, lang)}` : ""
       },
       regimenToExtString: (r: models.RegimenItemDto, lang: string) => {
-        const desc = self.regimenToString(r, lang)
+        const desc = myself.regimenToString(r, lang)
         return (
           (r.administratedQuantity && r.administratedQuantity.quantity && desc
             ? `${desc} (${r.administratedQuantity.quantity} ${(r.administratedQuantity
@@ -848,6 +849,6 @@ export class IccContactXApi extends iccContactApi {
         ) //Applies the (lower/upper)case to the translated lowercase version of the input string (s)
       }
     }
-    return self
+    return myself
   }
 }

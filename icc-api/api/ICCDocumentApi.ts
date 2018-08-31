@@ -149,7 +149,7 @@ export class iccDocumentApi {
       .then(doc => new models.DocumentDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  setAttachment(documentId: string, body?: Array<string>): Promise<models.DocumentDto | any> {
+  setAttachment(documentId: string, body?: ArrayBuffer): Promise<models.DocumentDto | any> {
     let _body = null
     _body = body
 
@@ -165,13 +165,13 @@ export class iccDocumentApi {
   }
   setAttachmentMulti(
     documentId: string,
-    attachment?: Array<string>
+    attachment?: ArrayBuffer
   ): Promise<models.DocumentDto | any> {
     let _body = null
     attachment &&
       (_body = _body || new FormData()).append(
         "attachment",
-        new Blob(attachment, { type: "application/octet-stream" })
+        new Blob([new Uint8Array(attachment)], { type: "application/octet-stream" })
       )
     const _url =
       this.host +
