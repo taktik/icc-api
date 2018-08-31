@@ -100,7 +100,11 @@ export class IccContactXApi extends iccContactApi {
 
   initEncryptionKeys(user: models.UserDto, ctc: models.ContactDto) {
     return this.crypto.initEncryptionKeys(ctc, user.healthcarePartyId!).then(eks => {
-      let promise = Promise.resolve(ctc)
+      let promise = Promise.resolve(
+        _.extend(ctc, {
+          encryptionKeys: eks.encryptionKeys
+        })
+      )
       ;(user.autoDelegations
         ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
         : []
