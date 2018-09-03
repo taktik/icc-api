@@ -168,7 +168,14 @@ export class iccDocumentApi {
       new Date().getTime() +
       (enckeys ? "&enckeys=" + enckeys : "")
 
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    return XHR.sendCommand(
+      "PUT",
+      _url,
+      this.headers
+        .filter(h => h.header !== "Content-Type")
+        .concat(new XHR.Header("Content-Type", "application/octet-stream")),
+      _body
+    )
       .then(doc => new models.DocumentDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }

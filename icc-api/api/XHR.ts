@@ -86,7 +86,9 @@ export namespace XHR {
         if (!contentType) {
           jsXHR.setRequestHeader("Content-Type", "application/json")
         }
-        jsXHR.send(JSON.stringify(data))
+        jsXHR.send(
+          !contentType || contentType.data === "application/json" ? JSON.stringify(data) : data
+        )
       } else {
         jsXHR.send()
       }
