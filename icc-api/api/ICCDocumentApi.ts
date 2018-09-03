@@ -110,7 +110,11 @@ export class iccDocumentApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.DocumentDto(it)))
       .catch(err => this.handleError(err))
   }
-  getAttachment(documentId: string, attachmentId: string, sfks?: string): Promise<any | Boolean> {
+  getAttachment(
+    documentId: string,
+    attachmentId: string,
+    enckeys?: string
+  ): Promise<any | Boolean> {
     let _body = null
 
     const _url =
@@ -120,7 +124,7 @@ export class iccDocumentApi {
         .replace("{attachmentId}", attachmentId + "") +
       "?ts=" +
       new Date().getTime() +
-      (sfks ? "&sfks=" + sfks : "")
+      (enckeys ? "&enckeys=" + enckeys : "")
 
     return XHR.sendCommand("GET", _url, this.headers, _body)
       .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
@@ -149,7 +153,11 @@ export class iccDocumentApi {
       .then(doc => new models.DocumentDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  setAttachment(documentId: string, body?: ArrayBuffer): Promise<models.DocumentDto | any> {
+  setAttachment(
+    documentId: string,
+    enckeys?: string,
+    body?: Array<string>
+  ): Promise<models.DocumentDto | any> {
     let _body = null
     _body = body
 
@@ -157,7 +165,8 @@ export class iccDocumentApi {
       this.host +
       "/document/{documentId}/attachment".replace("{documentId}", documentId + "") +
       "?ts=" +
-      new Date().getTime()
+      new Date().getTime() +
+      (enckeys ? "&enckeys=" + enckeys : "")
 
     return XHR.sendCommand("PUT", _url, this.headers, _body)
       .then(doc => new models.DocumentDto(doc.body as JSON))
@@ -165,19 +174,21 @@ export class iccDocumentApi {
   }
   setAttachmentMulti(
     documentId: string,
-    attachment?: ArrayBuffer
+    enckeys?: string,
+    attachment?: Array<string>
   ): Promise<models.DocumentDto | any> {
     let _body = null
     attachment &&
       (_body = _body || new FormData()).append(
         "attachment",
-        new Blob([new Uint8Array(attachment)], { type: "application/octet-stream" })
+        new Blob(attachment, { type: "application/octet-stream" })
       )
     const _url =
       this.host +
       "/document/{documentId}/attachment/multipart".replace("{documentId}", documentId + "") +
       "?ts=" +
-      new Date().getTime()
+      new Date().getTime() +
+      (enckeys ? "&enckeys=" + enckeys : "")
 
     return XHR.sendCommand("PUT", _url, this.headers, _body)
       .then(doc => new models.DocumentDto(doc.body as JSON))
