@@ -624,7 +624,7 @@ export class IccDocumentXApi extends iccDocumentApi {
       "/document/{documentId}/attachment/{attachmentId}"
         .replace("{documentId}", documentId)
         .replace("{attachmentId}", attachmentId) +
-      (sfks && sfks.length ? "?sfks=" + sfks.join(",") : "")
+      (sfks && sfks.length ? "?enckeys=" + sfks.join(",") : "")
     )
   }
 
