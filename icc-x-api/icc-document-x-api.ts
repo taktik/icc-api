@@ -472,7 +472,7 @@ export class IccDocumentXApi extends iccDocumentApi {
 
   private initDelegationsAndEncryptionKeys(
     user: models.UserDto,
-    message: models.MessageDto,
+    message: models.MessageDto | null,
     document: models.DocumentDto
   ): Promise<models.DocumentDto> {
     return this.crypto

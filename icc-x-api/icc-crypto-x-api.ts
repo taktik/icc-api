@@ -381,9 +381,13 @@ export class IccCryptoXApi {
       | models.ContactDto
       | models.DocumentDto
       | models.InvoiceDto
-      | models.HealthElementDto,
+      | models.HealthElementDto
+      | null,
     hcpartyId: string
   ): Promise<Array<string>> {
+    if (!document) {
+      return Promise.resolve([])
+    }
     const dels = document.delegations
     if (!dels || !dels[hcpartyId] || dels[hcpartyId].length <= 0) {
       console.log(
