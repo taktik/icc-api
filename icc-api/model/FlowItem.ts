@@ -25,6 +25,8 @@ export class FlowItem {
 
   status?: string;
 
+  homeVisit?: boolean;
+
   municipality?: string;
 
   town?: string;
