@@ -70,6 +70,7 @@ export class IccBekmehrXApi extends iccBekmehrApi {
           }
         } else {
           resolve(event.data)
+          socket.close(100, "Ok")
         }
       })
     })
