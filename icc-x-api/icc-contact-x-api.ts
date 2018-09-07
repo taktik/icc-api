@@ -315,6 +315,10 @@ export class IccContactXApi extends iccContactApi {
                 ctc.id!
               )
               .then((sfks: Array<string>) => {
+                if (!sfks || !sfks.length) {
+                  console.log("Cannot decrypt contact", ctc.id)
+                  return Promise.resolve(ctc)
+                }
                 return Promise.all(
                   ctc.services!.map(svc => {
                     if (svc.encryptedContent || svc.encryptedSelf) {
