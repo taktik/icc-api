@@ -45,7 +45,6 @@ export class IccBekmehrXApi extends iccBekmehrApi {
 
       // Listen for messages
       socket.addEventListener("message", function(event) {
-        console.log("Message from server ", event.data)
         if (typeof event.data === "string") {
           const msg = JSON.parse(event.data)
 
