@@ -144,13 +144,15 @@ export class IccPatientXApi extends iccPatientApi {
                 ).then(docs => {
                   let markerPromise: Promise<any> = Promise.resolve(null)
                   delegateIds.forEach(delegateId => {
-                    this.crypto.addDelegationsAndEncryptionKeys(
-                      null,
-                      p,
-                      ownerId,
-                      delegateId,
-                      psfks[0],
-                      peks[0]
+                    markerPromise = markerPromise.then(() =>
+                      this.crypto.addDelegationsAndEncryptionKeys(
+                        null,
+                        p,
+                        ownerId,
+                        delegateId,
+                        psfks[0],
+                        peks[0]
+                      )
                     )
                     hes.forEach(
                       x =>
@@ -206,26 +208,30 @@ export class IccPatientXApi extends iccPatientApi {
                           )
                         ))
                     )
-                    docs.forEach(x =>
-                      markerPromise.then(() =>
-                        Promise.all([
-                          this.crypto.extractDelegationsSFKs(x, ownerId),
-                          this.crypto.extractEncryptionsSKs(x, ownerId)
-                        ]).then(([sfks, eks]) =>
-                          this.crypto.addDelegationsAndEncryptionKeys(
-                            p,
-                            x,
-                            ownerId,
-                            delegateId,
-                            sfks[0],
-                            eks[0]
+                    docs.forEach(
+                      x =>
+                        (markerPromise = markerPromise.then(() =>
+                          Promise.all([
+                            this.crypto.extractDelegationsSFKs(x, ownerId),
+                            this.crypto.extractEncryptionsSKs(x, ownerId)
+                          ]).then(([sfks, eks]) =>
+                            this.crypto.addDelegationsAndEncryptionKeys(
+                              p,
+                              x,
+                              ownerId,
+                              delegateId,
+                              sfks[0],
+                              eks[0]
+                            )
                           )
-                        )
-                      )
+                        ))
                     )
                   })
                   return markerPromise
-                    .then(() => this.contactApi.setContactsDelegations(ctcsStubs))
+                    .then(() => {
+                      debugger
+                      this.contactApi.setContactsDelegations(ctcsStubs)
+                    })
                     .then(() => this.helementApi.setHealthElementsDelegations(hes))
                     .then(() => this.invoiceApi.setInvoicesDelegations(ivs))
                     .then(() => this.documentApi.setDocumentsDelegations(docs))

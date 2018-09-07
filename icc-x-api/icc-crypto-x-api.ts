@@ -449,7 +449,7 @@ export class IccCryptoXApi {
     masterId: string
   ): Promise<Array<string>> {
     const decryptPromises: Array<Promise<string>> = []
-    for (var i = 0; i < delegationsArray.length; i++) {
+    for (var i = 0; i < (delegationsArray || []).length; i++) {
       var delegation = delegationsArray[i]
 
       decryptPromises.push(

@@ -581,6 +581,11 @@ export class IccDocumentXApi extends iccDocumentApi {
                   document.id!
                 )
                 .then((sfks: Array<string>) => {
+                  if (!sfks || !sfks.length) {
+                    console.log("Cannot decrypt document", document.id)
+                    return Promise.resolve(document)
+                  }
+
                   if (sfks.length && document.encryptedSelf) {
                     return this.crypto.AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
                       .then(
