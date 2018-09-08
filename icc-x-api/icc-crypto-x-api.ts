@@ -571,4 +571,23 @@ export class IccCryptoXApi {
         .then(() => this.hcpartyBaseApi.modifyHealthcareParty(owner))
     )
   }
+
+  checkPrivateKeyValidity(hcp: models.HealthcarePartyDto): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
+      this.RSA.importKey("jwk", utils.spkiToJwk(utils.hex2ua(hcp.publicKey!)), ["encrypt"])
+        .then(k => this.RSA.encrypt(k, this.utils.utf82ua("shibboleth")))
+        .then(cipher => {
+          const kp = this.RSA.loadKeyPairNotImported(hcp.id!)
+          return this.RSA.importKeyPair("jwk", kp.privateKey, "jwk", kp.publicKey).then(ikp =>
+            this.RSA.decrypt(ikp.privateKey, new Uint8Array(cipher))
+          )
+        })
+        .then(plainText => {
+          const pt = this.utils.ua2utf8(plainText)
+          console.log(pt)
+          resolve(pt === "shibboleth")
+        })
+        .catch(() => resolve(false))
+    })
+  }
 }
