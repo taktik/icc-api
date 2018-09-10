@@ -98,7 +98,7 @@ export class IccHelementXApi extends iccHelementApi {
    * @param patient (Promise)
    */
 
-  findBy(hcpartyId: string, patient: models.PatientDto) {
+  findBy(hcpartyId: string, patient: models.PatientDto, latestOnly = true) {
     if (
       !patient.delegations ||
       !patient.delegations[hcpartyId] ||
@@ -130,16 +130,19 @@ export class IccHelementXApi extends iccHelementApi {
             )
             .then((helements: Array<models.HealthElementDto>) => this.decrypt(hcpartyId, helements))
             .then((decryptedHelements: Array<models.HealthElementDto>) => {
-              const byIds: { [key: string]: models.HealthElementDto } = {}
-              decryptedHelements.forEach(he => {
-                if (he.healthElementId) {
-                  const phe = byIds[he.healthElementId]
-                  if (!phe || !phe.modified || (he.modified && phe.modified < he.modified)) {
-                    byIds[he.healthElementId] = he
+              if (latestOnly) {
+                const byIds: { [key: string]: models.HealthElementDto } = {}
+                decryptedHelements.forEach(he => {
+                  if (he.healthElementId) {
+                    const phe = byIds[he.healthElementId]
+                    if (!phe || !phe.modified || (he.modified && phe.modified < he.modified)) {
+                      byIds[he.healthElementId] = he
+                    }
                   }
-                }
-              })
-              return _.values(byIds).filter((s: any) => !s.endOfLife)
+                })
+                decryptedHelements = _.values(byIds)
+              }
+              return decryptedHelements.filter((s: any) => !s.endOfLife)
             })
         }
       )
