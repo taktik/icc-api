@@ -35,4 +35,6 @@ export class CalendarItemTagDto {
 
   userId?: string;
 
+  userName?: string;
+
 }
