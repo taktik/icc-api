@@ -27,51 +27,83 @@ export class IccBekmehrXApi extends iccBekmehrApi {
       .replace(/\/rest\/v.+/, "/ws")
   }
 
+  socketEventListener(
+    socket: WebSocket,
+    healthcarePartyId: string,
+    resolve: (value?: Promise<Blob>) => void,
+    reject: (reason?: any) => void
+  ) {
+    const that = this
+    return (event: MessageEvent) => {
+      if (typeof event.data === "string") {
+        const msg = JSON.parse(event.data)
+
+        if (msg.command === "decrypt") {
+          if (msg.type === "ContactDto") {
+            that.ctcApi
+              .decrypt(healthcarePartyId, msg.body)
+              .then(res =>
+                socket.send(
+                  JSON.stringify({ command: "decryptResponse", uuid: msg.uuid, body: res })
+                )
+              )
+          } else {
+            that.ctcApi
+              .decryptServices(healthcarePartyId, msg.body)
+              .then(res =>
+                socket.send(
+                  JSON.stringify({ command: "decryptResponse", uuid: msg.uuid, body: res })
+                )
+              )
+          }
+        }
+      } else {
+        resolve(event.data)
+        socket.close(1000, "Ok")
+      }
+    }
+  }
+
   generateSmfExportWithEncryptionSupport(
     patientId: string,
     healthcarePartyId: string,
     language: string,
     body: models.SoftwareMedicalFileExportDto
   ): Promise<Blob> {
-    const that = this
-
     return new Promise((resolve, reject) => {
       const socket = new WebSocket(this.wssHost + "/be_kmehr/generateSmf")
-      socket.addEventListener("open", function(event) {
+      socket.addEventListener("open", function() {
         socket.send(
           JSON.stringify({ parameters: { patientId: patientId, language: language, info: body } })
         )
       })
 
       // Listen for messages
-      socket.addEventListener("message", function(event) {
-        if (typeof event.data === "string") {
-          const msg = JSON.parse(event.data)
+      socket.addEventListener(
+        "message",
+        this.socketEventListener(socket, healthcarePartyId, resolve, reject)
+      )
+    })
+  }
 
-          if (msg.command === "decrypt") {
-            if (msg.type === "ContactDto") {
-              that.ctcApi
-                .decrypt(healthcarePartyId, msg.body)
-                .then(res =>
-                  socket.send(
-                    JSON.stringify({ command: "decryptResponse", uuid: msg.uuid, body: res })
-                  )
-                )
-            } else {
-              that.ctcApi
-                .decryptServices(healthcarePartyId, msg.body)
-                .then(res =>
-                  socket.send(
-                    JSON.stringify({ command: "decryptResponse", uuid: msg.uuid, body: res })
-                  )
-                )
-            }
-          }
-        } else {
-          resolve(event.data)
-          socket.close(1000, "Ok")
-        }
+  generateSumehrExportWithEncryptionSupport(
+    patientId: string,
+    healthcarePartyId: string,
+    language: string,
+    body: models.SumehrExportInfoDto
+  ): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+      const socket = new WebSocket(this.wssHost + "/be_kmehr/generateSumehr")
+      socket.addEventListener("open", function() {
+        socket.send(
+          JSON.stringify({ parameters: { patientId: patientId, language: language, info: body } })
+        )
       })
+      // Listen for messages
+      socket.addEventListener(
+        "message",
+        this.socketEventListener(socket, healthcarePartyId, resolve, reject)
+      )
     })
   }
 }
