@@ -47,6 +47,14 @@ export class IccBekmehrXApi extends iccBekmehrApi {
                   JSON.stringify({ command: "decryptResponse", uuid: msg.uuid, body: res })
                 )
               )
+          } else if (msg.type === "HealthElementDto") {
+            that.helementApi
+              .decrypt(healthcarePartyId, msg.body)
+              .then(res =>
+                socket.send(
+                  JSON.stringify({ command: "decryptResponse", uuid: msg.uuid, body: res })
+                )
+              )
           } else {
             that.ctcApi
               .decryptServices(healthcarePartyId, msg.body)
