@@ -65,8 +65,11 @@ export class iccInvoiceApi {
       (secretFKeys ? "&secretFKeys=" + secretFKeys : "") +
       (invoiceId ? "&invoiceId=" + invoiceId : "") +
       (gracePriod ? "&gracePriod=" + gracePriod : "")
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.InvoiceDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -75,8 +78,11 @@ export class iccInvoiceApi {
     _body = body
 
     const _url = this.host + "/invoice" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.InvoiceDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -88,8 +94,11 @@ export class iccInvoiceApi {
       "/invoice/{invoiceId}".replace("{invoiceId}", invoiceId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("DELETE", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("DELETE", _url, headers, _body)
       .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
       .catch(err => this.handleError(err))
   }
@@ -113,8 +122,11 @@ export class iccInvoiceApi {
       (startKey ? "&startKey=" + startKey : "") +
       (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
       (limit ? "&limit=" + limit : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.InvoicePaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -131,8 +143,11 @@ export class iccInvoiceApi {
       new Date().getTime() +
       (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
       (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.InvoiceDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -149,8 +164,11 @@ export class iccInvoiceApi {
       new Date().getTime() +
       (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
       (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.IcureStubDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -162,8 +180,11 @@ export class iccInvoiceApi {
       "/invoice/{invoiceId}".replace("{invoiceId}", invoiceId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.InvoiceDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -172,8 +193,11 @@ export class iccInvoiceApi {
     _body = body
 
     const _url = this.host + "/invoice/byIds" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.InvoiceDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -193,8 +217,11 @@ export class iccInvoiceApi {
       new Date().getTime() +
       (from ? "&from=" + from : "") +
       (to ? "&to=" + to : "")
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.InvoiceDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -203,8 +230,11 @@ export class iccInvoiceApi {
     _body = body
 
     const _url = this.host + "/invoice/byCtcts" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.InvoiceDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -216,8 +246,11 @@ export class iccInvoiceApi {
       "/invoice/byIds/{invoiceIds}".replace("{invoiceIds}", invoiceIds + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.InvoiceDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -229,8 +262,11 @@ export class iccInvoiceApi {
       "/invoice/to/{recipientIds}".replace("{recipientIds}", recipientIds + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.InvoiceDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -242,8 +278,11 @@ export class iccInvoiceApi {
       "/invoice/byServiceIds/{serviceIds}".replace("{serviceIds}", serviceIds + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.InvoiceDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -256,8 +295,11 @@ export class iccInvoiceApi {
       "?ts=" +
       new Date().getTime() +
       (userIds ? "&userIds=" + userIds : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.InvoiceDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -270,8 +312,11 @@ export class iccInvoiceApi {
       "?ts=" +
       new Date().getTime() +
       (userIds ? "&userIds=" + userIds : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.InvoiceDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -279,8 +324,11 @@ export class iccInvoiceApi {
     let _body = null
 
     const _url = this.host + "/invoice/toPatients" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.InvoiceDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -288,8 +336,11 @@ export class iccInvoiceApi {
     let _body = null
 
     const _url = this.host + "/invoice/toPatients/unsent" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.InvoiceDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -302,8 +353,11 @@ export class iccInvoiceApi {
       "/invoice/mergeTo/{invoiceId}".replace("{invoiceId}", invoiceId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.InvoiceDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -312,8 +366,11 @@ export class iccInvoiceApi {
     _body = body
 
     const _url = this.host + "/invoice" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.InvoiceDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -329,8 +386,11 @@ export class iccInvoiceApi {
       "/invoice/{invoiceId}/delegate".replace("{invoiceId}", invoiceId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.InvoiceDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -339,8 +399,11 @@ export class iccInvoiceApi {
     _body = body
 
     const _url = this.host + "/invoice/reassign" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.InvoiceDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -361,8 +424,11 @@ export class iccInvoiceApi {
       "?ts=" +
       new Date().getTime() +
       (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.InvoiceDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -371,8 +437,11 @@ export class iccInvoiceApi {
     _body = body
 
     const _url = this.host + "/invoice/delegations" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
       .catch(err => this.handleError(err))
   }
@@ -390,8 +459,11 @@ export class iccInvoiceApi {
       new Date().getTime() +
       (scheme ? "&scheme=" + scheme : "") +
       (forcedValue ? "&forcedValue=" + forcedValue : "")
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.InvoiceDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }

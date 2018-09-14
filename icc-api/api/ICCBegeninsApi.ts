@@ -57,8 +57,11 @@ export class iccBegeninsApi {
       new Date().getTime() +
       (date ? "&date=" + date : "") +
       (hospitalized ? "&hospitalized=" + hospitalized : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.InsurabilityInfo(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -81,8 +84,11 @@ export class iccBegeninsApi {
       new Date().getTime() +
       (hospitalized ? "&hospitalized=" + hospitalized : "") +
       (date ? "&date=" + date : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.InsurabilityInfo(doc.body as JSON))
       .catch(err => this.handleError(err))
   }

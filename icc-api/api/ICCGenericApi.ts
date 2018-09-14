@@ -52,8 +52,11 @@ export class iccGenericApi {
         .replace("{ids}", ids + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("DELETE", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("DELETE", _url, headers, _body)
       .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
       .catch(err => this.handleError(err))
   }
@@ -67,8 +70,11 @@ export class iccGenericApi {
         .replace("{id}", id + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.StoredDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -80,8 +86,11 @@ export class iccGenericApi {
       "/generic/doc/{className}".replace("{className}", className + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
       .catch(err => this.handleError(err))
   }
@@ -93,8 +102,11 @@ export class iccGenericApi {
       "/generic/enum/{className}".replace("{className}", className + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
       .catch(err => this.handleError(err))
   }

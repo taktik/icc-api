@@ -53,8 +53,11 @@ export class iccUserApi {
       ) +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.UserDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -63,8 +66,11 @@ export class iccUserApi {
     _body = body
 
     const _url = this.host + "/user" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.UserDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -73,8 +79,11 @@ export class iccUserApi {
 
     const _url =
       this.host + "/user/{userId}".replace("{userId}", userId + "") + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("DELETE", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("DELETE", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
       .catch(err => this.handleError(err))
   }
@@ -82,8 +91,11 @@ export class iccUserApi {
     let _body = null
 
     const _url = this.host + "/user/current" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.UserDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -92,8 +104,11 @@ export class iccUserApi {
 
     const _url =
       this.host + "/user/{userId}".replace("{userId}", userId + "") + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.UserDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -105,8 +120,11 @@ export class iccUserApi {
       "/user/byEmail/{email}".replace("{email}", email + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.UserDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -125,8 +143,11 @@ export class iccUserApi {
       (startKey ? "&startKey=" + startKey : "") +
       (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
       (limit ? "&limit=" + limit : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.UserPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -142,8 +163,11 @@ export class iccUserApi {
       "/user/{userId}/properties".replace("{userId}", userId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.UserDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -152,8 +176,11 @@ export class iccUserApi {
     _body = body
 
     const _url = this.host + "/user" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.UserDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }

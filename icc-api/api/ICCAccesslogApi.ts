@@ -47,8 +47,11 @@ export class iccAccesslogApi {
     _body = body
 
     const _url = this.host + "/accesslog" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.AccessLogDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -60,8 +63,11 @@ export class iccAccesslogApi {
       "/accesslog/{accessLogIds}".replace("{accessLogIds}", accessLogIds + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("DELETE", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("DELETE", _url, headers, _body)
       .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
       .catch(err => this.handleError(err))
   }
@@ -88,8 +94,11 @@ export class iccAccesslogApi {
       (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
       (limit ? "&limit=" + limit : "") +
       (descending ? "&descending=" + descending : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.AccessLogPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -101,8 +110,11 @@ export class iccAccesslogApi {
       "/accesslog/{accessLogId}".replace("{accessLogId}", accessLogId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.AccessLogDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -121,8 +133,11 @@ export class iccAccesslogApi {
       (startKey ? "&startKey=" + startKey : "") +
       (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
       (limit ? "&limit=" + limit : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.AccessLogDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -131,8 +146,11 @@ export class iccAccesslogApi {
     _body = body
 
     const _url = this.host + "/accesslog" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.AccessLogDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }

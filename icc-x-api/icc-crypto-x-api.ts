@@ -276,10 +276,9 @@ export class IccCryptoXApi {
   }> {
     const secretId = this.randomUuid()
     return this.hcpartyBaseApi
-      .getHealthcareParty(ownerId)
-      .then(owner => owner.hcPartyKeys[ownerId][0])
+      .getHcPartyKeysForDelegate(ownerId)
       .then(encryptedHcPartyKey =>
-        this.decryptHcPartyKey(ownerId, ownerId, encryptedHcPartyKey, true)
+        this.decryptHcPartyKey(ownerId, ownerId, encryptedHcPartyKey[ownerId], true)
       )
       .then(importedAESHcPartyKey =>
         this.AES.encrypt(

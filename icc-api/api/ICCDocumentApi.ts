@@ -47,8 +47,11 @@ export class iccDocumentApi {
     _body = body
 
     const _url = this.host + "/document" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.DocumentDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -60,8 +63,11 @@ export class iccDocumentApi {
       "/document/{documentId}/attachment".replace("{documentId}", documentId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("DELETE", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("DELETE", _url, headers, _body)
       .then(doc => new models.DocumentDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -73,8 +79,11 @@ export class iccDocumentApi {
       "/document/{documentIds}".replace("{documentIds}", documentIds + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("DELETE", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("DELETE", _url, headers, _body)
       .then(doc => new models.DocumentDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -91,8 +100,11 @@ export class iccDocumentApi {
       new Date().getTime() +
       (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
       (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.DocumentDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -105,8 +117,11 @@ export class iccDocumentApi {
       "?ts=" +
       new Date().getTime() +
       (limit ? "&limit=" + limit : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.DocumentDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -125,8 +140,11 @@ export class iccDocumentApi {
       "?ts=" +
       new Date().getTime() +
       (enckeys ? "&enckeys=" + enckeys : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
       .catch(err => this.handleError(err))
   }
@@ -138,8 +156,11 @@ export class iccDocumentApi {
       "/document/{documentId}".replace("{documentId}", documentId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.DocumentDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -148,8 +169,11 @@ export class iccDocumentApi {
     _body = body
 
     const _url = this.host + "/document" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.DocumentDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -167,15 +191,11 @@ export class iccDocumentApi {
       "?ts=" +
       new Date().getTime() +
       (enckeys ? "&enckeys=" + enckeys : "")
-
-    return XHR.sendCommand(
-      "PUT",
-      _url,
-      this.headers
-        .filter(h => h.header !== "Content-Type")
-        .concat(new XHR.Header("Content-Type", "application/octet-stream")),
-      _body
-    )
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/octet-stream"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.DocumentDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -196,8 +216,11 @@ export class iccDocumentApi {
       "?ts=" +
       new Date().getTime() +
       (enckeys ? "&enckeys=" + enckeys : "")
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "multipart/form-data"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.DocumentDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -206,8 +229,11 @@ export class iccDocumentApi {
     _body = body
 
     const _url = this.host + "/document/delegations" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
       .catch(err => this.handleError(err))
   }

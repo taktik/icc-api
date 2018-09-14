@@ -50,6 +50,8 @@ export class CodeDto {
 
   links?: Array<string>
 
+  qualifiedLinks?: { [key: string]: Array<string> }
+
   flags?: Array<CodeDto.FlagsEnum>
 
   data?: string

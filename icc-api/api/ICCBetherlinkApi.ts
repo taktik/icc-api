@@ -51,8 +51,11 @@ export class iccBetherlinkApi {
       "/be_therlink/therlink/check/{token}".replace("{token}", token + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => JSON.parse(JSON.stringify(doc.body)))
       .catch(err => this.handleError(err))
   }
@@ -81,8 +84,11 @@ export class iccBetherlinkApi {
       (endDate ? "&endDate=" + endDate : "") +
       (type ? "&type=" + type : "") +
       (sign ? "&sign=" + sign : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.TherapeuticLinkMessage(it)))
       .catch(err => this.handleError(err))
   }
@@ -96,8 +102,11 @@ export class iccBetherlinkApi {
         .replace("{niss}", niss + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.ConsentMessage(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -120,8 +129,11 @@ export class iccBetherlinkApi {
       new Date().getTime() +
       (firstName ? "&firstName=" + firstName : "") +
       (lastName ? "&lastName=" + lastName : "")
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.ConsentMessage(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -152,8 +164,11 @@ export class iccBetherlinkApi {
       (type ? "&type=" + type : "") +
       (comment ? "&comment=" + comment : "") +
       (sign ? "&sign=" + sign : "")
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.TherapeuticLinkMessage(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -172,8 +187,11 @@ export class iccBetherlinkApi {
         .replace("{eid}", eid + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.ConsentMessage(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -192,8 +210,11 @@ export class iccBetherlinkApi {
         .replace("{eid}", eid + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.TherapeuticLinkMessage(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -202,8 +223,11 @@ export class iccBetherlinkApi {
     _body = body
 
     const _url = this.host + "/be_therlink" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("DELETE", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("DELETE", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.TherapeuticLinkMessage(it)))
       .catch(err => this.handleError(err))
   }
