@@ -34,11 +34,9 @@ export class Keyword {
 
   rev?: string;
 
-  value?: string;
-
   shortcut?: string;
 
-  subWords?: Array<KeywordSubword>;
+  values?: Array<KeywordSubword>;
 
   userId?: number;
 
