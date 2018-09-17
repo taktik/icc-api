@@ -35,4 +35,6 @@ export class RightDto {
 
   write?: boolean;
 
+  administration?: boolean;
+
 }
