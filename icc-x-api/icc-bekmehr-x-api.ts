@@ -66,8 +66,8 @@ export class IccBekmehrXApi extends iccBekmehrApi {
               )
           }
         } else if ((msg.command = "progress")) {
-          if (progressCallback && msg.body) {
-            progressCallback(msg.body.progress)
+          if (progressCallback && msg.body && msg.body[0]) {
+            progressCallback(msg.body[0].progress)
           }
         }
       } else {
