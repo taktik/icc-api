@@ -31,7 +31,8 @@ export class IccBekmehrXApi extends iccBekmehrApi {
     socket: WebSocket,
     healthcarePartyId: string,
     resolve: (value?: Promise<Blob>) => void,
-    reject: (reason?: any) => void
+    reject: (reason?: any) => void,
+    progressCallback?: (progress: number) => void
   ) {
     const that = this
     return (event: MessageEvent) => {
@@ -64,6 +65,10 @@ export class IccBekmehrXApi extends iccBekmehrApi {
                 )
               )
           }
+        } else if ((msg.command = "progress")) {
+          if (progressCallback && msg.body) {
+            progressCallback(msg.body.progress)
+          }
         }
       } else {
         resolve(event.data)
@@ -76,7 +81,8 @@ export class IccBekmehrXApi extends iccBekmehrApi {
     patientId: string,
     healthcarePartyId: string,
     language: string,
-    body: models.SoftwareMedicalFileExportDto
+    body: models.SoftwareMedicalFileExportDto,
+    progressCallback?: (progress: number) => void
   ): Promise<Blob> {
     return new Promise((resolve, reject) => {
       const socket = new WebSocket(this.wssHost + "/be_kmehr/generateSmf")
@@ -89,7 +95,7 @@ export class IccBekmehrXApi extends iccBekmehrApi {
       // Listen for messages
       socket.addEventListener(
         "message",
-        this.socketEventListener(socket, healthcarePartyId, resolve, reject)
+        this.socketEventListener(socket, healthcarePartyId, resolve, reject, progressCallback)
       )
     })
   }
