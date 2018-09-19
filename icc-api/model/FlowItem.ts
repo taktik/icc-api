@@ -7,27 +7,62 @@ export class FlowItem {
 
   title?: string;
 
+  comment?: string;
+
   receptionDate?: number;
-
-  cancellationDate?: number;
-
-  canceller?: string;
 
   processingDate?: number;
 
   processer?: string;
 
-  phoneNumber?: string;
+  cancellationDate?: number;
 
-  patientId?: string;
-
-  patientFirstName?: string;
-
-  patientLastName?: string;
-
-  status?: string;
+  canceller?: string;
 
   cancellationReason?: string;
 
   cancellationNote?: string;
+
+  status?: string;
+
+  homeVisit?: boolean;
+
+  municipality?: string;
+
+  town?: string;
+
+  zipCode?: string;
+
+  street?: string;
+
+  building?: string;
+
+  buildingNumber?: string;
+
+  doorbellName?: string;
+
+  floor?: string;
+
+  letterBox?: string;
+
+  notesOps?: string;
+
+  notesContact?: string;
+
+  latitude?: string;
+
+  longitude?: string;
+
+  type?: string;
+
+  emergency?: boolean;
+
+  phoneNumber?: string;
+
+  patientId?: string;
+
+  patientLastName?: string;
+
+  patientFirstName?: string;
+
 }

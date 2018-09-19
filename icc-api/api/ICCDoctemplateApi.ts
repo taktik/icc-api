@@ -87,6 +87,42 @@ export class iccDoctemplateApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.DocumentTemplateDto(it)))
       .catch(err => this.handleError(err))
   }
+  findDocumentTemplatesByDocumentType(
+    documentTypeCode: string
+  ): Promise<Array<models.DocumentTemplateDto> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/doctemplate/byDocumentType/{documentTypeCode}".replace(
+        "{documentTypeCode}",
+        documentTypeCode + ""
+      ) +
+      "?ts=" +
+      new Date().getTime()
+
+    return XHR.sendCommand("GET", _url, this.headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.DocumentTemplateDto(it)))
+      .catch(err => this.handleError(err))
+  }
+  findDocumentTemplatesByDocumentTypeForCurrentUser(
+    documentTypeCode: string
+  ): Promise<Array<models.DocumentTemplateDto> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/doctemplate/byDocumentTypeForCurrentUser/{documentTypeCode}".replace(
+        "{documentTypeCode}",
+        documentTypeCode + ""
+      ) +
+      "?ts=" +
+      new Date().getTime()
+
+    return XHR.sendCommand("GET", _url, this.headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.DocumentTemplateDto(it)))
+      .catch(err => this.handleError(err))
+  }
   getAttachment(documentTemplateId: string, attachmentId: string): Promise<any | Boolean> {
     let _body = null
 

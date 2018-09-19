@@ -24,17 +24,13 @@
 
 import * as models from './models';
 
-export class CalendarItemTagDto {
+export class KeywordSubword {
   constructor(json: JSON | any) {
-    Object.assign(this as CalendarItemTagDto, json)
+    Object.assign(this as KeywordSubword, json)
   }
 
-  code?: string;
+  value?: string;
 
-  date?: number; //YYYYMMDDHHMMSS
-
-  userId?: string;
-
-  userName?: string;
+  subWords?: Array<KeywordSubword>;
 
 }
