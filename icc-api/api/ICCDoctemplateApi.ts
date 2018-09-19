@@ -94,7 +94,10 @@ export class iccDoctemplateApi {
 
     const _url =
       this.host +
-      "/doctemplate/byDocumentType/{documentTypeCode}".replace("{documentTypeCode}", documentTypeCode + "") +
+      "/doctemplate/byDocumentType/{documentTypeCode}".replace(
+        "{documentTypeCode}",
+        documentTypeCode + ""
+      ) +
       "?ts=" +
       new Date().getTime()
 
@@ -109,7 +112,10 @@ export class iccDoctemplateApi {
 
     const _url =
       this.host +
-      "/doctemplate/byDocumentTypeForCurrentUser/{documentTypeCode}".replace("{documentTypeCode}", documentTypeCode + "") +
+      "/doctemplate/byDocumentTypeForCurrentUser/{documentTypeCode}".replace(
+        "{documentTypeCode}",
+        documentTypeCode + ""
+      ) +
       "?ts=" +
       new Date().getTime()
 
