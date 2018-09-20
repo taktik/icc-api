@@ -1,5 +1,4 @@
 import { iccHelementApi } from "../icc-api/iccApi"
-import { IccContactXApi } from "./icc-contact-x-api"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 
 import * as models from "../icc-api/model/models"
@@ -9,11 +8,9 @@ import moment from "moment"
 import { XHR } from "../icc-api/api/XHR"
 import { utils } from "./crypto/utils"
 import { AES } from "./crypto/AES"
-import { RSA } from "./crypto/RSA"
 
 export class IccHelementXApi extends iccHelementApi {
   crypto: IccCryptoXApi
-  // contactApi = IccContactXApi;  // needed in serviceToHealthElement, but not injected in the upstream code
 
   constructor(host: string, headers: Array<XHR.Header>, crypto: IccCryptoXApi) {
     super(host, headers)

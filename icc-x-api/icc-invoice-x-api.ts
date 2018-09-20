@@ -5,7 +5,7 @@ import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
 import { XHR } from "../icc-api/api/XHR"
 
-export class iccInvoiceXApi extends iccInvoiceApi {
+export class IccInvoiceXApi extends iccInvoiceApi {
   crypto: IccCryptoXApi
 
   constructor(host: string, headers: Array<XHR.Header>, crypto: IccCryptoXApi) {
