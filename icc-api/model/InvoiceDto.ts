@@ -70,7 +70,7 @@ export class InvoiceDto {
 
   invoiceType?: string
 
-  mediumType?: string
+  sentMediumType?: string
 
   recipientType?: string
 
