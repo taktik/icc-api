@@ -53,4 +53,29 @@ export class IccKeywordApi {
       .then(doc => new models.Keyword(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+
+  modifyKeyword(body?: models.Keyword): Promise<models.Keyword | any> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + "/keyword" + "?ts=" + new Date().getTime()
+
+    return XHR.sendCommand("PUT", _url, this.headers, _body)
+      .then(doc => new models.CalendarItemDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+
+  deleteCalendarItems(keywordIds: string): Promise<Array<string> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/keyword/{keywordIds}".replace("{keywordIds}", keywordIds + "") +
+      "?ts=" +
+      new Date().getTime()
+
+    return XHR.sendCommand("DELETE", _url, this.headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
+      .catch(err => this.handleError(err))
+  }
 }
