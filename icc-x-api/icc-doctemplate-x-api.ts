@@ -32,6 +32,9 @@ export class IccDoctemplateXApi extends iccDoctemplateApi {
         },
         c || {}
       )
+      if (documentTemplate.group && documentTemplate.group.guid == null) {
+        documentTemplate.group.guid = this.crypto.randomUuid()
+      }
 
       //sauver l doctemplate vide
 
