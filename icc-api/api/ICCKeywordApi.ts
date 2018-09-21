@@ -54,6 +54,14 @@ export class IccKeywordApi {
       .catch(err => this.handleError(err))
   }
 
+  getKeywords(): Promise<Array<models.Keyword> | any> {
+    const _url = this.host + "/keyword" + "?ts=" + new Date().getTime()
+
+    return XHR.sendCommand("GET", _url, this.headers)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.Keyword(it)))
+      .catch(err => this.handleError(err))
+  }
+
   modifyKeyword(body?: models.Keyword): Promise<models.Keyword | any> {
     let _body = null
     _body = body
