@@ -73,7 +73,7 @@ export class IccKeywordApi {
       .catch(err => this.handleError(err))
   }
 
-  deleteCalendarItems(keywordIds: string): Promise<Array<string> | any> {
+  deleteKeyword(keywordIds: string): Promise<Array<string> | any> {
     let _body = null
 
     const _url =
