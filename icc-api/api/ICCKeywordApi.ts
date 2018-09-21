@@ -69,7 +69,7 @@ export class IccKeywordApi {
     const _url = this.host + "/keyword" + "?ts=" + new Date().getTime()
 
     return XHR.sendCommand("PUT", _url, this.headers, _body)
-      .then(doc => new models.CalendarItemDto(doc.body as JSON))
+      .then(doc => new models.Keyword(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 
