@@ -50,8 +50,11 @@ export class iccBechapterApi {
       "/be_chapter4/paragraphs/{documentId}".replace("{documentId}", documentId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.AgreementTransaction(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -77,8 +80,11 @@ export class iccBechapterApi {
       (reference ? "&reference=" + reference : "") +
       (paragraph ? "&paragraph=" + paragraph : "") +
       (version ? "&version=" + version : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.AgreementResponse(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -98,8 +104,11 @@ export class iccBechapterApi {
       (patientId ? "&patientId=" + patientId : "") +
       (decisionReference ? "&decisionReference=" + decisionReference : "") +
       (ioRequestReference ? "&ioRequestReference=" + ioRequestReference : "")
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.AgreementResponse(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -117,8 +126,11 @@ export class iccBechapterApi {
       new Date().getTime() +
       (patientId ? "&patientId=" + patientId : "") +
       (decisionReference ? "&decisionReference=" + decisionReference : "")
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.AgreementResponse(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -135,8 +147,11 @@ export class iccBechapterApi {
       new Date().getTime() +
       (searchString ? "&searchString=" + searchString : "") +
       (language ? "&language=" + language : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.ParagraphPreview(it)))
       .catch(err => this.handleError(err))
   }
@@ -153,8 +168,11 @@ export class iccBechapterApi {
         .replace("{language}", language + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.ParagraphPreview(it)))
       .catch(err => this.handleError(err))
   }
@@ -171,8 +189,11 @@ export class iccBechapterApi {
       new Date().getTime() +
       (chapterName ? "&chapterName=" + chapterName : "") +
       (paragraphName ? "&paragraphName=" + paragraphName : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.AgreementResponse(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -193,8 +214,11 @@ export class iccBechapterApi {
       (mimeType ? "&mimeType=" + mimeType : "") +
       (verseSeq ? "&verseSeq=" + verseSeq : "") +
       (documentSeq ? "&documentSeq=" + documentSeq : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.Appendix(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -210,8 +234,11 @@ export class iccBechapterApi {
       "/be_chapter4/extension/{token}".replace("{token}", token + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.AgreementResponse(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -239,8 +266,11 @@ export class iccBechapterApi {
       (ioRequestReference ? "&ioRequestReference=" + ioRequestReference : "") +
       (paragraph ? "&paragraph=" + paragraph : "") +
       (version ? "&version=" + version : "")
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.AgreementResponse(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -256,8 +286,11 @@ export class iccBechapterApi {
       "/be_chapter4/new/{token}".replace("{token}", token + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.AgreementResponse(doc.body as JSON))
       .catch(err => this.handleError(err))
   }

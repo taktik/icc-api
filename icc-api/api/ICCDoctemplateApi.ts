@@ -49,8 +49,11 @@ export class iccDoctemplateApi {
     _body = body
 
     const _url = this.host + "/doctemplate" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.DocumentTemplateDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -58,8 +61,11 @@ export class iccDoctemplateApi {
     let _body = null
 
     const _url = this.host + "/doctemplate/find/all" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.DocumentTemplateDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -67,8 +73,11 @@ export class iccDoctemplateApi {
     let _body = null
 
     const _url = this.host + "/doctemplate" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.DocumentTemplateDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -82,8 +91,11 @@ export class iccDoctemplateApi {
       "/doctemplate/bySpecialty/{specialityCode}".replace("{specialityCode}", specialityCode + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.DocumentTemplateDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -97,8 +109,11 @@ export class iccDoctemplateApi {
         .replace("{attachmentId}", attachmentId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
       .catch(err => this.handleError(err))
   }
@@ -110,8 +125,11 @@ export class iccDoctemplateApi {
       "/doctemplate/{documentTemplateId}".replace("{documentTemplateId}", documentTemplateId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.DocumentTemplateDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -130,8 +148,11 @@ export class iccDoctemplateApi {
       ) +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/octet-stream"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.DocumentTemplateDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -147,8 +168,11 @@ export class iccDoctemplateApi {
       "/doctemplate/{documentTemplateId}".replace("{documentTemplateId}", documentTemplateId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.DocumentTemplateDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }

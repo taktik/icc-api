@@ -50,8 +50,11 @@ export class iccBeresultimportApi {
       "/be_result_import/canhandle/{id}".replace("{id}", id + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => JSON.parse(JSON.stringify(doc.body)))
       .catch(err => this.handleError(err))
   }
@@ -78,8 +81,11 @@ export class iccBeresultimportApi {
       "?ts=" +
       new Date().getTime() +
       (planOfActionId ? "&planOfActionId=" + planOfActionId : "")
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.ContactDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -91,8 +97,11 @@ export class iccBeresultimportApi {
       "/be_result_import/infos/{id}".replace("{id}", id + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.ResultInfoDto(it)))
       .catch(err => this.handleError(err))
   }

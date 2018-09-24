@@ -55,8 +55,11 @@ export class iccBeabApi {
         .replace("{language}", language + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.HealthcarePartyDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -73,8 +76,11 @@ export class iccBeabApi {
         .replace("{language}", language + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.HealthcarePartyDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -91,8 +97,11 @@ export class iccBeabApi {
       new Date().getTime() +
       (lastName ? "&lastName=" + lastName : "") +
       (firstName ? "&firstName=" + firstName : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.HealthcarePartyDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -109,8 +118,11 @@ export class iccBeabApi {
       new Date().getTime() +
       (name ? "&name=" + name : "") +
       (language ? "&language=" + language : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.HealthcarePartyDto(it)))
       .catch(err => this.handleError(err))
   }

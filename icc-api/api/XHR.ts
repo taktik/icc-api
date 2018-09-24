@@ -68,7 +68,9 @@ export namespace XHR {
       const contentType = headers && headers.find(it => it.header === "Content-Type")
       if (headers != null) {
         headers.forEach(header => {
-          jsXHR.setRequestHeader(header.header, header.data)
+          if (header.header !== "Content-Type" || header.data !== "multipart/form-data") {
+            jsXHR.setRequestHeader(header.header, header.data)
+          }
         })
       }
 
@@ -83,10 +85,11 @@ export namespace XHR {
       }
 
       if (method === "POST" || method === "PUT") {
-        if (!contentType) {
-          jsXHR.setRequestHeader("Content-Type", "application/json")
+        if (contentType && contentType.data === "application/json") {
+          jsXHR.send(JSON.stringify(data))
+        } else {
+          jsXHR.send(data)
         }
-        jsXHR.send(JSON.stringify(data))
       } else {
         jsXHR.send()
       }
