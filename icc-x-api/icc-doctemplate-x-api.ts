@@ -28,10 +28,14 @@ export class IccDoctemplateXApi extends iccDoctemplateApi {
           guid: this.crypto.randomUuid(),
           group: null,
           specialty: null,
-          attachment: this.crypto.utils.text2ua(template)
+          attachment: this.crypto.utils.text2ua(template),
+          mainUti: "public.plain-text"
         },
         c || {}
       )
+      if (documentTemplate.group && documentTemplate.group.guid == null) {
+        documentTemplate.group.guid = this.crypto.randomUuid()
+      }
 
       //sauver l doctemplate vide
 
@@ -62,6 +66,22 @@ export class IccDoctemplateXApi extends iccDoctemplateApi {
         .replace("{documentId}", documentId)
         .replace("{attachmentId}", attachmentId)
     )
+  }
+
+  getAttachmentText(documentTemplateId: string, attachmentId: string): Promise<any | Boolean> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/doctemplate/{documentTemplateId}/attachmentText/{attachmentId}"
+        .replace("{documentTemplateId}", documentTemplateId + "")
+        .replace("{attachmentId}", attachmentId + "") +
+      "?ts=" +
+      new Date().getTime()
+
+    return XHR.sendCommand("GET", _url, this.headers, _body)
+      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .catch(err => this.handleError(err))
   }
 
   setAttachmentJson(
