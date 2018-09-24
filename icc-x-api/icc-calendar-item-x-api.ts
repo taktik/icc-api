@@ -171,7 +171,6 @@ export class IccCalendarItemXApi extends ICCCalendarItemApi {
 
   encrypt(user: models.UserDto, calendarItems: Array<models.CalendarItemDto>) {
     const hcpartyId = user.healthcarePartyId!
-    debugger
     return Promise.all(
       calendarItems.map(item =>
         (item.encryptionKeys && Object.keys(item.encryptionKeys).length

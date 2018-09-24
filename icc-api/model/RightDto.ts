@@ -22,17 +22,18 @@
  * limitations under the License.
  */
 
-import * as models from './models';
+import * as models from "./models"
 
 export class RightDto {
   constructor(json: JSON | any) {
     Object.assign(this as RightDto, json)
   }
 
-  userId?: string;
+  userId?: string
 
-  read?: boolean;
+  read?: boolean
 
-  write?: boolean;
+  write?: boolean
 
+  administration?: boolean
 }

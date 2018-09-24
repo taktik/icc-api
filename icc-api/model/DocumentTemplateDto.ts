@@ -95,6 +95,8 @@ export namespace DocumentTemplateDto {
     Result = <any>"result",
     Sumehr = <any>"sumehr",
     Telemonitoring = <any>"telemonitoring",
+    Template = <any>"template",
+    TemplateAdmin = <any>"template_admin",
     Treatmentsuspension = <any>"treatmentsuspension",
     Vaccination = <any>"vaccination"
   }

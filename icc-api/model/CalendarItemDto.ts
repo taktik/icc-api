@@ -23,7 +23,7 @@
  */
 
 import * as models from './models';
-import {AddressDto, CalendarItemTypeDto, PlaceDto} from "./models";
+import {AddressDto, CalendarItemTypeDto, FlowItem, PlaceDto} from "./models";
 import {CalendarItemTagDto} from "./CalendarItemTagDto";
 
 export class CalendarItemDto {
@@ -90,5 +90,7 @@ export class CalendarItemDto {
   agendaId?: string;
 
   meetingTags?: Array<CalendarItemTagDto>;
+
+  flowItem?: FlowItem;
 
 }
