@@ -30,6 +30,8 @@ export class InvoiceDto {
   }
   id?: string
 
+  groupId?: string
+
   rev?: string
 
   deletionDate?: number
@@ -67,6 +69,8 @@ export class InvoiceDto {
   invoicingCodes?: Array<models.InvoicingCodeDto>
 
   invoiceType?: string
+
+  sentMediumType?: string
 
   recipientType?: string
 

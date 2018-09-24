@@ -45,6 +45,7 @@ export class iccInvoiceApi {
   appendCodes(
     userId: string,
     type: string,
+    sentMediumType: string,
     insuranceId?: string,
     secretFKeys?: string,
     invoiceId?: string,
@@ -56,9 +57,10 @@ export class iccInvoiceApi {
 
     const _url =
       this.host +
-      "/invoice/byauthor/{userId}/append/{type}"
+      "/invoice/byauthor/{userId}/append/{type}/{sentMediumType}"
         .replace("{userId}", userId + "")
-        .replace("{type}", type + "") +
+        .replace("{type}", type + "")
+        .replace("{sentMediumType}", sentMediumType + "") +
       "?ts=" +
       new Date().getTime() +
       (insuranceId ? "&insuranceId=" + insuranceId : "") +
