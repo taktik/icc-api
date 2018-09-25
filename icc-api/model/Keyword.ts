@@ -22,22 +22,21 @@
  * limitations under the License.
  */
 
-import * as models from './models';
-import {KeywordSubword} from "./KeywordSubword";
+import * as models from "./models"
+import { KeywordSubword } from "./KeywordSubword"
 
 export class Keyword {
   constructor(json: JSON | any) {
     Object.assign(this as Keyword, json)
   }
 
-  id?: string;
+  id?: string
 
-  rev?: string;
+  rev?: string
 
-  value?: string;
+  value?: string
 
-  subWords?: Array<KeywordSubword>;
+  subWords?: Array<KeywordSubword>
 
-  userId?: number;
-
+  userId?: string
 }
