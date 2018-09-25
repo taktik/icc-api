@@ -150,6 +150,22 @@ export class IccDocumentXApi extends iccDocumentApi {
     "unofficial.rssFeed": "application/rss+xml"
   }
 
+  utiExts: { [key: string]: string } = {
+    jpg: "public.jpeg",
+    jpeg: "public.jpeg",
+    png: "public.png",
+    rtf: "public.rtf",
+    mpeg: "public.mpeg",
+    mpg: "public.mpeg",
+    html: "public.html",
+    htm: "public.html",
+    pdf: "com.adobe.pdf",
+    xls: "com.microsoft.excel.xls",
+    xlsx: "com.microsoft.excel.xls",
+    doc: "com.microsoft.word.doc",
+    docx: "com.microsoft.word.doc"
+  }
+
   utiDefs: { [key: string]: string } = {
     "application/atom+xml": "unofficial.atomFeed",
     "application/bat": "com.microsoft.windowsExecutable",
@@ -634,8 +650,12 @@ export class IccDocumentXApi extends iccDocumentApi {
   }
 
   // noinspection JSUnusedGlobalSymbols
-  uti(mimeType: string) {
-    return this.utiDefs[mimeType]
+  uti(mimeType: string, extension: string) {
+    return (
+      (mimeType && mimeType !== "application/octet-stream"
+        ? this.utiDefs[mimeType]
+        : this.utiExts[extension]) || this.utiDefs[mimeType]
+    )
   }
 
   // noinspection JSUnusedGlobalSymbols
