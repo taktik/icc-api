@@ -63,8 +63,11 @@ export class iccBeetarifApi {
       (justification ? "&justification=" + justification : "") +
       (date ? "&date=" + date : "") +
       (nihiiDmg ? "&nihiiDmg=" + nihiiDmg : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.TarificationConsultationResultDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }

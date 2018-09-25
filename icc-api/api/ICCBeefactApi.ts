@@ -61,8 +61,11 @@ export class iccBeefactApi {
         .replace("{numericalRef}", numericalRef + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.SentMessageBatchDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -76,8 +79,11 @@ export class iccBeefactApi {
       "/be_efact/message/{docId}".replace("{docId}", docId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.BelgianInsuranceInvoicingMessageDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -89,8 +95,11 @@ export class iccBeefactApi {
       "/be_efact/tack/{docId}".replace("{docId}", docId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.TAckResponse(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -99,8 +108,11 @@ export class iccBeefactApi {
 
     const _url =
       this.host + "/be_efact/{token}".replace("{token}", token + "") + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.EfactMessageDto(it)))
       .catch(err => this.handleError(err))
   }

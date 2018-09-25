@@ -71,8 +71,11 @@ export class iccBerecipeApi {
       (executorId ? "&executorId=" + executorId : "") +
       (deliverableDate ? "&deliverableDate=" + deliverableDate : "") +
       (expirationDate ? "&expirationDate=" + expirationDate : "")
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.Prescription(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -84,8 +87,11 @@ export class iccBerecipeApi {
       "/be_recipe/feedbacks/{token}".replace("{token}", token + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.Feedback(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -97,8 +103,11 @@ export class iccBerecipeApi {
       "/be_recipe/{token}".replace("{token}", token + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.Prescription(it)))
       .catch(err => this.handleError(err))
   }
@@ -115,8 +124,11 @@ export class iccBerecipeApi {
         .replace("{patientId}", patientId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.Prescription(it)))
       .catch(err => this.handleError(err))
   }
@@ -129,8 +141,11 @@ export class iccBerecipeApi {
       "?ts=" +
       new Date().getTime() +
       (reason ? "&reason=" + reason : "")
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => JSON.parse(JSON.stringify(doc.body)))
       .catch(err => this.handleError(err))
   }
@@ -153,8 +168,11 @@ export class iccBerecipeApi {
       "?ts=" +
       new Date().getTime() +
       (executorId ? "&executorId=" + executorId : "")
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => JSON.parse(JSON.stringify(doc.body)))
       .catch(err => this.handleError(err))
   }
@@ -167,8 +185,11 @@ export class iccBerecipeApi {
       "?ts=" +
       new Date().getTime() +
       (feedbackFlag ? "&feedbackFlag=" + feedbackFlag : "")
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => JSON.parse(JSON.stringify(doc.body)))
       .catch(err => this.handleError(err))
   }

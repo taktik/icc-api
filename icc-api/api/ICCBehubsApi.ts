@@ -56,8 +56,11 @@ export class iccBehubsApi {
       new Date().getTime() +
       (inss ? "&inss=" + inss : "") +
       (nihii ? "&nihii=" + nihii : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.HcPartyConsent(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -71,8 +74,11 @@ export class iccBehubsApi {
         .replace("{ssinPatient}", ssinPatient + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.Consent(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -89,8 +95,11 @@ export class iccBehubsApi {
         .replace("{ssinPatient}", ssinPatient + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.HubTherapeuticLink(it)))
       .catch(err => this.handleError(err))
   }
@@ -113,8 +122,11 @@ export class iccBehubsApi {
         .replace("{transactionSl}", transactionSl + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => JSON.parse(JSON.stringify(doc.body)))
       .catch(err => this.handleError(err))
   }
@@ -145,8 +157,11 @@ export class iccBehubsApi {
       (inamiHcParty ? "&inamiHcParty=" + inamiHcParty : "") +
       (ssinHcParty ? "&ssinHcParty=" + ssinHcParty : "") +
       (isGlobal ? "&isGlobal=" + isGlobal : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.TransactionSummary(it)))
       .catch(err => this.handleError(err))
   }
@@ -160,8 +175,11 @@ export class iccBehubsApi {
         .replace("{idPatient}", idPatient + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.GenericResult(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -174,8 +192,11 @@ export class iccBehubsApi {
 
     const _url =
       this.host + "/be_hubs/{token}".replace("{token}", token + "") + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.GenericResult(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -189,8 +210,11 @@ export class iccBehubsApi {
         .replace("{idPatient}", idPatient + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.GenericResult(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -211,8 +235,11 @@ export class iccBehubsApi {
       new Date().getTime() +
       (start ? "&start=" + start : "") +
       (comment ? "&comment=" + comment : "")
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.GenericResult(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -233,8 +260,11 @@ export class iccBehubsApi {
       (name ? "&name=" + name : "") +
       (wsdl ? "&wsdl=" + wsdl : "") +
       (endpoint ? "&endpoint=" + endpoint : "")
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.GenericResult(doc.body as JSON))
       .catch(err => this.handleError(err))
   }

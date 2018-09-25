@@ -1,5 +1,4 @@
 import { iccHelementApi } from "../icc-api/iccApi"
-import { IccContactXApi } from "./icc-contact-x-api"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 
 import * as models from "../icc-api/model/models"
@@ -9,11 +8,9 @@ import moment from "moment"
 import { XHR } from "../icc-api/api/XHR"
 import { utils } from "./crypto/utils"
 import { AES } from "./crypto/AES"
-import { RSA } from "./crypto/RSA"
 
 export class IccHelementXApi extends iccHelementApi {
   crypto: IccCryptoXApi
-  // contactApi = IccContactXApi;  // needed in serviceToHealthElement, but not injected in the upstream code
 
   constructor(host: string, headers: Array<XHR.Header>, crypto: IccCryptoXApi) {
     super(host, headers)
@@ -98,7 +95,7 @@ export class IccHelementXApi extends iccHelementApi {
    * @param patient (Promise)
    */
 
-  findBy(hcpartyId: string, patient: models.PatientDto, latestOnly = true) {
+  findBy(hcpartyId: string, patient: models.PatientDto, keepObsoleteVersions: boolean = false) {
     if (
       !patient.delegations ||
       !patient.delegations[hcpartyId] ||
@@ -130,8 +127,11 @@ export class IccHelementXApi extends iccHelementApi {
             )
             .then((helements: Array<models.HealthElementDto>) => this.decrypt(hcpartyId, helements))
             .then((decryptedHelements: Array<models.HealthElementDto>) => {
-              if (latestOnly) {
-                const byIds: { [key: string]: models.HealthElementDto } = {}
+              const byIds: { [key: string]: models.HealthElementDto } = {}
+
+              if (keepObsoleteVersions) {
+                return decryptedHelements
+              } else {
                 decryptedHelements.forEach(he => {
                   if (he.healthElementId) {
                     const phe = byIds[he.healthElementId]
@@ -140,9 +140,8 @@ export class IccHelementXApi extends iccHelementApi {
                     }
                   }
                 })
-                decryptedHelements = _.values(byIds)
+                return _.values(byIds).filter((s: any) => !s.endOfLife)
               }
-              return decryptedHelements.filter((s: any) => !s.endOfLife)
             })
         }
       )
@@ -170,6 +169,10 @@ export class IccHelementXApi extends iccHelementApi {
               return this.crypto
                 .decryptDelegationsSFKs(he.delegations![hcpartyId], collatedAesKeys, he.id!)
                 .then((sfks: Array<string>) => {
+                  if (!sfks || !sfks.length) {
+                    console.log("Cannot decrypt helement", he.id)
+                    return Promise.resolve(he)
+                  }
                   if (he.encryptedSelf) {
                     return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(
                       key =>
