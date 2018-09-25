@@ -5,7 +5,6 @@ import * as _ from "lodash"
 import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
 import { DocumentTemplateDto } from "../icc-api/model/models"
-import { User } from "../../../../core/src"
 
 // noinspection JSUnusedGlobalSymbols
 export class IccDoctemplateXApi extends iccDoctemplateApi {
@@ -16,7 +15,7 @@ export class IccDoctemplateXApi extends iccDoctemplateApi {
     this.crypto = crypto
   }
 
-  newInstance(user: User, template: string, c: any): Promise<DocumentTemplateDto> {
+  newInstance(user: models.UserDto, template: string, c: any): Promise<DocumentTemplateDto> {
     return new Promise<DocumentTemplateDto>((resolve, reject) => {
       const documentTemplate: DocumentTemplateDto = _.extend(
         {
