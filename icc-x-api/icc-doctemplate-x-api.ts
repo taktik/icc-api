@@ -1,7 +1,7 @@
 import { iccDoctemplateApi } from "../icc-api/iccApi"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 
-import * as _ from "lodash"
+import { extend } from "lodash"
 import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
 import { DocumentTemplateDto } from "../icc-api/model/models"
@@ -17,7 +17,7 @@ export class IccDoctemplateXApi extends iccDoctemplateApi {
 
   newInstance(user: models.UserDto, template: string, c: any): Promise<DocumentTemplateDto> {
     return new Promise<DocumentTemplateDto>((resolve, reject) => {
-      const documentTemplate: DocumentTemplateDto = _.extend(
+      const documentTemplate: DocumentTemplateDto = extend(
         {
           id: this.crypto.randomUuid(),
           _type: "org.taktik.icure.entities.DocumentTemplate",
