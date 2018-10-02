@@ -51,8 +51,11 @@ export class iccBedmgApi {
       "/be_dmg/message/delete/{token}".replace("{token}", token + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => JSON.parse(JSON.stringify(doc.body)))
       .catch(err => this.handleError(err))
   }
@@ -66,8 +69,11 @@ export class iccBedmgApi {
         .replace("{names}", names + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("DELETE", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("DELETE", _url, headers, _body)
       .then(doc => JSON.parse(JSON.stringify(doc.body)))
       .catch(err => this.handleError(err))
   }
@@ -86,8 +92,11 @@ export class iccBedmgApi {
       "?ts=" +
       new Date().getTime() +
       (date ? "&date=" + date : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.DmgConsultation(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -110,8 +119,11 @@ export class iccBedmgApi {
       "?ts=" +
       new Date().getTime() +
       (date ? "&date=" + date : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.DmgConsultation(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -124,8 +136,11 @@ export class iccBedmgApi {
       "?ts=" +
       new Date().getTime() +
       (names ? "&names=" + names : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.DmgMessageResponse(it)))
       .catch(err => this.handleError(err))
   }
@@ -134,8 +149,11 @@ export class iccBedmgApi {
 
     const _url =
       this.host + "/be_dmg/message/template/DmgAcknowledge" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.DmgAcknowledge(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -143,8 +161,11 @@ export class iccBedmgApi {
     let _body = null
 
     const _url = this.host + "/be_dmg/message/template/DmgClosure" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.DmgClosure(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -153,8 +174,11 @@ export class iccBedmgApi {
 
     const _url =
       this.host + "/be_dmg/message/template/DmgConsultation" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.DmgConsultation(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -162,8 +186,11 @@ export class iccBedmgApi {
     let _body = null
 
     const _url = this.host + "/be_dmg/message/template/DmgExtension" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.DmgExtension(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -172,8 +199,11 @@ export class iccBedmgApi {
 
     const _url =
       this.host + "/be_dmg/message/template/DmgInscription" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.DmgInscription(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -182,8 +212,11 @@ export class iccBedmgApi {
 
     const _url =
       this.host + "/be_dmg/message/template/DmgNotification" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.DmgNotification(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -192,8 +225,11 @@ export class iccBedmgApi {
 
     const _url =
       this.host + "/be_dmg/message/template/DmgRegistration" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.DmgRegistration(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -201,8 +237,11 @@ export class iccBedmgApi {
     let _body = null
 
     const _url = this.host + "/be_dmg/message/template/DmgsList" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.DmgsList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -210,8 +249,11 @@ export class iccBedmgApi {
     let _body = null
 
     const _url = this.host + "/be_dmg/message/template/all" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.DmgMessage(it)))
       .catch(err => this.handleError(err))
   }
@@ -224,8 +266,11 @@ export class iccBedmgApi {
       "?ts=" +
       new Date().getTime() +
       (names ? "&names=" + names : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.DmgMessage(it)))
       .catch(err => this.handleError(err))
   }
@@ -252,8 +297,11 @@ export class iccBedmgApi {
       (firstName ? "&firstName=" + firstName : "") +
       (lastName ? "&lastName=" + lastName : "") +
       (gender ? "&gender=" + gender : "")
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.DmgNotification(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -282,8 +330,11 @@ export class iccBedmgApi {
       (firstName ? "&firstName=" + firstName : "") +
       (lastName ? "&lastName=" + lastName : "") +
       (gender ? "&gender=" + gender : "")
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.DmgNotification(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -298,8 +349,11 @@ export class iccBedmgApi {
       "?ts=" +
       new Date().getTime() +
       (date ? "&date=" + date : "")
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => JSON.parse(JSON.stringify(doc.body)))
       .catch(err => this.handleError(err))
   }
@@ -320,8 +374,11 @@ export class iccBedmgApi {
         .replace("{iban}", iban + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.DmgRegistration(doc.body as JSON))
       .catch(err => this.handleError(err))
   }

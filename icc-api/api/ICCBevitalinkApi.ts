@@ -58,8 +58,11 @@ export class iccBevitalinkApi {
       (includeBusinessData ? "&includeBusinessData=" + includeBusinessData : "") +
       (breakTheGlass ? "&breakTheGlass=" + breakTheGlass : "") +
       (reason ? "&reason=" + reason : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.Prescription(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -84,8 +87,11 @@ export class iccBevitalinkApi {
       (reference ? "&reference=" + reference : "") +
       (previousVersionId ? "&previousVersionId=" + previousVersionId : "") +
       (previousVersionNumber ? "&previousVersionNumber=" + previousVersionNumber : "")
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.Prescription(doc.body as JSON))
       .catch(err => this.handleError(err))
   }

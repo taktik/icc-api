@@ -47,8 +47,11 @@ export class iccInsuranceApi {
     _body = body
 
     const _url = this.host + "/insurance" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.AccessLogDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -60,8 +63,11 @@ export class iccInsuranceApi {
       "/insurance/{insuranceId}".replace("{insuranceId}", insuranceId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("DELETE", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("DELETE", _url, headers, _body)
       .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
       .catch(err => this.handleError(err))
   }
@@ -73,8 +79,11 @@ export class iccInsuranceApi {
       "/insurance/{insuranceId}".replace("{insuranceId}", insuranceId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.InsuranceDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -83,8 +92,11 @@ export class iccInsuranceApi {
     _body = body
 
     const _url = this.host + "/insurance/byIds" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.InsuranceDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -96,8 +108,11 @@ export class iccInsuranceApi {
       "/insurance/byCode/{insuranceCode}".replace("{insuranceCode}", insuranceCode + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.InsuranceDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -109,8 +124,11 @@ export class iccInsuranceApi {
       "/insurance/byName/{insuranceName}".replace("{insuranceName}", insuranceName + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.InsuranceDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -119,8 +137,11 @@ export class iccInsuranceApi {
     _body = body
 
     const _url = this.host + "/insurance" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.InsuranceDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }

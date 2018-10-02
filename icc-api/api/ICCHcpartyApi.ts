@@ -49,8 +49,11 @@ export class iccHcpartyApi {
     _body = body
 
     const _url = this.host + "/hcparty" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.HealthcarePartyDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -59,8 +62,11 @@ export class iccHcpartyApi {
     _body = body
 
     const _url = this.host + "/hcparty/signup" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.HealthcarePartyDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -83,8 +89,11 @@ export class iccHcpartyApi {
       new Date().getTime() +
       (protocol ? "&protocol=" + protocol : "") +
       (port ? "&port=" + port : "")
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.ReplicationDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -96,8 +105,11 @@ export class iccHcpartyApi {
       "/hcparty/{healthcarePartyIds}".replace("{healthcarePartyIds}", healthcarePartyIds + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("DELETE", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("DELETE", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
       .catch(err => this.handleError(err))
   }
@@ -120,8 +132,11 @@ export class iccHcpartyApi {
       (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
       (limit ? "&limit=" + limit : "") +
       (desc ? "&desc=" + desc : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.HcPartyPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -144,8 +159,11 @@ export class iccHcpartyApi {
       (firstCode ? "&firstCode=" + firstCode : "") +
       (lastCode ? "&lastCode=" + lastCode : "") +
       (limit ? "&limit=" + limit : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.HcPartyPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -167,8 +185,11 @@ export class iccHcpartyApi {
       (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
       (limit ? "&limit=" + limit : "") +
       (desc ? "&desc=" + desc : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.HcPartyPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -176,8 +197,11 @@ export class iccHcpartyApi {
     let _body = null
 
     const _url = this.host + "/hcparty/current" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.HealthcarePartyDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -189,8 +213,11 @@ export class iccHcpartyApi {
       "/hcparty/{healthcarePartyId}/keys".replace("{healthcarePartyId}", healthcarePartyId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => JSON.parse(JSON.stringify(doc.body)))
       .catch(err => this.handleError(err))
   }
@@ -207,8 +234,11 @@ export class iccHcpartyApi {
       ) +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.HealthcarePartyDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -220,8 +250,11 @@ export class iccHcpartyApi {
       "/hcparty/{healthcarePartyId}".replace("{healthcarePartyId}", healthcarePartyId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.HealthcarePartyDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -236,8 +269,11 @@ export class iccHcpartyApi {
       ) +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.PublicKeyDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -249,8 +285,11 @@ export class iccHcpartyApi {
       "/hcparty/byNameStrict/{name}".replace("{name}", name + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.HealthcarePartyDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -271,8 +310,11 @@ export class iccHcpartyApi {
       (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
       (limit ? "&limit=" + limit : "") +
       (desc ? "&desc=" + desc : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.HcPartyPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -283,8 +325,11 @@ export class iccHcpartyApi {
     _body = body
 
     const _url = this.host + "/hcparty" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.HealthcarePartyDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }

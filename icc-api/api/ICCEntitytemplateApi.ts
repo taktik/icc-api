@@ -47,8 +47,11 @@ export class iccEntitytemplateApi {
     _body = body
 
     const _url = this.host + "/entitytemplate" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.EntityTemplateDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -69,8 +72,11 @@ export class iccEntitytemplateApi {
       new Date().getTime() +
       (searchString ? "&searchString=" + searchString : "") +
       (includeEntities ? "&includeEntities=" + includeEntities : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.EntityTemplateDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -82,8 +88,11 @@ export class iccEntitytemplateApi {
       "/entitytemplate/{entityTemplateId}".replace("{entityTemplateId}", entityTemplateId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.EntityTemplateDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -98,8 +107,11 @@ export class iccEntitytemplateApi {
       ) +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.EntityTemplateDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -108,8 +120,11 @@ export class iccEntitytemplateApi {
     _body = body
 
     const _url = this.host + "/entitytemplate" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.EntityTemplateDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }

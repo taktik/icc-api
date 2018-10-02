@@ -32,17 +32,19 @@ export class ServiceDto {
 
   contactId?: string
 
-  cryptedForeignKeys?: { [key: string]: Array<models.DelegationDto> }
-
-  encryptionKeys?: { [key: string]: Array<models.DelegationDto> }
-
-  delegations?: { [key: string]: Array<models.DelegationDto> }
+  secretForeignKeys?: Array<string>
 
   subContactIds?: Array<string>
 
   plansOfActionIds?: Array<string>
 
   healthElementsIds?: Array<string>
+
+  cryptedForeignKeys?: { [key: string]: Array<models.DelegationDto> }
+
+  delegations?: { [key: string]: Array<models.DelegationDto> }
+
+  encryptionKeys?: { [key: string]: Array<models.DelegationDto> }
 
   label?: string
 

@@ -31,6 +31,8 @@ export class TelecomDtoEmbed {
   telecomType?: TelecomDtoEmbed.TelecomTypeEnum
 
   telecomNumber?: string
+
+  telecomDescription?: string
 }
 export namespace TelecomDtoEmbed {
   export enum TelecomTypeEnum {

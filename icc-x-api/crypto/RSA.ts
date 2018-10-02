@@ -198,7 +198,7 @@ export class RSAUtils {
    * @param id  doc id - hcpartyId
    * @returns {Object} it is in JWK - not imported
    */
-  loadKeyPairNotImported(id: string) {
+  loadKeyPairNotImported(id: string): { publicKey: any; privateKey: any } {
     if (typeof Storage === "undefined") {
       console.log("Your browser does not support HTML5 Browser Local Storage !")
       throw "Your browser does not support HTML5 Browser Local Storage !"

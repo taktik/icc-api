@@ -50,6 +50,8 @@ export class TarificationDto {
 
   links?: Array<string>
 
+  qualifiedLinks?: { [key: string]: Array<string> }
+
   flags?: Array<TarificationDto.FlagsEnum>
 
   data?: string
