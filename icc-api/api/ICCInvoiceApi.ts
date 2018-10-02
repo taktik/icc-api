@@ -134,8 +134,8 @@ export class iccInvoiceApi {
   }
   listByHcPartyTypeSentDate(
     hcPartyId: string,
-    sentMediumType: string,
-    invoiceType: string,
+    sentMediumType: models.MediumType,
+    invoiceType: models.InvoiceType,
     sent: boolean,
     from?: number,
     to?: number
