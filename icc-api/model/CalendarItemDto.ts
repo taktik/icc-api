@@ -24,9 +24,9 @@
 
 import * as models from "./models"
 
-export class TarificationDto {
+export class CalendarItemDto {
   constructor(json: JSON | any) {
-    Object.assign(this as TarificationDto, json)
+    Object.assign(this as CalendarItemDto, json)
   }
   id?: string
 
@@ -34,41 +34,59 @@ export class TarificationDto {
 
   deletionDate?: number
 
-  regions?: Array<string>
+  created?: number
 
-  type?: string
+  modified?: number
 
-  version?: string
+  endOfLife?: number
 
-  code?: string
+  author?: string
 
-  level?: number
+  responsible?: string
 
-  label?: { [key: string]: string }
+  codes?: Array<models.CodeDto>
 
-  searchTerms?: { [key: string]: Array<string> }
+  tags?: Array<models.CodeDto>
 
-  links?: Array<string>
+  secretForeignKeys?: Array<string>
 
-  qualifiedLinks?: { [key: string]: Array<string> }
+  cryptedForeignKeys?: { [key: string]: Array<models.DelegationDto> }
 
-  flags?: Array<TarificationDto.FlagsEnum>
+  delegations?: { [key: string]: Array<models.DelegationDto> }
 
-  data?: string
+  encryptionKeys?: { [key: string]: Array<models.DelegationDto> }
 
-  valorisations?: Array<models.ValorisationDto>
+  title?: string
 
-  category?: { [key: string]: string }
+  calendarItemTypeId?: string
 
-  consultationCode?: boolean
+  patientId?: string
 
-  hasRelatedCode?: boolean
+  important?: boolean
 
-  needsPrescriber?: boolean
-}
-export namespace TarificationDto {
-  export enum FlagsEnum {
-    MaleOnly = <any>"male_only",
-    FemaleOnly = <any>"female_only"
-  }
+  homeVisit?: boolean
+
+  phoneNumber?: string
+
+  placeId?: string
+
+  address?: models.AddressDto
+
+  addressText?: string
+
+  startTime?: number
+
+  endTime?: number
+
+  duration?: number
+
+  allDay?: boolean
+
+  details?: string
+
+  agendaId?: string
+
+  meetingTags?: Array<models.CalendarItemTagDto>
+
+  flowItem?: models.FlowItemDto
 }

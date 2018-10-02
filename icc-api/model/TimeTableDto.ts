@@ -24,9 +24,9 @@
 
 import * as models from "./models"
 
-export class TarificationDto {
+export class TimeTableDto {
   constructor(json: JSON | any) {
-    Object.assign(this as TarificationDto, json)
+    Object.assign(this as TimeTableDto, json)
   }
   id?: string
 
@@ -34,41 +34,35 @@ export class TarificationDto {
 
   deletionDate?: number
 
-  regions?: Array<string>
+  created?: number
 
-  type?: string
+  modified?: number
 
-  version?: string
+  endOfLife?: number
 
-  code?: string
+  author?: string
 
-  level?: number
+  responsible?: string
 
-  label?: { [key: string]: string }
+  codes?: Array<models.CodeDto>
 
-  searchTerms?: { [key: string]: Array<string> }
+  tags?: Array<models.CodeDto>
 
-  links?: Array<string>
+  secretForeignKeys?: Array<string>
 
-  qualifiedLinks?: { [key: string]: Array<string> }
+  cryptedForeignKeys?: { [key: string]: Array<models.DelegationDto> }
 
-  flags?: Array<TarificationDto.FlagsEnum>
+  delegations?: { [key: string]: Array<models.DelegationDto> }
 
-  data?: string
+  encryptionKeys?: { [key: string]: Array<models.DelegationDto> }
 
-  valorisations?: Array<models.ValorisationDto>
+  name?: string
 
-  category?: { [key: string]: string }
+  agendaId?: string
 
-  consultationCode?: boolean
+  startTime?: number
 
-  hasRelatedCode?: boolean
+  endTime?: number
 
-  needsPrescriber?: boolean
-}
-export namespace TarificationDto {
-  export enum FlagsEnum {
-    MaleOnly = <any>"male_only",
-    FemaleOnly = <any>"female_only"
-  }
+  items?: Array<models.TimeTableItemDto>
 }

@@ -24,51 +24,15 @@
 
 import * as models from "./models"
 
-export class TarificationDto {
+export class Right {
   constructor(json: JSON | any) {
-    Object.assign(this as TarificationDto, json)
+    Object.assign(this as Right, json)
   }
-  id?: string
+  userId?: string
 
-  rev?: string
+  read?: boolean
 
-  deletionDate?: number
+  write?: boolean
 
-  regions?: Array<string>
-
-  type?: string
-
-  version?: string
-
-  code?: string
-
-  level?: number
-
-  label?: { [key: string]: string }
-
-  searchTerms?: { [key: string]: Array<string> }
-
-  links?: Array<string>
-
-  qualifiedLinks?: { [key: string]: Array<string> }
-
-  flags?: Array<TarificationDto.FlagsEnum>
-
-  data?: string
-
-  valorisations?: Array<models.ValorisationDto>
-
-  category?: { [key: string]: string }
-
-  consultationCode?: boolean
-
-  hasRelatedCode?: boolean
-
-  needsPrescriber?: boolean
-}
-export namespace TarificationDto {
-  export enum FlagsEnum {
-    MaleOnly = <any>"male_only",
-    FemaleOnly = <any>"female_only"
-  }
+  administration?: boolean
 }

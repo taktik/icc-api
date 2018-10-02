@@ -24,16 +24,10 @@
 
 import * as models from "./models"
 
-export class HealthElementDto {
+export class CalendarItem {
   constructor(json: JSON | any) {
-    Object.assign(this as HealthElementDto, json)
+    Object.assign(this as CalendarItem, json)
   }
-  id?: string
-
-  rev?: string
-
-  deletionDate?: number
-
   created?: number
 
   modified?: number
@@ -44,41 +38,67 @@ export class HealthElementDto {
 
   responsible?: string
 
-  codes?: Array<models.CodeDto>
+  codes?: Array<models.CodeStub>
 
-  tags?: Array<models.CodeDto>
+  tags?: Array<models.CodeStub>
 
   secretForeignKeys?: Array<string>
 
-  cryptedForeignKeys?: { [key: string]: Array<models.DelegationDto> }
+  cryptedForeignKeys?: { [key: string]: Array<models.Delegation> }
 
-  delegations?: { [key: string]: Array<models.DelegationDto> }
+  delegations?: { [key: string]: Array<models.Delegation> }
 
-  encryptionKeys?: { [key: string]: Array<models.DelegationDto> }
-
-  healthElementId?: string
-
-  descr?: string
-
-  note?: string
-
-  relevant?: boolean
-
-  valueDate?: number
-
-  openingDate?: number
-
-  closingDate?: number
-
-  idOpeningContact?: string
-
-  idClosingContact?: string
-
-  status?: number
-
-  idService?: string
-
-  plansOfAction?: Array<models.PlanOfActionDto>
+  encryptionKeys?: { [key: string]: Array<models.Delegation> }
 
   encryptedSelf?: string
+
+  title?: string
+
+  calendarItemTypeId?: string
+
+  patientId?: string
+
+  important?: boolean
+
+  homeVisit?: boolean
+
+  phoneNumber?: string
+
+  placeId?: string
+
+  address?: models.Address
+
+  addressText?: string
+
+  startTime?: number
+
+  endTime?: number
+
+  duration?: number
+
+  allDay?: boolean
+
+  details?: string
+
+  agendaId?: string
+
+  meetingTags?: Array<models.CalendarItemTag>
+
+  flowItem?: models.FlowItem
+
+  attachments?: { [key: string]: models.Attachment }
+
+  deleted?: number
+
+  id?: string
+
+  rev?: string
+
+  revsInfo?: Array<models.RevisionInfo>
+
+  conflicts?: Array<string>
+
+  javaType?: string
+
+  revHistory?: { [key: string]: string }
 }

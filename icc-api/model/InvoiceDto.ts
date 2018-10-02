@@ -68,6 +68,12 @@ export class InvoiceDto {
 
   invoiceType?: string
 
+  sentMediumType?: string
+
+  interventionType?: string
+
+  groupId?: string
+
   recipientType?: string
 
   recipientId?: string
@@ -75,6 +81,34 @@ export class InvoiceDto {
   invoiceReference?: string
 
   thirdPartyReference?: string
+
+  gnotionNihii?: string
+
+  gnotionSsin?: string
+
+  gnotionLastName?: string
+
+  gnotionFirstName?: string
+
+  gnotionCdHcParty?: string
+
+  invoicePeriod?: number
+
+  internshipNihii?: string
+
+  internshipSsin?: string
+
+  internshipLastName?: string
+
+  internshipFirstName?: string
+
+  internshipCdHcParty?: string
+
+  longDelayJustification?: number
+
+  creditNote?: boolean
+
+  careProviderType?: string
 
   receipts?: { [key: string]: string }
 
