@@ -24,51 +24,36 @@
 
 import * as models from "./models"
 
-export class TarificationDto {
+export class Address {
   constructor(json: JSON | any) {
-    Object.assign(this as TarificationDto, json)
+    Object.assign(this as Address, json)
   }
-  id?: string
+  addressType?: Address.AddressTypeEnum
 
-  rev?: string
+  descr?: string
 
-  deletionDate?: number
+  street?: string
 
-  regions?: Array<string>
+  houseNumber?: string
 
-  type?: string
+  postboxNumber?: string
 
-  version?: string
+  postalCode?: string
 
-  code?: string
+  city?: string
 
-  level?: number
+  country?: string
 
-  label?: { [key: string]: string }
-
-  searchTerms?: { [key: string]: Array<string> }
-
-  links?: Array<string>
-
-  qualifiedLinks?: { [key: string]: Array<string> }
-
-  flags?: Array<TarificationDto.FlagsEnum>
-
-  data?: string
-
-  valorisations?: Array<models.ValorisationDto>
-
-  category?: { [key: string]: string }
-
-  consultationCode?: boolean
-
-  hasRelatedCode?: boolean
-
-  needsPrescriber?: boolean
+  telecoms?: Array<models.Telecom>
 }
-export namespace TarificationDto {
-  export enum FlagsEnum {
-    MaleOnly = <any>"male_only",
-    FemaleOnly = <any>"female_only"
+export namespace Address {
+  export enum AddressTypeEnum {
+    Home = <any>"home",
+    Work = <any>"work",
+    Vacation = <any>"vacation",
+    Hospital = <any>"hospital",
+    Clinic = <any>"clinic",
+    Hq = <any>"hq",
+    Other = <any>"other"
   }
 }
