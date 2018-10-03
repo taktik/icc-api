@@ -51,7 +51,10 @@ export class iccTimeTableApi {
     _body = body
 
     const _url = this.host + "/timeTable" + "?ts=" + (new Date).getTime()
-
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand('POST', _url, this.headers, _body)
       .then(doc => new models.TimeTableDto(doc.body as JSON))
       .catch(err => this.handleError(err))
@@ -64,7 +67,10 @@ export class iccTimeTableApi {
 
 
     const _url = this.host + "/timeTable/{timeTableIds}".replace("{timeTableIds}", timeTableIds + "") + "?ts=" + (new Date).getTime()
-
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand('DELETE', _url, this.headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
       .catch(err => this.handleError(err))
@@ -76,7 +82,10 @@ export class iccTimeTableApi {
     let _body = null
 
     const _url = this.host + "/timeTable/{timeTableId}".replace("{timeTableId}", timeTableId + "") + "?ts=" + (new Date).getTime()
-
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand('GET', _url, this.headers, _body)
       .then(doc => new models.TimeTableDto(doc.body as JSON))
       .catch(err => this.handleError(err))
@@ -89,7 +98,10 @@ export class iccTimeTableApi {
     _body = body
 
     const _url = this.host + "/timeTable/byIds" + "?ts=" + (new Date).getTime()
-
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand('POST', _url, this.headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.TimeTableDto(it)))
       .catch(err => this.handleError(err))
@@ -102,7 +114,10 @@ export class iccTimeTableApi {
     _body = body
 
     const _url = this.host + "/timeTable" + "?ts=" + (new Date).getTime()
-
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand('PUT', _url, this.headers, _body)
       .then(doc => new models.TimeTableDto(doc.body as JSON))
       .catch(err => this.handleError(err))
@@ -117,7 +132,10 @@ export class iccTimeTableApi {
 
     const _url = this.host + "/timeTable/byAgendaId" + "?ts=" + (new Date).getTime()
       + (agendaId ? "&agendaId=" + agendaId : "");
-
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand('POST', _url, this.headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.TimeTableDto(it)))
       .catch(err => this.handleError(err));
@@ -130,7 +148,10 @@ export class iccTimeTableApi {
       + (startDate ? "&startDate=" + startDate : "")
       + (endDate ? "&endDate=" + endDate : "")
       + (agendaId ? "&agendaId=" + agendaId : "");
-
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand('POST', _url, this.headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.TimeTableDto(it)))
       .catch(err => this.handleError(err));

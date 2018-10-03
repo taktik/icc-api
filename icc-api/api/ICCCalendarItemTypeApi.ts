@@ -49,7 +49,10 @@ export class iccCalendarItemTypeApi {
     _body = body
 
     const _url = this.host + "/calendarItemType" + "?ts=" + (new Date).getTime()
-
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand('POST', _url, this.headers, _body)
       .then(doc => new models.CalendarItemTypeDto(doc.body as JSON))
       .catch(err => this.handleError(err))
@@ -62,7 +65,10 @@ export class iccCalendarItemTypeApi {
 
 
     const _url = this.host + "/calendarItemType/{calendarItemTypeIds}".replace("{calendarItemTypeIds}", calendarItemTypeIds + "") + "?ts=" + (new Date).getTime()
-
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand('DELETE', _url, this.headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
       .catch(err => this.handleError(err))
@@ -74,7 +80,10 @@ export class iccCalendarItemTypeApi {
     let _body = null
 
     const _url = this.host + "/calendarItemType/{calendarItemTypeId}".replace("{calendarItemTypeId}", calendarItemTypeId + "") + "?ts=" + (new Date).getTime()
-
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand('GET', _url, this.headers, _body)
       .then(doc => new models.CalendarItemTypeDto(doc.body as JSON))
       .catch(err => this.handleError(err))
@@ -84,7 +93,10 @@ export class iccCalendarItemTypeApi {
 
   getCalendarItemTypes(): Promise<Array<models.CalendarItemTypeDto> | any> {
     const _url = this.host + "/calendarItemType" + "?ts=" + (new Date).getTime()
-
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand('GET', _url, this.headers)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.CalendarItemTypeDto(it)))
       .catch(err => this.handleError(err))
@@ -94,7 +106,10 @@ export class iccCalendarItemTypeApi {
 
   getCalendarItemTypesIncludeDeleted(): Promise<Array<models.CalendarItemTypeDto> | any> {
     const _url = this.host + "/calendarItemType/includeDeleted" + "?ts=" + (new Date).getTime()
-
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand('GET', _url, this.headers)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.CalendarItemTypeDto(it)))
       .catch(err => this.handleError(err))
@@ -107,7 +122,10 @@ export class iccCalendarItemTypeApi {
     _body = body
 
     const _url = this.host + "/calendarItemType" + "?ts=" + (new Date).getTime()
-
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand('PUT', _url, this.headers, _body)
       .then(doc => new models.CalendarItemTypeDto(doc.body as JSON))
       .catch(err => this.handleError(err))
