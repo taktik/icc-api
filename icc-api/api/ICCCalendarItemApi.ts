@@ -49,8 +49,11 @@ export class ICCCalendarItemApi {
     _body = body
 
     const _url = this.host + "/calendarItem" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.CalendarItemDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -63,8 +66,11 @@ export class ICCCalendarItemApi {
       "/calendarItem/{calendarItemIds}".replace("{calendarItemIds}", calendarItemIds + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("DELETE", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("DELETE", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
       .catch(err => this.handleError(err))
   }
@@ -77,8 +83,11 @@ export class ICCCalendarItemApi {
       "/calendarItem/{calendarItemId}".replace("{calendarItemId}", calendarItemId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.CalendarItemDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -88,8 +97,11 @@ export class ICCCalendarItemApi {
     _body = body
 
     const _url = this.host + "/calendarItem/byIds" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.CalendarItemDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -99,8 +111,11 @@ export class ICCCalendarItemApi {
     _body = body
 
     const _url = this.host + "/calendarItem" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.CalendarItemDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -121,8 +136,11 @@ export class ICCCalendarItemApi {
       (startDate ? "&startDate=" + startDate : "") +
       (endDate ? "&endDate=" + endDate : "") +
       (agendaId ? "&agendaId=" + agendaId : "")
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.CalendarItemDto(it)))
       .catch(err => this.handleError(err))
   }
