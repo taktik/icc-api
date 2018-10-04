@@ -132,6 +132,31 @@ export class iccInvoiceApi {
       .then(doc => new models.InvoicePaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+
+  listByHcPartyEfactUnsent(
+    hcPartyId: string,
+    from?: number,
+    to?: number
+  ): Promise<Array<models.InvoiceDto> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/invoice/byHcParty/{hcPartyId}/efact/unsent"
+      .replace("{hcPartyId}", hcPartyId) +
+      "?ts=" +
+      new Date().getTime() +
+      (from ? "&from=" + from : "") +
+      (to ? "&to=" + to : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.InvoiceDto(it)))
+      .catch(err => this.handleError(err))
+  }
+
   listByHcPartyTypeSentDate(
     hcPartyId: string,
     sentMediumType: models.MediumType,
