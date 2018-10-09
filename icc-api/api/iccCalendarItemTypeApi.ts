@@ -107,6 +107,18 @@ export class iccCalendarItemTypeApi {
       .then(doc => new models.CalendarItemTypeDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+  getCalendarItemTypesIncludeDelete(): Promise<models.CalendarItemTypeDto | any> {
+    let _body = null
+
+    const _url = this.host + "/calendarItemType/includeDeleted" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => new models.CalendarItemTypeDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
   modifyCalendarItemType(
     body?: models.CalendarItemTypeDto
   ): Promise<models.CalendarItemTypeDto | any> {

@@ -87,6 +87,22 @@ export class iccKeywordApi {
       .then(doc => new models.KeywordDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+  getKeywordByUser(userId: string): Promise<models.KeywordDto | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/keyword/byUser/{userId}".replace("{userId}", userId + "") +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => new models.KeywordDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
   getKeywords(): Promise<models.KeywordDto | any> {
     let _body = null
 

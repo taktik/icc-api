@@ -137,7 +137,8 @@ export class iccFormApi {
       .catch(err => this.handleError(err))
   }
   findFormTemplatesBySpeciality(
-    specialityCode: string
+    specialityCode: string,
+    loadLayout?: boolean
   ): Promise<Array<models.FormTemplateDto> | any> {
     let _body = null
 
@@ -148,7 +149,8 @@ export class iccFormApi {
         specialityCode + ""
       ) +
       "?ts=" +
-      new Date().getTime()
+      new Date().getTime() +
+      (loadLayout ? "&loadLayout=" + loadLayout : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
