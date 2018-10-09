@@ -130,7 +130,7 @@ export class InvoicingCodeDto {
 
   locationCdHcParty?: string
 
-  status?: string
+  status?: number
 }
 export namespace InvoicingCodeDto {
   export enum PaymentTypeEnum {
