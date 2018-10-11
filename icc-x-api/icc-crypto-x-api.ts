@@ -44,13 +44,25 @@ export class IccCryptoXApi {
     return base36UUID.encode(uuid)
   }
 
+  /**
+   * This function encodes an uuid in 13 characters in base36, this is
+   * for the fileRef in efact, zone 303
+   */
   uuidBase36Half(uuid: string): string {
     const rawEndcode = base36UUID.encode(uuid.substr(0, 18))
     return _.padStart(rawEndcode, 13, "0")
   }
 
   decodeBase36Uuid(base36: string): string {
-    return base36UUID.decode(base36)
+    const decoded: string = base36UUID.decode(base36)
+    if (base36.length !== 13) {
+      return decoded
+    } else {
+      const truncated = decoded.substr(19, decoded.length)
+      const raw = truncated.replace(/-/g, "")
+      const formatted = raw.substr(0, 8) + "-" + raw.substring(8, 12) + "-" + raw.substring(12, 16)
+      return formatted
+    }
   }
 
   decryptHcPartyKey(
