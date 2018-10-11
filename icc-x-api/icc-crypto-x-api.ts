@@ -2,10 +2,13 @@ import { iccHcpartyApi } from "../icc-api/iccApi"
 import { AES, AESUtils } from "./crypto/AES"
 import { RSA, RSAUtils } from "./crypto/RSA"
 import { utils, UtilsClass } from "./crypto/utils"
+import * as UuidEncoder from "uuid-encoder"
 
 import * as _ from "lodash"
 import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
+
+const base36UUID = new UuidEncoder("base36")
 
 export class IccCryptoXApi {
   hcPartyKeysCache: {
@@ -35,6 +38,31 @@ export class IccCryptoXApi {
             (15 >> (Number(c) / 4)))
         ).toString(16) //Keep that inlined or you will loose the random
     )
+  }
+
+  uuidBase36(uuid: string): string {
+    return base36UUID.encode(uuid)
+  }
+
+  /**
+   * This function encodes an uuid in 13 characters in base36, this is
+   * for the fileRef in efact, zone 303
+   */
+  uuidBase36Half(uuid: string): string {
+    const rawEndcode = base36UUID.encode(uuid.substr(0, 18))
+    return _.padStart(rawEndcode, 13, "0")
+  }
+
+  decodeBase36Uuid(base36: string): string {
+    const decoded: string = base36UUID.decode(base36)
+    if (base36.length !== 13) {
+      return decoded
+    } else {
+      const truncated = decoded.substr(19, decoded.length)
+      const raw = truncated.replace(/-/g, "")
+      const formatted = raw.substr(0, 8) + "-" + raw.substring(8, 12) + "-" + raw.substring(12, 16)
+      return formatted
+    }
   }
 
   decryptHcPartyKey(
@@ -402,6 +430,34 @@ export class IccCryptoXApi {
   }
              
    extractCryptedFKs(
+    document:
+      | models.PatientDto
+      | models.MessageDto
+      | models.ContactDto
+      | models.DocumentDto
+      | models.InvoiceDto
+      | models.HealthElementDto
+      | null,
+    hcpartyId: string
+  ): Promise<Array<string>> {
+    if (!document) {
+      return Promise.resolve([])
+    }
+    const dels = document.cryptedForeignKeys
+    if (!dels || !dels[hcpartyId] || dels[hcpartyId].length <= 0) {
+      console.log(
+        "There is no cryptedForeignKeys for this healthcare party (" +
+          hcpartyId +
+          ") in document (" +
+          document.id +
+          ")"
+      )
+      return Promise.resolve([])
+    }
+    return this.extractSfks(hcpartyId, document.id!, dels)
+  }
+
+  extractCryptedFKs(
     document:
       | models.PatientDto
       | models.MessageDto
