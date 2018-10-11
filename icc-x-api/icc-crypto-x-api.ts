@@ -2,10 +2,13 @@ import { iccHcpartyApi } from "../icc-api/iccApi"
 import { AES, AESUtils } from "./crypto/AES"
 import { RSA, RSAUtils } from "./crypto/RSA"
 import { utils, UtilsClass } from "./crypto/utils"
+import * as UuidEncoder from "uuid-encoder"
 
 import * as _ from "lodash"
 import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
+
+const base36UUID = new UuidEncoder("base36")
 
 export class IccCryptoXApi {
   hcPartyKeysCache: {
@@ -35,6 +38,19 @@ export class IccCryptoXApi {
             (15 >> (Number(c) / 4)))
         ).toString(16) //Keep that inlined or you will loose the random
     )
+  }
+
+  uuidBase36(uuid: string): string {
+    return base36UUID.encode(uuid)
+  }
+
+  uuidBase36Half(uuid: string): string {
+    const rawEndcode = base36UUID.encode(uuid.substr(0, 18))
+    return _.padStart(rawEndcode, 13, "0")
+  }
+
+  decodeBase36Uuid(base36: string): string {
+    return base36UUID.decode(base36)
   }
 
   decryptHcPartyKey(

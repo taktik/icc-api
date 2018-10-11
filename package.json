@@ -8,7 +8,8 @@
     "@types/moment": "^2.13.0",
     "base64-js": "^1.3.0",
     "lodash": "^4.17.10",
-    "moment": "^2.22.1"
+    "moment": "^2.22.1",
+    "uuid-encoder": "^1.1.0"
   },
   "devDependencies": {
     "@types/base64-js": "^1.2.5",
