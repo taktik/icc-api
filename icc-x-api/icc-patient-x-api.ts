@@ -229,7 +229,6 @@ export class IccPatientXApi extends iccPatientApi {
                   })
                   return markerPromise
                     .then(() => {
-                      debugger
                       this.contactApi.setContactsDelegations(ctcsStubs)
                     })
                     .then(() => this.helementApi.setHealthElementsDelegations(hes))

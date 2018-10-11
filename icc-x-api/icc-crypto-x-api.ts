@@ -428,6 +428,34 @@ export class IccCryptoXApi {
     }
     return this.extractSfks(hcpartyId, document.id!, dels)
   }
+             
+   extractCryptedFKs(
+    document:
+      | models.PatientDto
+      | models.MessageDto
+      | models.ContactDto
+      | models.DocumentDto
+      | models.InvoiceDto
+      | models.HealthElementDto
+      | null,
+    hcpartyId: string
+  ): Promise<Array<string>> {
+    if (!document) {
+      return Promise.resolve([])
+    }
+    const dels = document.cryptedForeignKeys
+    if (!dels || !dels[hcpartyId] || dels[hcpartyId].length <= 0) {
+      console.log(
+        "There is no cryptedForeignKeys for this healthcare party (" +
+          hcpartyId +
+          ") in document (" +
+          document.id +
+          ")"
+      )
+      return Promise.resolve([])
+    }
+    return this.extractSfks(hcpartyId, document.id!, dels)
+  }
 
   extractCryptedFKs(
     document:
