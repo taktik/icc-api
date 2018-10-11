@@ -21,6 +21,7 @@
   },
   "scripts": {
     "gen": "java -classpath swagger-codegen-cli.jar io.swagger.codegen.SwaggerCodegen generate -i https://icure.cloud/rest/v1/swagger.json -l typescript --additional-properties classPrefix=icc -o ./icc-api",
+    "genloc": "java -classpath swagger-codegen-cli.jar io.swagger.codegen.SwaggerCodegen generate -i http://127.0.0.1:16043/rest/v1/swagger.json -l typescript --additional-properties classPrefix=icc -o ./icc-api",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "prepublishOnly": "rm -rf dist && npm run build",
