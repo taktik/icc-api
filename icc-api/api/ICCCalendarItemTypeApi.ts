@@ -22,115 +22,116 @@
  * limitations under the License.
  */
 
-import {XHR} from "./XHR"
-import * as models from '../model/models';
+import { XHR } from "./XHR"
+import * as models from "../model/models"
 
 export class iccCalendarItemTypeApi {
   host: string
   headers: Array<XHR.Header>
-
   constructor(host: string, headers: any) {
     this.host = host
     this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
   }
 
   setHeaders(h: Array<XHR.Header>) {
-    this.headers = h;
+    this.headers = h
   }
-
 
   handleError(e: XHR.Data) {
-    if (e.status == 401) throw Error('auth-failed')
-    else throw Error('api-error' + e.status)
+    if (e.status == 401) throw Error("auth-failed")
+    else throw Error("api-error" + e.status)
   }
 
-  createCalendarItemType(body?: models.CalendarItemTypeDto): Promise<models.CalendarItemTypeDto | any> {
+  createCalendarItemType(
+    body?: models.CalendarItemTypeDto
+  ): Promise<models.CalendarItemTypeDto | any> {
     let _body = null
     _body = body
 
-    const _url = this.host + "/calendarItemType" + "?ts=" + (new Date).getTime()
+    const _url = this.host + "/calendarItemType" + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand('POST', _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.CalendarItemTypeDto(doc.body as JSON))
       .catch(err => this.handleError(err))
-
-
   }
-
-  deleteCalendarItemTypes(calendarItemTypeIds: string): Promise<Array<string> | any> {
+  deleteCalendarItemType(calendarItemTypeIds: string): Promise<any | Boolean> {
     let _body = null
 
-
-    const _url = this.host + "/calendarItemType/{calendarItemTypeIds}".replace("{calendarItemTypeIds}", calendarItemTypeIds + "") + "?ts=" + (new Date).getTime()
+    const _url =
+      this.host +
+      "/calendarItemType/{calendarItemTypeIds}".replace(
+        "{calendarItemTypeIds}",
+        calendarItemTypeIds + ""
+      ) +
+      "?ts=" +
+      new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand('DELETE', _url, headers, _body)
-      .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
+    return XHR.sendCommand("DELETE", _url, headers, _body)
+      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
       .catch(err => this.handleError(err))
-
-
   }
-
   getCalendarItemType(calendarItemTypeId: string): Promise<models.CalendarItemTypeDto | any> {
     let _body = null
 
-    const _url = this.host + "/calendarItemType/{calendarItemTypeId}".replace("{calendarItemTypeId}", calendarItemTypeId + "") + "?ts=" + (new Date).getTime()
+    const _url =
+      this.host +
+      "/calendarItemType/{calendarItemTypeId}".replace(
+        "{calendarItemTypeId}",
+        calendarItemTypeId + ""
+      ) +
+      "?ts=" +
+      new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand('GET', _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.CalendarItemTypeDto(doc.body as JSON))
       .catch(err => this.handleError(err))
-
-
   }
+  getCalendarItemTypes(): Promise<models.CalendarItemTypeDto | any> {
+    let _body = null
 
-  getCalendarItemTypes(): Promise<Array<models.CalendarItemTypeDto> | any> {
-    const _url = this.host + "/calendarItemType" + "?ts=" + (new Date).getTime()
+    const _url = this.host + "/calendarItemType" + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand('GET', _url, headers)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.CalendarItemTypeDto(it)))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => new models.CalendarItemTypeDto(doc.body as JSON))
       .catch(err => this.handleError(err))
-
-
   }
+  getCalendarItemTypesIncludeDelete(): Promise<models.CalendarItemTypeDto | any> {
+    let _body = null
 
-  getCalendarItemTypesIncludeDeleted(): Promise<Array<models.CalendarItemTypeDto> | any> {
-    const _url = this.host + "/calendarItemType/includeDeleted" + "?ts=" + (new Date).getTime()
+    const _url = this.host + "/calendarItemType/includeDeleted" + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand('GET', _url, headers)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.CalendarItemTypeDto(it)))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => new models.CalendarItemTypeDto(doc.body as JSON))
       .catch(err => this.handleError(err))
-
-
   }
-
-  modifyCalendarItemType(body?: models.CalendarItemTypeDto): Promise<models.CalendarItemTypeDto | any> {
+  modifyCalendarItemType(
+    body?: models.CalendarItemTypeDto
+  ): Promise<models.CalendarItemTypeDto | any> {
     let _body = null
     _body = body
 
-    const _url = this.host + "/calendarItemType" + "?ts=" + (new Date).getTime()
+    const _url = this.host + "/calendarItemType" + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand('PUT', _url, headers, _body)
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.CalendarItemTypeDto(doc.body as JSON))
       .catch(err => this.handleError(err))
-
-
   }
 }
-

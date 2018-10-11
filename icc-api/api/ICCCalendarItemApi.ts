@@ -25,10 +25,9 @@
 import { XHR } from "./XHR"
 import * as models from "../model/models"
 
-export class ICCCalendarItemApi {
+export class iccCalendarItemApi {
   host: string
   headers: Array<XHR.Header>
-
   constructor(host: string, headers: any) {
     this.host = host
     this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
@@ -43,7 +42,6 @@ export class ICCCalendarItemApi {
     else throw Error("api-error" + e.status)
   }
 
-  // region calendar item
   createCalendarItem(body?: models.CalendarItemDto): Promise<models.CalendarItemDto | any> {
     let _body = null
     _body = body
@@ -57,8 +55,7 @@ export class ICCCalendarItemApi {
       .then(doc => new models.CalendarItemDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-
-  deleteCalendarItems(calendarItemIds: string): Promise<Array<string> | any> {
+  deleteCalendarItem(calendarItemIds: string): Promise<any | Boolean> {
     let _body = null
 
     const _url =
@@ -71,10 +68,9 @@ export class ICCCalendarItemApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("DELETE", _url, headers, _body)
-      .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
+      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
       .catch(err => this.handleError(err))
   }
-
   getCalendarItem(calendarItemId: string): Promise<models.CalendarItemDto | any> {
     let _body = null
 
@@ -91,12 +87,33 @@ export class ICCCalendarItemApi {
       .then(doc => new models.CalendarItemDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-
-  getCalendarItems(body?: models.ListOfIdsDto): Promise<Array<models.CalendarItemDto> | any> {
+  getCalendarItems(): Promise<models.CalendarItemDto | any> {
     let _body = null
-    _body = body
 
-    const _url = this.host + "/calendarItem/byIds" + "?ts=" + new Date().getTime()
+    const _url = this.host + "/calendarItem" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => new models.CalendarItemDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+  getCalendars(
+    startDate?: number,
+    endDate?: number,
+    hcPartyId?: string
+  ): Promise<Array<models.CalendarItemDto> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/calendarItem/byPeriodAndHcPartyId" +
+      "?ts=" +
+      new Date().getTime() +
+      (startDate ? "&startDate=" + startDate : "") +
+      (endDate ? "&endDate=" + endDate : "") +
+      (hcPartyId ? "&hcPartyId=" + hcPartyId : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -105,27 +122,11 @@ export class ICCCalendarItemApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.CalendarItemDto(it)))
       .catch(err => this.handleError(err))
   }
-
-  modifyCalendarItem(body?: models.CalendarItemDto): Promise<models.CalendarItemDto | any> {
-    let _body = null
-    _body = body
-
-    const _url = this.host + "/calendarItem" + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("PUT", _url, headers, _body)
-      .then(doc => new models.CalendarItemDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
-  }
-  //endregion
-
-  byPeriodAndAgendaId(
-    startDate: number,
-    endDate: number,
-    agendaId: string
-  ): Promise<Array<models.CalendarItemDto> | any> {
+  getCalendarsForAgenda(
+    startDate?: number,
+    endDate?: number,
+    agendaId?: string
+  ): Promise<any | Boolean> {
     let _body = null
 
     const _url =
@@ -141,7 +142,20 @@ export class ICCCalendarItemApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.CalendarItemDto(it)))
+      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .catch(err => this.handleError(err))
+  }
+  modifyCalendarItem(body?: models.CalendarItemDto): Promise<models.CalendarItemDto | any> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + "/calendarItem" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
+      .then(doc => new models.CalendarItemDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 }

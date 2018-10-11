@@ -22,130 +22,128 @@
  * limitations under the License.
  */
 
-import {XHR} from "./XHR"
-import * as models from '../model/models';
+import { XHR } from "./XHR"
+import * as models from "../model/models"
 
 export class iccAgendaApi {
   host: string
   headers: Array<XHR.Header>
-
   constructor(host: string, headers: any) {
     this.host = host
     this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
   }
 
   setHeaders(h: Array<XHR.Header>) {
-    this.headers = h;
+    this.headers = h
   }
 
-
   handleError(e: XHR.Data) {
-    if (e.status == 401) throw Error('auth-failed')
-    else throw Error('api-error' + e.status)
+    if (e.status == 401) throw Error("auth-failed")
+    else throw Error("api-error" + e.status)
   }
 
   createAgenda(body?: models.AgendaDto): Promise<models.AgendaDto | any> {
     let _body = null
     _body = body
 
-    const _url = this.host + "/agenda" + "?ts=" + (new Date).getTime()
+    const _url = this.host + "/agenda" + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand('POST', _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.AgendaDto(doc.body as JSON))
       .catch(err => this.handleError(err))
-
-
   }
-
-  deleteAgendas(agendaIds: string): Promise<Array<string> | any> {
+  deleteAgenda(agendaIds: string): Promise<any | Boolean> {
     let _body = null
 
-
-    const _url = this.host + "/agenda/{agendaIds}".replace("{agendaIds}", agendaIds + "") + "?ts=" + (new Date).getTime()
+    const _url =
+      this.host +
+      "/agenda/{agendaIds}".replace("{agendaIds}", agendaIds + "") +
+      "?ts=" +
+      new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand('DELETE', _url, headers, _body)
-      .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
+    return XHR.sendCommand("DELETE", _url, headers, _body)
+      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
       .catch(err => this.handleError(err))
-
-
   }
-
   getAgenda(agendaId: string): Promise<models.AgendaDto | any> {
     let _body = null
 
-    const _url = this.host + "/agenda/{agendaId}".replace("{agendaId}", agendaId + "") + "?ts=" + (new Date).getTime()
+    const _url =
+      this.host +
+      "/agenda/{agendaId}".replace("{agendaId}", agendaId + "") +
+      "?ts=" +
+      new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand('GET', _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.AgendaDto(doc.body as JSON))
       .catch(err => this.handleError(err))
-
-
   }
+  getAgendas(): Promise<models.AgendaDto | any> {
+    let _body = null
 
-  getAgendas(): Promise<Array<models.AgendaDto> | any> {
-    const _url = this.host + "/agenda" + "?ts=" + (new Date).getTime()
+    const _url = this.host + "/agenda" + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand('GET', _url, headers)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.AgendaDto(it)))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => new models.AgendaDto(doc.body as JSON))
       .catch(err => this.handleError(err))
-
-
   }
+  getAgendasForUser(userId?: string): Promise<models.AgendaDto | any> {
+    let _body = null
 
+    const _url =
+      this.host +
+      "/agenda/byUser" +
+      "?ts=" +
+      new Date().getTime() +
+      (userId ? "&userId=" + userId : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => new models.AgendaDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+  getReadableAgendasForUser(userId?: string): Promise<models.AgendaDto | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/agenda/readableForUser" +
+      "?ts=" +
+      new Date().getTime() +
+      (userId ? "&userId=" + userId : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => new models.AgendaDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
   modifyAgenda(body?: models.AgendaDto): Promise<models.AgendaDto | any> {
     let _body = null
     _body = body
 
-    const _url = this.host + "/agenda" + "?ts=" + (new Date).getTime()
+    const _url = this.host + "/agenda" + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand('PUT', _url, headers, _body)
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.AgendaDto(doc.body as JSON))
       .catch(err => this.handleError(err))
-
-
-  }
-
-  byUser(userId: string): Promise<models.AgendaDto | any> {
-    let _body = null;
-
-    const _url = this.host + "/agenda/byUser" + "?ts=" + (new Date).getTime()
-      + (userId ? "&userId=" + userId : "");
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand('GET', _url, headers, _body)
-      .then(doc => new models.AgendaDto(doc.body as JSON))
-      .catch(err => this.handleError(err));
-  }
-
-  readableForUser(userId: string): Promise<Array<models.AgendaDto> | any> {
-    let _body = null;
-
-    const _url = this.host + "/agenda/readableForUser" + "?ts=" + (new Date).getTime()
-      + (userId ? "&userId=" + userId : "");
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand('GET', _url, headers, _body)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.AgendaDto(it)))
-      .catch(err => this.handleError(err));
   }
 }
-

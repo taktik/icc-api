@@ -22,102 +22,94 @@
  * limitations under the License.
  */
 
-import {XHR} from "./XHR"
-import * as models from '../model/models';
+import { XHR } from "./XHR"
+import * as models from "../model/models"
 
 export class iccPlaceApi {
   host: string
   headers: Array<XHR.Header>
-
   constructor(host: string, headers: any) {
     this.host = host
     this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
   }
 
   setHeaders(h: Array<XHR.Header>) {
-    this.headers = h;
+    this.headers = h
   }
 
-
   handleError(e: XHR.Data) {
-    if (e.status == 401) throw Error('auth-failed')
-    else throw Error('api-error' + e.status)
+    if (e.status == 401) throw Error("auth-failed")
+    else throw Error("api-error" + e.status)
   }
 
   createPlace(body?: models.PlaceDto): Promise<models.PlaceDto | any> {
     let _body = null
     _body = body
 
-    const _url = this.host + "/place" + "?ts=" + (new Date).getTime()
+    const _url = this.host + "/place" + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand('POST', _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.PlaceDto(doc.body as JSON))
       .catch(err => this.handleError(err))
-
-
   }
-
-  deletePlaces(placeIds: string): Promise<Array<string> | any> {
+  deletePlace(placeIds: string): Promise<any | Boolean> {
     let _body = null
 
-
-    const _url = this.host + "/place/{placeIds}".replace("{placeIds}", placeIds + "") + "?ts=" + (new Date).getTime()
+    const _url =
+      this.host +
+      "/place/{placeIds}".replace("{placeIds}", placeIds + "") +
+      "?ts=" +
+      new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand('DELETE', _url, headers, _body)
-      .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
+    return XHR.sendCommand("DELETE", _url, headers, _body)
+      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
       .catch(err => this.handleError(err))
-
-
   }
-
   getPlace(placeId: string): Promise<models.PlaceDto | any> {
     let _body = null
 
-    const _url = this.host + "/place/{placeId}".replace("{placeId}", placeId + "") + "?ts=" + (new Date).getTime()
+    const _url =
+      this.host +
+      "/place/{placeId}".replace("{placeId}", placeId + "") +
+      "?ts=" +
+      new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand('GET', _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.PlaceDto(doc.body as JSON))
       .catch(err => this.handleError(err))
-
-
   }
+  getPlaces(): Promise<models.PlaceDto | any> {
+    let _body = null
 
-  getPlaces(): Promise<Array<models.PlaceDto> | any> {
-    const _url = this.host + "/place" + "?ts=" + (new Date).getTime()
+    const _url = this.host + "/place" + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand('GET', _url, headers)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.PlaceDto(it)))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => new models.PlaceDto(doc.body as JSON))
       .catch(err => this.handleError(err))
-
-
   }
-
   modifyPlace(body?: models.PlaceDto): Promise<models.PlaceDto | any> {
     let _body = null
     _body = body
 
-    const _url = this.host + "/place" + "?ts=" + (new Date).getTime()
+    const _url = this.host + "/place" + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand('PUT', _url, headers, _body)
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.PlaceDto(doc.body as JSON))
       .catch(err => this.handleError(err))
-
-
   }
 }
-

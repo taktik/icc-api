@@ -61,6 +61,12 @@ export class TarificationDto {
   category?: { [key: string]: string }
 
   consultationCode?: boolean
+
+  hasRelatedCode?: boolean
+
+  needsPrescriber?: boolean
+
+  relatedCodes?: Array<string>
 }
 export namespace TarificationDto {
   export enum FlagsEnum {

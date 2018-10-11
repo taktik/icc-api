@@ -22,75 +22,71 @@
  * limitations under the License.
  */
 
-import * as models from './models';
-import {AddressDto, CalendarItemTypeDto, FlowItem, PlaceDto} from "./models";
-import {CalendarItemTagDto} from "./CalendarItemTagDto";
+import * as models from "./models"
 
 export class CalendarItemDto {
   constructor(json: JSON | any) {
     Object.assign(this as CalendarItemDto, json)
   }
+  id?: string
 
-  id?: string;
+  rev?: string
 
-  rev?: string;
+  deletionDate?: number
 
-  deletionDate?: number;
+  created?: number
 
-  created?: number;
+  modified?: number
 
-  modified?: number;
+  endOfLife?: number
 
-  endOfLife?: number;
+  author?: string
 
-  author?: string;
+  responsible?: string
 
-  responsible?: string;
+  codes?: Array<models.CodeDto>
 
-  codes?: Array<models.CodeDto>;
+  tags?: Array<models.CodeDto>
 
-  tags?: Array<models.CodeDto>;
+  secretForeignKeys?: Array<string>
 
-  secretForeignKeys?: Array<string>;
+  cryptedForeignKeys?: { [key: string]: Array<models.DelegationDto> }
 
-  cryptedForeignKeys?: { [key: string]: Array<models.DelegationDto>; };
+  delegations?: { [key: string]: Array<models.DelegationDto> }
 
-  delegations?: { [key: string]: Array<models.DelegationDto>; };
+  encryptionKeys?: { [key: string]: Array<models.DelegationDto> }
 
-  encryptionKeys?: { [key: string]: Array<models.DelegationDto> };
+  title?: string
 
-  title?: string;
+  calendarItemTypeId?: string
 
-  calendarItemTypeId?: string;
+  patientId?: string
 
-  patientId?: string;
+  important?: boolean
 
-  important?: boolean;
+  homeVisit?: boolean
 
-  homeVisit?: boolean;
+  phoneNumber?: string
 
-  phoneNumber?: string;
+  placeId?: string
 
-  placeId?: string;
+  address?: models.AddressDto
 
-  address?: AddressDto;
+  addressText?: string
 
-  addressText?: string;
+  startTime?: number
 
-  startTime?: number;
+  endTime?: number
 
-  endTime?: number;
+  duration?: number
 
-  duration?: number;
+  allDay?: boolean
 
-  allDay?: boolean;
+  details?: string
 
-  details?: string;
+  agendaId?: string
 
-  agendaId?: string;
+  meetingTags?: Array<models.CalendarItemTagDto>
 
-  meetingTags?: Array<CalendarItemTagDto>;
-
-  flowItem?: FlowItem;
-
+  flowItem?: models.FlowItemDto
 }

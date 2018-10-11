@@ -25,10 +25,9 @@
 import { XHR } from "./XHR"
 import * as models from "../model/models"
 
-export class IccKeywordApi {
+export class iccKeywordApi {
   host: string
   headers: Array<XHR.Header>
-
   constructor(host: string, headers: any) {
     this.host = host
     this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
@@ -43,7 +42,7 @@ export class IccKeywordApi {
     else throw Error("api-error" + e.status)
   }
 
-  createKeyword(body?: models.Keyword): Promise<models.Keyword | any> {
+  createKeyword(body?: models.KeywordDto): Promise<models.KeywordDto | any> {
     let _body = null
     _body = body
 
@@ -53,47 +52,10 @@ export class IccKeywordApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => new models.Keyword(doc.body as JSON))
+      .then(doc => new models.KeywordDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-
-  getKeywords(): Promise<Array<models.Keyword> | any> {
-    const _url = this.host + "/keyword" + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.Keyword(it)))
-      .catch(err => this.handleError(err))
-  }
-
-  getKeywordsByUser(userId: string): Promise<Array<models.Keyword> | any> {
-    const _url = this.host + "/keyword/byUser/" + (userId ? userId : "")
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.Keyword(it)))
-      .catch(err => this.handleError(err))
-  }
-
-  modifyKeyword(body?: models.Keyword): Promise<models.Keyword | any> {
-    let _body = null
-    _body = body
-
-    const _url = this.host + "/keyword" + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("PUT", _url, headers, _body)
-      .then(doc => new models.Keyword(doc.body as JSON))
-      .catch(err => this.handleError(err))
-  }
-
-  deleteKeyword(keywordIds: string): Promise<Array<string> | any> {
+  deleteKeywords(keywordIds: string): Promise<Array<string> | any> {
     let _body = null
 
     const _url =
@@ -107,6 +69,63 @@ export class IccKeywordApi {
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("DELETE", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
+      .catch(err => this.handleError(err))
+  }
+  getKeyword(keywordId: string): Promise<models.KeywordDto | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/keyword/{keywordId}".replace("{keywordId}", keywordId + "") +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => new models.KeywordDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+  getKeywordByUser(userId: string): Promise<models.KeywordDto | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/keyword/byUser/{userId}".replace("{userId}", userId + "") +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => new models.KeywordDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+  getKeywords(): Promise<models.KeywordDto | any> {
+    let _body = null
+
+    const _url = this.host + "/keyword" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => new models.KeywordDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+  modifyKeyword(body?: models.KeywordDto): Promise<models.KeywordDto | any> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + "/keyword" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
+      .then(doc => new models.KeywordDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 }
