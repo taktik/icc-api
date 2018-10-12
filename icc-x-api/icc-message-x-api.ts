@@ -1,16 +1,52 @@
-import { iccMessageApi } from "../icc-api/iccApi"
+import {
+  iccEntityrefApi,
+  iccInsuranceApi,
+  iccMessageApi,
+  iccReceiptApi,
+  iccInvoiceApi
+} from "../icc-api/iccApi"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 
 import * as _ from "lodash"
 import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
+import {
+  EntityReference,
+  HealthcarePartyDto,
+  MessageDto,
+  ReceiptDto,
+  UserDto
+} from "../icc-api/model/models"
+import { InvoiceWithPatient, toInvoiceBatch, uuidBase36, uuidBase36Half } from "./utils/efact-util"
+import { timeEncode } from "../dist/icc-x-api/utils/formatting-util"
+import { InvoicesBatch } from "fhc-api/dist/model/InvoicesBatch"
+import { fhcEfactcontrollerApi } from "fhc-api"
+import { EfactSendResponse } from "fhc-api/dist/model/EfactSendResponse"
+import { IccDocumentXApi } from "./icc-document-x-api"
+import { utils } from "../dist/icc-x-api/crypto/utils"
 
 export class IccMessageXApi extends iccMessageApi {
-  crypto: IccCryptoXApi
+  private crypto: IccCryptoXApi
+  private insuranceApi: iccInsuranceApi
+  private entityReferenceApi: iccEntityrefApi
+  private receiptApi: iccReceiptApi
+  private invoiceApi: iccInvoiceApi
 
-  constructor(host: string, headers: Array<XHR.Header>, crypto: IccCryptoXApi) {
+  constructor(
+    host: string,
+    headers: Array<XHR.Header>,
+    crypto: IccCryptoXApi,
+    insuranceApi: iccInsuranceApi,
+    entityReferenceApi: iccEntityrefApi,
+    receiptApi: iccReceiptApi,
+    invoiceApi: iccInvoiceApi
+  ) {
     super(host, headers)
     this.crypto = crypto
+    this.insuranceApi = insuranceApi
+    this.entityReferenceApi = entityReferenceApi
+    this.receiptApi = receiptApi
+    this.invoiceApi = invoiceApi
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -29,6 +65,128 @@ export class IccMessageXApi extends iccMessageApi {
       p || {}
     )
     return this.initDelegations(message, null, user)
+  }
+
+  sendBatch(
+    user: UserDto,
+    hcp: HealthcarePartyDto,
+    federationId: string, //uuid for the Insurance
+    invoices: Array<InvoiceWithPatient>,
+    xFHCKeystoreId: string,
+    xFHCTokenId: string,
+    xFHCPassPhrase: string,
+    efactApi: fhcEfactcontrollerApi,
+    docXApi: IccDocumentXApi
+  ): Promise<models.MessageDto> {
+    const uuid = this.crypto.randomUuid()
+    const smallBase36 = uuidBase36Half(uuid)
+    const fullBase36 = uuidBase36Half(uuid)
+    const sentDate = +new Date()
+    const errors: Array<string> = []
+
+    const prefix = `efact:${hcp.id}:${federationId}:`
+
+    return this.entityReferenceApi
+      .getLatest(prefix)
+      .then(er =>
+        this.entityReferenceApi.createEntityReference(
+          new EntityReference({
+            id: prefix + (((er ? Number(er.id.substr(prefix.length)) : 0) + 1) % 1000),
+            docId: uuid
+          })
+        )
+      )
+      .then(er => {
+        const sendNumber = er ? Number(er.id.substr(prefix.length)) : 0
+        return this.newInstance(user, {
+          id: uuid,
+          invoiceIds: invoices.map(i => i.invoiceDto.id),
+          // tslint:disable-next-line:no-bitwise
+          status: 1 << 6, // STATUS_EFACT
+          externalRef: sendNumber,
+          transportGuid: "EFACT:BATCH:" + smallBase36,
+          sent: timeEncode(new Date()),
+          fromHealthcarePartyId: hcp.id,
+          recipients: [federationId],
+          recipientsType: "org.taktik.icure.entities.Insurance"
+        })
+      })
+      .then(message =>
+        toInvoiceBatch(
+          invoices,
+          hcp,
+          smallBase36,
+          message.externalRef!!,
+          fullBase36,
+          this.insuranceApi
+        )
+          .then(batch =>
+            efactApi.sendBatchUsingPOST(xFHCKeystoreId, xFHCTokenId, xFHCPassPhrase, batch)
+          )
+          .then((res: EfactSendResponse) => {
+            if (res.success) {
+              let promise = Promise.resolve(true)
+
+              _.each(invoices, iv => {
+                promise = promise.then(() => {
+                  ;(iv.invoiceDto.invoicingCodes || []).forEach(code => {
+                    code.status = 4 // STATUS_PENDING
+                  })
+                  iv.invoiceDto.sentDate = sentDate
+                  return this.invoiceApi.modifyInvoice(iv.invoiceDto).catch((err: any) => {
+                    errors.push(`efac-management.CANNOT_UPDATE_INVOICE.${iv.invoiceDto.id}`)
+                  })
+                })
+              })
+              return promise
+                .then(() =>
+                  this.createMessage(
+                    Object.assign(message, {
+                      sent: sentDate,
+                      status: (message.status || 0) | (1 << 8)
+                    })
+                  )
+                )
+                .then(msg =>
+                  docXApi.newInstance(user, msg, { mainUti: "public.text", name: "920000" })
+                )
+                .then(doc =>
+                  docXApi.setAttachment(
+                    doc.id!!,
+                    undefined /*TODO provide keys for encryption*/,
+                    utils.ua2ArrayBuffer(utils.text2ua(res.detail!!))
+                  )
+                )
+                .then(() =>
+                  this.receiptApi.createReceipt(
+                    new ReceiptDto({
+                      documentId: message.id,
+                      references: [
+                        `mycarenet:efact:inputReference:${res.inputReference}`,
+                        res.tack!!.appliesTo,
+                        res.tack!!.reference
+                      ]
+                    })
+                  )
+                )
+                .then(rcpt => {
+                  this.receiptApi.setAttachment(
+                    rcpt.id,
+                    "tack",
+                    undefined,
+                    utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.tack)))
+                  )
+                })
+                .then(() => message)
+            } else {
+              throw "Cannot send batch"
+            }
+          })
+      )
+      .catch(err => {
+        errors.push(err)
+        throw errors
+      })
   }
 
   initDelegations(

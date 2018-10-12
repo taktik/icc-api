@@ -5,7 +5,7 @@ import {
   InvoicingCodeDto,
   ListOfIdsDto,
   PatientDto
-} from "../../../icc-api/model/models"
+} from "../../icc-api/model/models"
 
 import { InvoicesBatch, InvoiceItem, Invoice, EIDItem } from "fhc-api/dist/model/models"
 import { dateEncode } from "./formatting-util"
@@ -14,12 +14,15 @@ import { toInvoiceSender } from "./fhc-invoice-sender-util"
 import { isPatientHospitalized, getMembership, getInsurability } from "./insurability-util"
 import * as _ from "lodash"
 import * as moment from "moment"
-import { iccInsuranceApi } from "../../../icc-api/api/iccInsuranceApi"
+import { iccInsuranceApi } from "../../icc-api/api/iccInsuranceApi"
+import { UuidEncoder } from "./uuid-encoder"
 
 export interface InvoiceWithPatient {
   invoiceDto: InvoiceDto
   patientDto: PatientDto
 }
+
+const base36UUID = new UuidEncoder()
 
 // Here we trust the invoices argument for grouping validity (month, year and patient)
 export function toInvoiceBatch(
@@ -172,4 +175,29 @@ function getPrescriberNorm(code: number) {
           : code === 9
             ? InvoiceItem.PrescriberNormEnum.ManyPrescribers
             : InvoiceItem.PrescriberNormEnum.None
+}
+
+export function uuidBase36(uuid: string): string {
+  return base36UUID.encode(uuid)
+}
+
+/**
+ * This function encodes an uuid in 13 characters in base36, this is
+ * for the fileRef in efact, zone 303
+ */
+export function uuidBase36Half(uuid: string): string {
+  const rawEndcode = base36UUID.encode(uuid.substr(0, 18))
+  return _.padStart(rawEndcode, 13, "0")
+}
+
+export function decodeBase36Uuid(base36: string): string {
+  const decoded: string = base36UUID.decode(base36)
+  if (base36.length !== 13) {
+    return decoded
+  } else {
+    const truncated = decoded.substr(19, decoded.length)
+    const raw = truncated.replace(/-/g, "")
+    const formatted = raw.substr(0, 8) + "-" + raw.substring(8, 12) + "-" + raw.substring(12, 16)
+    return formatted
+  }
 }

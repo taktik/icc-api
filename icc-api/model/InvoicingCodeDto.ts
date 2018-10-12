@@ -109,6 +109,8 @@ export class InvoicingCodeDto {
   locationNihii?: string
 
   locationCdHcParty?: string
+
+  status?: number
 }
 export namespace InvoicingCodeDto {
   export enum PaymentTypeEnum {

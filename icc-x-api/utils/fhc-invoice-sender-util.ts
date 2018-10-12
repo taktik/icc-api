@@ -1,4 +1,4 @@
-import { HealthcarePartyDto } from "../../../icc-api/model/models"
+import { HealthcarePartyDto } from "../../icc-api/model/models"
 import { InvoiceSender } from "fhc-api/dist/model/models"
 import { getPhoneNumber } from "./hcp-util"
 

@@ -203,7 +203,7 @@ export class iccDocumentApi {
   setAttachment(
     documentId: string,
     enckeys?: string,
-    body?: Array<string>
+    body?: ArrayBuffer
   ): Promise<models.DocumentDto | any> {
     let _body = null
     _body = body

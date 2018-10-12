@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { PatientDto, InsurabilityDto } from "../../../icc-api/model/models"
+import { PatientDto, InsurabilityDto } from "../../icc-api/model/models"
 
 export function isBIM(ct1: number | string, ct2: number | string): boolean {
   //BIM if ct1 ood and ct2 ood
