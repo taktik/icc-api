@@ -64,7 +64,6 @@ export namespace XHR {
   ): Promise<Data> {
     return new Promise<Data>(function(resolve, reject) {
       var jsXHR = new XMLHttpRequest()
-	  jsXHR.withCredentials = true;
       jsXHR.open(method, url)
       const contentType =
         headers &&
