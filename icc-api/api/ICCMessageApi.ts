@@ -196,7 +196,6 @@ export class iccMessageApi {
   }
   findMessagesByTransportGuid(
     transportGuid?: string,
-    received?: boolean,
     startKey?: string,
     startDocumentId?: string,
     limit?: number
@@ -209,7 +208,6 @@ export class iccMessageApi {
       "?ts=" +
       new Date().getTime() +
       (transportGuid ? "&transportGuid=" + transportGuid : "") +
-      (received ? "&received=" + received : "") +
       (startKey ? "&startKey=" + startKey : "") +
       (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
       (limit ? "&limit=" + limit : "")
