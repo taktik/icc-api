@@ -22,47 +22,47 @@
  * limitations under the License.
  */
 
-import * as models from '../model/models';
+import * as models from "./models"
 
 export class TimeTableDto {
   constructor(json: JSON | any) {
     Object.assign(this as TimeTableDto, json)
   }
+  id?: string
 
-  id?: string;
+  rev?: string
 
-  rev?: string;
+  deletionDate?: number
 
-  deletionDate?: number;
+  created?: number
 
-  created?: number;
+  modified?: number
 
-  modified?: number;
+  endOfLife?: number
 
-  endOfLife?: number;
+  author?: string
 
-  author?: string;
+  responsible?: string
 
-  responsible?: string;
+  codes?: Array<models.CodeDto>
 
-  codes?: Array<models.CodeDto>;
+  tags?: Array<models.CodeDto>
 
-  tags?: Array<models.CodeDto>;
+  secretForeignKeys?: Array<string>
 
-  secretForeignKeys?: Array<string>;
+  cryptedForeignKeys?: { [key: string]: Array<models.DelegationDto> }
 
-  cryptedForeignKeys?: { [key: string]: Array<models.DelegationDto>; };
+  delegations?: { [key: string]: Array<models.DelegationDto> }
 
-  delegations?: { [key: string]: Array<models.DelegationDto>; };
+  encryptionKeys?: { [key: string]: Array<models.DelegationDto> }
 
-  name?: string;
+  name?: string
 
-  agendaId?: string;
+  agendaId?: string
 
-  startTime?: number;
+  startTime?: number
 
-  endTime?: number;
+  endTime?: number
 
-  items?: Array<models.TimeTableItemDto>;
-
+  items?: Array<models.TimeTableItemDto>
 }

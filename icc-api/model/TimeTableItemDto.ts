@@ -22,25 +22,21 @@
  * limitations under the License.
  */
 
-import {TimeTableHourDto} from "./TimeTableHourDto";
-import {PlaceDto} from "./PlaceDto";
+import * as models from "./models"
 
 export class TimeTableItemDto {
-
   constructor(json: JSON | any) {
     Object.assign(this as TimeTableItemDto, json)
   }
+  days?: Array<string>
 
-  days?: Array<string>;
+  hours?: Array<models.TimeTableHourDto>
 
-  hours?: Array<TimeTableHourDto>;
+  recurrenceTypes?: Array<string>
 
-  recurrenceTypes?: Array<string>;
+  calendarItemTypeId?: string
 
-  calendarItemTypeId?: string;
+  homeVisit?: boolean
 
-  placeId?: string;
-
-  homeVisit?: boolean;
-
+  placeId?: string
 }

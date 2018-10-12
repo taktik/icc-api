@@ -22,20 +22,19 @@
  * limitations under the License.
  */
 
-import {AddressDto} from "./AddressDto";
+import * as models from "./models"
 
 export class PlaceDto {
-
   constructor(json: JSON | any) {
     Object.assign(this as PlaceDto, json)
   }
+  id?: string
 
-  id?: string;
+  rev?: string
 
-  rev?: string;
+  deletionDate?: number
 
-  name?: string;
+  name?: string
 
-  address?: AddressDto;
-
+  address?: models.AddressDto
 }

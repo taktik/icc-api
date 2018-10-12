@@ -22,14 +22,13 @@
  * limitations under the License.
  */
 
-export class TimeTableHourDto{
+import * as models from "./models"
 
+export class TimeTableHourDto {
   constructor(json: JSON | any) {
     Object.assign(this as TimeTableHourDto, json)
   }
+  startHour?: number
 
-  startHour?: number;
-
-  endHour?: number;
-
+  endHour?: number
 }
