@@ -132,11 +132,12 @@ export class iccReceiptApi {
       .then(doc => new models.ReceiptDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+
   setAttachment(
     receiptId: string,
     blobType: string,
     enckeys?: string,
-    body?: Array<string>
+    body?: ArrayBuffer
   ): Promise<models.ReceiptDto | any> {
     let _body = null
     _body = body

@@ -18,12 +18,12 @@ import {
   UserDto
 } from "../icc-api/model/models"
 import { InvoiceWithPatient, toInvoiceBatch, uuidBase36, uuidBase36Half } from "./utils/efact-util"
-import { timeEncode } from "../dist/icc-x-api/utils/formatting-util"
+import { timeEncode } from "./utils/formatting-util"
 import { InvoicesBatch } from "fhc-api/dist/model/InvoicesBatch"
 import { fhcEfactcontrollerApi } from "fhc-api"
 import { EfactSendResponse } from "fhc-api/dist/model/EfactSendResponse"
 import { IccDocumentXApi } from "./icc-document-x-api"
-import { utils } from "../dist/icc-x-api/crypto/utils"
+import { utils } from "./crypto/utils"
 
 export class IccMessageXApi extends iccMessageApi {
   private crypto: IccCryptoXApi
