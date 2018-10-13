@@ -10,16 +10,9 @@ import { IccCryptoXApi } from "./icc-crypto-x-api"
 import * as _ from "lodash"
 import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
-import {
-  EntityReference,
-  HealthcarePartyDto,
-  MessageDto,
-  ReceiptDto,
-  UserDto
-} from "../icc-api/model/models"
+import { EntityReference, HealthcarePartyDto, ReceiptDto, UserDto } from "../icc-api/model/models"
 import { InvoiceWithPatient, toInvoiceBatch, uuidBase36, uuidBase36Half } from "./utils/efact-util"
 import { timeEncode } from "./utils/formatting-util"
-import { InvoicesBatch } from "fhc-api/dist/model/InvoicesBatch"
 import { fhcEfactcontrollerApi } from "fhc-api"
 import { EfactSendResponse } from "fhc-api/dist/model/EfactSendResponse"
 import { IccDocumentXApi } from "./icc-document-x-api"
@@ -80,7 +73,7 @@ export class IccMessageXApi extends iccMessageApi {
   ): Promise<models.MessageDto> {
     const uuid = this.crypto.randomUuid()
     const smallBase36 = uuidBase36Half(uuid)
-    const fullBase36 = uuidBase36Half(uuid)
+    const fullBase36 = uuidBase36(uuid)
     const sentDate = +new Date()
     const errors: Array<string> = []
 
