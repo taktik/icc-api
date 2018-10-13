@@ -25,7 +25,7 @@ export function isPatientPaymentByIo(patient: PatientDto) {
  * @param patient The patient
  */
 export function getMembership(patient: PatientDto): string {
-  const ioCode = _.get(patient, "insurabilities[0].membership")
+  const ioCode = _.get(patient, "insurabilities[0].identificationNumber")
   if (_.isUndefined(ioCode)) {
     // TODO translate
     throw new Error("Le patient n'a pas de données d'assurabilité")
@@ -53,10 +53,5 @@ export function getInsurability(patient: PatientDto): InsurabilityDto {
  * @param patient
  */
 export function isPatientHospitalized(patient: PatientDto): boolean {
-  const hosp = _.get(patient, "insurabilities[0].hospitalisation")
-  if (_.isUndefined(hosp)) {
-    // TODO translate
-    throw new Error("Le patient n'a pas de données d'assurabilité")
-  }
-  return hosp
+  return getInsurability(patient).hospitalisation || false
 }
