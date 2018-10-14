@@ -83,24 +83,25 @@ export class IccDoctemplateXApi extends iccDoctemplateApi {
       .catch(err => this.handleError(err))
   }
 
-  setAttachmentJson(
-    documentTemplateId: string,
-    body: string
-  ): Promise<models.DocumentTemplateDto | any> {
-    let _body = null
-    _body = btoa(body)
+  // FIXME-GENLOC
+  // setAttachmentJson(
+  //   documentTemplateId: string,
+  //   body: string
+  // ): Promise<models.DocumentTemplateDto | any> {
+  //   let _body = null
+  //   _body = btoa(body)
 
-    const _url =
-      this.host +
-      "/doctemplate/{documentTemplateId}/attachmentJson".replace(
-        "{documentTemplateId}",
-        documentTemplateId + ""
-      ) +
-      "?ts=" +
-      new Date().getTime()
+  //   const _url =
+  //     this.host +
+  //     "/doctemplate/{documentTemplateId}/attachmentJson".replace(
+  //       "{documentTemplateId}",
+  //       documentTemplateId + ""
+  //     ) +
+  //     "?ts=" +
+  //     new Date().getTime()
 
-    return XHR.sendCommand("PUT", _url, this.headers, { data: _body })
-      .then(doc => new models.DocumentTemplateDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
-  }
+  //   return XHR.sendCommand("PUT", _url, this.headers, { data: _body })
+  //     .then(doc => new models.DocumentTemplateDto(doc.body as JSON))
+  //     .catch(err => this.handleError(err))
+  // }
 }
