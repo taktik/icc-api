@@ -87,8 +87,8 @@ export class IccMessageXApi extends iccMessageApi {
               id:
                 prefix +
                 _.padStart(
-                  "" + (((er && er.id ? Number(er.id.substr(prefix.length)) : 0) + 1) % 1000),
-                  3,
+                  "" + (((er && er.id ? Number(er.id.substr(prefix.length)) : 0) + 1) % 1000000000),
+                  9, //1 billion invoices that are going to be mod 1000
                   "0"
                 ),
               docId: uuid
@@ -96,7 +96,7 @@ export class IccMessageXApi extends iccMessageApi {
           )
         )
         .then(er => {
-          const sendNumber = er && er.id ? Number(er.id.substr(prefix.length)) : 0
+          const sendNumber = er && er.id ? Number(er.id.substr(prefix.length)) % 1000 : 0
           return this.newInstance(user, {
             id: uuid,
             invoiceIds: invoices.map(i => i.invoiceDto.id),
