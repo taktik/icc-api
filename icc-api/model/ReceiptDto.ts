@@ -22,15 +22,45 @@
  * limitations under the License.
  */
 
-import * as models from './models';
+import * as models from "./models"
 
-export class KeywordSubword {
+export class ReceiptDto {
   constructor(json: JSON | any) {
-    Object.assign(this as KeywordSubword, json)
+    Object.assign(this as ReceiptDto, json)
   }
+  id?: string
 
-  value?: string;
+  rev?: string
 
-  subWords?: Array<KeywordSubword>;
+  deletionDate?: number
 
+  created?: number
+
+  modified?: number
+
+  endOfLife?: number
+
+  author?: string
+
+  responsible?: string
+
+  codes?: Array<models.CodeDto>
+
+  tags?: Array<models.CodeDto>
+
+  secretForeignKeys?: Array<string>
+
+  cryptedForeignKeys?: { [key: string]: Array<models.DelegationDto> }
+
+  delegations?: { [key: string]: Array<models.DelegationDto> }
+
+  encryptionKeys?: { [key: string]: Array<models.DelegationDto> }
+
+  attachmentIds?: { [key: string]: string }
+
+  references?: Array<string>
+
+  documentId?: string
+
+  encryptedSelf?: string
 }

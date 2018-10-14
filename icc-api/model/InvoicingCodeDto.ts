@@ -64,6 +64,8 @@ export class InvoicingCodeDto {
 
   contract?: string
 
+  contractDate?: number
+
   units?: number
 
   side?: number
