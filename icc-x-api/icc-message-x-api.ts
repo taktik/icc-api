@@ -114,9 +114,9 @@ export class IccMessageXApi extends iccMessageApi {
           toInvoiceBatch(
             invoices,
             hcp,
-            smallBase36,
-            message.externalRef!!,
             fullBase36,
+            message.externalRef!!,
+            smallBase36,
             this.insuranceApi
           )
             .then(batch =>

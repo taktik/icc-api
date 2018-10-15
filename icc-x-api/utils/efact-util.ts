@@ -126,7 +126,7 @@ function toInvoiceItem(
   invoiceItem.gnotionNihii = invoiceDto.gnotionNihii
   invoiceItem.insuranceRef = getMembership(patientDto)
   invoiceItem.insuranceRefDate = invoicingCode.contractDate || invoiceItem.dateCode
-  invoiceItem.invoiceRef = invoiceDto.invoiceReference || "0"
+  invoiceItem.invoiceRef = uuidBase36(invoicingCode.id!!)
 
   invoiceItem.override3rdPayerCode = invoicingCode.override3rdPayerCode
   invoiceItem.patientFee = invoicingCode.patientIntervention
