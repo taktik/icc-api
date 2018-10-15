@@ -2,6 +2,7 @@ import { parseNumber, formatNumber, isValidNumber } from "libphonenumber-js"
 
 import * as moment from "moment"
 import * as _ from "lodash"
+import { Moment } from "moment"
 
 // TODO: move this to env.js?
 const DEFAULT_COUNTRY = "BE"
@@ -182,4 +183,17 @@ export function personName(person: { firstName?: string; lastName?: string }): s
 export function personNameAbbrev(person: { firstName?: string; lastName?: string }): string {
   const firstName = person.firstName ? person.firstName[0] + "." : undefined
   return personName({ ...person, firstName })
+}
+
+export function toMoment(epochOrLongCalendar: number): Moment | null {
+  if (!epochOrLongCalendar && epochOrLongCalendar !== 0) {
+    return null
+  }
+  if (epochOrLongCalendar >= 18000101 && epochOrLongCalendar < 25400000) {
+    return moment("" + epochOrLongCalendar, "YYYYMMDD")
+  } else if (epochOrLongCalendar >= 18000101000000) {
+    return moment("" + epochOrLongCalendar, "YYYYMMDDhhmmss")
+  } else {
+    return moment(epochOrLongCalendar)
+  }
 }
