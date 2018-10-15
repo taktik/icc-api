@@ -133,9 +133,9 @@ export class IccMessageXApi extends iccMessageApi {
               if (res.success) {
                 let promise = Promise.resolve(true)
 
-                _.each(invoices, iv => {
+                _.forEach(invoices, iv => {
                   promise = promise.then(() => {
-                    ;(iv.invoiceDto.invoicingCodes || []).forEach(code => {
+                    _.forEach(iv.invoiceDto.invoicingCodes, code => {
                       code.status = 4 // STATUS_PENDING
                     })
                     iv.invoiceDto.sentDate = sentDate
