@@ -1,5 +1,5 @@
 import * as _ from "lodash"
-import { HealthcarePartyDto } from "../../../icc-api/model/models"
+import { HealthcarePartyDto } from "../../icc-api/model/models"
 import { Telecom } from "fhc-api/dist/model/Telecom"
 
 export interface KendoDropdownSpeciality {
@@ -103,14 +103,39 @@ export function isDoctorAssistant(nihii: string): boolean {
   )
 }
 
-export function getPhoneNumber(hcp: HealthcarePartyDto): number | null {
+export function getPhoneNumber(
+  hcp: HealthcarePartyDto,
+  maxLength: number | undefined
+): number | null {
   const phoneNumbers = (hcp.addresses || []).map(a => {
     const t = (a.telecoms || []).find(
       (t: Telecom) =>
         t.telecomType === Telecom.TelecomTypeEnum.Phone ||
         t.telecomType === Telecom.TelecomTypeEnum.Mobile
     )
-    return t && Number(t.telecomNumber)
+    let res = t && t.telecomNumber
+    if (res && maxLength) {
+      while (res.length > maxLength) {
+        if (res.startsWith("0032")) {
+          res = "0" + res.substr(4)
+        } else if (res.startsWith("+32")) {
+          res = "0" + res.substr(3)
+        } else if (res.startsWith("32")) {
+          res = "0" + res.substr(2)
+        } else if (res.startsWith("00")) {
+          res = res.substr(2)
+        } else if (res.startsWith("0")) {
+          res = res.substr(1)
+        } else if (res.startsWith("352")) {
+          res = "0" + res.substr(3)
+        } else if (res.startsWith("33")) {
+          res = "0" + res.substr(2)
+        } else {
+          res = res.substr(1)
+        }
+      }
+    }
+    return res && Number(res)
   })
 
   return (!phoneNumbers.length || _.isNaN(phoneNumbers[0]) ? null : phoneNumbers[0]) || null

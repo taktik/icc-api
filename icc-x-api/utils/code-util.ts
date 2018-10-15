@@ -1,6 +1,6 @@
 import * as _ from "lodash"
 
-import { CodeDto } from "../../../icc-api/model/CodeDto"
+import { CodeDto } from "../../icc-api/model/CodeDto"
 
 /**
  * Normalizes the code's four main fields (type, code, version and id). The first three are considered to be

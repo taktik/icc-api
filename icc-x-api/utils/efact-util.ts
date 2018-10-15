@@ -5,21 +5,24 @@ import {
   InvoicingCodeDto,
   ListOfIdsDto,
   PatientDto
-} from "../../../icc-api/model/models"
+} from "../../icc-api/model/models"
 
 import { InvoicesBatch, InvoiceItem, Invoice, EIDItem } from "fhc-api/dist/model/models"
-import { dateEncode } from "./formatting-util"
+import { dateEncode, toMoment } from "./formatting-util"
 import { toPatient } from "./fhc-patient-util"
 import { toInvoiceSender } from "./fhc-invoice-sender-util"
 import { isPatientHospitalized, getMembership, getInsurability } from "./insurability-util"
 import * as _ from "lodash"
 import * as moment from "moment"
-import { iccInsuranceApi } from "../../../icc-api/api/iccInsuranceApi"
+import { iccInsuranceApi } from "../../icc-api/api/iccInsuranceApi"
+import { UuidEncoder } from "./uuid-encoder"
 
 export interface InvoiceWithPatient {
   invoiceDto: InvoiceDto
   patientDto: PatientDto
 }
+
+const base36UUID = new UuidEncoder()
 
 // Here we trust the invoices argument for grouping validity (month, year and patient)
 export function toInvoiceBatch(
@@ -32,13 +35,15 @@ export function toInvoiceBatch(
 ): Promise<InvoicesBatch> {
   return insuranceApi
     .getInsurances(
-      new ListOfIdsDto(_.compact(invoices.map(iwp => getInsurability(iwp.patientDto).insuranceId)))
+      new ListOfIdsDto({
+        ids: _.compact(invoices.map(iwp => getInsurability(iwp.patientDto).insuranceId))
+      })
     )
     .then((insurances: Array<InsuranceDto>) => {
       return insuranceApi
-        .getInsurances(new ListOfIdsDto(_.uniq(_.compact(insurances.map(i => i.parent)))))
+        .getInsurances(new ListOfIdsDto({ ids: _.uniq(_.compact(insurances.map(i => i.parent))) }))
         .then((parents: Array<InsuranceDto>) => {
-          const fedCodes = _.compact(parents.map(i => i.code))
+          const fedCodes = _.compact(parents.map(i => i.code && i.code.substr(0, 3)))
           if (!fedCodes.length) {
             throw "The federation is missing from the recipients of the invoices"
           }
@@ -62,7 +67,10 @@ export function toInvoiceBatch(
           invoicesBatch.invoicingMonth = moment(invoices[0].invoiceDto.invoiceDate).month() + 1
           invoicesBatch.invoicingYear = moment(invoices[0].invoiceDto.invoiceDate).year()
           invoicesBatch.ioFederationCode = fedCodes[0]
-          invoicesBatch.numericalRef = Number.parseInt(batchNumber)
+          invoicesBatch.numericalRef =
+            invoicesBatch.invoicingYear * 1000000 +
+            Number(fedCodes[0]) * 1000 +
+            Number.parseInt(batchNumber)
           invoicesBatch.sender = toInvoiceSender(hcp)
           invoicesBatch.uniqueSendNumber = Number.parseInt(batchNumber)
 
@@ -84,7 +92,7 @@ function toInvoice(
   invoice.invoiceNumber = Number(invoiceDto.invoiceReference) || 0
   // FIXME : coder l'invoice ref
   invoice.invoiceRef = invoiceDto.invoiceReference || "0"
-  invoice.ioCode = insurance.code
+  invoice.ioCode = insurance.code!!.substr(0, 3)
   invoice.items = _.map(invoiceDto.invoicingCodes, (invoicingCodeDto: InvoicingCodeDto) => {
     return toInvoiceItem(nihiiHealthcareProvider, patientDto, invoiceDto, invoicingCodeDto)
   })
@@ -103,7 +111,7 @@ function toInvoiceItem(
 ): InvoiceItem {
   const invoiceItem = new InvoiceItem({})
   invoiceItem.codeNomenclature = Number(invoicingCode.tarificationId!!.split("|")[1])
-  invoiceItem.dateCode = dateEncode(moment(invoicingCode.dateCode).toDate())
+  invoiceItem.dateCode = dateEncode(toMoment(invoicingCode.dateCode!!)!!.toDate())
   invoiceItem.doctorIdentificationNumber = nihiiHealthcareProvider
   invoiceItem.doctorSupplement = invoicingCode.doctorSupplement
   if (invoicingCode.eidReadingHour && invoicingCode.eidReadingValue) {
@@ -117,7 +125,7 @@ function toInvoiceItem(
   }
   invoiceItem.gnotionNihii = invoiceDto.gnotionNihii
   invoiceItem.insuranceRef = getMembership(patientDto)
-  invoiceItem.insuranceRefDate = getInsurability(patientDto).startDate
+  invoiceItem.insuranceRefDate = invoicingCode.contractDate || invoiceItem.dateCode
   invoiceItem.invoiceRef = invoiceDto.invoiceReference || "0"
 
   invoiceItem.override3rdPayerCode = invoicingCode.override3rdPayerCode
@@ -172,4 +180,29 @@ function getPrescriberNorm(code: number) {
           : code === 9
             ? InvoiceItem.PrescriberNormEnum.ManyPrescribers
             : InvoiceItem.PrescriberNormEnum.None
+}
+
+export function uuidBase36(uuid: string): string {
+  return base36UUID.encode(uuid)
+}
+
+/**
+ * This function encodes an uuid in 13 characters in base36, this is
+ * for the fileRef in efact, zone 303
+ */
+export function uuidBase36Half(uuid: string): string {
+  const rawEndcode = base36UUID.encode(uuid.substr(0, 18))
+  return _.padStart(rawEndcode, 13, "0")
+}
+
+export function decodeBase36Uuid(base36: string): string {
+  const decoded: string = base36UUID.decode(base36)
+  if (base36.length !== 13) {
+    return decoded
+  } else {
+    const truncated = decoded.substr(19, decoded.length)
+    const raw = truncated.replace(/-/g, "")
+    const formatted = raw.substr(0, 8) + "-" + raw.substring(8, 12) + "-" + raw.substring(12, 16)
+    return formatted
+  }
 }

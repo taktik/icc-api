@@ -1,4 +1,4 @@
-import { PatientDto } from "../../../icc-api/model/models"
+import { PatientDto } from "../../icc-api/model/models"
 import { Patient } from "fhc-api/dist/model/models"
 import * as _ from "lodash"
 

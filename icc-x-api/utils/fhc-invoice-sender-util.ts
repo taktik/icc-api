@@ -1,9 +1,9 @@
-import { HealthcarePartyDto } from "../../../icc-api/model/models"
+import { HealthcarePartyDto } from "../../icc-api/model/models"
 import { InvoiceSender } from "fhc-api/dist/model/models"
 import { getPhoneNumber } from "./hcp-util"
 
 export function toInvoiceSender(hcp: HealthcarePartyDto) {
-  const phoneNumber = getPhoneNumber(hcp) || 484082978
+  const phoneNumber = getPhoneNumber(hcp, 10) || 484082978
 
   if (!phoneNumber) {
     throw new Error("NO_PHONE_NUMBER_IN_HCP")
