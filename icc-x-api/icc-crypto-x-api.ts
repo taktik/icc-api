@@ -428,8 +428,8 @@ export class IccCryptoXApi {
     }
     return this.extractSfks(hcpartyId, document.id!, dels)
   }
-             
-   extractCryptedFKs(
+
+  extractCryptedFKs(
     document:
       | models.PatientDto
       | models.MessageDto

@@ -22,17 +22,16 @@
  * limitations under the License.
  */
 
-import * as models from './models';
+import * as models from "./models"
 
 export class RecurrenceTypeDto {
   constructor(json: JSON | any) {
     Object.assign(this as RecurrenceTypeDto, json)
   }
 
-  id?: string;
+  id?: string
 
-  code?: string;
+  code?: string
 
-  name?: string;
-
+  name?: string
 }

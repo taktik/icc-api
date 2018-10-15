@@ -1,1 +1,1 @@
-export type MediumType = "efact" | "eattest" | "paper";
+export type MediumType = "efact" | "eattest" | "paper"

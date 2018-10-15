@@ -1,1 +1,1 @@
-export type InvoiceType = "mutualfund" | "patient" | "payingagency";
+export type InvoiceType = "mutualfund" | "patient" | "payingagency"
