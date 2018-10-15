@@ -25,7 +25,7 @@
 import { XHR } from "./XHR"
 import * as models from "../model/models"
 
-export class iccPlaceApi {
+export class iccReceiptApi {
   host: string
   headers: Array<XHR.Header>
   constructor(host: string, headers: any) {
@@ -42,56 +42,77 @@ export class iccPlaceApi {
     else throw Error("api-error" + e.status)
   }
 
-  createPlace(body?: models.PlaceDto): Promise<models.PlaceDto | any> {
+  createReceipt(body?: models.ReceiptDto): Promise<models.ReceiptDto | any> {
     let _body = null
     _body = body
     
-    const _url = this.host + "/place" + "?ts=" + new Date().getTime() 
+    const _url = this.host + "/receipt" + "?ts=" + new Date().getTime() 
     let headers = this.headers
     headers = headers.filter(h => h.header !== "Content-Type").concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc =>  new models.PlaceDto(doc.body as JSON))
+      .then(doc =>  new models.ReceiptDto(doc.body as JSON))
       .catch(err => this.handleError(err))
 }
-  deletePlace(placeIds: string): Promise<any | Boolean> {
+  deleteReceipt(receiptIds: string): Promise<models.ReceiptDto | any> {
     let _body = null
     
-    const _url = this.host + "/place/{placeIds}".replace("{placeIds}", placeIds+"") + "?ts=" + new Date().getTime() 
+    const _url = this.host + "/receipt/{receiptIds}".replace("{receiptIds}", receiptIds+"") + "?ts=" + new Date().getTime() 
     let headers = this.headers
     headers = headers.filter(h => h.header !== "Content-Type").concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("DELETE", _url, headers, _body)
+      .then(doc =>  new models.ReceiptDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+}
+  getAttachment(receiptId: string, attachmentId: string, enckeys?: string): Promise<any | Boolean> {
+    let _body = null
+    
+    const _url = this.host + "/receipt/{receiptId}/attachment/{attachmentId}".replace("{receiptId}", receiptId+"").replace("{attachmentId}", attachmentId+"") + "?ts=" + new Date().getTime()  + (enckeys ? "&enckeys=" + enckeys : "")
+    let headers = this.headers
+    headers = headers.filter(h => h.header !== "Content-Type").concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
       .catch(err => this.handleError(err))
 }
-  getPlace(placeId: string): Promise<models.PlaceDto | any> {
+  getReceipt(receiptId: string): Promise<models.ReceiptDto | any> {
     let _body = null
     
-    const _url = this.host + "/place/{placeId}".replace("{placeId}", placeId+"") + "?ts=" + new Date().getTime() 
+    const _url = this.host + "/receipt/{receiptId}".replace("{receiptId}", receiptId+"") + "?ts=" + new Date().getTime() 
     let headers = this.headers
     headers = headers.filter(h => h.header !== "Content-Type").concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc =>  new models.PlaceDto(doc.body as JSON))
+      .then(doc =>  new models.ReceiptDto(doc.body as JSON))
       .catch(err => this.handleError(err))
 }
-  getPlaces(): Promise<models.PlaceDto | any> {
+  listByReference(ref: string): Promise<Array<models.ReceiptDto> | any> {
     let _body = null
     
-    const _url = this.host + "/place" + "?ts=" + new Date().getTime() 
+    const _url = this.host + "/receipt/byref/{ref}".replace("{ref}", ref+"") + "?ts=" + new Date().getTime() 
     let headers = this.headers
     headers = headers.filter(h => h.header !== "Content-Type").concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc =>  new models.PlaceDto(doc.body as JSON))
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.ReceiptDto(it)))
       .catch(err => this.handleError(err))
 }
-  modifyPlace(body?: models.PlaceDto): Promise<models.PlaceDto | any> {
+  modifyReceipt(body?: models.ReceiptDto): Promise<models.ReceiptDto | any> {
     let _body = null
     _body = body
     
-    const _url = this.host + "/place" + "?ts=" + new Date().getTime() 
+    const _url = this.host + "/receipt" + "?ts=" + new Date().getTime() 
     let headers = this.headers
     headers = headers.filter(h => h.header !== "Content-Type").concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body)
-      .then(doc =>  new models.PlaceDto(doc.body as JSON))
+      .then(doc =>  new models.ReceiptDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+}
+  setAttachment(receiptId: string, blobType: string, enckeys?: string, body?: Array<string>): Promise<models.ReceiptDto | any> {
+    let _body = null
+    _body = body
+    
+    const _url = this.host + "/receipt/{receiptId}/attachment/{blobType}".replace("{receiptId}", receiptId+"").replace("{blobType}", blobType+"") + "?ts=" + new Date().getTime()  + (enckeys ? "&enckeys=" + enckeys : "")
+    let headers = this.headers
+    headers = headers.filter(h => h.header !== "Content-Type").concat(new XHR.Header("Content-Type", "application/octet-stream"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
+      .then(doc =>  new models.ReceiptDto(doc.body as JSON))
       .catch(err => this.handleError(err))
 }
 }
