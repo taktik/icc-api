@@ -147,15 +147,33 @@ export class IccMessageXApi extends iccMessageApi {
                     )
                   )
                   .then(msg =>
-                    docXApi.newInstance(user, msg, { mainUti: "public.text", name: "920000" })
+                    Promise.all([
+                      docXApi.newInstance(user, msg, {
+                        mainUti: "public.plain-text",
+                        name: "920000"
+                      }),
+                      docXApi.newInstance(user, msg, {
+                        mainUti: "public.json",
+                        name: "920000_records"
+                      })
+                    ])
                   )
-                  .then(doc => docXApi.createDocument(doc))
-                  .then(doc =>
-                    docXApi.setAttachment(
-                      doc.id!!,
-                      undefined /*TODO provide keys for encryption*/,
-                      utils.ua2ArrayBuffer(utils.text2ua(res.detail!!))
-                    )
+                  .then(([doc, jsonDoc]) =>
+                    Promise.all([docXApi.createDocument(doc), docXApi.createDocument(jsonDoc)])
+                  )
+                  .then(([doc, jsonDoc]) =>
+                    Promise.all([
+                      docXApi.setAttachment(
+                        doc.id!!,
+                        undefined /*TODO provide keys for encryption*/,
+                        utils.ua2ArrayBuffer(utils.text2ua(res.detail!!))
+                      ),
+                      docXApi.setAttachment(
+                        jsonDoc.id!!,
+                        undefined /*TODO provide keys for encryption*/,
+                        utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.records!!)))
+                      )
+                    ])
                   )
                   .then(() =>
                     this.receiptApi.createReceipt(
