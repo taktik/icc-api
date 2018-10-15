@@ -136,12 +136,13 @@ export class IccMessageXApi extends iccMessageApi {
           })
         })
         .then(message =>
+          // Fullbase36 and smallBase36 => inversé
           toInvoiceBatch(
             invoices,
             hcp,
-            smallBase36,
-            message.externalRef!!,
             fullBase36,
+            message.externalRef!!,
+            smallBase36,
             this.insuranceApi
           )
             .then(batch =>
@@ -209,6 +210,7 @@ export class IccMessageXApi extends iccMessageApi {
             })
         )
         .catch(err => {
+          console.log(err)
           errors.push(err)
           throw errors
         })
