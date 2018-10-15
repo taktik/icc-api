@@ -30,7 +30,7 @@ export class IccMessageXApi extends iccMessageApi {
   private entityReferenceApi: iccEntityrefApi
   private receiptApi: iccReceiptApi
   private invoiceApi: iccInvoiceApi
-  private docXApi: IccDocumentXApi
+  private documentXApi: IccDocumentXApi
 
   constructor(
     host: string,
@@ -40,7 +40,7 @@ export class IccMessageXApi extends iccMessageApi {
     entityReferenceApi: iccEntityrefApi,
     receiptApi: iccReceiptApi,
     invoiceApi: iccInvoiceApi,
-    docXApi: IccDocumentXApi
+    documentXApi: IccDocumentXApi
   ) {
     super(host, headers)
     this.crypto = crypto
@@ -48,7 +48,7 @@ export class IccMessageXApi extends iccMessageApi {
     this.entityReferenceApi = entityReferenceApi
     this.receiptApi = receiptApi
     this.invoiceApi = invoiceApi
-    this.docXApi = docXApi
+    this.documentXApi = documentXApi
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -83,6 +83,7 @@ export class IccMessageXApi extends iccMessageApi {
     const fullBase36 = uuidBase36(uuid)
     const sentDate = +new Date()
     const errors: Array<string> = []
+    let batch = null
 
     return getFederaton(invoices, this.insuranceApi).then(fed => {
       const prefix = `efact:${hcp.id}:${fed.code}:`
@@ -105,19 +106,6 @@ export class IccMessageXApi extends iccMessageApi {
         .then(er => {
           const sendNumber = er && er.id ? Number(er.id.substr(prefix.length)) % 1000 : 0
 
-          const totalAmount = invoices
-            .reduce((acc, invoice) => {
-              return (
-                acc +
-                invoice.invoiceDto.invoicingCodes.reduce((accCode, code) => {
-                  return accCode + code.patientIntervention + code.reimbursement
-                }, 0)
-              )
-            }, 0)
-            .toString()
-
-          const invoicingDate = toMoment(invoices[0].invoiceDto.invoiceDate).format("MM/YYYY")
-
           return this.newInstance(user, {
             id: uuid,
             invoiceIds: invoices.map(i => i.invoiceDto.id),
@@ -128,11 +116,7 @@ export class IccMessageXApi extends iccMessageApi {
             sent: timeEncode(new Date()),
             fromHealthcarePartyId: hcp.id,
             recipients: [fed.id],
-            recipientsType: "org.taktik.icure.entities.Insurance",
-            metas: {
-              totalAmount,
-              invoicingDate
-            }
+            recipientsType: "org.taktik.icure.entities.Insurance"
           })
         })
         .then(message =>
@@ -145,17 +129,20 @@ export class IccMessageXApi extends iccMessageApi {
             smallBase36,
             this.insuranceApi
           )
-            .then(batch =>
-              efactApi.sendBatchUsingPOST(xFHCKeystoreId, xFHCTokenId, xFHCPassPhrase, batch)
-            )
+            .then(_batch => {
+              batch = _batch
+              console.log("batch", batch)
+              return efactApi.sendBatchUsingPOST(xFHCKeystoreId, xFHCTokenId, xFHCPassPhrase, batch)
+            })
             .then((res: EfactSendResponse) => {
               if (res.success) {
                 let promise = Promise.resolve(true)
-
+                let totalAmount = 0
                 _.forEach(invoices, iv => {
                   promise = promise.then(() => {
                     _.forEach(iv.invoiceDto.invoicingCodes, code => {
                       code.status = 4 // STATUS_PENDING
+                      totalAmount += code.reimbursement
                     })
                     iv.invoiceDto.sentDate = sentDate
                     return this.invoiceApi.modifyInvoice(iv.invoiceDto).catch((err: any) => {
@@ -168,16 +155,25 @@ export class IccMessageXApi extends iccMessageApi {
                     this.createMessage(
                       Object.assign(message, {
                         sent: sentDate,
-                        status: (message.status || 0) | (1 << 8)
+                        status: (message.status || 0) | (1 << 8),
+                        metas: {
+                          numericalRef: batch.numericalRef,
+                          invoiceMonth: batch.invoiceMonth,
+                          invoiceYear: batch.invoiceYear,
+                          totalAmount: totalAmount
+                        }
                       })
                     )
                   )
                   .then(msg =>
-                    this.docXApi.newInstance(user, msg, { mainUti: "public.text", name: "920000" })
+                    this.documentXApi.newInstance(user, msg, {
+                      mainUti: "public.text",
+                      name: "920000"
+                    })
                   )
-                  .then(doc => this.docXApi.createDocument(doc))
+                  .then(doc => this.documentXApi.createDocument(doc))
                   .then(doc =>
-                    this.docXApi.setAttachment(
+                    this.documentXApi.setAttachment(
                       doc.id!!,
                       undefined /*TODO provide keys for encryption*/,
                       utils.ua2ArrayBuffer(utils.text2ua(res.detail!!))
