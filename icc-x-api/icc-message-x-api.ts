@@ -83,7 +83,7 @@ export class IccMessageXApi extends iccMessageApi {
     const fullBase36 = uuidBase36(uuid)
     const sentDate = +new Date()
     const errors: Array<string> = []
-    let batch = null
+    let batch: any = null
 
     return getFederaton(invoices, this.insuranceApi).then(fed => {
       const prefix = `efact:${hcp.id}:${fed.code}:`
@@ -142,7 +142,7 @@ export class IccMessageXApi extends iccMessageApi {
                   promise = promise.then(() => {
                     _.forEach(iv.invoiceDto.invoicingCodes, code => {
                       code.status = 4 // STATUS_PENDING
-                      totalAmount += code.reimbursement
+                      totalAmount += code.reimbursement || 0
                     })
                     iv.invoiceDto.sentDate = sentDate
                     return this.invoiceApi.modifyInvoice(iv.invoiceDto).catch((err: any) => {
@@ -157,9 +157,10 @@ export class IccMessageXApi extends iccMessageApi {
                         sent: sentDate,
                         status: (message.status || 0) | (1 << 8),
                         metas: {
+                          ioFederationCode: batch.ioFederationCode,
                           numericalRef: batch.numericalRef,
-                          invoiceMonth: batch.invoiceMonth,
-                          invoiceYear: batch.invoiceYear,
+                          invoiceMonth: batch.invoicingMonth,
+                          invoiceYear: batch.invoicingYear,
                           totalAmount: totalAmount
                         }
                       })
