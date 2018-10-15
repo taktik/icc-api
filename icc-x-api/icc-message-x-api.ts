@@ -19,7 +19,7 @@ import {
   uuidBase36,
   uuidBase36Half
 } from "./utils/efact-util"
-import { timeEncode } from "./utils/formatting-util"
+import { timeEncode, dateDecode, toMoment } from "./utils/formatting-util"
 import { fhcEfactcontrollerApi } from "fhc-api"
 import { EfactSendResponse } from "fhc-api/dist/model/EfactSendResponse"
 import { utils } from "./crypto/utils"
@@ -104,6 +104,20 @@ export class IccMessageXApi extends iccMessageApi {
         )
         .then(er => {
           const sendNumber = er && er.id ? Number(er.id.substr(prefix.length)) % 1000 : 0
+
+          const totalAmount = invoices
+            .reduce((acc, invoice) => {
+              return (
+                acc +
+                invoice.invoiceDto.invoicingCodes.reduce((accCode, code) => {
+                  return accCode + code.patientIntervention + code.reimbursement
+                }, 0)
+              )
+            }, 0)
+            .toString()
+
+          const invoicingDate = toMoment(invoices[0].invoiceDto.invoiceDate).format("MM/YYYY")
+
           return this.newInstance(user, {
             id: uuid,
             invoiceIds: invoices.map(i => i.invoiceDto.id),
@@ -114,16 +128,21 @@ export class IccMessageXApi extends iccMessageApi {
             sent: timeEncode(new Date()),
             fromHealthcarePartyId: hcp.id,
             recipients: [fed.id],
-            recipientsType: "org.taktik.icure.entities.Insurance"
+            recipientsType: "org.taktik.icure.entities.Insurance",
+            metas: {
+              totalAmount,
+              invoicingDate
+            }
           })
         })
         .then(message =>
+          // Fullbase36 and smallBase36 => inversé
           toInvoiceBatch(
             invoices,
             hcp,
-            smallBase36,
-            message.externalRef!!,
             fullBase36,
+            message.externalRef!!,
+            smallBase36,
             this.insuranceApi
           )
             .then(batch =>
@@ -191,6 +210,7 @@ export class IccMessageXApi extends iccMessageApi {
             })
         )
         .catch(err => {
+          console.log(err)
           errors.push(err)
           throw errors
         })
