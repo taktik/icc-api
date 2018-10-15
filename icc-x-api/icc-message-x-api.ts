@@ -6,16 +6,22 @@ import {
   iccInvoiceApi
 } from "../icc-api/iccApi"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
+import { IccDocumentXApi } from "./icc-document-x-api"
 
 import * as _ from "lodash"
 import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
 import { EntityReference, HealthcarePartyDto, ReceiptDto, UserDto } from "../icc-api/model/models"
-import { InvoiceWithPatient, toInvoiceBatch, uuidBase36, uuidBase36Half } from "./utils/efact-util"
+import {
+  InvoiceWithPatient,
+  toInvoiceBatch,
+  getFederaton,
+  uuidBase36,
+  uuidBase36Half
+} from "./utils/efact-util"
 import { timeEncode } from "./utils/formatting-util"
 import { fhcEfactcontrollerApi } from "fhc-api"
 import { EfactSendResponse } from "fhc-api/dist/model/EfactSendResponse"
-import { IccDocumentXApi } from "./icc-document-x-api"
 import { utils } from "./crypto/utils"
 
 export class IccMessageXApi extends iccMessageApi {
@@ -24,6 +30,7 @@ export class IccMessageXApi extends iccMessageApi {
   private entityReferenceApi: iccEntityrefApi
   private receiptApi: iccReceiptApi
   private invoiceApi: iccInvoiceApi
+  private docXApi: IccDocumentXApi
 
   constructor(
     host: string,
@@ -32,7 +39,8 @@ export class IccMessageXApi extends iccMessageApi {
     insuranceApi: iccInsuranceApi,
     entityReferenceApi: iccEntityrefApi,
     receiptApi: iccReceiptApi,
-    invoiceApi: iccInvoiceApi
+    invoiceApi: iccInvoiceApi,
+    docXApi: IccDocumentXApi
   ) {
     super(host, headers)
     this.crypto = crypto
@@ -40,6 +48,7 @@ export class IccMessageXApi extends iccMessageApi {
     this.entityReferenceApi = entityReferenceApi
     this.receiptApi = receiptApi
     this.invoiceApi = invoiceApi
+    this.docXApi = docXApi
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -63,13 +72,11 @@ export class IccMessageXApi extends iccMessageApi {
   sendBatch(
     user: UserDto,
     hcp: HealthcarePartyDto,
-    federationId: string, //uuid for the Insurance
     invoices: Array<InvoiceWithPatient>,
     xFHCKeystoreId: string,
     xFHCTokenId: string,
     xFHCPassPhrase: string,
-    efactApi: fhcEfactcontrollerApi,
-    docXApi: IccDocumentXApi
+    efactApi: fhcEfactcontrollerApi
   ): Promise<models.MessageDto> {
     const uuid = this.crypto.randomUuid()
     const smallBase36 = uuidBase36Half(uuid)
@@ -77,7 +84,7 @@ export class IccMessageXApi extends iccMessageApi {
     const sentDate = +new Date()
     const errors: Array<string> = []
 
-    return this.insuranceApi.getInsurance(federationId).then(fed => {
+    return getFederaton(invoices, this.insuranceApi).then(fed => {
       const prefix = `efact:${hcp.id}:${fed.code}:`
       return this.entityReferenceApi
         .getLatest(prefix)
@@ -106,7 +113,7 @@ export class IccMessageXApi extends iccMessageApi {
             transportGuid: "EFACT:BATCH:" + smallBase36,
             sent: timeEncode(new Date()),
             fromHealthcarePartyId: hcp.id,
-            recipients: [federationId],
+            recipients: [fed.id],
             recipientsType: "org.taktik.icure.entities.Insurance"
           })
         })
@@ -147,11 +154,11 @@ export class IccMessageXApi extends iccMessageApi {
                     )
                   )
                   .then(msg =>
-                    docXApi.newInstance(user, msg, { mainUti: "public.text", name: "920000" })
+                    this.docXApi.newInstance(user, msg, { mainUti: "public.text", name: "920000" })
                   )
-                  .then(doc => docXApi.createDocument(doc))
+                  .then(doc => this.docXApi.createDocument(doc))
                   .then(doc =>
-                    docXApi.setAttachment(
+                    this.docXApi.setAttachment(
                       doc.id!!,
                       undefined /*TODO provide keys for encryption*/,
                       utils.ua2ArrayBuffer(utils.text2ua(res.detail!!))
