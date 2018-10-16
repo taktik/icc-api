@@ -240,11 +240,7 @@ export class IccMessageXApi extends iccMessageApi {
           )
           .then(
             () =>
-              (statuses &
-                ((1 << 15) /*STATUS_SUCCESS*/ |
-                (1 << 16) /*STATUS_WARNING*/ |
-                  (1 << 17))) /*STATUS_ERROR*/ >
-              0
+              ["920999", "920099", "920900"].includes(messageType)
                 ? this.invoiceApi.getInvoices(new ListOfIdsDto({ ids: parent.invoiceIds }))
                 : Promise.resolve([])
           )
