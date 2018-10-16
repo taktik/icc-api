@@ -17,6 +17,9 @@ import { fhcEfactcontrollerApi } from "fhc-api"
 import { EfactSendResponse } from "fhc-api/dist/model/EfactSendResponse"
 import { IccDocumentXApi } from "./icc-document-x-api"
 import { utils } from "./crypto/utils"
+import { Record } from "fhc-api/dist/model/Record"
+import { EfactMessage } from "fhc-api/dist/model/EfactMessage"
+import { EfactMessageReader } from "./utils/efact-reader"
 
 export class IccMessageXApi extends iccMessageApi {
   private crypto: IccCryptoXApi
@@ -58,6 +61,58 @@ export class IccMessageXApi extends iccMessageApi {
       p || {}
     )
     return this.initDelegations(message, null, user)
+  }
+
+  processEfactMessage(
+    user: UserDto,
+    hcp: HealthcarePartyDto,
+    efactMessage: EfactMessage,
+    docXApi: IccDocumentXApi
+  ) {
+    const parsedRecords = new EfactMessageReader(efactMessage).read()
+    const ref = efactMessage.commonOutput.inputReference
+    this.newInstance(user, {
+      // tslint:disable-next-line:no-bitwise
+      status: 1 << 1, // STATUS_EFACT
+      transportGuid: "EFACT:IN:" + ref,
+      fromAddress: "EFACT",
+      sent: timeEncode(new Date()),
+      fromHealthcarePartyId: hcp.id,
+      recipients: [hcp.id],
+      recipientsType: "org.taktik.icure.entities.HealthcareParty",
+      received: +new Date(),
+      subject: efactMessage.detail!!.substr(0, 6)
+    })
+      .then(msg => this.createMessage(msg))
+      .then(msg =>
+        Promise.all([
+          docXApi.newInstance(user, msg, {
+            mainUti: "public.plain-text",
+            name: msg.subject
+          }),
+          docXApi.newInstance(user, msg, {
+            mainUti: "public.json",
+            name: `${msg.subject}_records`
+          })
+        ])
+      )
+      .then(([doc, jsonDoc]) =>
+        Promise.all([docXApi.createDocument(doc), docXApi.createDocument(jsonDoc)])
+      )
+      .then(([doc, jsonDoc]) =>
+        Promise.all([
+          docXApi.setAttachment(
+            doc.id!!,
+            undefined /*TODO provide keys for encryption*/,
+            utils.ua2ArrayBuffer(utils.text2ua(efactMessage.detail!!))
+          ),
+          docXApi.setAttachment(
+            jsonDoc.id!!,
+            undefined /*TODO provide keys for encryption*/,
+            utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(parsedRecords)))
+          )
+        ])
+      )
   }
 
   sendBatch(
