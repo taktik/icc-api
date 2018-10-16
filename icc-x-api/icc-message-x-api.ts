@@ -167,18 +167,36 @@ export class IccMessageXApi extends iccMessageApi {
                     )
                   )
                   .then(msg =>
-                    this.documentXApi.newInstance(user, msg, {
-                      mainUti: "public.text",
-                      name: "920000"
-                    })
+                    Promise.all([
+                      this.documentXApi.newInstance(user, msg, {
+                        mainUti: "public.plain-text",
+                        name: "920000"
+                      }),
+                      this.documentXApi.newInstance(user, msg, {
+                        mainUti: "public.json",
+                        name: "920000_records"
+                      })
+                    ])
                   )
-                  .then(doc => this.documentXApi.createDocument(doc))
-                  .then(doc =>
-                    this.documentXApi.setAttachment(
-                      doc.id!!,
-                      undefined /*TODO provide keys for encryption*/,
-                      utils.ua2ArrayBuffer(utils.text2ua(res.detail!!))
-                    )
+                  .then(([doc, jsonDoc]) =>
+                    Promise.all([
+                      this.documentXApi.createDocument(doc),
+                      this.documentXApi.createDocument(jsonDoc)
+                    ])
+                  )
+                  .then(([doc, jsonDoc]) =>
+                    Promise.all([
+                      this.documentXApi.setAttachment(
+                        doc.id!!,
+                        undefined /*TODO provide keys for encryption*/,
+                        utils.ua2ArrayBuffer(utils.text2ua(res.detail!!))
+                      ),
+                      this.documentXApi.setAttachment(
+                        jsonDoc.id!!,
+                        undefined /*TODO provide keys for encryption*/,
+                        utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.records!!)))
+                      )
+                    ])
                   )
                   .then(() =>
                     this.receiptApi.createReceipt(

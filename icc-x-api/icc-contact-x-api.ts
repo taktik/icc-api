@@ -774,7 +774,7 @@ export class IccContactXApi extends iccContactApi {
             codes: [],
             tags: [],
             content: {},
-            valueDate: parseInt(moment().format("YYYYMMDDhhmmss"))
+            valueDate: parseInt(moment().format("YYYYMMDDHHmmss"))
           },
           s
         )

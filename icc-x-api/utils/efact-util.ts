@@ -117,7 +117,7 @@ function toInvoice(
   // FIXME : coder l'invoice ref
   invoice.invoiceNumber = Number(invoiceDto.invoiceReference) || 0
   // FIXME : coder l'invoice ref
-  invoice.invoiceRef = uuidBase36(invoiceDto.id)
+  invoice.invoiceRef = uuidBase36(invoiceDto.id!!)
   invoice.ioCode = insurance.code!!.substr(0, 3)
   invoice.items = _.map(invoiceDto.invoicingCodes, (invoicingCodeDto: InvoicingCodeDto) => {
     return toInvoiceItem(nihiiHealthcareProvider, patientDto, invoiceDto, invoicingCodeDto)
@@ -152,7 +152,7 @@ function toInvoiceItem(
   invoiceItem.gnotionNihii = invoiceDto.gnotionNihii
   invoiceItem.insuranceRef = invoicingCode.contract
   invoiceItem.insuranceRefDate = invoicingCode.contractDate || invoiceItem.dateCode
-  invoiceItem.invoiceRef = uuidBase36(invoicingCode.id)
+  invoiceItem.invoiceRef = uuidBase36(invoicingCode.id!!)
 
   invoiceItem.override3rdPayerCode = invoicingCode.override3rdPayerCode
   invoiceItem.patientFee = invoicingCode.patientIntervention
