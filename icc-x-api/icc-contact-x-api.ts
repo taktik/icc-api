@@ -323,7 +323,7 @@ export class IccContactXApi extends iccContactApi {
               )
               .then((sfks: Array<string>) => {
                 if (!sfks || !sfks.length) {
-                  console.log("Cannot decrypt contact", ctc.id)
+                  //console.log("Cannot decrypt contact", ctc.id)
                   return Promise.resolve(ctc)
                 }
                 return Promise.all(
@@ -653,7 +653,7 @@ export class IccContactXApi extends iccContactApi {
 
     //Rearrange poaIds and heIds as a hierarchy
     const hierarchyOfHeAndPoaIds: { [key: string]: Array<any> } = {}
-    ;(heIds || []).forEach(id => (hierarchyOfHeAndPoaIds[id] = []))
+    ;(heIds || []).forEach(id => (hierarchyOfHeAndPoaIds[id || "_"] = []))
     Object.keys(poaIds || {}).forEach((k: string) => {
       const poas = hierarchyOfHeAndPoaIds[k]
       if (poas) {
@@ -703,10 +703,12 @@ export class IccContactXApi extends iccContactApi {
           }
         })
 
-    Object.keys(
-      hierarchyOfHeAndPoaIds && hierarchyOfHeAndPoaIds.size ? hierarchyOfHeAndPoaIds : { null: [] }
-    ).forEach((heId: string | null) => {
-      if (heId === "null") {
+    if (!Object.keys(hierarchyOfHeAndPoaIds).length) {
+      hierarchyOfHeAndPoaIds._ = [] //Default is to have at least one option with heId equals to null (represented by _)
+    }
+
+    Object.keys(hierarchyOfHeAndPoaIds).forEach((heId: string | null) => {
+      if (heId === "_") {
         heId = null
       }
       const subPoaIds = heId ? hierarchyOfHeAndPoaIds[heId] : []
@@ -772,7 +774,7 @@ export class IccContactXApi extends iccContactApi {
             codes: [],
             tags: [],
             content: {},
-            valueDate: parseInt(moment().format("YYYYMMDDhhmmss"))
+            valueDate: parseInt(moment().format("YYYYMMDDHHmmss"))
           },
           s
         )

@@ -25,6 +25,12 @@ export class IccBekmehrXApi extends iccBekmehrApi {
       .replace(/^http/, "ws")
       .replace(/:\/\//, "://" + (auth ? atob(auth.data.replace(/Basic /, "")) + "@" : ""))
       .replace(/\/rest\/v.+/, "/ws")
+
+    // FIXME - GPI (Proxi issue)
+    // For dev only ...
+    //let passsord = 'PASSWORD'
+    //let login = 'LOGIN'
+    //this.wssHost = `ws://${login}:${password}@localhost:16043/ws`
   }
 
   socketEventListener(

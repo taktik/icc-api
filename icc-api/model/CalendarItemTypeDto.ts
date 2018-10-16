@@ -22,21 +22,23 @@
  * limitations under the License.
  */
 
-import * as models from './models';
+import * as models from "./models"
 
 export class CalendarItemTypeDto {
   constructor(json: JSON | any) {
     Object.assign(this as CalendarItemTypeDto, json)
   }
+  id?: string
 
-  id?: string;
+  rev?: string
 
-  rev?: string;
+  deletionDate?: number
 
-  name?: string;
+  name?: string
 
-  color?: string;
+  color?: string
 
-  duration?: number;
+  duration?: number
 
+  visit?: boolean
 }

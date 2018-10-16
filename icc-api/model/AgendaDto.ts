@@ -22,22 +22,23 @@
  * limitations under the License.
  */
 
-import * as models from './models';
-import {RightDto} from "./RightDto";
+import * as models from "./models"
 
 export class AgendaDto {
   constructor(json: JSON | any) {
     Object.assign(this as AgendaDto, json)
   }
+  id?: string
 
-  id?: string;
+  rev?: string
 
-  rev?: string;
+  deletionDate?: number
 
-  name?: string;
+  name?: string
 
-  userId?: string;
+  userId?: string
 
-  rights?: Array<RightDto>;
+  events?: Array<models.CalendarItem>
 
+  rights?: Array<models.Right>
 }

@@ -108,6 +108,29 @@ export class iccDocumentApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.DocumentDto(it)))
       .catch(err => this.handleError(err))
   }
+  findByTypeHCPartyMessageSecretFKeys(
+    documentTypeCode?: string,
+    hcPartyId?: string,
+    secretFKeys?: string
+  ): Promise<Array<models.DocumentDto> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/document/byTypeHcPartySecretForeignKeys" +
+      "?ts=" +
+      new Date().getTime() +
+      (documentTypeCode ? "&documentTypeCode=" + documentTypeCode : "") +
+      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
+      (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.DocumentDto(it)))
+      .catch(err => this.handleError(err))
+  }
   findWithoutDelegation(limit?: number): Promise<Array<models.DocumentDto> | any> {
     let _body = null
 
@@ -180,7 +203,7 @@ export class iccDocumentApi {
   setAttachment(
     documentId: string,
     enckeys?: string,
-    body?: Array<string>
+    body?: ArrayBuffer
   ): Promise<models.DocumentDto | any> {
     let _body = null
     _body = body

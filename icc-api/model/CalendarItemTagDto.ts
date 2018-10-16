@@ -22,19 +22,17 @@
  * limitations under the License.
  */
 
-import * as models from './models';
+import * as models from "./models"
 
 export class CalendarItemTagDto {
   constructor(json: JSON | any) {
     Object.assign(this as CalendarItemTagDto, json)
   }
+  code?: string
 
-  code?: string;
+  date?: number
 
-  date?: number; //YYYYMMDDHHMMSS
+  userId?: string
 
-  userId?: string;
-
-  userName?: string;
-
+  userName?: string
 }
