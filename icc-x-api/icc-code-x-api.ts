@@ -98,7 +98,7 @@ export class IccCodeXApi extends iccCodeApi {
 
   // noinspection JSMethodCanBeStatic, JSUnusedGlobalSymbols
   normalize(c: CodeDto | string) {
-    return typeof c === 'string'
+    return typeof c === "string"
       ? {
           id: c,
           type: c.split(/\|/)[0],
