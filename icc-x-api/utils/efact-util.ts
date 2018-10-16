@@ -64,8 +64,9 @@ export function toInvoiceBatch(
             }
             return toInvoice(hcp.nihii!!, invWithPat.invoiceDto, invWithPat.patientDto, ins)
           })
-          invoicesBatch.invoicingMonth = moment(invoices[0].invoiceDto.invoiceDate).month() + 1
-          invoicesBatch.invoicingYear = moment(invoices[0].invoiceDto.invoiceDate).year()
+          invoicesBatch.invoicingMonth =
+            toMoment(invoices[0].invoiceDto.invoiceDate!!)!!.month() + 1
+          invoicesBatch.invoicingYear = toMoment(invoices[0].invoiceDto.invoiceDate!!)!!.year()
           invoicesBatch.ioFederationCode = fedCodes[0]
           invoicesBatch.numericalRef =
             invoicesBatch.invoicingYear * 1000000 +
