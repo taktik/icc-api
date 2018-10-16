@@ -159,7 +159,7 @@ export interface File920900Data {
     et80: ET80Data
   }>
   et90: ET90Data
-  et91: ET91Data
+  et91: Array<ET91Data>
   et92: ET92Data
 }
 
@@ -245,8 +245,11 @@ export class EfactMessageReader {
       }
       const et90 = this.readET90(rawRecords[i])
       i++
-      const et91 = this.readET91(rawRecords[i])
-      i++
+      let et91s = [];
+      while (rawRecords[i].zones!![0].value === "91") {
+        et91s.push(this.readET91(rawRecords[i]))
+        i++
+      }
       const et92 = this.readET92(rawRecords[i])
       i++
 
@@ -260,7 +263,7 @@ export class EfactMessageReader {
         et10,
         records,
         et90,
-        et91,
+        et91: et91s,
         et92
       }
     } catch (err) {
