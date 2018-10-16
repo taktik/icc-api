@@ -117,7 +117,7 @@ export class IccMessageXApi extends iccMessageApi {
       throw new Error("Invalid tack")
     }
 
-    this.receiptApi
+    return this.receiptApi
       .createReceipt(
         new ReceiptDto({
           references: [
