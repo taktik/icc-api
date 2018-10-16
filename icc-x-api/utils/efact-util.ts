@@ -194,14 +194,20 @@ export function uuidBase36Half(uuid: string): string {
   return _.padStart(rawEndcode, 13, "0")
 }
 
-export function decodeBase36Uuid(base36: string): string {
-  const decoded: string = base36UUID.decode(base36)
-  if (base36.length !== 13) {
-    return decoded
-  } else {
-    const truncated = decoded.substr(19, decoded.length)
-    const raw = truncated.replace(/-/g, "")
-    const formatted = raw.substr(0, 8) + "-" + raw.substring(8, 12) + "-" + raw.substring(12, 16)
-    return formatted
+export function decodeBase36Uuid(base36: string): string | null {
+  try {
+    const decoded: string = base36UUID.decode(base36)
+    if (base36.length !== 13) {
+      return decoded
+    } else {
+      const truncated = decoded.substr(19, decoded.length)
+      const raw = truncated.replace(/-/g, "")
+      const formatted = raw.substr(0, 8) + "-" + raw.substring(8, 12) + "-" + raw.substring(12, 16)
+      return formatted
+    }
+  } catch (e) {
+    console.log("Cannot interpret: " + base36, e)
   }
+
+  return null
 }

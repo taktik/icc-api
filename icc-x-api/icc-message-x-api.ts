@@ -85,7 +85,7 @@ export class IccMessageXApi extends iccMessageApi {
     return this.initDelegations(message, null, user)
   }
 
-  extractErrorMessage(es?: { itemId: string; error?: ErrorDetail }): string | undefined {
+  extractErrorMessage(es?: { itemId: string | null; error?: ErrorDetail }): string | undefined {
     const e = es && es.error
     return e &&
       (e.rejectionCode1 ||
@@ -215,7 +215,7 @@ export class IccMessageXApi extends iccMessageApi {
       (["920999"].includes(messageType) ? 1 << 12 /*STATUS_REJECTED*/ : 0) |
       (["920900", "920098", "920099"].includes(messageType) ? 1 << 17 /*STATUS_ACCEPTED*/ : 0)
 
-    const invoicingErrors: Array<{ itemId: string; error?: ErrorDetail }> =
+    const invoicingErrors: Array<{ itemId: string | null; error?: ErrorDetail }> =
       messageType === "920900"
         ? _.compact(
             _.flatMap((parsedRecords as File920900Data).records, r =>
