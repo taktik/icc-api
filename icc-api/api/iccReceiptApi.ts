@@ -136,7 +136,7 @@ export class iccReceiptApi {
     receiptId: string,
     blobType: string,
     enckeys?: string,
-    body?: Array<string>
+    body?: ArrayBuffer
   ): Promise<models.ReceiptDto | any> {
     let _body = null
     _body = body
