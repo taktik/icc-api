@@ -166,8 +166,10 @@ export interface File920900Data {
 export interface File920999Data {
   zone200: Zone200Data
   zone300: Zone300Data
-  zone400: Zone400Data | undefined
-  zone500: Zone500Data | undefined
+  et95: Array<
+    Zone400Data | undefined
+  >
+  et96: Zone500Data | undefined
 }
 
 export class EfactMessageReader {
@@ -274,13 +276,14 @@ export class EfactMessageReader {
 
       const zone200 = this.readZone200(rawRecords[i++])
       const zone300 = this.readZone300(rawRecords[i++])
-      let zone400 = null;
-      if(rawRecords[i].zones!![0].value === "95"){
-        zone400=this.readZone400(rawRecords[i++])
+      let et95= []
+      while(rawRecords[i].zones!![0].value === "95"){
+        const zone400=this.readZone400(rawRecords[i++])
+        et95.push(zone400);
       }
-      let zone500 = null;
+      let et96;
       if(rawRecords[i].zones!![0].value === "96"){
-        zone500=this.readZone500(rawRecords[i++])
+        et96=this.readZone500(rawRecords[i++])
       }
 
       if (rawRecords.length !== i) {
@@ -290,8 +293,8 @@ export class EfactMessageReader {
       return {
         zone200,
         zone300,
-        zone400,
-        zone500
+        et95,
+        et96
       }
     } catch (err) {
       console.error(err, "Cannot parse message", this.message)
@@ -1614,7 +1617,7 @@ export class EfactMessageReader {
     }
   }
 
-  private readZone500(zone500: Record): Zone400Data {
+  private readZone500(zone500: Record): Zone500Data {
     let i = 0
     this.log("Type", zone500.zones!![i++].value)
     this.log("Code d'erreur",zone500.zones!![i++].value)
