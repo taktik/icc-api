@@ -63,15 +63,18 @@ export class iccBedrugsApi {
       (types ? "&types=" + types : "") +
       (first ? "&first=" + first : "") +
       (count ? "&count=" + count : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.FullTextSearchResult(it)))
       .catch(err => this.handleError(err))
   }
   getCheapAlternativesBasedOnAtc(
     medecinePackageId: string,
     lang: string
-  ): Promise<Array<models.MpPreview> | any> {
+  ): Promise<Array<models.MppPreview> | any> {
     let _body = null
 
     const _url =
@@ -81,9 +84,12 @@ export class iccBedrugsApi {
         .replace("{lang}", lang + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.MpPreview(it)))
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.MppPreview(it)))
       .catch(err => this.handleError(err))
   }
   getCheapAlternativesBasedOnInn(
@@ -99,8 +105,11 @@ export class iccBedrugsApi {
         .replace("{lang}", lang + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.MppPreview(it)))
       .catch(err => this.handleError(err))
   }
@@ -114,8 +123,11 @@ export class iccBedrugsApi {
         .replace("{lang}", lang + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.DocPreview(it)))
       .catch(err => this.handleError(err))
   }
@@ -129,8 +141,11 @@ export class iccBedrugsApi {
         .replace("{lang}", lang + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.MpPreview(it)))
       .catch(err => this.handleError(err))
   }
@@ -144,8 +159,11 @@ export class iccBedrugsApi {
         .replace("{lang}", lang + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.DocPreview(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -157,8 +175,11 @@ export class iccBedrugsApi {
       "/be_drugs/doc/{docId}/{lang}".replace("{docId}", docId + "").replace("{lang}", lang + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.DocPreview(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -175,8 +196,11 @@ export class iccBedrugsApi {
         .replace("{lang}", lang + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.MpExtendedInfos(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -193,8 +217,11 @@ export class iccBedrugsApi {
         .replace("{lang}", lang + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.MpFullInfos(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -217,8 +244,11 @@ export class iccBedrugsApi {
       (types ? "&types=" + types : "") +
       (first ? "&first=" + first : "") +
       (count ? "&count=" + count : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.MppPreview(it)))
       .catch(err => this.handleError(err))
   }
@@ -237,8 +267,11 @@ export class iccBedrugsApi {
         .replace("{otherCnks}", otherCnks + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.IamFullInfos(it)))
       .catch(err => this.handleError(err))
   }
@@ -261,8 +294,11 @@ export class iccBedrugsApi {
       (types ? "&types=" + types : "") +
       (first ? "&first=" + first : "") +
       (count ? "&count=" + count : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.MppPreview(it)))
       .catch(err => this.handleError(err))
   }
@@ -285,8 +321,11 @@ export class iccBedrugsApi {
       (types ? "&types=" + types : "") +
       (first ? "&first=" + first : "") +
       (count ? "&count=" + count : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.MppPreview(it)))
       .catch(err => this.handleError(err))
   }
@@ -300,8 +339,11 @@ export class iccBedrugsApi {
         .replace("{lang}", lang + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.MpPreview(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -315,8 +357,11 @@ export class iccBedrugsApi {
         .replace("{lang}", lang + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.MppInfos(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -330,8 +375,11 @@ export class iccBedrugsApi {
         .replace("{lang}", lang + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.DocPreview(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -343,8 +391,11 @@ export class iccBedrugsApi {
       "/be_drugs/doc/{lang}".replace("{lang}", lang + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.DocPreview(it)))
       .catch(err => this.handleError(err))
   }

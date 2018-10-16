@@ -55,8 +55,11 @@ export class iccContactApi {
       new Date().getTime() +
       (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
       (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.ContactDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -65,8 +68,11 @@ export class iccContactApi {
     _body = body
 
     const _url = this.host + "/contact" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.ContactDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -78,8 +84,11 @@ export class iccContactApi {
       "/contact/{contactIds}".replace("{contactIds}", contactIds + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("DELETE", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("DELETE", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
       .catch(err => this.handleError(err))
   }
@@ -100,8 +109,11 @@ export class iccContactApi {
       (startKey ? "&startKey=" + startKey : "") +
       (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
       (limit ? "&limit=" + limit : "")
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.ContactPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -122,8 +134,11 @@ export class iccContactApi {
       (startKey ? "&startKey=" + startKey : "") +
       (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
       (limit ? "&limit=" + limit : "")
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.ServicePaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -140,8 +155,11 @@ export class iccContactApi {
       new Date().getTime() +
       (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
       (formId ? "&formId=" + formId : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.ContactDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -158,8 +176,11 @@ export class iccContactApi {
       "?ts=" +
       new Date().getTime() +
       (hcPartyId ? "&hcPartyId=" + hcPartyId : "")
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.ContactDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -180,8 +201,11 @@ export class iccContactApi {
       (secretFKeys ? "&secretFKeys=" + secretFKeys : "") +
       (planOfActionIds ? "&planOfActionIds=" + planOfActionIds : "") +
       (skipClosedContacts ? "&skipClosedContacts=" + skipClosedContacts : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.ContactDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -198,8 +222,11 @@ export class iccContactApi {
       new Date().getTime() +
       (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
       (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.ContactDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -211,8 +238,11 @@ export class iccContactApi {
       "/contact/{contactId}".replace("{contactId}", contactId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.ContactDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -221,8 +251,11 @@ export class iccContactApi {
     _body = body
 
     const _url = this.host + "/contact/byIds" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.ContactDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -230,9 +263,33 @@ export class iccContactApi {
     let _body = null
 
     const _url = this.host + "/contact/service/content/empty" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.ContentDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+  getServiceCodesOccurences(
+    codeType: string,
+    minOccurences: number
+  ): Promise<Array<models.LabelledOccurenceDto> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/contact/service/codes/{codeType}/{minOccurences}"
+        .replace("{codeType}", codeType + "")
+        .replace("{minOccurences}", minOccurences + "") +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.LabelledOccurenceDto(it)))
       .catch(err => this.handleError(err))
   }
   getServiceLabelsOccurences(
@@ -245,8 +302,11 @@ export class iccContactApi {
       "/contact/service/labels/{minOccurences}".replace("{minOccurences}", minOccurences + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.LabelledOccurenceDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -255,8 +315,11 @@ export class iccContactApi {
     _body = body
 
     const _url = this.host + "/contact/match" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
       .catch(err => this.handleError(err))
   }
@@ -265,8 +328,11 @@ export class iccContactApi {
     _body = body
 
     const _url = this.host + "/contact" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.ContactDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -279,8 +345,11 @@ export class iccContactApi {
       "/contact/{contactId}/delegate".replace("{contactId}", contactId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.ContactDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -289,8 +358,11 @@ export class iccContactApi {
     _body = body
 
     const _url = this.host + "/contact/delegations" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
       .catch(err => this.handleError(err))
   }

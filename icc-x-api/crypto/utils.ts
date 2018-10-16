@@ -16,6 +16,17 @@ export class UtilsClass {
     return ua
   }
 
+  ua2ArrayBuffer(ua: Uint8Array): ArrayBuffer {
+    const buffer = ua.buffer
+    return (buffer.byteLength > ua.byteLength
+      ? buffer.slice(0, ua.byteLength)
+      : buffer) as ArrayBuffer
+  }
+
+  base64toArrayBuffer(s: string) {
+    return this.ua2ArrayBuffer(this.text2ua(atob(s)))
+  }
+
   /**
    * Hex String to Uint8Array
    *
@@ -331,7 +342,7 @@ export class UtilsClass {
     if (epochOrLongCalendar >= 18000101 && epochOrLongCalendar < 25400000) {
       return moment("" + epochOrLongCalendar, "YYYYMMDD")
     } else if (epochOrLongCalendar >= 18000101000000) {
-      return moment("" + epochOrLongCalendar, "YYYYMMDDhhmmss")
+      return moment("" + epochOrLongCalendar, "YYYYMMDDHHmmss")
     } else {
       return moment(epochOrLongCalendar)
     }

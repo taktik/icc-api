@@ -29,7 +29,9 @@ export class IccCryptoXApi {
       c =>
         (
           Number(c) ^
-          ((window.crypto.getRandomValues(new Uint8Array(1))! as Uint8Array)[0] &
+          (((typeof window === "undefined" ? self : window).crypto.getRandomValues(
+            new Uint8Array(1)
+          )! as Uint8Array)[0] &
             (15 >> (Number(c) / 4)))
         ).toString(16) //Keep that inlined or you will loose the random
     )
@@ -49,38 +51,41 @@ export class IccCryptoXApi {
       return Promise.resolve(res)
     } else {
       const keyPair = this.RSA.rsaKeyPairs[hcPartyKeyOwner]
-      if (!keyPair) {
-        const keyPairInJwk = this.RSA.loadKeyPairNotImported(hcPartyKeyOwner)
-        if (!keyPairInJwk) {
-          throw "No RSA private key for Healthcare party(" + hcPartyKeyOwner + ")."
-        }
-        // import the jwk formatted key
-        return this.RSA.importKeyPair("jwk", keyPairInJwk.privateKey, "jwk", keyPairInJwk.publicKey)
-          .then(importedKeyPair => {
-            const keyPair = (this.RSA.rsaKeyPairs[hcPartyKeyOwner] = importedKeyPair)
-            // Obtaining the AES Key by decrypting the HcpartyKey
-            return this.RSA.decrypt(keyPair.privateKey, this.utils.hex2ua(encryptedHcPartyKey))
-          })
-          .then(decryptedHcPartyKey => this.AES.importKey("raw", decryptedHcPartyKey))
-          .then(
-            decryptedImportedHcPartyKey =>
-              (this.hcPartyKeysCache[cacheKey] = {
-                delegatorId: delegatorId,
-                key: decryptedImportedHcPartyKey
-              })
+      return (keyPair
+        ? Promise.resolve(keyPair)
+        : Promise.resolve(this.RSA.loadKeyPairNotImported(hcPartyKeyOwner)).then(keyPairInJwk =>
+            this.cacheKeyPair(keyPairInJwk, hcPartyKeyOwner)
           )
-      } else {
-        return this.RSA.decrypt(keyPair.privateKey, this.utils.hex2ua(encryptedHcPartyKey))
-          .then(decryptedHcPartyKey => this.AES.importKey("raw", decryptedHcPartyKey))
-          .then(
-            decryptedImportedHcPartyKey =>
-              (this.hcPartyKeysCache[cacheKey] = {
-                delegatorId: delegatorId,
-                key: decryptedImportedHcPartyKey
-              })
-          )
-      }
+      )
+        .then(keyPair =>
+          this.RSA.decrypt(keyPair.privateKey, this.utils.hex2ua(encryptedHcPartyKey))
+        )
+        .then(decryptedHcPartyKey => this.AES.importKey("raw", decryptedHcPartyKey))
+        .then(
+          decryptedImportedHcPartyKey =>
+            (this.hcPartyKeysCache[cacheKey] = {
+              delegatorId: delegatorId,
+              key: decryptedImportedHcPartyKey
+            })
+        )
     }
+  }
+
+  cacheKeyPair(
+    keyPairInJwk: { publicKey: JsonWebKey | ArrayBuffer; privateKey: JsonWebKey | ArrayBuffer },
+    hcPartyKeyOwner: string
+  ) {
+    if (!keyPairInJwk) {
+      throw "No RSA private key for Healthcare party(" + hcPartyKeyOwner + ")."
+    }
+    return this.RSA.importKeyPair(
+      "jwk",
+      keyPairInJwk.privateKey,
+      "jwk",
+      keyPairInJwk.publicKey
+    ).then(importedKeyPair => {
+      return (this.RSA.rsaKeyPairs[hcPartyKeyOwner] = importedKeyPair)
+    })
   }
 
   decryptAndImportAesHcPartyKeysForDelegators(
@@ -271,10 +276,9 @@ export class IccCryptoXApi {
   }> {
     const secretId = this.randomUuid()
     return this.hcpartyBaseApi
-      .getHealthcareParty(ownerId)
-      .then(owner => owner.hcPartyKeys[ownerId][0])
+      .getHcPartyKeysForDelegate(ownerId)
       .then(encryptedHcPartyKey =>
-        this.decryptHcPartyKey(ownerId, ownerId, encryptedHcPartyKey, true)
+        this.decryptHcPartyKey(ownerId, ownerId, encryptedHcPartyKey[ownerId], true)
       )
       .then(importedAESHcPartyKey =>
         this.AES.encrypt(
@@ -376,13 +380,45 @@ export class IccCryptoXApi {
       | models.ContactDto
       | models.DocumentDto
       | models.InvoiceDto
-      | models.HealthElementDto,
+      | models.HealthElementDto
+      | null,
     hcpartyId: string
   ): Promise<Array<string>> {
+    if (!document) {
+      return Promise.resolve([])
+    }
     const dels = document.delegations
     if (!dels || !dels[hcpartyId] || dels[hcpartyId].length <= 0) {
       console.log(
         "There is no delegation for this healthcare party (" +
+          hcpartyId +
+          ") in document (" +
+          document.id +
+          ")"
+      )
+      return Promise.resolve([])
+    }
+    return this.extractSfks(hcpartyId, document.id!, dels)
+  }
+             
+   extractCryptedFKs(
+    document:
+      | models.PatientDto
+      | models.MessageDto
+      | models.ContactDto
+      | models.DocumentDto
+      | models.InvoiceDto
+      | models.HealthElementDto
+      | null,
+    hcpartyId: string
+  ): Promise<Array<string>> {
+    if (!document) {
+      return Promise.resolve([])
+    }
+    const dels = document.cryptedForeignKeys
+    if (!dels || !dels[hcpartyId] || dels[hcpartyId].length <= 0) {
+      console.log(
+        "There is no cryptedForeignKeys for this healthcare party (" +
           hcpartyId +
           ") in document (" +
           document.id +
@@ -440,7 +476,7 @@ export class IccCryptoXApi {
     masterId: string
   ): Promise<Array<string>> {
     const decryptPromises: Array<Promise<string>> = []
-    for (var i = 0; i < delegationsArray.length; i++) {
+    for (var i = 0; i < (delegationsArray || []).length; i++) {
       var delegation = delegationsArray[i]
 
       decryptPromises.push(
@@ -561,5 +597,24 @@ export class IccCryptoXApi {
         )
         .then(() => this.hcpartyBaseApi.modifyHealthcareParty(owner))
     )
+  }
+
+  checkPrivateKeyValidity(hcp: models.HealthcarePartyDto): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
+      this.RSA.importKey("jwk", utils.spkiToJwk(utils.hex2ua(hcp.publicKey!)), ["encrypt"])
+        .then(k => this.RSA.encrypt(k, this.utils.utf82ua("shibboleth")))
+        .then(cipher => {
+          const kp = this.RSA.loadKeyPairNotImported(hcp.id!)
+          return this.RSA.importKeyPair("jwk", kp.privateKey, "jwk", kp.publicKey).then(ikp =>
+            this.RSA.decrypt(ikp.privateKey, new Uint8Array(cipher))
+          )
+        })
+        .then(plainText => {
+          const pt = this.utils.ua2utf8(plainText)
+          console.log(pt)
+          resolve(pt === "shibboleth")
+        })
+        .catch(() => resolve(false))
+    })
   }
 }

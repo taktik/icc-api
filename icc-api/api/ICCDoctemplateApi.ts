@@ -49,8 +49,11 @@ export class iccDoctemplateApi {
     _body = body
 
     const _url = this.host + "/doctemplate" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.DocumentTemplateDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -58,8 +61,11 @@ export class iccDoctemplateApi {
     let _body = null
 
     const _url = this.host + "/doctemplate/find/all" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.DocumentTemplateDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -67,8 +73,53 @@ export class iccDoctemplateApi {
     let _body = null
 
     const _url = this.host + "/doctemplate" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.DocumentTemplateDto(it)))
+      .catch(err => this.handleError(err))
+  }
+  findDocumentTemplatesByDocumentType(
+    documentTypeCode: string
+  ): Promise<Array<models.DocumentTemplateDto> | any> {
+    let _body = null
 
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    const _url =
+      this.host +
+      "/doctemplate/byDocumentType/{documentTypeCode}".replace(
+        "{documentTypeCode}",
+        documentTypeCode + ""
+      ) +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.DocumentTemplateDto(it)))
+      .catch(err => this.handleError(err))
+  }
+  findDocumentTemplatesByDocumentTypeForCurrentUser(
+    documentTypeCode: string
+  ): Promise<Array<models.DocumentTemplateDto> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/doctemplate/byDocumentTypeForCurrentUser/{documentTypeCode}".replace(
+        "{documentTypeCode}",
+        documentTypeCode + ""
+      ) +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.DocumentTemplateDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -82,8 +133,11 @@ export class iccDoctemplateApi {
       "/doctemplate/bySpecialty/{specialityCode}".replace("{specialityCode}", specialityCode + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.DocumentTemplateDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -97,8 +151,29 @@ export class iccDoctemplateApi {
         .replace("{attachmentId}", attachmentId + "") +
       "?ts=" +
       new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .catch(err => this.handleError(err))
+  }
+  getAttachmentText(documentTemplateId: string, attachmentId: string): Promise<any | Boolean> {
+    let _body = null
 
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    const _url =
+      this.host +
+      "/doctemplate/{documentTemplateId}/attachmentText/{attachmentId}"
+        .replace("{documentTemplateId}", documentTemplateId + "")
+        .replace("{attachmentId}", attachmentId + "") +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
       .catch(err => this.handleError(err))
   }
@@ -110,8 +185,11 @@ export class iccDoctemplateApi {
       "/doctemplate/{documentTemplateId}".replace("{documentTemplateId}", documentTemplateId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.DocumentTemplateDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -130,8 +208,34 @@ export class iccDoctemplateApi {
       ) +
       "?ts=" +
       new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/octet-stream"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
+      .then(doc => new models.DocumentTemplateDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+  setAttachmentJson(
+    documentTemplateId: string,
+    body?: models.ByteArrayDto
+  ): Promise<models.DocumentTemplateDto | any> {
+    let _body = null
+    _body = body
 
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    const _url =
+      this.host +
+      "/doctemplate/{documentTemplateId}/attachmentJson".replace(
+        "{documentTemplateId}",
+        documentTemplateId + ""
+      ) +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.DocumentTemplateDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -147,8 +251,11 @@ export class iccDoctemplateApi {
       "/doctemplate/{documentTemplateId}".replace("{documentTemplateId}", documentTemplateId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.DocumentTemplateDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }

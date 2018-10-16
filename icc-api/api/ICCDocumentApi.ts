@@ -47,8 +47,11 @@ export class iccDocumentApi {
     _body = body
 
     const _url = this.host + "/document" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.DocumentDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -60,8 +63,11 @@ export class iccDocumentApi {
       "/document/{documentId}/attachment".replace("{documentId}", documentId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("DELETE", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("DELETE", _url, headers, _body)
       .then(doc => new models.DocumentDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -73,8 +79,11 @@ export class iccDocumentApi {
       "/document/{documentIds}".replace("{documentIds}", documentIds + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("DELETE", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("DELETE", _url, headers, _body)
       .then(doc => new models.DocumentDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -91,8 +100,34 @@ export class iccDocumentApi {
       new Date().getTime() +
       (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
       (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.DocumentDto(it)))
+      .catch(err => this.handleError(err))
+  }
+  findByTypeHCPartyMessageSecretFKeys(
+    documentTypeCode?: string,
+    hcPartyId?: string,
+    secretFKeys?: string
+  ): Promise<Array<models.DocumentDto> | any> {
+    let _body = null
 
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    const _url =
+      this.host +
+      "/document/byTypeHcPartySecretForeignKeys" +
+      "?ts=" +
+      new Date().getTime() +
+      (documentTypeCode ? "&documentTypeCode=" + documentTypeCode : "") +
+      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
+      (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.DocumentDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -105,12 +140,19 @@ export class iccDocumentApi {
       "?ts=" +
       new Date().getTime() +
       (limit ? "&limit=" + limit : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.DocumentDto(it)))
       .catch(err => this.handleError(err))
   }
-  getAttachment(documentId: string, attachmentId: string, sfks?: string): Promise<any | Boolean> {
+  getAttachment(
+    documentId: string,
+    attachmentId: string,
+    enckeys?: string
+  ): Promise<any | Boolean> {
     let _body = null
 
     const _url =
@@ -120,9 +162,12 @@ export class iccDocumentApi {
         .replace("{attachmentId}", attachmentId + "") +
       "?ts=" +
       new Date().getTime() +
-      (sfks ? "&sfks=" + sfks : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+      (enckeys ? "&enckeys=" + enckeys : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
       .catch(err => this.handleError(err))
   }
@@ -134,8 +179,11 @@ export class iccDocumentApi {
       "/document/{documentId}".replace("{documentId}", documentId + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.DocumentDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -144,12 +192,19 @@ export class iccDocumentApi {
     _body = body
 
     const _url = this.host + "/document" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.DocumentDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  setAttachment(documentId: string, body?: Array<string>): Promise<models.DocumentDto | any> {
+  setAttachment(
+    documentId: string,
+    enckeys?: string,
+    body?: ArrayBuffer
+  ): Promise<models.DocumentDto | any> {
     let _body = null
     _body = body
 
@@ -157,14 +212,19 @@ export class iccDocumentApi {
       this.host +
       "/document/{documentId}/attachment".replace("{documentId}", documentId + "") +
       "?ts=" +
-      new Date().getTime()
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+      new Date().getTime() +
+      (enckeys ? "&enckeys=" + enckeys : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/octet-stream"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.DocumentDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
   setAttachmentMulti(
     documentId: string,
+    enckeys?: string,
     attachment?: Array<string>
   ): Promise<models.DocumentDto | any> {
     let _body = null
@@ -177,9 +237,13 @@ export class iccDocumentApi {
       this.host +
       "/document/{documentId}/attachment/multipart".replace("{documentId}", documentId + "") +
       "?ts=" +
-      new Date().getTime()
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+      new Date().getTime() +
+      (enckeys ? "&enckeys=" + enckeys : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "multipart/form-data"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.DocumentDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -188,8 +252,11 @@ export class iccDocumentApi {
     _body = body
 
     const _url = this.host + "/document/delegations" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
       .catch(err => this.handleError(err))
   }

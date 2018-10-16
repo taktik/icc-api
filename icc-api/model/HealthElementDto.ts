@@ -60,6 +60,8 @@ export class HealthElementDto {
 
   descr?: string
 
+  note?: string
+
   relevant?: boolean
 
   valueDate?: number

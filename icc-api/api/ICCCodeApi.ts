@@ -47,8 +47,11 @@ export class iccCodeApi {
     _body = body
 
     const _url = this.host + "/code" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("POST", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.CodeDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -62,8 +65,11 @@ export class iccCodeApi {
       new Date().getTime() +
       (region ? "&region=" + region : "") +
       (type ? "&type=" + type : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
       .catch(err => this.handleError(err))
   }
@@ -84,8 +90,11 @@ export class iccCodeApi {
       (type ? "&type=" + type : "") +
       (code ? "&code=" + code : "") +
       (version ? "&version=" + version : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.CodeDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -110,8 +119,11 @@ export class iccCodeApi {
       (version ? "&version=" + version : "") +
       (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
       (limit ? "&limit=" + limit : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.CodePaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -134,12 +146,15 @@ export class iccCodeApi {
       (region ? "&region=" + region : "") +
       (types ? "&types=" + types : "") +
       (language ? "&language=" + language : "") +
-      (label ? "&label=" + encodeURIComponent(label) : "") +
-      (startKey ? "&startKey=" + encodeURIComponent(startKey) : "") +
-      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(startDocumentId) : "") +
+      (label ? "&label=" + label : "") +
+      (startKey ? "&startKey=" + startKey : "") +
+      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
       (limit ? "&limit=" + limit : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.CodePaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -153,8 +168,11 @@ export class iccCodeApi {
       new Date().getTime() +
       (region ? "&region=" + region : "") +
       (type ? "&type=" + type : "")
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
       .catch(err => this.handleError(err))
   }
@@ -163,8 +181,11 @@ export class iccCodeApi {
 
     const _url =
       this.host + "/code/{codeId}".replace("{codeId}", codeId + "") + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.CodeDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -179,8 +200,11 @@ export class iccCodeApi {
         .replace("{version}", version + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.CodeDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -192,8 +216,11 @@ export class iccCodeApi {
       "/code/byIds/{codeIds}".replace("{codeIds}", codeIds + "") +
       "?ts=" +
       new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.CodeDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -202,8 +229,11 @@ export class iccCodeApi {
     _body = body
 
     const _url = this.host + "/code" + "?ts=" + new Date().getTime()
-
-    return XHR.sendCommand("PUT", _url, this.headers, _body)
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.CodeDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }

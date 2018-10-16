@@ -46,6 +46,8 @@ export class SubContactDto {
 
   healthElementId?: string
 
+  classificationId?: string
+
   created?: number
 
   modified?: number

@@ -105,129 +105,148 @@ export class IccPatientXApi extends iccPatientApi {
           ? this.crypto.extractEncryptionsSKs(p, ownerId)
           : Promise.resolve([])
 
-      return Promise.all([psfksPromise, peksPromise]).then(([psfks, peks]) =>
-        Promise.all([
-          this.helementApi.findDelegationsStubsByHCPartyPatientSecretFKeys(
-            ownerId,
-            psfks.join(",")
-          ) as Promise<Array<models.IcureStubDto>>,
-          this.contactApi.findBy(ownerId, p) as Promise<Array<models.ContactDto>>,
-          this.invoiceApi.findDelegationsStubsByHCPartyPatientSecretFKeys(
-            ownerId,
-            psfks.join(",")
-          ) as Promise<Array<models.IcureStubDto>>
-        ]).then(([hes, ctcs, ivs]) => {
-          const ctcsStubs = ctcs.map(c => ({
-            id: c.id,
-            rev: c.rev,
-            delegations: c.delegations,
-            cryptedForeignKeys: c.cryptedForeignKeys,
-            encryptionKeys: c.encryptionKeys
-          }))
-          const docIds: { [key: string]: number } = {}
-          ctcs.forEach(
-            (c: models.ContactDto) =>
-              c.services &&
-              c.services.forEach(
-                s =>
-                  s.content &&
-                  Object.values(s.content).forEach(c => c.documentId && (docIds[c.documentId] = 1))
-              )
-          )
-
-          return Promise.all(
-            Object.keys(docIds).map(dId => this.documentApi.getDocument(dId))
-          ).then(docs => {
-            let markerPromise: Promise<any> = Promise.resolve(null)
-            delegateIds.forEach(delegateId => {
-              this.crypto.addDelegationsAndEncryptionKeys(
-                null,
-                p,
-                ownerId,
-                delegateId,
-                psfks[0],
-                peks[0]
-              )
-              hes.forEach(
-                x =>
-                  (markerPromise = markerPromise.then(() =>
-                    Promise.all([
-                      this.crypto.extractDelegationsSFKs(x, ownerId),
-                      this.crypto.extractEncryptionsSKs(x, ownerId)
-                    ]).then(([sfks, eks]) =>
-                      this.crypto.addDelegationsAndEncryptionKeys(
-                        p,
-                        x,
-                        ownerId,
-                        delegateId,
-                        sfks[0],
-                        eks[0]
-                      )
+      return Promise.all([psfksPromise, peksPromise]).then(
+        ([psfks, peks]) =>
+          psfks.length
+            ? Promise.all([
+                this.helementApi.findDelegationsStubsByHCPartyPatientSecretFKeys(
+                  ownerId,
+                  psfks.join(",")
+                ) as Promise<Array<models.IcureStubDto>>,
+                this.contactApi.findBy(ownerId, p) as Promise<Array<models.ContactDto>>,
+                this.invoiceApi.findDelegationsStubsByHCPartyPatientSecretFKeys(
+                  ownerId,
+                  psfks.join(",")
+                ) as Promise<Array<models.IcureStubDto>>
+              ]).then(([hes, ctcs, ivs]) => {
+                const ctcsStubs = ctcs.map(c => ({
+                  id: c.id,
+                  rev: c.rev,
+                  delegations: c.delegations,
+                  cryptedForeignKeys: c.cryptedForeignKeys,
+                  encryptionKeys: c.encryptionKeys
+                }))
+                const docIds: { [key: string]: number } = {}
+                ctcs.forEach(
+                  (c: models.ContactDto) =>
+                    c.services &&
+                    c.services.forEach(
+                      s =>
+                        s.content &&
+                        Object.values(s.content).forEach(
+                          c => c.documentId && (docIds[c.documentId] = 1)
+                        )
                     )
-                  ))
-              )
-              ctcsStubs.forEach(
-                x =>
-                  (markerPromise = markerPromise.then(() =>
-                    Promise.all([
-                      this.crypto.extractDelegationsSFKs(x, ownerId),
-                      this.crypto.extractEncryptionsSKs(x, ownerId)
-                    ]).then(([sfks, eks]) =>
-                      this.crypto.addDelegationsAndEncryptionKeys(
-                        p,
-                        x,
-                        ownerId,
-                        delegateId,
-                        sfks[0],
-                        eks[0]
-                      )
-                    )
-                  ))
-              )
-              ivs.forEach(
-                x =>
-                  (markerPromise = markerPromise.then(() =>
-                    Promise.all([
-                      this.crypto.extractDelegationsSFKs(x, ownerId),
-                      this.crypto.extractEncryptionsSKs(x, ownerId)
-                    ]).then(([sfks, eks]) =>
-                      this.crypto.addDelegationsAndEncryptionKeys(
-                        p,
-                        x,
-                        ownerId,
-                        delegateId,
-                        sfks[0],
-                        eks[0]
-                      )
-                    )
-                  ))
-              )
-              docs.forEach(x =>
-                markerPromise.then(() =>
-                  Promise.all([
-                    this.crypto.extractDelegationsSFKs(x, ownerId),
-                    this.crypto.extractEncryptionsSKs(x, ownerId)
-                  ]).then(([sfks, eks]) =>
-                    this.crypto.addDelegationsAndEncryptionKeys(
-                      p,
-                      x,
-                      ownerId,
-                      delegateId,
-                      sfks[0],
-                      eks[0]
-                    )
-                  )
                 )
+
+                return Promise.all(
+                  Object.keys(docIds).map(dId => this.documentApi.getDocument(dId))
+                ).then(docs => {
+                  let markerPromise: Promise<any> = Promise.resolve(null)
+                  delegateIds.forEach(delegateId => {
+                    markerPromise = markerPromise.then(() =>
+                      this.crypto.addDelegationsAndEncryptionKeys(
+                        null,
+                        p,
+                        ownerId,
+                        delegateId,
+                        psfks[0],
+                        peks[0]
+                      )
+                    )
+                    hes.forEach(
+                      x =>
+                        (markerPromise = markerPromise.then(() =>
+                          Promise.all([
+                            this.crypto.extractDelegationsSFKs(x, ownerId),
+                            this.crypto.extractEncryptionsSKs(x, ownerId)
+                          ]).then(([sfks, eks]) =>
+                            this.crypto.addDelegationsAndEncryptionKeys(
+                              p,
+                              x,
+                              ownerId,
+                              delegateId,
+                              sfks[0],
+                              eks[0]
+                            )
+                          )
+                        ))
+                    )
+                    ctcsStubs.forEach(
+                      x =>
+                        (markerPromise = markerPromise.then(() =>
+                          Promise.all([
+                            this.crypto.extractDelegationsSFKs(x, ownerId),
+                            this.crypto.extractEncryptionsSKs(x, ownerId)
+                          ]).then(([sfks, eks]) =>
+                            this.crypto.addDelegationsAndEncryptionKeys(
+                              p,
+                              x,
+                              ownerId,
+                              delegateId,
+                              sfks[0],
+                              eks[0]
+                            )
+                          )
+                        ))
+                    )
+                    ivs.forEach(
+                      x =>
+                        (markerPromise = markerPromise.then(() =>
+                          Promise.all([
+                            this.crypto.extractDelegationsSFKs(x, ownerId),
+                            this.crypto.extractEncryptionsSKs(x, ownerId)
+                          ]).then(([sfks, eks]) =>
+                            this.crypto.addDelegationsAndEncryptionKeys(
+                              p,
+                              x,
+                              ownerId,
+                              delegateId,
+                              sfks[0],
+                              eks[0]
+                            )
+                          )
+                        ))
+                    )
+                    docs.forEach(
+                      x =>
+                        (markerPromise = markerPromise.then(() =>
+                          Promise.all([
+                            this.crypto.extractDelegationsSFKs(x, ownerId),
+                            this.crypto.extractEncryptionsSKs(x, ownerId)
+                          ]).then(([sfks, eks]) =>
+                            this.crypto.addDelegationsAndEncryptionKeys(
+                              p,
+                              x,
+                              ownerId,
+                              delegateId,
+                              sfks[0],
+                              eks[0]
+                            )
+                          )
+                        ))
+                    )
+                  })
+                  return markerPromise
+                    .then(() => {
+                      this.contactApi.setContactsDelegations(ctcsStubs)
+                    })
+                    .then(() => this.helementApi.setHealthElementsDelegations(hes))
+                    .then(() => this.invoiceApi.setInvoicesDelegations(ivs))
+                    .then(() => this.documentApi.setDocumentsDelegations(docs))
+                    .then(() => this.modifyPatient(p))
+                })
+              })
+            : this.modifyPatient(
+                Object.assign(p, {
+                  delegations: delegateIds
+                    .filter(id => !p.delegations || !p.delegations[id])
+                    .reduce(
+                      (acc, del: String) => Object.assign(acc, _.fromPairs([[del, []]])),
+                      p.delegations || {}
+                    )
+                })
               )
-            })
-            return markerPromise
-              .then(() => this.contactApi.setContactsDelegations(ctcsStubs))
-              .then(() => this.helementApi.setHealthElementsDelegations(hes))
-              .then(() => this.invoiceApi.setInvoicesDelegations(ivs))
-              .then(() => this.documentApi.setDocumentsDelegations(docs))
-              .then(() => this.modifyPatient(p))
-          })
-        })
       )
     })
   }

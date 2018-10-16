@@ -4,13 +4,11 @@ import { IccCryptoXApi } from "../icc-x-api/icc-crypto-x-api"
 import i18n from "./rsrc/contact.i18n"
 import { utils } from "./crypto/utils"
 import { AES } from "./crypto/AES"
-import { RSA } from "./crypto/RSA"
 
 import moment from "moment"
 import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
 import { XHR } from "../icc-api/api/XHR"
-import { ContactDto } from "../icc-api/model/models"
 
 export class IccContactXApi extends iccContactApi {
   i18n: any = i18n
@@ -100,7 +98,11 @@ export class IccContactXApi extends iccContactApi {
 
   initEncryptionKeys(user: models.UserDto, ctc: models.ContactDto) {
     return this.crypto.initEncryptionKeys(ctc, user.healthcarePartyId!).then(eks => {
-      let promise = Promise.resolve(ctc)
+      let promise = Promise.resolve(
+        _.extend(ctc, {
+          encryptionKeys: eks.encryptionKeys
+        })
+      )
       ;(user.autoDelegations
         ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
         : []
@@ -241,48 +243,57 @@ export class IccContactXApi extends iccContactApi {
   encrypt(user: models.UserDto, ctcs: Array<models.ContactDto>) {
     const hcpartyId = user.healthcarePartyId!
     return Promise.all(
-      ctcs.map(ctc =>
-        (ctc.encryptionKeys && Object.keys(ctc.encryptionKeys).length
-          ? Promise.resolve(ctc)
-          : this.initEncryptionKeys(user, ctc)
-        )
-          .then(ctc =>
-            this.crypto.decryptAndImportAesHcPartyKeysInDelegations(hcpartyId, ctc.encryptionKeys!)
-          )
-          .then(decryptedAndImportedAesHcPartyKeys => {
-            var collatedAesKeys: { [key: string]: CryptoKey } = {}
-            decryptedAndImportedAesHcPartyKeys.forEach(
-              k => (collatedAesKeys[k.delegatorId] = k.key)
-            )
-            return this.crypto.decryptDelegationsSFKs(
-              ctc.encryptionKeys![hcpartyId],
-              collatedAesKeys,
-              ctc.id!
-            )
-          })
-          .then((sfks: Array<string>) =>
-            AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
-          )
-          .then((key: CryptoKey) =>
-            Promise.all(
-              ctc.services!.map(svc =>
-                AES.encrypt(key, utils.utf82ua(JSON.stringify({ content: svc.content })))
+      ctcs.map(
+        ctc =>
+          ctc.secretForeignKeys &&
+          ctc.secretForeignKeys.includes("2d3ab21f-3f2e-4db3-9535-4238c605dbf4")
+            ? ctc
+            : (ctc.encryptionKeys && Object.keys(ctc.encryptionKeys).length
+                ? Promise.resolve(ctc)
+                : this.initEncryptionKeys(user, ctc)
               )
-            )
-              .then(eSvcs => {
-                console.log("eSvcs ", eSvcs)
-                ctc.services!.forEach((svc, idx) => {
-                  svc.encryptedSelf = btoa(utils.ua2text(eSvcs[idx]))
-                  delete svc.content
+                .then(ctc =>
+                  this.crypto.decryptAndImportAesHcPartyKeysInDelegations(
+                    hcpartyId,
+                    ctc.encryptionKeys!
+                  )
+                )
+                .then(decryptedAndImportedAesHcPartyKeys => {
+                  var collatedAesKeys: { [key: string]: CryptoKey } = {}
+                  decryptedAndImportedAesHcPartyKeys.forEach(
+                    k => (collatedAesKeys[k.delegatorId] = k.key)
+                  )
+                  return this.crypto.decryptDelegationsSFKs(
+                    ctc.encryptionKeys![hcpartyId],
+                    collatedAesKeys,
+                    ctc.id!
+                  )
                 })
-              })
-              .then(() => AES.encrypt(key, utils.utf82ua(JSON.stringify({ descr: ctc.descr }))))
-              .then(es => {
-                ctc.encryptedSelf = btoa(utils.ua2text(es))
-                delete ctc.descr
-                return ctc
-              })
-          )
+                .then((sfks: Array<string>) =>
+                  AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
+                )
+                .then((key: CryptoKey) =>
+                  Promise.all(
+                    ctc.services!.map(svc =>
+                      AES.encrypt(key, utils.utf82ua(JSON.stringify({ content: svc.content })))
+                    )
+                  )
+                    .then(eSvcs => {
+                      console.log("eSvcs ", eSvcs)
+                      ctc.services!.forEach((svc, idx) => {
+                        svc.encryptedSelf = btoa(utils.ua2text(eSvcs[idx]))
+                        delete svc.content
+                      })
+                    })
+                    .then(() =>
+                      AES.encrypt(key, utils.utf82ua(JSON.stringify({ descr: ctc.descr })))
+                    )
+                    .then(es => {
+                      ctc.encryptedSelf = btoa(utils.ua2text(es))
+                      delete ctc.descr
+                      return ctc
+                    })
+                )
       )
     )
   }
@@ -311,6 +322,10 @@ export class IccContactXApi extends iccContactApi {
                 ctc.id!
               )
               .then((sfks: Array<string>) => {
+                if (!sfks || !sfks.length) {
+                  //console.log("Cannot decrypt contact", ctc.id)
+                  return Promise.resolve(ctc)
+                }
                 return Promise.all(
                   ctc.services!.map(svc => {
                     if (svc.encryptedContent || svc.encryptedSelf) {
@@ -405,6 +420,95 @@ export class IccContactXApi extends iccContactApi {
                     : Promise.resolve(ctc)
                 })
               })
+          })
+      )
+    )
+  }
+
+  decryptServices(
+    hcpartyId: string,
+    svcs: Array<models.ServiceDto>
+  ): Promise<Array<models.ContactDto>> {
+    return Promise.all(
+      svcs.map(svc =>
+        this.crypto
+          .decryptAndImportAesHcPartyKeysInDelegations(
+            hcpartyId,
+            svc.encryptionKeys && Object.keys(svc.encryptionKeys).length
+              ? svc.encryptionKeys
+              : svc.delegations!
+          )
+          .then(decryptedAndImportedAesHcPartyKeys => {
+            var collatedAesKeys: { [key: string]: CryptoKey } = {}
+            decryptedAndImportedAesHcPartyKeys.forEach(
+              k => (collatedAesKeys[k.delegatorId] = k.key)
+            )
+            return this.crypto
+              .decryptDelegationsSFKs(
+                (svc.encryptionKeys && Object.keys(svc.encryptionKeys).length
+                  ? svc.encryptionKeys
+                  : svc.delegations)![hcpartyId],
+                collatedAesKeys,
+                svc.id!
+              )
+              .then(
+                (sfks: Array<string>) =>
+                  svc.encryptedContent || svc.encryptedSelf
+                    ? AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
+                        .then(
+                          (key: CryptoKey) =>
+                            new Promise((resolve: (value: any) => any) => {
+                              svc.encryptedContent
+                                ? AES.decrypt(key, utils.text2ua(atob(svc.encryptedContent!))).then(
+                                    c => {
+                                      let jsonContent
+                                      try {
+                                        jsonContent = utils.ua2utf8(c!).replace(/\0+$/g, "")
+                                        resolve(c && { content: JSON.parse(jsonContent) })
+                                      } catch (e) {
+                                        console.log(
+                                          "Cannot parse service",
+                                          svc.id,
+                                          jsonContent || "<- Invalid encoding"
+                                        )
+                                        resolve(null)
+                                      }
+                                    },
+                                    () => {
+                                      console.log("Cannot decrypt service", svc.id)
+                                      resolve(null)
+                                    }
+                                  )
+                                : svc.encryptedSelf
+                                  ? AES.decrypt(key, utils.text2ua(atob(svc.encryptedSelf!))).then(
+                                      s => {
+                                        let jsonContent
+                                        try {
+                                          jsonContent = utils.ua2utf8(s!).replace(/\0+$/g, "")
+                                          resolve(s && JSON.parse(jsonContent))
+                                        } catch (e) {
+                                          console.log(
+                                            "Cannot parse service",
+                                            svc.id,
+                                            jsonContent || "<- Invalid encoding"
+                                          )
+                                          resolve(null)
+                                        }
+                                      },
+                                      () => {
+                                        console.log("Cannot decrypt service", svc.id)
+                                        resolve(null)
+                                      }
+                                    )
+                                  : resolve(null)
+                            })
+                        )
+                        .then(decrypted => {
+                          decrypted && _.assign(svc, decrypted)
+                          return svc
+                        })
+                    : svc
+              )
           })
       )
     )
@@ -549,7 +653,7 @@ export class IccContactXApi extends iccContactApi {
 
     //Rearrange poaIds and heIds as a hierarchy
     const hierarchyOfHeAndPoaIds: { [key: string]: Array<any> } = {}
-    ;(heIds || []).forEach(id => (hierarchyOfHeAndPoaIds[id] = []))
+    ;(heIds || []).forEach(id => (hierarchyOfHeAndPoaIds[id || "_"] = []))
     Object.keys(poaIds || {}).forEach((k: string) => {
       const poas = hierarchyOfHeAndPoaIds[k]
       if (poas) {
@@ -599,10 +703,12 @@ export class IccContactXApi extends iccContactApi {
           }
         })
 
-    Object.keys(
-      hierarchyOfHeAndPoaIds && hierarchyOfHeAndPoaIds.size ? hierarchyOfHeAndPoaIds : { null: [] }
-    ).forEach((heId: string | null) => {
-      if (heId === "null") {
+    if (!Object.keys(hierarchyOfHeAndPoaIds).length) {
+      hierarchyOfHeAndPoaIds._ = [] //Default is to have at least one option with heId equals to null (represented by _)
+    }
+
+    Object.keys(hierarchyOfHeAndPoaIds).forEach((heId: string | null) => {
+      if (heId === "_") {
         heId = null
       }
       const subPoaIds = heId ? hierarchyOfHeAndPoaIds[heId] : []
@@ -668,7 +774,7 @@ export class IccContactXApi extends iccContactApi {
             codes: [],
             tags: [],
             content: {},
-            valueDate: parseInt(moment().format("YYYYMMDDhhmmss"))
+            valueDate: parseInt(moment().format("YYYYMMDDHHmmss"))
           },
           s
         )
@@ -698,23 +804,23 @@ export class IccContactXApi extends iccContactApi {
       aftermeal: 20000
     }
 
-    const self = {
+    const myself = {
       medicationNameToString: function(m: any): string {
         return m.compoundPrescription
           ? m.compoundPrescription
           : m.substanceProduct
-            ? self.productToString(m.substanceProduct)
-            : self.productToString(m.medicinalProduct)
+            ? myself.productToString(m.substanceProduct)
+            : myself.productToString(m.medicinalProduct)
       },
       medicationToString: (m: any, lang: string) => {
-        let res = `${self.medicationNameToString(m)}, ${self.posologyToString(m, lang)}`
+        let res = `${myself.medicationNameToString(m)}, ${myself.posologyToString(m, lang)}`
         res = m.numberOfPackages
           ? `${m.numberOfPackages} ${
               m.numberOfPackages > 1 ? this.i18n[lang].packagesOf : this.i18n[lang].packageOf
             } ${res}`
           : res
         res = m.duration
-          ? `${res} ${this.i18n[lang].during} ${self.durationToString(m.duration, lang)}`
+          ? `${res} ${this.i18n[lang].during} ${myself.durationToString(m.duration, lang)}`
           : res
         return res
       },
@@ -777,7 +883,8 @@ export class IccContactXApi extends iccContactApi {
                 : 0)
         )
           .map(
-            r => (cplxRegimen ? self.regimenToExtString(r, lang) : self.regimenToString(r, lang))
+            r =>
+              cplxRegimen ? myself.regimenToExtString(r, lang) : myself.regimenToString(r, lang)
           )
           .join(", ")}`
       },
@@ -785,7 +892,7 @@ export class IccContactXApi extends iccContactApi {
         return d.value ? `${d.value} ${this.localize(d.unit!.label, lang)}` : ""
       },
       regimenToExtString: (r: models.RegimenItemDto, lang: string) => {
-        const desc = self.regimenToString(r, lang)
+        const desc = myself.regimenToString(r, lang)
         return (
           (r.administratedQuantity && r.administratedQuantity.quantity && desc
             ? `${desc} (${r.administratedQuantity.quantity} ${(r.administratedQuantity
@@ -844,6 +951,6 @@ export class IccContactXApi extends iccContactApi {
         ) //Applies the (lower/upper)case to the translated lowercase version of the input string (s)
       }
     }
-    return self
+    return myself
   }
 }
