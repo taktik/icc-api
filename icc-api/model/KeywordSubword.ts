@@ -24,21 +24,12 @@
 
 import * as models from "./models"
 
-export class MeasureDto {
+export class KeywordSubword {
   constructor(json: JSON | any) {
-    Object.assign(this as MeasureDto, json)
+    Object.assign(this as KeywordSubword, json)
   }
-  value?: number
 
-  min?: number
+  value?: string
 
-  max?: number
-
-  ref?: number
-
-  unit?: string
-
-  unitCodes?: Array<models.CodeDto>
-
-  comment?: string
+  subWords?: Array<KeywordSubword>
 }

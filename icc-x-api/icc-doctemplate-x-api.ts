@@ -82,26 +82,4 @@ export class IccDoctemplateXApi extends iccDoctemplateApi {
       .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
       .catch(err => this.handleError(err))
   }
-
-  // FIXME-GENLOC
-  // setAttachmentJson(
-  //   documentTemplateId: string,
-  //   body: string
-  // ): Promise<models.DocumentTemplateDto | any> {
-  //   let _body = null
-  //   _body = btoa(body)
-
-  //   const _url =
-  //     this.host +
-  //     "/doctemplate/{documentTemplateId}/attachmentJson".replace(
-  //       "{documentTemplateId}",
-  //       documentTemplateId + ""
-  //     ) +
-  //     "?ts=" +
-  //     new Date().getTime()
-
-  //   return XHR.sendCommand("PUT", _url, this.headers, { data: _body })
-  //     .then(doc => new models.DocumentTemplateDto(doc.body as JSON))
-  //     .catch(err => this.handleError(err))
-  // }
 }
