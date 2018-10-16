@@ -20,6 +20,20 @@ export interface Zone300Data {
   invoiceRejectionType: string
 }
 
+export interface Zone400Data {
+  mutualityNumber: string
+  signAmount1: string
+  askedAmount1: string
+  mutualityControlNumber: string
+}
+
+export interface Zone500Data {
+  mutualityNumber: string
+  signAmount1: string
+  askedAmount1: string
+  mutualityControlNumber: string
+}
+
 export interface ETData {
   errorDetail?: ErrorDetail
 }
@@ -143,20 +157,63 @@ export interface File920900Data {
   records: Array<{
     et20: ET20Data
     items: Array<{
-      et50: ET50Data | undefined
-      et51: ET51Data | undefined
-      et52: ET52Data | undefined
+      et50?: ET50Data | undefined
+      et51?: ET51Data | undefined
+      et52?: ET52Data | undefined
     }>
-    et80: ET80Data
+    et80?: ET80Data
   }>
   et90: ET90Data
-  et91: ET91Data
+  et91: Array<ET91Data>
   et92: ET92Data
 }
 
-export class EfactMessageReader {
-  private message: EfactMessage
-  private fileType = "920900"
+export interface File931000Data {
+  zone200: Zone200Data
+}
+
+export interface File920099Data {
+  zone200: Zone200Data
+  zone300: Zone300Data
+  et10: ET10Data
+  records: Array<{
+    et20: ET20Data
+    items: Array<{
+      et50?: ET50Data | undefined
+      et51?: ET51Data | undefined
+      et52?: ET52Data | undefined
+    }>
+    et80?: ET80Data
+  }>
+  et90: ET90Data
+}
+
+export interface File920098Data {
+  zone200: Zone200Data
+  zone300: Zone300Data
+  et10: ET10Data
+  records: Array<{
+    et20: ET20Data
+    items: Array<{
+      et50?: ET50Data | undefined
+      et51?: ET51Data | undefined
+      et52?: ET52Data | undefined
+    }>
+    et80?: ET80Data
+  }>
+  et90: ET90Data
+}
+
+export interface File920999Data {
+  zone200: Zone200Data
+  zone300: Zone300Data
+  et95: Array<Zone400Data | undefined>
+  et96: Zone500Data | undefined
+}
+
+export abstract class EfactMessageReader {
+  message: EfactMessage
+  abstract fileType: string
   private log: Function = () => {}
 
   constructor(message: EfactMessage, debug: boolean = false) {
@@ -177,80 +234,9 @@ export class EfactMessageReader {
     return this.message.hashValue
   }
 
-  read(): File920900Data | undefined {
-    try {
-      let i = 0
-      // FIXME the code does not support multiple invoices yet.
-      let rawRecords = this.message.message!!
-      const zone200 = this.readZone200(rawRecords[i])
-      i++
-      const zone300 = this.readZone300(rawRecords[i])
-      i++
-      const et10 = this.readET10(rawRecords[i]!!)
-      i++
-      const records = []
-      while (rawRecords[i].zones!![0].value === "20") {
-        const et20 = this.readET20(rawRecords[i])
-        i++
-        const items = []
-        while (rawRecords[i].zones!![0].value === "50") {
-          // || this.message.message[i].zones[0].value === '51'
-          let et50
-          let et51
-          let et52
-          if (rawRecords[i].zones!![0].value === "50") {
-            et50 = this.readET50(rawRecords[i])
-            i++
-          }
-          if (rawRecords[i].zones!![0].value === "51") {
-            et51 = this.readET51(rawRecords[i])
-            i++
-          }
-          if (rawRecords[i].zones!!![0].value === "52") {
-            et52 = this.readET52(rawRecords[i])
-            i++
-          }
+  abstract read(): any
 
-          items.push({
-            et50,
-            et51,
-            et52
-          })
-        }
-        const et80 = this.readET80(rawRecords[i])
-        i++
-        records.push({
-          et20,
-          items,
-          et80
-        })
-      }
-      const et90 = this.readET90(rawRecords[i])
-      i++
-      const et91 = this.readET91(rawRecords[i])
-      i++
-      const et92 = this.readET92(rawRecords[i])
-      i++
-
-      if (rawRecords.length !== i) {
-        throw new Error("EfactMessage was not entirely parsed " + JSON.stringify(this.message))
-      }
-
-      return {
-        zone200,
-        zone300,
-        et10,
-        records,
-        et90,
-        et91,
-        et92
-      }
-    } catch (err) {
-      console.error(err, "Cannot parse message", this.message)
-    }
-  }
-
-  private readZone200(zone200: Record): Zone200Data {
+  readZone200(zone200: Record): Zone200Data {
     let i = 0
     this.log("responseType", zone200.zones!![i].value)
     this.fileType = zone200.zones!![i].value
@@ -294,9 +280,9 @@ export class EfactMessageReader {
     }
   }
 
-  private readZone300(zone300: Record): Zone300Data {
+  readZone300(zone300: Record): Zone300Data {
     let i = 0
-    this.log("Lien T10 Z22&23 Anne et mois facturation", zone300.zones!![i].value)
+    this.log("Lien T10 Z22&23 Annee et mois facturation", zone300.zones!![i].value)
     i++
     this.log("Code erreur", zone300.zones!![i].value)
     i++
@@ -373,7 +359,7 @@ export class EfactMessageReader {
     }
   }
 
-  private readET10(et10: Record): ET10Data {
+  readET10(et10: Record): ET10Data {
     const etNumber = 10
     let i = 0
     this.log("EnregistrementType", et10.zones!![i].value)
@@ -523,7 +509,7 @@ export class EfactMessageReader {
     }
   }
 
-  private readET20(et20: Record): ET20Data {
+  readET20(et20: Record): ET20Data {
     const etNumber = 20
     let i = 0
     this.log("EnregistrementDeType20", et20.zones!![i].value)
@@ -649,7 +635,7 @@ export class EfactMessageReader {
     }
   }
 
-  private readET50(et50: Record): ET50Data {
+  readET50(et50: Record): ET50Data {
     const etNumber = 50
     let i = 0
     this.log("EnregistrementDeType50", et50.zones!![i].value)
@@ -782,7 +768,7 @@ export class EfactMessageReader {
     }
   }
 
-  private readET51(et51: Record): ET51Data {
+  readET51(et51: Record): ET51Data {
     const etNumber = 51
     let i = 0
     this.log("EnregistrementType", et51.zones!![i].value)
@@ -938,7 +924,7 @@ export class EfactMessageReader {
     }
   }
 
-  private readET52(et52: Record): ET52Data {
+  readET52(et52: Record): ET52Data {
     const etNumber = 52
     let i = 0
     if (et52.zones!![i].value !== etNumber.toString()) {
@@ -1007,7 +993,7 @@ export class EfactMessageReader {
     }
   }
 
-  private readET80(et80: Record): ET80Data {
+  readET80(et80: Record): ET80Data {
     const etNumber = 80
     let i = 0
     this.log("EnregistrementDeType80", et80.zones!![i].value)
@@ -1143,7 +1129,7 @@ export class EfactMessageReader {
     }
   }
 
-  private readET90(et90: Record): ET90Data {
+  readET90(et90: Record): ET90Data {
     const etNumber = 90
     let i = 0
     if (et90.zones!![i].value !== etNumber.toString()) {
@@ -1292,7 +1278,7 @@ export class EfactMessageReader {
     }
   }
 
-  private readET91(et91: Record): ET91Data {
+  readET91(et91: Record): ET91Data {
     const etNumber = 91
     let i = 0
     if (et91.zones!![i].value !== etNumber.toString()) {
@@ -1415,7 +1401,7 @@ export class EfactMessageReader {
     }
   }
 
-  private readET92(et92: Record): ET92Data {
+  readET92(et92: Record): ET92Data {
     const etNumber = 92
     let i = 0
     if (et92.zones!![i].value !== etNumber.toString()) {
@@ -1524,6 +1510,361 @@ export class EfactMessageReader {
       rejectedAmountAccount2,
       totalAcceptedAmount,
       totalRejectedAmount
+    }
+  }
+
+  readZone400(zone400: Record): Zone400Data {
+    let i = 0
+    this.log("Type", zone400.zones!![i++].value)
+    this.log("Code d'erreur", zone400.zones!![i++].value)
+    this.log("numero de mutuelle", zone400.zones!![i++].value)
+    const mutuelle = zone400.zones!![i - 1].value
+    this.log("code d'erreur", zone400.zones!![i++].value)
+    this.log("numero de la facture recapitulative", zone400.zones!![i++].value)
+    this.log("code d'erreur", zone400.zones!![i++].value)
+    this.log("signe montant demande compte A", zone400.zones!![i++].value)
+    const signMontantA = zone400.zones!![i - 1].value
+    this.log("montant demande compte A", zone400.zones!![i++].value)
+    const montantDemandeA = zone400.zones!![i - 1].value
+    this.log("code d'erreur", zone400.zones!![i++].value)
+    this.log("signe montant demande compte B", zone400.zones!![i++].value)
+    this.log("montant demande compte B", zone400.zones!![i++].value)
+    this.log("code d'erreur", zone400.zones!![i++].value)
+    this.log("signe somme A + B", zone400.zones!![i++].value)
+    this.log("total somme A + B", zone400.zones!![i++].value)
+    this.log("code d'erreur", zone400.zones!![i++].value)
+    this.log("nombre d'enregistrements", zone400.zones!![i++].value)
+    this.log("code d'erreur", zone400.zones!![i++].value)
+    this.log("numero de controle par mutualite", zone400.zones!![i++].value)
+    const controleMut = zone400.zones!![i - 1].value
+    this.log("code d'erreur", zone400.zones!![i++].value)
+    this.log("reserve", zone400.zones!![i++].value)
+
+    if (zone400.zones!!.length !== i) {
+      throw Error("Zone 400: The parsing is not matching the available number of zones.")
+    }
+
+    return {
+      mutualityNumber: mutuelle,
+      signAmount1: signMontantA,
+      askedAmount1: montantDemandeA,
+      mutualityControlNumber: controleMut
+    }
+  }
+
+  readZone500(zone500: Record): Zone500Data {
+    let i = 0
+    this.log("Type", zone500.zones!![i++].value)
+    this.log("Code d'erreur", zone500.zones!![i++].value)
+    this.log("numero de mutuelle", zone500.zones!![i++].value)
+    const mutuelle = zone500.zones!![i - 1].value
+    this.log("code d'erreur", zone500.zones!![i++].value)
+    this.log("non utlise", zone500.zones!![i++].value)
+    this.log("code d'erreur", zone500.zones!![i++].value)
+    this.log("numero de la facture recapitulative", zone500.zones!![i++].value)
+    this.log("code d'erreur", zone500.zones!![i++].value)
+    this.log("signe montant demande compte A", zone500.zones!![i++].value)
+    const signMontantA = zone500.zones!![i - 1].value
+    this.log("montant demande compte A", zone500.zones!![i++].value)
+    const montantDemandeA = zone500.zones!![i - 1].value
+    this.log("code d'erreur", zone500.zones!![i++].value)
+    this.log("signe montant demande compte B", zone500.zones!![i++].value)
+    this.log("montant demande compte B", zone500.zones!![i++].value)
+    this.log("code d'erreur", zone500.zones!![i++].value)
+    this.log("signe somme A + B", zone500.zones!![i++].value)
+    this.log("total somme A + B", zone500.zones!![i++].value)
+    this.log("code d'erreur", zone500.zones!![i++].value)
+    this.log("nombre d'enregistrements", zone500.zones!![i++].value)
+    this.log("code d'erreur", zone500.zones!![i++].value)
+    this.log("numero de controle par mutualite", zone500.zones!![i++].value)
+    const controleMut = zone500.zones!![i - 1].value
+    this.log("code d'erreur", zone500.zones!![i++].value)
+    this.log("reserve", zone500.zones!![i++].value)
+
+    if (zone500.zones!!.length !== i) {
+      throw Error("Zone 500: The parsing is not matching the available number of zones.")
+    }
+
+    return {
+      mutualityNumber: mutuelle,
+      signAmount1: signMontantA,
+      askedAmount1: montantDemandeA,
+      mutualityControlNumber: controleMut
+    }
+  }
+}
+
+export class EfactMessage920900Reader extends EfactMessageReader {
+  fileType = "920900"
+
+  read(): File920900Data | undefined {
+    try {
+      let i = 0
+      // FIXME the code does not support multiple invoices yet.
+      const rawRecords = this.message.message!!
+      const zone200 = this.readZone200(rawRecords[i])
+      i++
+      const zone300 = this.readZone300(rawRecords[i])
+      i++
+      const et10 = this.readET10(rawRecords[i])
+      i++
+      const records = []
+      while (rawRecords[i].zones!![0].value === "20") {
+        const et20 = this.readET20(rawRecords[i])
+        i++
+        const items = []
+        while (
+          rawRecords[i].zones!![0].value === "50" ||
+          this.message.message!![i].zones!![0].value === "51"
+        ) {
+          let et50
+          let et51
+          let et52
+          if (rawRecords[i].zones!![0].value === "50") {
+            et50 = this.readET50(rawRecords[i])
+            i++
+          }
+          if (rawRecords[i].zones!![0].value === "51") {
+            et51 = this.readET51(rawRecords[i])
+            i++
+          }
+          if (rawRecords[i].zones!![0].value === "52") {
+            et52 = this.readET52(rawRecords[i])
+            i++
+          }
+
+          items.push({
+            et50,
+            et51,
+            et52
+          })
+        }
+        const et80 = this.readET80(rawRecords[i])
+        i++
+        records.push({
+          et20,
+          items,
+          et80
+        })
+      }
+      const et90 = this.readET90(rawRecords[i])
+      i++
+      const et91s = []
+      while (rawRecords[i].zones!![0].value === "91") {
+        et91s.push(this.readET91(rawRecords[i]))
+        i++
+      }
+      const et92 = this.readET92(rawRecords[i])
+      i++
+
+      if (rawRecords.length !== i) {
+        throw new Error("EfactMessage was not entirely parsed " + JSON.stringify(this.message))
+      }
+
+      return {
+        zone200,
+        zone300,
+        et10,
+        records,
+        et90,
+        et91: et91s,
+        et92
+      }
+    } catch (err) {
+      console.error(err, "Cannot parse message", this.message)
+    }
+  }
+}
+
+export class EfactMessage931000Reader extends EfactMessageReader {
+  fileType = "931000"
+
+  read(): File931000Data | undefined {
+    const zone200 = this.readZone200(this.message.message!![0])
+    return {
+      zone200
+    }
+  }
+}
+
+export class EfactMessage920099Reader extends EfactMessageReader {
+  fileType = "920099"
+
+  read(): File920099Data | undefined {
+    try {
+      let i = 0
+      // FIXME the code does not support multiple invoices yet.
+      const rawRecords = this.message.message!!
+      const zone200 = this.readZone200(rawRecords[i])
+      i++
+      const zone300 = this.readZone300(rawRecords[i])
+      i++
+      const et10 = this.readET10(rawRecords[i])
+      i++
+      const records = []
+      while (rawRecords[i].zones!![0].value === "20") {
+        const et20 = this.readET20(rawRecords[i])
+        i++
+        const items = []
+        while (rawRecords[i].zones!![0].value === "50") {
+          // || this.message.message[i].zones[0].value === '51'
+          let et50
+          let et51
+          let et52
+          if (rawRecords[i].zones!![0].value === "50") {
+            et50 = this.readET50(rawRecords[i])
+            i++
+          }
+          if (rawRecords[i].zones!![0].value === "51") {
+            et51 = this.readET51(rawRecords[i])
+            i++
+          }
+          if (rawRecords[i].zones!![0].value === "52") {
+            et52 = this.readET52(rawRecords[i])
+            i++
+          }
+
+          items.push({
+            et50,
+            et51,
+            et52
+          })
+        }
+        const et80 = this.readET80(rawRecords[i])
+        i++
+        records.push({
+          et20,
+          items,
+          et80
+        })
+      }
+      const et90 = this.readET90(rawRecords[i])
+      i++
+
+      if (rawRecords.length !== i) {
+        throw new Error("EfactMessage was not entirely parsed " + JSON.stringify(this.message))
+      }
+
+      return {
+        zone200,
+        zone300,
+        et10,
+        records,
+        et90
+      }
+    } catch (err) {
+      console.error(err, "Cannot parse message", this.message)
+    }
+  }
+}
+
+export class EfactMessage920098Reader extends EfactMessageReader {
+  fileType = "920098"
+
+  read(): File920098Data | undefined {
+    try {
+      let i = 0
+      // FIXME the code does not support multiple invoices yet.
+      const rawRecords = this.message.message!!
+      const zone200 = this.readZone200(rawRecords[i])
+      i++
+      const zone300 = this.readZone300(rawRecords[i])
+      i++
+      const et10 = this.readET10(rawRecords[i])
+      i++
+      const records = []
+      while (rawRecords[i].zones!![0].value === "20") {
+        const et20 = this.readET20(rawRecords[i])
+        i++
+        const items = []
+        while (
+          rawRecords[i].zones!![0].value === "50" ||
+          this.message.message!![i].zones!![0].value === "52"
+        ) {
+          // || this.message.message[i].zones[0].value === '51'
+          let et50
+          let et51
+          let et52
+          if (rawRecords[i].zones!![0].value === "50") {
+            et50 = this.readET50(rawRecords[i])
+            i++
+          }
+          if (rawRecords[i].zones!![0].value === "51") {
+            et51 = this.readET51(rawRecords[i])
+            i++
+          }
+          if (rawRecords[i].zones!![0].value === "52") {
+            et52 = this.readET52(rawRecords[i])
+            i++
+          }
+
+          items.push({
+            et50,
+            et51,
+            et52
+          })
+        }
+        const et80 = this.readET80(rawRecords[i])
+        i++
+        records.push({
+          et20,
+          items,
+          et80
+        })
+      }
+      const et90 = this.readET90(rawRecords[i])
+      i++
+
+      if (rawRecords.length !== i) {
+        throw new Error("EfactMessage was not entirely parsed " + JSON.stringify(this.message))
+      }
+
+      return {
+        zone200,
+        zone300,
+        et10,
+        records,
+        et90
+      }
+    } catch (err) {
+      console.error(err, "Cannot parse message", this.message)
+    }
+  }
+}
+
+export class EfactMessage920999Reader extends EfactMessageReader {
+  fileType = "920999"
+
+  read(): File920999Data | undefined {
+    try {
+      let i = 0
+      // FIXME the code does not support multiple invoices yet.
+      let rawRecords = this.message.message!!
+
+      const zone200 = this.readZone200(rawRecords[i++])
+      const zone300 = this.readZone300(rawRecords[i++])
+      let et95 = []
+      while (rawRecords[i].zones!![0].value === "95") {
+        const zone400 = this.readZone400(rawRecords[i++])
+        et95.push(zone400)
+      }
+      let et96
+      if (rawRecords[i].zones!![0].value === "96") {
+        et96 = this.readZone500(rawRecords[i++])
+      }
+
+      if (rawRecords.length !== i) {
+        throw new Error("EfactMessage was not entirely parsed " + JSON.stringify(this.message))
+      }
+
+      return {
+        zone200,
+        zone300,
+        et95,
+        et96
+      }
+    } catch (err) {
+      console.error(err, "Cannot parse message", this.message)
     }
   }
 }
