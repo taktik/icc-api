@@ -99,7 +99,7 @@ export class iccAgendaApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.AgendaDto(it)))
       .catch(err => this.handleError(err))
   }
-  getAgendasForUser(userId?: string): Promise<Array<models.AgendaDto> | any> {
+  getAgendasForUser(userId?: string): Promise<models.AgendaDto | any> {
     let _body = null
 
     const _url =
@@ -113,7 +113,7 @@ export class iccAgendaApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.AgendaDto(it)))
+      .then(doc => new models.AgendaDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
   getReadableAgendasForUser(userId?: string): Promise<Array<models.AgendaDto> | any> {
