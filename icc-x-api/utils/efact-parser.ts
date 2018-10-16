@@ -266,6 +266,38 @@ export class EfactMessageReader {
     }
   }
 
+  read920999(): File920999Data | undefined {
+    try {
+      let i = 0
+      // FIXME the code does not support multiple invoices yet.
+      let rawRecords = this.message.message!!
+
+      const zone200 = this.readZone200(rawRecords[i++])
+      const zone300 = this.readZone300(rawRecords[i++])
+      let zone400 = null;
+      if(rawRecords[i].zones!![0].value === "95"){
+        zone400=this.readZone400(rawRecords[i++])
+      }
+      let zone500 = null;
+      if(rawRecords[i].zones!![0].value === "96"){
+        zone500=this.readZone500(rawRecords[i++])
+      }
+
+      if (rawRecords.length !== i) {
+        throw new Error("EfactMessage was not entirely parsed " + JSON.stringify(this.message))
+      }
+
+      return {
+        zone200,
+        zone300,
+        zone400,
+        zone500
+      }
+    } catch (err) {
+      console.error(err, "Cannot parse message", this.message)
+    }
+  }
+
   private readZone200(zone200: Record): Zone200Data {
     let i = 0
     this.log("responseType", zone200.zones!![i].value)
