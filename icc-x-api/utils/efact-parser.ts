@@ -20,6 +20,15 @@ export interface Zone300Data {
   invoiceRejectionType: string
 }
 
+export interface Zone400Data {
+
+}
+
+export interface Zone500Data {
+
+}
+
+
 export interface ETData {
   errorDetail?: ErrorDetail
 }
@@ -152,6 +161,13 @@ export interface File920900Data {
   et90: ET90Data
   et91: ET91Data
   et92: ET92Data
+}
+
+export interface File920999Data {
+  zone200: Zone200Data
+  zone300: Zone300Data
+  zone400: Zone400Data | undefined
+  zone500: Zone500Data | undefined
 }
 
 export class EfactMessageReader {
@@ -296,7 +312,7 @@ export class EfactMessageReader {
 
   private readZone300(zone300: Record): Zone300Data {
     let i = 0
-    this.log("Lien T10 Z22&23 Anne et mois facturation", zone300.zones!![i].value)
+    this.log("Lien T10 Z22&23 Annee et mois facturation", zone300.zones!![i].value)
     i++
     this.log("Code erreur", zone300.zones!![i].value)
     i++
@@ -1524,6 +1540,86 @@ export class EfactMessageReader {
       rejectedAmountAccount2,
       totalAcceptedAmount,
       totalRejectedAmount
+    }
+  }
+
+  private readZone400(zone400: Record): Zone400Data {
+    let i = 0
+    this.log("Type", zone400.zones!![i++].value)
+    this.log("Code d'erreur",zone400.zones!![i++].value)
+    this.log("numero de mutuelle",zone400.zones!![i++].value)
+    const mutuelle = zone400.zones!![i-1].value
+    this.log("code d'erreur",zone400.zones!![i++].value)
+    this.log("numero de la facture recapitulative",zone400.zones!![i++].value)
+    this.log("code d'erreur",zone400.zones!![i++].value)
+    this.log("signe montant demande compte A",zone400.zones!![i++].value)
+    const signMontantA = zone400.zones!![i-1].value
+    this.log("montant demande compte A",zone400.zones!![i++].value)
+    const montantDemandeA = zone400.zones!![i-1].value
+    this.log("code d'erreur",zone400.zones!![i++].value)
+    this.log("signe montant demande compte B",zone400.zones!![i++].value)
+    this.log("montant demande compte B",zone400.zones!![i++].value)
+    this.log("code d'erreur",zone400.zones!![i++].value)
+    this.log("signe somme A + B",zone400.zones!![i++].value)
+    this.log("total somme A + B",zone400.zones!![i++].value)
+    this.log("code d'erreur",zone400.zones!![i++].value)
+    this.log("nombre d'enregistrements",zone400.zones!![i++].value)
+    this.log("code d'erreur",zone400.zones!![i++].value)
+    this.log("numero de controle par mutualite",zone400.zones!![i++].value)
+    const controleMut = zone400.zones!![i-1].value
+    this.log("code d'erreur",zone400.zones!![i++].value)
+    this.log("reserve",zone400.zones!![i++].value)
+
+    if (zone400.zones!!.length !== i) {
+      throw Error("Zone 400: The parsing is not matching the available number of zones.")
+    }
+
+    return {
+      numMutualite: mutuelle,
+      signeMontantA: signMontantA,
+      montantDemandeA: montantDemandeA,
+      numeroControleMutualite: controleMut
+    }
+  }
+
+  private readZone500(zone500: Record): Zone400Data {
+    let i = 0
+    this.log("Type", zone500.zones!![i++].value)
+    this.log("Code d'erreur",zone500.zones!![i++].value)
+    this.log("numero de mutuelle",zone500.zones!![i++].value)
+    const mutuelle = zone500.zones!![i-1].value
+    this.log("code d'erreur",zone500.zones!![i++].value)
+    this.log("non utlise",zone500.zones!![i++].value)
+    this.log("code d'erreur",zone500.zones!![i++].value)
+    this.log("numero de la facture recapitulative",zone500.zones!![i++].value)
+    this.log("code d'erreur",zone500.zones!![i++].value)
+    this.log("signe montant demande compte A",zone500.zones!![i++].value)
+    const signMontantA = zone500.zones!![i-1].value
+    this.log("montant demande compte A",zone500.zones!![i++].value)
+    const montantDemandeA = zone500.zones!![i-1].value
+    this.log("code d'erreur",zone500.zones!![i++].value)
+    this.log("signe montant demande compte B",zone500.zones!![i++].value)
+    this.log("montant demande compte B",zone500.zones!![i++].value)
+    this.log("code d'erreur",zone500.zones!![i++].value)
+    this.log("signe somme A + B",zone500.zones!![i++].value)
+    this.log("total somme A + B",zone500.zones!![i++].value)
+    this.log("code d'erreur",zone500.zones!![i++].value)
+    this.log("nombre d'enregistrements",zone500.zones!![i++].value)
+    this.log("code d'erreur",zone500.zones!![i++].value)
+    this.log("numero de controle par mutualite",zone500.zones!![i++].value)
+    const controleMut = zone500.zones!![i-1].value
+    this.log("code d'erreur",zone500.zones!![i++].value)
+    this.log("reserve",zone500.zones!![i++].value)
+
+    if (zone500.zones!!.length !== i) {
+      throw Error("Zone 500: The parsing is not matching the available number of zones.")
+    }
+
+    return {
+      numMutualite: mutuelle,
+      signeMontantA: signMontantA,
+      montantDemandeA: montantDemandeA,
+      numeroControleMutualite: controleMut
     }
   }
 }
