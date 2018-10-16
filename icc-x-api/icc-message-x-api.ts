@@ -153,13 +153,13 @@ export class IccMessageXApi extends iccMessageApi {
                 : null
 
     if (!parser) {
-      throw new Error(`Unsupported message type ${messageType}`)
+      return Promise.reject(new Error(`Unsupported message type ${messageType}`))
     }
 
     const parsedRecords = parser.read()
 
     if (!parsedRecords) {
-      throw new Error("Cannot parse...")
+      return Promise.reject(new Error("Cannot parse..."))
     }
 
     const errors = (parsedRecords.et10 && parsedRecords.et10.errorDetail
@@ -237,7 +237,7 @@ export class IccMessageXApi extends iccMessageApi {
       1
     ).then(parents => {
       if (!parents.rows || !parents.rows.length) {
-        throw new Error(`Cannot find parent with ref ${ref}`)
+        throw new Error(`Cannot find parent with ref "EFACT:BATCH:${ref}"`)
       }
       const parent: MessageDto = parents.rows[0]
       return this.newInstance(user, {
@@ -326,7 +326,23 @@ export class IccMessageXApi extends iccMessageApi {
                       "cryptedForeignKeys",
                       "paid",
                       "author",
-                      "responsible"
+                      "responsible",
+                      //
+                      "groupId",
+                      "sentMediumType",
+                      "interventionType",
+                      //
+                      "gnotionNihii",
+                      "gnotionSsin",
+                      "gnotionLastName",
+                      "gnotionFirstName",
+                      "gnotionCdHcParty",
+                      //
+                      "internshipNihii",
+                      "internshipSsin",
+                      "internshipLastName",
+                      "internshipFirstName",
+                      "internshipCdHcParty"
                     ])
                   ))
                 ).invoicingCodes = (newInvoice.invoicingCodes || []).concat(
