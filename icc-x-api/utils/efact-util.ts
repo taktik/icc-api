@@ -24,6 +24,32 @@ export interface InvoiceWithPatient {
 
 const base36UUID = new UuidEncoder()
 
+export function getFederaton(
+  invoices: Array<InvoiceWithPatient>,
+  insuranceApi: iccInsuranceApi
+): Promise<InsuranceDto> {
+  return insuranceApi
+    .getInsurances(
+      new ListOfIdsDto({
+        ids: _.compact(invoices.map(iwp => getInsurability(iwp.patientDto).insuranceId))
+      })
+    )
+    .then((insurances: Array<InsuranceDto>) => {
+      return insuranceApi
+        .getInsurances(new ListOfIdsDto({ ids: _.uniq(_.compact(insurances.map(i => i.parent))) }))
+        .then((parents: Array<InsuranceDto>) => {
+          const fedCodes = _.compact(parents.map(i => i.code && i.code.substr(0, 3)))
+          if (!fedCodes.length) {
+            throw "The federation is missing from the recipients of the invoices"
+          }
+          if (fedCodes.length > 1) {
+            throw "The provided invoices are not addressed to insurances belonging to the same federation"
+          }
+          return parents[0]
+        })
+    })
+}
+
 // Here we trust the invoices argument for grouping validity (month, year and patient)
 export function toInvoiceBatch(
   invoices: Array<InvoiceWithPatient>,
@@ -64,8 +90,9 @@ export function toInvoiceBatch(
             }
             return toInvoice(hcp.nihii!!, invWithPat.invoiceDto, invWithPat.patientDto, ins)
           })
-          invoicesBatch.invoicingMonth = moment(invoices[0].invoiceDto.invoiceDate).month() + 1
-          invoicesBatch.invoicingYear = moment(invoices[0].invoiceDto.invoiceDate).year()
+          invoicesBatch.invoicingMonth =
+            toMoment(invoices[0].invoiceDto.invoiceDate!!)!!.month() + 1
+          invoicesBatch.invoicingYear = toMoment(invoices[0].invoiceDto.invoiceDate!!)!!.year()
           invoicesBatch.ioFederationCode = fedCodes[0]
           invoicesBatch.numericalRef =
             invoicesBatch.invoicingYear * 1000000 +
@@ -91,7 +118,7 @@ function toInvoice(
   // FIXME : coder l'invoice ref
   invoice.invoiceNumber = Number(invoiceDto.invoiceReference) || 0
   // FIXME : coder l'invoice ref
-  invoice.invoiceRef = invoiceDto.invoiceReference || "0"
+  invoice.invoiceRef = uuidBase36(invoiceDto.id!!)
   invoice.ioCode = insurance.code!!.substr(0, 3)
   invoice.items = _.map(invoiceDto.invoicingCodes, (invoicingCodeDto: InvoicingCodeDto) => {
     return toInvoiceItem(nihiiHealthcareProvider, patientDto, invoiceDto, invoicingCodeDto)
@@ -124,9 +151,9 @@ function toInvoiceItem(
     })
   }
   invoiceItem.gnotionNihii = invoiceDto.gnotionNihii
-  invoiceItem.insuranceRef = getMembership(patientDto)
+  invoiceItem.insuranceRef = invoicingCode.contract
   invoiceItem.insuranceRefDate = invoicingCode.contractDate || invoiceItem.dateCode
-  invoiceItem.invoiceRef = invoiceDto.invoiceReference || "0"
+  invoiceItem.invoiceRef = uuidBase36(invoicingCode.id!!)
 
   invoiceItem.override3rdPayerCode = invoicingCode.override3rdPayerCode
   invoiceItem.patientFee = invoicingCode.patientIntervention
@@ -136,7 +163,9 @@ function toInvoiceItem(
   invoiceItem.prescriberNihii = invoicingCode.prescriberNihii
   invoiceItem.prescriberNorm = getPrescriberNorm(invoicingCode.prescriberNorm || 0)
   invoiceItem.reimbursedAmount = invoicingCode.reimbursement
-  invoiceItem.relatedCode = Number(invoicingCode.relatedCode)
+  invoiceItem.relatedCode = invoicingCode.relatedCode
+    ? Number(invoicingCode.relatedCode)
+    : undefined
   invoiceItem.sideCode = getSideCode(invoicingCode.side || 0)
   invoiceItem.timeOfDay = getTimeOfDay(invoicingCode.timeOfDay || 0)
   invoiceItem.units = invoicingCode.units
