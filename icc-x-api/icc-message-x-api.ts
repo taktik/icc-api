@@ -168,9 +168,12 @@ export class IccMessageXApi extends iccMessageApi {
     const ref = efactMessage.commonOutput!!.inputReference
 
     const acceptedButRejected =
-      Number(parsedRecords.et91.acceptedAmountAccount1) +
-        Number(parsedRecords.et91.acceptedAmountAccount2) ===
-      0
+      (parsedRecords.et91 &&
+        Number(parsedRecords.et91.acceptedAmountAccount1) +
+          Number(parsedRecords.et91.acceptedAmountAccount2) ===
+          0) ||
+      false
+
     const statuses =
       (["920999", "920099"].includes(messageType) ||
       (["920900"].includes(messageType) && acceptedButRejected)
