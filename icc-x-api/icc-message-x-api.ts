@@ -108,6 +108,31 @@ export class IccMessageXApi extends iccMessageApi {
       : undefined
   }
 
+  processTack(user: UserDto, hcp: HealthcarePartyDto, efactMessage: EfactMessage) {
+    if (!efactMessage.tack) {
+      throw new Error("Invalid tack")
+    }
+
+    this.receiptApi
+      .createReceipt(
+        new ReceiptDto({
+          references: [
+            `mycarenet:efact:inputReference:${efactMessage.tack.appliesTo}`,
+            efactMessage.tack!!.appliesTo,
+            efactMessage.tack!!.reference
+          ]
+        })
+      )
+      .then(rcpt =>
+        this.receiptApi.setAttachment(
+          rcpt.id,
+          "tack",
+          undefined,
+          utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(efactMessage.tack)))
+        )
+      )
+  }
+
   processEfactMessage(
     user: UserDto,
     hcp: HealthcarePartyDto,
