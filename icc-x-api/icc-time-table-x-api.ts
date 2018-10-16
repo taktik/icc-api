@@ -1,7 +1,7 @@
 import * as i18n from "./rsrc/contact.i18n"
 
 import * as _ from "lodash"
-import { iccTimeTableApi } from "../icc-api/api/ICCTimeTableApi"
+import { iccTimeTableApi } from "../icc-api/iccApi"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 
 export class IccTimeTableXApi extends iccTimeTableApi {
