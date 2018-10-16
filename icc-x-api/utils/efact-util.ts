@@ -11,9 +11,8 @@ import { InvoicesBatch, InvoiceItem, Invoice, EIDItem } from "fhc-api/dist/model
 import { dateEncode, toMoment } from "./formatting-util"
 import { toPatient } from "./fhc-patient-util"
 import { toInvoiceSender } from "./fhc-invoice-sender-util"
-import { isPatientHospitalized, getMembership, getInsurability } from "./insurability-util"
+import { isPatientHospitalized, getInsurability } from "./insurability-util"
 import * as _ from "lodash"
-import * as moment from "moment"
 import { iccInsuranceApi } from "../../icc-api/api/iccInsuranceApi"
 import { UuidEncoder } from "./uuid-encoder"
 
