@@ -284,6 +284,27 @@ export class iccInvoiceApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.InvoiceDto(it)))
       .catch(err => this.handleError(err))
   }
+  listByHcPartyGroupId(
+    hcPartyId: string,
+    groupId: string
+  ): Promise<Array<models.InvoiceDto> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/invoice/byHcPartyGroupId/{hcPartyId}/{groupId}"
+        .replace("{hcPartyId}", hcPartyId + "")
+        .replace("{groupId}", groupId + "") +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.InvoiceDto(it)))
+      .catch(err => this.handleError(err))
+  }
   listByHcPartySentMediumTypeInvoiceTypeSentDate(
     hcPartyId: string,
     sentMediumType: string,
