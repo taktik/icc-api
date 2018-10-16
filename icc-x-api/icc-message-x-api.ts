@@ -165,7 +165,7 @@ export class IccMessageXApi extends iccMessageApi {
         parsedRecords.et90 && parsedRecords.et90.errorDetail ? [parsedRecords.et90.errorDetail] : []
       )
 
-    const ref = efactMessage.commonOutput!!.inputReference % 10000000000
+    const ref = Number(efactMessage.commonOutput!!.inputReference!!) % 10000000000
 
     const acceptedButRejected =
       (parsedRecords.et91 &&
