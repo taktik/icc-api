@@ -142,16 +142,19 @@ export class IccMessageXApi extends iccMessageApi {
 
     const ref = efactMessage.commonOutput!!.inputReference
 
-    const statuses =
-      (["920999", "920099"].includes(messageType) ? 1 << 17 /*STATUS_ERROR*/ : 0) |
-      (["920900"].includes(messageType) &&
-      !errors.length &&
+    const acceptedButRejected =
       Number(parsedRecords.et91.acceptedAmountAccount1) +
-        Number(parsedRecords.et91.acceptedAmountAccount2) >
-        0
+        Number(parsedRecords.et91.acceptedAmountAccount2) ===
+      0
+    const statuses =
+      (["920999", "920099"].includes(messageType) ||
+      (["920900"].includes(messageType) && acceptedButRejected)
+        ? 1 << 17 /*STATUS_ERROR*/
+        : 0) |
+      (["920900"].includes(messageType) && !errors.length && !acceptedButRejected
         ? 1 << 15 /*STATUS_SUCCESS*/
         : 0) |
-      (["920900", "920098"].includes(messageType) && errors.length
+      (["920900", "920098"].includes(messageType) && errors.length && !acceptedButRejected
         ? 1 << 16 /*STATUS_WARNING*/
         : 0) |
       (["931000", "920999"].includes(messageType) ? 1 << 9 /*STATUS_RECEIVED*/ : 0) |
@@ -241,14 +244,14 @@ export class IccMessageXApi extends iccMessageApi {
               (statuses &
                 ((1 << 15) /*STATUS_SUCCESS*/ |
                 (1 << 16) /*STATUS_WARNING*/ |
-                  (1 << 17)) /*STATUS_ERROR*/) >
+                  (1 << 17))) /*STATUS_ERROR*/ >
               0
                 ? this.invoiceApi.getInvoices(new ListOfIdsDto({ ids: parent.invoiceIds }))
                 : Promise.resolve([])
           )
           .then((invoices: Array<models.InvoiceDto>) => {
             const newInvoices: Array<InvoiceDto> = []
-            const rejectAll = (statuses & (1 << 17) /*STATUS_ERROR*/) > 0
+            const rejectAll = (statuses & (1 << 17)) /*STATUS_ERROR*/ > 0
             invoices.forEach(iv => {
               let newInvoice: InvoiceDto | null = null
               _.each(iv.invoicingCodes, ic => {
