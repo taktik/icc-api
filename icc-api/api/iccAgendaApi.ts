@@ -87,7 +87,7 @@ export class iccAgendaApi {
       .then(doc => new models.AgendaDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  getAgendas(): Promise<models.AgendaDto | any> {
+  getAgendas(): Promise<Array<models.AgendaDto> | any> {
     let _body = null
 
     const _url = this.host + "/agenda" + "?ts=" + new Date().getTime()
@@ -96,10 +96,10 @@ export class iccAgendaApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => new models.AgendaDto(doc.body as JSON))
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.AgendaDto(it)))
       .catch(err => this.handleError(err))
   }
-  getAgendasForUser(userId?: string): Promise<models.AgendaDto | any> {
+  getAgendasForUser(userId?: string): Promise<Array<models.AgendaDto> | any> {
     let _body = null
 
     const _url =
@@ -113,10 +113,10 @@ export class iccAgendaApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => new models.AgendaDto(doc.body as JSON))
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.AgendaDto(it)))
       .catch(err => this.handleError(err))
   }
-  getReadableAgendasForUser(userId?: string): Promise<models.AgendaDto | any> {
+  getReadableAgendasForUser(userId?: string): Promise<Array<models.AgendaDto> | any> {
     let _body = null
 
     const _url =
@@ -130,7 +130,7 @@ export class iccAgendaApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => new models.AgendaDto(doc.body as JSON))
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.AgendaDto(it)))
       .catch(err => this.handleError(err))
   }
   modifyAgenda(body?: models.AgendaDto): Promise<models.AgendaDto | any> {

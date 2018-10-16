@@ -87,7 +87,7 @@ export class iccTimeTableApi {
       .then(doc => new models.TimeTableDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  getTimeTableByAgendaId(agendaId?: string): Promise<Array<models.TimeTableDto> | any> {
+  getTimeTablesByAgendaId(agendaId?: string): Promise<Array<models.TimeTableDto> | any> {
     let _body = null
 
     const _url =
@@ -104,7 +104,7 @@ export class iccTimeTableApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.TimeTableDto(it)))
       .catch(err => this.handleError(err))
   }
-  getTimeTableByPeriodAndAgendaId(
+  getTimeTablesByPeriodAndAgendaId(
     startDate?: number,
     endDate?: number,
     agendaId?: string

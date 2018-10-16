@@ -87,7 +87,19 @@ export class iccKeywordApi {
       .then(doc => new models.KeywordDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  getKeywordByUser(userId: string): Promise<models.KeywordDto | any> {
+  getKeywords(): Promise<Array<models.KeywordDto> | any> {
+    let _body = null
+
+    const _url = this.host + "/keyword" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.KeywordDto(it)))
+      .catch(err => this.handleError(err))
+  }
+  getKeywordsByUser(userId: string): Promise<Array<models.KeywordDto> | any> {
     let _body = null
 
     const _url =
@@ -100,19 +112,7 @@ export class iccKeywordApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => new models.KeywordDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
-  }
-  getKeywords(): Promise<models.KeywordDto | any> {
-    let _body = null
-
-    const _url = this.host + "/keyword" + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => new models.KeywordDto(doc.body as JSON))
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.KeywordDto(it)))
       .catch(err => this.handleError(err))
   }
   modifyKeyword(body?: models.KeywordDto): Promise<models.KeywordDto | any> {
