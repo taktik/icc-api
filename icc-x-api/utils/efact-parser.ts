@@ -20,7 +20,11 @@ export interface Zone300Data {
   invoiceRejectionType: string
 }
 
-export interface ET10Data {
+export interface ETData {
+  errorDetail?: ErrorDetail
+}
+
+export interface ET10Data extends ETData {
   fileVersion: string
   financialAccountNumber1: string
   sendingNumber: string
@@ -38,7 +42,7 @@ export interface ET10Data {
   recordControlNumber: string
 }
 
-export interface ET20Data {
+export interface ET20Data extends ETData {
   ct1ct2: string
   reference: string
   recipientIdentifierFlag: string
@@ -47,7 +51,7 @@ export interface ET20Data {
   insurabilityEndDate: string
 }
 
-export interface ET50Data {
+export interface ET50Data extends ETData {
   recordOrderNumber: string
   sex: string
   units: string
@@ -58,7 +62,7 @@ export interface ET50Data {
   treatedMember: string
 }
 
-export interface ET51Data {
+export interface ET51Data extends ETData {
   recordOrderNumber: string
   prestationCode: string
   prestationDate: string
@@ -71,7 +75,7 @@ export interface ET51Data {
   recordControlNumber: string
 }
 
-export interface ET52Data {
+export interface ET52Data extends ETData {
   recordOrderNumber: string
   nomenCode: string
   prestationDate: string
@@ -83,11 +87,11 @@ export interface ET52Data {
   nihii: string
 }
 
-export interface ET80Data {
+export interface ET80Data extends ETData {
   recipientIdentifier: string
 }
 
-export interface ET90Data {
+export interface ET90Data extends ETData {
   financialAccountNumber1: string
   sendingNumber: string
   financialAccountNumber2: string
@@ -173,12 +177,6 @@ export class EfactMessageReader {
     return this.message.hashValue
   }
 
-  get errors(): Array<ErrorDetail> {
-    return (this.message.message || []).map((message: Record) => {
-      return message.errorDetail!!
-    })
-  }
-
   read(): File920900Data | undefined {
     try {
       let i = 0
@@ -255,11 +253,7 @@ export class EfactMessageReader {
   private readZone200(zone200: Record): Zone200Data {
     let i = 0
     this.log("responseType", zone200.zones!![i].value)
-    if (zone200.zones!![i].value !== this.fileType) {
-      throw new Error(
-        `Expecting a file of type ${this.fileType} but got ${zone200.zones!![i].value}`
-      )
-    }
+    this.fileType = zone200.zones!![i].value
     i++
     this.log("errorCode", zone200.zones!![i].value)
     i++
@@ -510,6 +504,7 @@ export class EfactMessageReader {
     }
 
     return {
+      errorDetail: et10.errorDetail,
       fileVersion,
       financialAccountNumber1,
       sendingNumber,
@@ -644,6 +639,7 @@ export class EfactMessageReader {
       throw new Error(`You didn\'t parse every zones of the ET${etNumber}`)
     }
     return {
+      errorDetail: et20.errorDetail,
       ct1ct2,
       reference,
       recipientIdentifierFlag,
@@ -774,6 +770,7 @@ export class EfactMessageReader {
     }
 
     return {
+      errorDetail: et50.errorDetail,
       recordOrderNumber,
       sex,
       units,
@@ -927,6 +924,7 @@ export class EfactMessageReader {
       throw new Error(`You didn\'t parse every zones of the ET${etNumber}`)
     }
     return {
+      errorDetail: et51.errorDetail,
       recordOrderNumber,
       prestationCode,
       prestationDate,
@@ -996,6 +994,7 @@ export class EfactMessageReader {
       throw new Error(`You didn\'t parse every zones of the ET${etNumber}`)
     }
     return {
+      errorDetail: et52.errorDetail,
       recordOrderNumber,
       nomenCode,
       prestationDate,
@@ -1139,6 +1138,7 @@ export class EfactMessageReader {
       throw new Error(`You didn\'t parse every zones of the ET${etNumber}`)
     }
     return {
+      errorDetail: et80.errorDetail,
       recipientIdentifier
     }
   }
@@ -1274,6 +1274,7 @@ export class EfactMessageReader {
     }
 
     return {
+      errorDetail: et90.errorDetail,
       financialAccountNumber1,
       sendingNumber,
       financialAccountNumber2,

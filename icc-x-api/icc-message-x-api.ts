@@ -19,7 +19,7 @@ import { IccDocumentXApi } from "./icc-document-x-api"
 import { utils } from "./crypto/utils"
 import { Record } from "fhc-api/dist/model/Record"
 import { EfactMessage } from "fhc-api/dist/model/EfactMessage"
-import { EfactMessageReader } from "./utils/efact-reader"
+import { EfactMessageReader } from "./utils/efact-parser"
 
 export class IccMessageXApi extends iccMessageApi {
   private crypto: IccCryptoXApi
@@ -70,7 +70,7 @@ export class IccMessageXApi extends iccMessageApi {
     docXApi: IccDocumentXApi
   ) {
     const parsedRecords = new EfactMessageReader(efactMessage).read()
-    const ref = efactMessage.commonOutput.inputReference
+    const ref = efactMessage.commonOutput!!.inputReference
 
     this.findMessagesByTransportGuid("EFACT:BATCH:" + ref, false, undefined, undefined, 1)
       .then(parent =>
