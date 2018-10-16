@@ -32,7 +32,15 @@ import { EfactSendResponse } from "fhc-api/dist/model/EfactSendResponse"
 import { IccDocumentXApi } from "./icc-document-x-api"
 import { utils } from "./crypto/utils"
 import { EfactMessage } from "fhc-api/dist/model/EfactMessage"
-import { EfactMessageReader } from "./utils/efact-parser"
+import {
+  EfactMessage920098Reader,
+  EfactMessage920099Reader,
+  EfactMessage920900Reader,
+  EfactMessage920999Reader,
+  EfactMessage931000Reader,
+  EfactMessageReader,
+  File920900Data
+} from "./utils/efact-parser"
 import { ErrorDetail } from "fhc-api/dist/model/ErrorDetail"
 
 export class IccMessageXApi extends iccMessageApi {
@@ -107,8 +115,25 @@ export class IccMessageXApi extends iccMessageApi {
     docXApi: IccDocumentXApi
   ) {
     const messageType = efactMessage.detail!!.substr(0, 6)
+    const parser: EfactMessageReader | null =
+      messageType === "920098"
+        ? new EfactMessage920098Reader(efactMessage)
+        : messageType === "920099"
+          ? new EfactMessage920099Reader(efactMessage)
+          : messageType === "920900"
+            ? new EfactMessage920900Reader(efactMessage)
+            : messageType === "920999"
+              ? new EfactMessage920999Reader(efactMessage)
+              : messageType === "931000"
+                ? new EfactMessage931000Reader(efactMessage)
+                : null
 
-    const parsedRecords = new EfactMessageReader(efactMessage).read()
+    if (!parser) {
+      throw new Error(`Unsupported message type ${messageType}`)
+    }
+
+    const parsedRecords = parser.read()
+
     if (!parsedRecords) {
       throw new Error("Cannot parse...")
     }
@@ -165,7 +190,7 @@ export class IccMessageXApi extends iccMessageApi {
     const invoicingErrors: Array<{ itemId: string; error?: ErrorDetail }> =
       messageType === "920900"
         ? _.compact(
-            _.flatMap(parsedRecords.records, r =>
+            _.flatMap((parsedRecords as File920900Data).records, r =>
               r.items.map(
                 i =>
                   i.et50 &&
@@ -287,14 +312,19 @@ export class IccMessageXApi extends iccMessageApi {
                   ic.pending = false
                   ic.error = undefined
 
-                  let record51 = _.compact(
-                    _.flatMap(parsedRecords.records, r =>
-                      r.items!!.map(
-                        i =>
-                          i && i.et50 && decodeBase36Uuid(i.et50.itemReference) === ic.id && i.et51
+                  let record51 =
+                    messageType === "920900" &&
+                    _.compact(
+                      _.flatMap((parsedRecords as File920900Data).records, r =>
+                        r.items!!.map(
+                          i =>
+                            i &&
+                            i.et50 &&
+                            decodeBase36Uuid(i.et50.itemReference) === ic.id &&
+                            i.et51
+                        )
                       )
-                    )
-                  )[0]
+                    )[0]
                   ic.paid =
                     (record51 &&
                       record51.reimbursementAmount &&
