@@ -71,18 +71,23 @@ export class IccMessageXApi extends iccMessageApi {
   ) {
     const parsedRecords = new EfactMessageReader(efactMessage).read()
     const ref = efactMessage.commonOutput.inputReference
-    this.newInstance(user, {
-      // tslint:disable-next-line:no-bitwise
-      status: 1 << 1, // STATUS_EFACT
-      transportGuid: "EFACT:IN:" + ref,
-      fromAddress: "EFACT",
-      sent: timeEncode(new Date()),
-      fromHealthcarePartyId: hcp.id,
-      recipients: [hcp.id],
-      recipientsType: "org.taktik.icure.entities.HealthcareParty",
-      received: +new Date(),
-      subject: efactMessage.detail!!.substr(0, 6)
-    })
+
+    this.findMessagesByTransportGuid("EFACT:BATCH:" + ref, false, undefined, undefined, 1)
+      .then(parent =>
+        this.newInstance(user, {
+          // tslint:disable-next-line:no-bitwise
+          status: 1 << 1, // STATUS_EFACT
+          transportGuid: "EFACT:IN:" + ref,
+          fromAddress: "EFACT",
+          sent: timeEncode(new Date()),
+          fromHealthcarePartyId: hcp.id,
+          recipients: [hcp.id],
+          recipientsType: "org.taktik.icure.entities.HealthcareParty",
+          received: +new Date(),
+          subject: efactMessage.detail!!.substr(0, 6),
+          parentId: parent && parent.id
+        })
+      )
       .then(msg => this.createMessage(msg))
       .then(msg =>
         Promise.all([
@@ -93,13 +98,21 @@ export class IccMessageXApi extends iccMessageApi {
           docXApi.newInstance(user, msg, {
             mainUti: "public.json",
             name: `${msg.subject}_records`
+          }),
+          docXApi.newInstance(user, msg, {
+            mainUti: "public.json",
+            name: `${msg.subject}_parsed_records`
           })
         ])
       )
-      .then(([doc, jsonDoc]) =>
-        Promise.all([docXApi.createDocument(doc), docXApi.createDocument(jsonDoc)])
+      .then(([doc, jsonDoc, jsonParsedDoc]) =>
+        Promise.all([
+          docXApi.createDocument(doc),
+          docXApi.createDocument(jsonDoc),
+          docXApi.createDocument(jsonParsedDoc)
+        ])
       )
-      .then(([doc, jsonDoc]) =>
+      .then(([doc, jsonDoc, jsonParsedDoc]) =>
         Promise.all([
           docXApi.setAttachment(
             doc.id!!,
@@ -108,6 +121,11 @@ export class IccMessageXApi extends iccMessageApi {
           ),
           docXApi.setAttachment(
             jsonDoc.id!!,
+            undefined /*TODO provide keys for encryption*/,
+            utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(efactMessage.message)))
+          ),
+          docXApi.setAttachment(
+            jsonParsedDoc.id!!,
             undefined /*TODO provide keys for encryption*/,
             utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(parsedRecords)))
           )
