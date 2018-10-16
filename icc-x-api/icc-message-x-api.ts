@@ -252,7 +252,12 @@ export class IccMessageXApi extends iccMessageApi {
         recipientsType: "org.taktik.icure.entities.HealthcareParty",
         received: +new Date(),
         subject: messageType,
-        parentId: parent.id
+        parentId: parent.id,
+        senderReferences: {
+          inputReference: efactMessage.commonOutput!!.inputReference,
+          outputReference: efactMessage.commonOutput!!.outputReference,
+          nipReference: efactMessage.commonOutput!!.nipReference
+        }
       })
         .then(msg => this.createMessage(msg))
         .then(msg =>
