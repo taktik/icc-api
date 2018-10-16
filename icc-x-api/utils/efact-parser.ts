@@ -20,6 +20,20 @@ export interface Zone300Data {
   invoiceRejectionType: string
 }
 
+export interface Zone300Short {
+  sendingNumber: string
+  invoiceReference: string
+  mutualityContactLastName: string
+  mutualityContactFirstName: string
+  mutualityContactPhoneNumber: string
+  invoiceType: string
+  invoiceMode: string
+}
+
+export interface Zone300Stub {
+  messageType: string
+}
+
 export interface Zone400Data {
   mutualityNumber: string
   signAmount1: string
@@ -206,7 +220,7 @@ export interface File920098Data {
 
 export interface File920999Data {
   zone200: Zone200Data
-  zone300: Zone300Data
+  zone300: Zone300Short
   et95: Array<Zone400Data | undefined>
   et96: Zone500Data | undefined
 }
@@ -356,6 +370,92 @@ export abstract class EfactMessageReader {
       invoiceMode: invoiceMode,
       errorPercentage: errorPercentage,
       invoiceRejectionType: invoiceRejectionType
+    }
+  }
+
+  readZone300Stub(zone300: Record): Zone300Stub {
+    let i = 0
+    this.log("Nom du message visé par cette communication", zone300.zones!![i].value)
+    const messageType = zone300.zones!![i].value
+    i++
+    this.log("Code erreur", zone300.zones!![i].value)
+    i++
+    this.log("reserve", zone300.zones!![i].value)
+    i++
+
+    if (zone300.zones!!.length !== i) {
+      throw Error("Zone 300: The parsing is not matching the available number of zones.")
+    }
+
+    return {
+      messageType
+    }
+  }
+
+  readZone300Short(zone300: Record): Zone300Short {
+    let i = 0
+    this.log("Lien T10 Z22&23 Annee et mois facturation", zone300.zones!![i].value)
+    i++
+    this.log("Code erreur", zone300.zones!![i].value)
+    i++
+    this.log("Numro d'envoi", zone300.zones!![i].value)
+    const sendingNumber = zone300.zones!![i].value
+    i++
+    this.log("Code erreur", zone300.zones!![i].value)
+    i++
+    this.log("Lien T10 Z25 Date cration facture", zone300.zones!![i].value)
+    i++
+    this.log("Code erreur", zone300.zones!![i].value)
+    i++
+    this.log("Reference facture", zone300.zones!![i].value)
+    const invoiceReference = zone300.zones!![i].value
+    i++
+    this.log("Code erreur", zone300.zones!![i].value)
+    i++
+    this.log("Lien T10 Z4 Numro version instructions", zone300.zones!![i].value)
+    i++
+    this.log("Code erreur", zone300.zones!![i].value)
+    i++
+    this.log("Nom personne contact OA", zone300.zones!![i].value)
+    const oaContactLastName = zone300.zones!![i].value
+    i++
+    this.log("Code erreur", zone300.zones!![i].value)
+    i++
+    this.log("Prnom personne de contact OA", zone300.zones!![i].value)
+    const oaContactFirstName = zone300.zones!![i].value
+    i++
+    this.log("Code erreur", zone300.zones!![i].value)
+    i++
+    this.log("Numro telephone personne contact OA", zone300.zones!![i].value)
+    const oaContactPhoneNumber = zone300.zones!![i].value
+    i++
+    this.log("Code erreur", zone300.zones!![i].value)
+    i++
+    this.log("Type de facture", zone300.zones!![i].value)
+    const invoiceType = zone300.zones!![i].value
+    i++
+    this.log("Code erreur", zone300.zones!![i].value)
+    i++
+    this.log("Mode facturation", zone300.zones!![i].value)
+    const invoiceMode = zone300.zones!![i].value
+    i++
+    this.log("Code erreur", zone300.zones!![i].value)
+    i++
+    this.log("reserve", zone300.zones!![i].value)
+    i++
+
+    if (zone300.zones!!.length !== i) {
+      throw Error("Zone 300: The parsing is not matching the available number of zones.")
+    }
+
+    return {
+      sendingNumber: sendingNumber,
+      invoiceReference: invoiceReference,
+      mutualityContactLastName: oaContactLastName,
+      mutualityContactFirstName: oaContactFirstName,
+      mutualityContactPhoneNumber: oaContactPhoneNumber,
+      invoiceType: invoiceType,
+      invoiceMode: invoiceMode
     }
   }
 
@@ -1842,14 +1942,14 @@ export class EfactMessage920999Reader extends EfactMessageReader {
       let rawRecords = this.message.message!!
 
       const zone200 = this.readZone200(rawRecords[i++])
-      const zone300 = this.readZone300(rawRecords[i++])
+      const zone300 = this.readZone300Short(rawRecords[i++])
       let et95 = []
-      while (rawRecords[i].zones!![0].value === "95") {
+      while (rawRecords[i] && rawRecords[i].zones!![0].value === "95") {
         const zone400 = this.readZone400(rawRecords[i++])
         et95.push(zone400)
       }
       let et96
-      if (rawRecords[i].zones!![0].value === "96") {
+      if (rawRecords[i] && rawRecords[i].zones!![0].value === "96") {
         et96 = this.readZone500(rawRecords[i++])
       }
 
