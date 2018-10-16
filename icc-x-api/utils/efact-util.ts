@@ -29,7 +29,7 @@ export function toInvoiceBatch(
   invoices: Array<InvoiceWithPatient>,
   hcp: HealthcarePartyDto,
   batchRef: string,
-  batchNumber: string,
+  batchNumber: number,
   fileRef: string,
   insuranceApi: iccInsuranceApi
 ): Promise<InvoicesBatch> {
@@ -69,11 +69,9 @@ export function toInvoiceBatch(
           invoicesBatch.invoicingYear = toMoment(invoices[0].invoiceDto.invoiceDate!!)!!.year()
           invoicesBatch.ioFederationCode = fedCodes[0]
           invoicesBatch.numericalRef =
-            invoicesBatch.invoicingYear * 1000000 +
-            Number(fedCodes[0]) * 1000 +
-            Number.parseInt(batchNumber)
+            invoicesBatch.invoicingYear * 1000000 + Number(fedCodes[0]) * 1000 + batchNumber
           invoicesBatch.sender = toInvoiceSender(hcp)
-          invoicesBatch.uniqueSendNumber = Number.parseInt(batchNumber)
+          invoicesBatch.uniqueSendNumber = batchNumber
 
           return invoicesBatch
         })
