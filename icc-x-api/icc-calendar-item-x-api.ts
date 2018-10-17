@@ -4,8 +4,8 @@ import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
 import { utils } from "./crypto/utils"
 import { AES } from "./crypto/AES"
-import { iccCalendarItemApi } from "../icc-api/iccApi"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
+import { iccCalendarItemApi } from ".."
 
 export class IccCalendarItemXApi extends iccCalendarItemApi {
   i18n: any = i18n

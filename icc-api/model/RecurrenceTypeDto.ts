@@ -24,21 +24,14 @@
 
 import * as models from "./models"
 
-export class MeasureDto {
+export class RecurrenceTypeDto {
   constructor(json: JSON | any) {
-    Object.assign(this as MeasureDto, json)
+    Object.assign(this as RecurrenceTypeDto, json)
   }
-  value?: number
 
-  min?: number
+  id?: string
 
-  max?: number
+  code?: string
 
-  ref?: number
-
-  unit?: string
-
-  unitCodes?: Array<models.CodeDto>
-
-  comment?: string
+  name?: string
 }
