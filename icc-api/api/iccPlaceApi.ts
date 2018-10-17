@@ -87,7 +87,7 @@ export class iccPlaceApi {
       .then(doc => new models.PlaceDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  getPlaces(): Promise<models.PlaceDto | any> {
+  getPlaces(): Promise<Array<models.PlaceDto> | any> {
     let _body = null
 
     const _url = this.host + "/place" + "?ts=" + new Date().getTime()
@@ -96,7 +96,7 @@ export class iccPlaceApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => new models.PlaceDto(doc.body as JSON))
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.PlaceDto(it)))
       .catch(err => this.handleError(err))
   }
   modifyPlace(body?: models.PlaceDto): Promise<models.PlaceDto | any> {
