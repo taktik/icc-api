@@ -19,6 +19,7 @@ import { UuidEncoder } from "./uuid-encoder"
 export interface InvoiceWithPatient {
   invoiceDto: InvoiceDto
   patientDto: PatientDto
+  aggregatedInvoice?: InvoiceDto
 }
 
 const base36UUID = new UuidEncoder()
@@ -81,13 +82,17 @@ export function toInvoiceBatch(
           invoicesBatch.batchRef = batchRef
           invoicesBatch.fileRef = fileRef
           invoicesBatch.invoices = _.map(invoices, (invWithPat: InvoiceWithPatient) => {
+            const invoice = invWithPat.aggregatedInvoice
+              ? invWithPat.aggregatedInvoice
+              : invWithPat.invoiceDto
+
             const ins = insurances.find(
               i => i.id === getInsurability(invWithPat.patientDto).insuranceId
             )
             if (!ins) {
               throw "Insurance is invalid for patient " + invWithPat.patientDto.id
             }
-            return toInvoice(hcp.nihii!!, invWithPat.invoiceDto, invWithPat.patientDto, ins)
+            return toInvoice(hcp.nihii!!, invoice, invWithPat.patientDto, ins)
           })
           invoicesBatch.invoicingMonth =
             toMoment(invoices[0].invoiceDto.invoiceDate!!)!!.month() + 1
