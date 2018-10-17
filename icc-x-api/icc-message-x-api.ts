@@ -128,12 +128,9 @@ export class IccMessageXApi extends iccMessageApi {
         })
       )
       .then(rcpt =>
-        this.receiptApi.setAttachment(
-          rcpt.id,
-          "tack",
-          undefined,
+        this.receiptApi.setAttachment(rcpt.id, "tack", undefined, <any>(
           utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(efactMessage.tack)))
-        )
+        ))
       )
   }
 
@@ -282,17 +279,17 @@ export class IccMessageXApi extends iccMessageApi {
             this.documentXApi.setAttachment(
               doc.id!!,
               undefined /*TODO provide keys for encryption*/,
-              utils.ua2ArrayBuffer(utils.text2ua(efactMessage.detail!!))
+              <any>utils.ua2ArrayBuffer(utils.text2ua(efactMessage.detail!!))
             ),
             this.documentXApi.setAttachment(
               jsonDoc.id!!,
               undefined /*TODO provide keys for encryption*/,
-              utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(efactMessage.message)))
+              <any>utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(efactMessage.message)))
             ),
             this.documentXApi.setAttachment(
               jsonParsedDoc.id!!,
               undefined /*TODO provide keys for encryption*/,
-              utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(parsedRecords)))
+              <any>utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(parsedRecords)))
             )
           ])
         )
@@ -484,12 +481,12 @@ export class IccMessageXApi extends iccMessageApi {
                           this.documentXApi.setAttachment(
                             doc.id!!,
                             undefined /*TODO provide keys for encryption*/,
-                            utils.ua2ArrayBuffer(utils.text2ua(res.detail!!))
+                            <any>utils.ua2ArrayBuffer(utils.text2ua(res.detail!!))
                           ),
                           this.documentXApi.setAttachment(
                             jsonDoc.id!!,
                             undefined /*TODO provide keys for encryption*/,
-                            utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.records!!)))
+                            <any>utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.records!!)))
                           )
                         ])
                       )
@@ -506,12 +503,9 @@ export class IccMessageXApi extends iccMessageApi {
                         )
                       )
                       .then(rcpt =>
-                        this.receiptApi.setAttachment(
-                          rcpt.id,
-                          "tack",
-                          undefined,
+                        this.receiptApi.setAttachment(rcpt.id, "tack", undefined, <any>(
                           utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.tack)))
-                        )
+                        ))
                       )
                       .then(() => message)
                   )
