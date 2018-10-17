@@ -239,12 +239,15 @@ export class IccMessageXApi extends iccMessageApi {
       false,
       undefined,
       undefined,
-      1
+      100
     ).then(parents => {
-      if (!parents.rows || !parents.rows.length) {
+      const msgsForHcp = ((parents && parents.rows) || []).filter(
+        (p: MessageDto) => p.responsible === hcp.id
+      )
+      if (!msgsForHcp.length) {
         throw new Error(`Cannot find parent with ref ${ref}`)
       }
-      const parent: MessageDto = parents.rows[0]
+      const parent: MessageDto = msgsForHcp[0]
       return this.newInstance(user, {
         // tslint:disable-next-line:no-bitwise
         status: (1 << 1) /*STATUS_UNREAD*/ | statuses,
