@@ -85,7 +85,7 @@ export class IccMessageXApi extends iccMessageApi {
     return this.initDelegations(message, null, user)
   }
 
-  extractErrorMessage(es?: { itemId: string | null; error?: ErrorDetail }): string | undefined {
+  extractErrorMessage(es?: { itemId: string; error?: ErrorDetail }): string | undefined {
     const e = es && es.error
     return e &&
       (e.rejectionCode1 ||
@@ -108,7 +108,11 @@ export class IccMessageXApi extends iccMessageApi {
       : undefined
   }
 
-  processTack(user: UserDto, hcp: HealthcarePartyDto, efactMessage: EfactMessage) {
+  processTack(
+    user: UserDto,
+    hcp: HealthcarePartyDto,
+    efactMessage: EfactMessage
+  ): Promise<ReceiptDto> {
     if (!efactMessage.tack) {
       throw new Error("Invalid tack")
     }
@@ -138,7 +142,7 @@ export class IccMessageXApi extends iccMessageApi {
     hcp: HealthcarePartyDto,
     efactMessage: EfactMessage,
     docXApi: IccDocumentXApi
-  ) {
+  ): Promise<MessageDto> {
     const messageType = efactMessage.detail!!.substr(0, 6)
     const parser: EfactMessageReader | null =
       messageType === "920098"
@@ -215,7 +219,7 @@ export class IccMessageXApi extends iccMessageApi {
       (["920999"].includes(messageType) ? 1 << 12 /*STATUS_REJECTED*/ : 0) |
       (["920900", "920098", "920099"].includes(messageType) ? 1 << 17 /*STATUS_ACCEPTED*/ : 0)
 
-    const invoicingErrors: Array<{ itemId: string | null; error?: ErrorDetail }> =
+    const invoicingErrors: Array<{ itemId: string; error?: ErrorDetail }> =
       messageType === "920900"
         ? _.compact(
             _.flatMap((parsedRecords as File920900Data).records, r =>
@@ -241,139 +245,142 @@ export class IccMessageXApi extends iccMessageApi {
         throw new Error(`Cannot find parent with ref ${ref}`)
       }
       const parent: MessageDto = parents.rows[0]
-      parent.status = (parent.status || 0) | statuses
-      return this.modifyMessage(parent).then(parent =>
-        this.newInstance(user, {
-          // tslint:disable-next-line:no-bitwise
-          status: (1 << 1) /*STATUS_UNREAD*/ | statuses,
-          transportGuid: "EFACT:IN:" + ref,
-          fromAddress: "EFACT",
-          sent: timeEncode(new Date()),
-          fromHealthcarePartyId: hcp.id,
-          recipients: [hcp.id],
-          recipientsType: "org.taktik.icure.entities.HealthcareParty",
-          received: +new Date(),
-          subject: messageType,
-          parentId: parent.id
-        })
-          .then(msg => this.createMessage(msg))
-          .then(msg =>
-            Promise.all([
-              docXApi.newInstance(user, msg, {
-                mainUti: "public.plain-text",
-                name: msg.subject
-              }),
-              docXApi.newInstance(user, msg, {
-                mainUti: "public.json",
-                name: `${msg.subject}_records`
-              }),
-              docXApi.newInstance(user, msg, {
-                mainUti: "public.json",
-                name: `${msg.subject}_parsed_records`
-              })
-            ])
-          )
-          .then(([doc, jsonDoc, jsonParsedDoc]) =>
-            Promise.all([
-              docXApi.createDocument(doc),
-              docXApi.createDocument(jsonDoc),
-              docXApi.createDocument(jsonParsedDoc)
-            ])
-          )
-          .then(([doc, jsonDoc, jsonParsedDoc]) =>
-            Promise.all([
-              docXApi.setAttachment(
-                doc.id!!,
-                undefined /*TODO provide keys for encryption*/,
-                utils.ua2ArrayBuffer(utils.text2ua(efactMessage.detail!!))
-              ),
-              docXApi.setAttachment(
-                jsonDoc.id!!,
-                undefined /*TODO provide keys for encryption*/,
-                utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(efactMessage.message)))
-              ),
-              docXApi.setAttachment(
-                jsonParsedDoc.id!!,
-                undefined /*TODO provide keys for encryption*/,
-                utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(parsedRecords)))
-              )
-            ])
-          )
-          .then(
-            () =>
-              ["920999", "920099", "920900"].includes(messageType)
-                ? this.invoiceApi.getInvoices(new ListOfIdsDto({ ids: parent.invoiceIds }))
-                : Promise.resolve([])
-          )
-          .then((invoices: Array<models.InvoiceDto>) => {
-            const newInvoices: Array<InvoiceDto> = []
-            const rejectAll = (statuses & (1 << 17)) /*STATUS_ERROR*/ > 0
-            invoices.forEach(iv => {
-              let newInvoice: InvoiceDto | null = null
-              _.each(iv.invoicingCodes, ic => {
-                const errStruct = invoicingErrors.find(it => it.itemId === ic.id)
-                if (rejectAll || errStruct) {
-                  ic.accepted = false
-                  ic.canceled = true
-                  ic.pending = false
-                  ic.error = this.extractErrorMessage(errStruct)
-                  ;(
-                    newInvoice ||
-                    (newInvoice = new InvoiceDto(
-                      _.pick(iv, [
-                        "invoiceDate",
-                        "recipientType",
-                        "recipientId",
-                        "invoiceType",
-                        "secretForeignKeys",
-                        "cryptedForeignKeys",
-                        "paid",
-                        "author",
-                        "responsible"
-                      ])
-                    ))
-                  ).invoicingCodes = (newInvoice.invoicingCodes || []).concat(
-                    _.assign({}, ic, {
-                      id: this.crypto.randomUuid(),
-                      accepted: false,
-                      canceled: false,
-                      pending: true,
-                      resent: true
-                    })
-                  )
-                } else {
-                  ic.accepted = true
-                  ic.canceled = false
-                  ic.pending = false
-                  ic.error = undefined
-
-                  let record51 =
-                    messageType === "920900" &&
-                    _.compact(
-                      _.flatMap((parsedRecords as File920900Data).records, r =>
-                        r.items!!.map(
-                          i =>
-                            i &&
-                            i.et50 &&
-                            decodeBase36Uuid(i.et50.itemReference) === ic.id &&
-                            i.et51
-                        )
-                      )
-                    )[0]
-                  ic.paid =
-                    (record51 &&
-                      record51.reimbursementAmount &&
-                      Number((Number(record51.reimbursementAmount) / 100).toFixed(2))) ||
-                    ic.reimbursement
-                }
-              })
-              newInvoice && newInvoices.push(newInvoice)
-              this.invoiceApi.modifyInvoice(iv)
+      return this.newInstance(user, {
+        // tslint:disable-next-line:no-bitwise
+        status: (1 << 1) /*STATUS_UNREAD*/ | statuses,
+        transportGuid: "EFACT:IN:" + ref,
+        fromAddress: "EFACT",
+        sent: timeEncode(new Date()),
+        fromHealthcarePartyId: hcp.id,
+        recipients: [hcp.id],
+        recipientsType: "org.taktik.icure.entities.HealthcareParty",
+        received: +new Date(),
+        subject: messageType,
+        parentId: parent.id,
+        senderReferences: {
+          inputReference: efactMessage.commonOutput!!.inputReference,
+          outputReference: efactMessage.commonOutput!!.outputReference,
+          nipReference: efactMessage.commonOutput!!.nipReference
+        }
+      })
+        .then(msg => this.createMessage(msg))
+        .then(msg =>
+          Promise.all([
+            docXApi.newInstance(user, msg, {
+              mainUti: "public.plain-text",
+              name: msg.subject
+            }),
+            docXApi.newInstance(user, msg, {
+              mainUti: "public.json",
+              name: `${msg.subject}_records`
+            }),
+            docXApi.newInstance(user, msg, {
+              mainUti: "public.json",
+              name: `${msg.subject}_parsed_records`
             })
-            newInvoices.forEach(iv => this.invoiceApi.createInvoice(iv))
-            return newInvoices
-          })
-      )
+          ])
+            .then(([doc, jsonDoc, jsonParsedDoc]) =>
+              Promise.all([
+                docXApi.createDocument(doc),
+                docXApi.createDocument(jsonDoc),
+                docXApi.createDocument(jsonParsedDoc)
+              ])
+            )
+            .then(([doc, jsonDoc, jsonParsedDoc]) =>
+              Promise.all([
+                docXApi.setAttachment(
+                  doc.id!!,
+                  undefined /*TODO provide keys for encryption*/,
+                  utils.ua2ArrayBuffer(utils.text2ua(efactMessage.detail!!))
+                ),
+                docXApi.setAttachment(
+                  jsonDoc.id!!,
+                  undefined /*TODO provide keys for encryption*/,
+                  utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(efactMessage.message)))
+                ),
+                docXApi.setAttachment(
+                  jsonParsedDoc.id!!,
+                  undefined /*TODO provide keys for encryption*/,
+                  utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(parsedRecords)))
+                )
+              ])
+            )
+            .then(
+              () =>
+                ["920999", "920099", "920900"].includes(messageType)
+                  ? this.invoiceApi.getInvoices(new ListOfIdsDto({ ids: parent.invoiceIds }))
+                  : Promise.resolve([])
+            )
+            .then((invoices: Array<models.InvoiceDto>) => {
+              const rejectAll = (statuses & (1 << 17)) /*STATUS_ERROR*/ > 0
+              return Promise.all(
+                _.flatMap(invoices, iv => {
+                  let newInvoice: InvoiceDto | null = null
+                  _.each(iv.invoicingCodes, ic => {
+                    const errStruct = invoicingErrors.find(it => it.itemId === ic.id)
+                    if (rejectAll || errStruct) {
+                      ic.accepted = false
+                      ic.canceled = true
+                      ic.pending = false
+                      ic.error = this.extractErrorMessage(errStruct)
+                      ;(
+                        newInvoice ||
+                        (newInvoice = new InvoiceDto(
+                          _.pick(iv, [
+                            "invoiceDate",
+                            "recipientType",
+                            "recipientId",
+                            "invoiceType",
+                            "secretForeignKeys",
+                            "cryptedForeignKeys",
+                            "paid",
+                            "author",
+                            "responsible"
+                          ])
+                        ))
+                      ).invoicingCodes = (newInvoice.invoicingCodes || []).concat(
+                        _.assign({}, ic, {
+                          id: this.crypto.randomUuid(),
+                          accepted: false,
+                          canceled: false,
+                          pending: true,
+                          resent: true
+                        })
+                      )
+                    } else {
+                      ic.accepted = true
+                      ic.canceled = false
+                      ic.pending = false
+                      ic.error = undefined
+
+                      let record51 =
+                        messageType === "920900" &&
+                        _.compact(
+                          _.flatMap((parsedRecords as File920900Data).records, r =>
+                            r.items!!.map(
+                              i =>
+                                i &&
+                                i.et50 &&
+                                decodeBase36Uuid(i.et50.itemReference) === ic.id &&
+                                i.et51
+                            )
+                          )
+                        )[0]
+                      ic.paid =
+                        (record51 &&
+                          record51.reimbursementAmount &&
+                          Number((Number(record51.reimbursementAmount) / 100).toFixed(2))) ||
+                        ic.reimbursement
+                    }
+                  })
+                  return newInvoice
+                    ? [this.invoiceApi.createInvoice(newInvoice), this.invoiceApi.modifyInvoice(iv)]
+                    : [this.invoiceApi.modifyInvoice(iv)]
+                })
+              )
+            })
+            .then(() => msg)
+        )
     })
   }
 
