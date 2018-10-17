@@ -479,29 +479,29 @@ export class IccMessageXApi extends iccMessageApi {
                       .then(msg =>
                         Promise.all([
                           docXApi.newInstance(user, msg, {
-                            mainUti: "public.plain-text",
-                            name: "920000"
-                          }),
-                          docXApi.newInstance(user, msg, {
                             mainUti: "public.json",
                             name: "920000_records"
+                          }),
+                          docXApi.newInstance(user, msg, {
+                            mainUti: "public.plain-text",
+                            name: "920000"
                           })
                         ])
                       )
-                      .then(([doc, jsonDoc]) =>
-                        Promise.all([docXApi.createDocument(doc), docXApi.createDocument(jsonDoc)])
+                      .then(([jsonDoc, doc]) =>
+                        Promise.all([docXApi.createDocument(jsonDoc), docXApi.createDocument(doc)])
                       )
-                      .then(([doc, jsonDoc]) =>
+                      .then(([jsonDoc, doc]) =>
                         Promise.all([
-                          docXApi.setAttachment(
-                            doc.id!!,
-                            undefined /*TODO provide keys for encryption*/,
-                            utils.ua2ArrayBuffer(utils.text2ua(res.detail!!))
-                          ),
                           docXApi.setAttachment(
                             jsonDoc.id!!,
                             undefined /*TODO provide keys for encryption*/,
                             utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.records!!)))
+                          ),
+                          docXApi.setAttachment(
+                            doc.id!!,
+                            undefined /*TODO provide keys for encryption*/,
+                            utils.ua2ArrayBuffer(utils.text2ua(res.detail!!))
                           )
                         ])
                       )
