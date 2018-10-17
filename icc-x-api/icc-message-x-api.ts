@@ -33,7 +33,15 @@ import { fhcEfactcontrollerApi } from "fhc-api"
 import { EfactSendResponse } from "fhc-api/dist/model/EfactSendResponse"
 import { utils } from "./crypto/utils"
 import { EfactMessage } from "fhc-api/dist/model/EfactMessage"
-import { EfactMessageReader } from "./utils/efact-parser"
+import {
+  EfactMessage920098Reader,
+  EfactMessage920099Reader,
+  EfactMessage920900Reader,
+  EfactMessage920999Reader,
+  EfactMessage931000Reader,
+  EfactMessageReader,
+  File920900Data
+} from "./utils/efact-parser"
 import { ErrorDetail } from "fhc-api/dist/model/ErrorDetail"
 
 export class IccMessageXApi extends iccMessageApi {
@@ -104,10 +112,49 @@ export class IccMessageXApi extends iccMessageApi {
       : undefined
   }
 
+  processTack(user: UserDto, hcp: HealthcarePartyDto, efactMessage: EfactMessage) {
+    if (!efactMessage.tack) {
+      throw new Error("Invalid tack")
+    }
+
+    return this.receiptApi
+      .createReceipt(
+        new ReceiptDto({
+          references: [
+            `mycarenet:efact:inputReference:${efactMessage.tack.appliesTo}`,
+            efactMessage.tack!!.appliesTo,
+            efactMessage.tack!!.reference
+          ]
+        })
+      )
+      .then(rcpt =>
+        this.receiptApi.setAttachment(rcpt.id, "tack", undefined, <any>(
+          utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(efactMessage.tack)))
+        ))
+      )
+  }
+
   processEfactMessage(user: UserDto, hcp: HealthcarePartyDto, efactMessage: EfactMessage) {
     const messageType = efactMessage.detail!!.substr(0, 6)
+    const parser: EfactMessageReader | null =
+      messageType === "920098"
+        ? new EfactMessage920098Reader(efactMessage)
+        : messageType === "920099"
+          ? new EfactMessage920099Reader(efactMessage)
+          : messageType === "920900"
+            ? new EfactMessage920900Reader(efactMessage)
+            : messageType === "920999"
+              ? new EfactMessage920999Reader(efactMessage)
+              : messageType === "931000"
+                ? new EfactMessage931000Reader(efactMessage)
+                : null
 
-    const parsedRecords = new EfactMessageReader(efactMessage).read()
+    if (!parser) {
+      throw new Error(`Unsupported message type ${messageType}`)
+    }
+
+    const parsedRecords = parser.read()
+
     if (!parsedRecords) {
       throw new Error("Cannot parse...")
     }
@@ -139,12 +186,15 @@ export class IccMessageXApi extends iccMessageApi {
         parsedRecords.et90 && parsedRecords.et90.errorDetail ? [parsedRecords.et90.errorDetail] : []
       )
 
-    const ref = efactMessage.commonOutput!!.inputReference
+    const ref = Number(efactMessage.commonOutput!!.inputReference!!) % 10000000000
 
     const acceptedButRejected =
-      Number(parsedRecords.et91.acceptedAmountAccount1) +
-        Number(parsedRecords.et91.acceptedAmountAccount2) ===
-      0
+      (parsedRecords.et91 &&
+        Number(parsedRecords.et91.acceptedAmountAccount1) +
+          Number(parsedRecords.et91.acceptedAmountAccount2) ===
+          0) ||
+      false
+
     const statuses =
       (["920999", "920099"].includes(messageType) ||
       (["920900"].includes(messageType) && acceptedButRejected)
@@ -164,7 +214,7 @@ export class IccMessageXApi extends iccMessageApi {
     const invoicingErrors: Array<{ itemId: string; error?: ErrorDetail }> =
       messageType === "920900"
         ? _.compact(
-            _.flatMap(parsedRecords.records, r =>
+            _.flatMap((parsedRecords as File920900Data).records, r =>
               r.items.map(
                 i =>
                   i.et50 &&
@@ -176,138 +226,144 @@ export class IccMessageXApi extends iccMessageApi {
           )
         : []
 
-    this.findMessagesByTransportGuid("EFACT:BATCH:" + ref, false, undefined, undefined, 1).then(
-      parents => {
-        if (!parents.length) {
-          throw new Error(`Cannot find parent with ref ${ref}`)
-        }
-        const parent: MessageDto = parents[0]
-        return this.newInstance(user, {
-          // tslint:disable-next-line:no-bitwise
-          status: (1 << 1) /*STATUS_UNREAD*/ | statuses,
-          transportGuid: "EFACT:IN:" + ref,
-          fromAddress: "EFACT",
-          sent: timeEncode(new Date()),
-          fromHealthcarePartyId: hcp.id,
-          recipients: [hcp.id],
-          recipientsType: "org.taktik.icure.entities.HealthcareParty",
-          received: +new Date(),
-          subject: messageType,
-          parentId: parent.id
-        })
-          .then(msg => this.createMessage(msg))
-          .then(msg =>
-            Promise.all([
-              this.documentXApi.newInstance(user, msg, {
-                mainUti: "public.plain-text",
-                name: msg.subject
-              }),
-              this.documentXApi.newInstance(user, msg, {
-                mainUti: "public.json",
-                name: `${msg.subject}_records`
-              }),
-              this.documentXApi.newInstance(user, msg, {
-                mainUti: "public.json",
-                name: `${msg.subject}_parsed_records`
-              })
-            ])
-          )
-          .then(([doc, jsonDoc, jsonParsedDoc]) =>
-            Promise.all([
-              this.documentXApi.createDocument(doc),
-              this.documentXApi.createDocument(jsonDoc),
-              this.documentXApi.createDocument(jsonParsedDoc)
-            ])
-          )
-          .then(([doc, jsonDoc, jsonParsedDoc]) =>
-            Promise.all([
-              this.documentXApi.setAttachment(
-                doc.id!!,
-                undefined /*TODO provide keys for encryption*/,
-                utils.ua2ArrayBuffer(utils.text2ua(efactMessage.detail!!))
-              ),
-              this.documentXApi.setAttachment(
-                jsonDoc.id!!,
-                undefined /*TODO provide keys for encryption*/,
-                utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(efactMessage.message)))
-              ),
-              this.documentXApi.setAttachment(
-                jsonParsedDoc.id!!,
-                undefined /*TODO provide keys for encryption*/,
-                utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(parsedRecords)))
-              )
-            ])
-          )
-          .then(
-            () =>
-              ["920999", "920099", "920900"].includes(messageType)
-                ? this.invoiceApi.getInvoices(new ListOfIdsDto({ ids: parent.invoiceIds }))
-                : Promise.resolve([])
-          )
-          .then((invoices: Array<models.InvoiceDto>) => {
-            const newInvoices: Array<InvoiceDto> = []
-            const rejectAll = (statuses & (1 << 17)) /*STATUS_ERROR*/ > 0
-            invoices.forEach(iv => {
-              let newInvoice: InvoiceDto | null = null
-              _.each(iv.invoicingCodes, ic => {
-                const errStruct = invoicingErrors.find(it => it.itemId === ic.id)
-                if (rejectAll || errStruct) {
-                  ic.accepted = false
-                  ic.canceled = true
-                  ic.pending = false
-                  ic.error = this.extractErrorMessage(errStruct)
-                  ;(
-                    newInvoice ||
-                    (newInvoice = new InvoiceDto(
-                      _.pick(iv, [
-                        "invoiceDate",
-                        "recipientType",
-                        "recipientId",
-                        "invoiceType",
-                        "secretForeignKeys",
-                        "cryptedForeignKeys",
-                        "paid",
-                        "author",
-                        "responsible"
-                      ])
-                    ))
-                  ).invoicingCodes = (newInvoice.invoicingCodes || []).concat(
-                    _.assign({}, ic, {
-                      id: this.crypto.randomUuid(),
-                      accepted: false,
-                      canceled: false,
-                      pending: true,
-                      resent: true
-                    })
-                  )
-                } else {
-                  ic.accepted = true
-                  ic.canceled = false
-                  ic.pending = false
-                  ic.error = undefined
+    return this.findMessagesByTransportGuid(
+      "EFACT:BATCH:" + ref,
+      false,
+      undefined,
+      undefined,
+      1
+    ).then(parents => {
+      if (!parents.rows || !parents.rows.length) {
+        throw new Error(`Cannot find parent with ref ${ref}`)
+      }
+      const parent: MessageDto = parents.rows[0]
+      return this.newInstance(user, {
+        // tslint:disable-next-line:no-bitwise
+        status: (1 << 1) /*STATUS_UNREAD*/ | statuses,
+        transportGuid: "EFACT:IN:" + ref,
+        fromAddress: "EFACT",
+        sent: timeEncode(new Date()),
+        fromHealthcarePartyId: hcp.id,
+        recipients: [hcp.id],
+        recipientsType: "org.taktik.icure.entities.HealthcareParty",
+        received: +new Date(),
+        subject: messageType,
+        parentId: parent.id
+      })
+        .then(msg => this.createMessage(msg))
+        .then(msg =>
+          Promise.all([
+            this.documentXApi.newInstance(user, msg, {
+              mainUti: "public.plain-text",
+              name: msg.subject
+            }),
+            this.documentXApi.newInstance(user, msg, {
+              mainUti: "public.json",
+              name: `${msg.subject}_records`
+            }),
+            this.documentXApi.newInstance(user, msg, {
+              mainUti: "public.json",
+              name: `${msg.subject}_parsed_records`
+            })
+          ])
+        )
+        .then(([doc, jsonDoc, jsonParsedDoc]) =>
+          Promise.all([
+            this.documentXApi.createDocument(doc),
+            this.documentXApi.createDocument(jsonDoc),
+            this.documentXApi.createDocument(jsonParsedDoc)
+          ])
+        )
+        .then(([doc, jsonDoc, jsonParsedDoc]) =>
+          Promise.all([
+            this.documentXApi.setAttachment(
+              doc.id!!,
+              undefined /*TODO provide keys for encryption*/,
+              <any>utils.ua2ArrayBuffer(utils.text2ua(efactMessage.detail!!))
+            ),
+            this.documentXApi.setAttachment(
+              jsonDoc.id!!,
+              undefined /*TODO provide keys for encryption*/,
+              <any>utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(efactMessage.message)))
+            ),
+            this.documentXApi.setAttachment(
+              jsonParsedDoc.id!!,
+              undefined /*TODO provide keys for encryption*/,
+              <any>utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(parsedRecords)))
+            )
+          ])
+        )
+        .then(
+          () =>
+            ["920999", "920099", "920900"].includes(messageType)
+              ? this.invoiceApi.getInvoices(new ListOfIdsDto({ ids: parent.invoiceIds }))
+              : Promise.resolve([])
+        )
+        .then((invoices: Array<models.InvoiceDto>) => {
+          const newInvoices: Array<InvoiceDto> = []
+          const rejectAll = (statuses & (1 << 17)) /*STATUS_ERROR*/ > 0
+          invoices.forEach(iv => {
+            let newInvoice: InvoiceDto | null = null
+            _.each(iv.invoicingCodes, ic => {
+              const errStruct = invoicingErrors.find(it => it.itemId === ic.id)
+              if (rejectAll || errStruct) {
+                ic.accepted = false
+                ic.canceled = true
+                ic.pending = false
+                ic.error = this.extractErrorMessage(errStruct)
+                ;(
+                  newInvoice ||
+                  (newInvoice = new InvoiceDto(
+                    _.pick(iv, [
+                      "invoiceDate",
+                      "recipientType",
+                      "recipientId",
+                      "invoiceType",
+                      "secretForeignKeys",
+                      "cryptedForeignKeys",
+                      "paid",
+                      "author",
+                      "responsible"
+                    ])
+                  ))
+                ).invoicingCodes = (newInvoice.invoicingCodes || []).concat(
+                  _.assign({}, ic, {
+                    id: this.crypto.randomUuid(),
+                    accepted: false,
+                    canceled: false,
+                    pending: true,
+                    resent: true
+                  })
+                )
+              } else {
+                ic.accepted = true
+                ic.canceled = false
+                ic.pending = false
+                ic.error = undefined
 
-                  let record51 = _.compact(
-                    _.flatMap(parsedRecords.records, r =>
+                let record51 =
+                  messageType === "920900" &&
+                  _.compact(
+                    _.flatMap((parsedRecords as File920900Data).records, r =>
                       r.items!!.map(
                         i =>
                           i && i.et50 && decodeBase36Uuid(i.et50.itemReference) === ic.id && i.et51
                       )
                     )
                   )[0]
-                  ic.paid =
-                    (record51 &&
-                      record51.reimbursementAmount &&
-                      Number((Number(record51.reimbursementAmount) / 100).toFixed(2))) ||
-                    ic.reimbursement
-                }
-              })
-              newInvoice && newInvoices.push(newInvoice)
+                ic.paid =
+                  (record51 &&
+                    record51.reimbursementAmount &&
+                    Number((Number(record51.reimbursementAmount) / 100).toFixed(2))) ||
+                  ic.reimbursement
+              }
             })
-            newInvoices.forEach(iv => this.invoiceApi.createInvoice(iv))
-            return newInvoices
+            newInvoice && newInvoices.push(newInvoice)
           })
-      }
-    )
+          newInvoices.forEach(iv => this.invoiceApi.createInvoice(iv))
+          return newInvoices
+        })
+    })
   }
 
   sendBatch(
@@ -344,37 +400,19 @@ export class IccMessageXApi extends iccMessageApi {
             })
           )
         )
-        .then(er => {
-          const sendNumber = er && er.id ? Number(er.id.substr(prefix.length)) % 1000 : 0
-
-          return this.newInstance(user, {
-            id: uuid,
-            invoiceIds: invoices.map(i => i.invoiceDto.id),
-            // tslint:disable-next-line:no-bitwise
-            status: 1 << 6, // STATUS_EFACT
-            externalRef: sendNumber,
-            transportGuid: "EFACT:BATCH:" + smallBase36,
-            sent: timeEncode(new Date()),
-            fromHealthcarePartyId: hcp.id,
-            recipients: [fed.id],
-            recipientsType: "org.taktik.icure.entities.Insurance"
-          })
-        })
-        .then(message =>
-          // Fullbase36 and smallBase36 => inversé
+        .then(er =>
           toInvoiceBatch(
             invoices,
             hcp,
             fullBase36,
-            message.externalRef!!,
+            er && er.id ? Number(er.id.substr(prefix.length)) % 1000 : 0,
             smallBase36,
             this.insuranceApi
           )
-            .then(_batch => {
-              batch = _batch
-              console.log("batch", batch)
-              return efactApi.sendBatchUsingPOST(xFHCKeystoreId, xFHCTokenId, xFHCPassPhrase, batch)
-            })
+        )
+        .then(batch =>
+          efactApi
+            .sendBatchUsingPOST(xFHCKeystoreId, xFHCTokenId, xFHCPassPhrase, batch)
             .then((res: EfactSendResponse) => {
               if (res.success) {
                 let promise = Promise.resolve(true)
@@ -382,7 +420,7 @@ export class IccMessageXApi extends iccMessageApi {
                 _.forEach(invoices, iv => {
                   promise = promise.then(() => {
                     _.forEach(iv.invoiceDto.invoicingCodes, code => {
-                      code.status = 4 // STATUS_PENDING
+                      code.pending = true // STATUS_PENDING
                       totalAmount += code.reimbursement || 0
                     })
                     iv.invoiceDto.sentDate = sentDate
@@ -393,6 +431,20 @@ export class IccMessageXApi extends iccMessageApi {
                 })
                 return promise
                   .then(() =>
+                    this.newInstance(user, {
+                      id: uuid,
+                      invoiceIds: invoices.map(i => i.invoiceDto.id),
+                      // tslint:disable-next-line:no-bitwise
+                      status: 1 << 6, // STATUS_EFACT
+                      externalRef: "" + batch.uniqueSendNumber,
+                      transportGuid: "EFACT:BATCH:" + batch.numericalRef,
+                      sent: timeEncode(new Date()),
+                      fromHealthcarePartyId: hcp.id,
+                      recipients: [fed.code],
+                      recipientsType: "org.taktik.icure.entities.Insurance"
+                    })
+                  )
+                  .then(message =>
                     this.createMessage(
                       Object.assign(message, {
                         sent: sentDate,
@@ -406,60 +458,57 @@ export class IccMessageXApi extends iccMessageApi {
                         }
                       })
                     )
-                  )
-                  .then(msg =>
-                    Promise.all([
-                      this.documentXApi.newInstance(user, msg, {
-                        mainUti: "public.plain-text",
-                        name: "920000"
-                      }),
-                      this.documentXApi.newInstance(user, msg, {
-                        mainUti: "public.json",
-                        name: "920000_records"
-                      })
-                    ])
-                  )
-                  .then(([doc, jsonDoc]) =>
-                    Promise.all([
-                      this.documentXApi.createDocument(doc),
-                      this.documentXApi.createDocument(jsonDoc)
-                    ])
-                  )
-                  .then(([doc, jsonDoc]) =>
-                    Promise.all([
-                      this.documentXApi.setAttachment(
-                        doc.id!!,
-                        undefined /*TODO provide keys for encryption*/,
-                        utils.ua2ArrayBuffer(utils.text2ua(res.detail!!))
-                      ),
-                      this.documentXApi.setAttachment(
-                        jsonDoc.id!!,
-                        undefined /*TODO provide keys for encryption*/,
-                        utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.records!!)))
+                      .then(msg =>
+                        Promise.all([
+                          this.documentXApi.newInstance(user, msg, {
+                            mainUti: "public.plain-text",
+                            name: "920000"
+                          }),
+                          this.documentXApi.newInstance(user, msg, {
+                            mainUti: "public.json",
+                            name: "920000_records"
+                          })
+                        ])
                       )
-                    ])
+                      .then(([doc, jsonDoc]) =>
+                        Promise.all([
+                          this.documentXApi.createDocument(doc),
+                          this.documentXApi.createDocument(jsonDoc)
+                        ])
+                      )
+                      .then(([doc, jsonDoc]) =>
+                        Promise.all([
+                          this.documentXApi.setAttachment(
+                            doc.id!!,
+                            undefined /*TODO provide keys for encryption*/,
+                            <any>utils.ua2ArrayBuffer(utils.text2ua(res.detail!!))
+                          ),
+                          this.documentXApi.setAttachment(
+                            jsonDoc.id!!,
+                            undefined /*TODO provide keys for encryption*/,
+                            <any>utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.records!!)))
+                          )
+                        ])
+                      )
+                      .then(() =>
+                        this.receiptApi.createReceipt(
+                          new ReceiptDto({
+                            documentId: message.id,
+                            references: [
+                              `mycarenet:efact:inputReference:${res.inputReference}`,
+                              res.tack!!.appliesTo,
+                              res.tack!!.reference
+                            ]
+                          })
+                        )
+                      )
+                      .then(rcpt =>
+                        this.receiptApi.setAttachment(rcpt.id, "tack", undefined, <any>(
+                          utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.tack)))
+                        ))
+                      )
+                      .then(() => message)
                   )
-                  .then(() =>
-                    this.receiptApi.createReceipt(
-                      new ReceiptDto({
-                        documentId: message.id,
-                        references: [
-                          `mycarenet:efact:inputReference:${res.inputReference}`,
-                          res.tack!!.appliesTo,
-                          res.tack!!.reference
-                        ]
-                      })
-                    )
-                  )
-                  .then(rcpt =>
-                    this.receiptApi.setAttachment(
-                      rcpt.id,
-                      "tack",
-                      undefined,
-                      utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.tack)))
-                    )
-                  )
-                  .then(() => message)
               } else {
                 throw "Cannot send batch"
               }

@@ -11,9 +11,8 @@ import { InvoicesBatch, InvoiceItem, Invoice, EIDItem } from "fhc-api/dist/model
 import { dateEncode, toMoment } from "./formatting-util"
 import { toPatient } from "./fhc-patient-util"
 import { toInvoiceSender } from "./fhc-invoice-sender-util"
-import { isPatientHospitalized, getMembership, getInsurability } from "./insurability-util"
+import { isPatientHospitalized, getInsurability } from "./insurability-util"
 import * as _ from "lodash"
-import * as moment from "moment"
 import { iccInsuranceApi } from "../../icc-api/api/iccInsuranceApi"
 import { UuidEncoder } from "./uuid-encoder"
 
@@ -55,7 +54,7 @@ export function toInvoiceBatch(
   invoices: Array<InvoiceWithPatient>,
   hcp: HealthcarePartyDto,
   batchRef: string,
-  batchNumber: string,
+  batchNumber: number,
   fileRef: string,
   insuranceApi: iccInsuranceApi
 ): Promise<InvoicesBatch> {
@@ -95,11 +94,9 @@ export function toInvoiceBatch(
           invoicesBatch.invoicingYear = toMoment(invoices[0].invoiceDto.invoiceDate!!)!!.year()
           invoicesBatch.ioFederationCode = fedCodes[0]
           invoicesBatch.numericalRef =
-            invoicesBatch.invoicingYear * 1000000 +
-            Number(fedCodes[0]) * 1000 +
-            Number.parseInt(batchNumber)
+            invoicesBatch.invoicingYear * 1000000 + Number(fedCodes[0]) * 1000 + batchNumber
           invoicesBatch.sender = toInvoiceSender(hcp)
-          invoicesBatch.uniqueSendNumber = Number.parseInt(batchNumber)
+          invoicesBatch.uniqueSendNumber = batchNumber
 
           return invoicesBatch
         })
@@ -140,7 +137,7 @@ function toInvoiceItem(
   invoiceItem.codeNomenclature = Number(invoicingCode.tarificationId!!.split("|")[1])
   invoiceItem.dateCode = dateEncode(toMoment(invoicingCode.dateCode!!)!!.toDate())
   invoiceItem.doctorIdentificationNumber = nihiiHealthcareProvider
-  invoiceItem.doctorSupplement = invoicingCode.doctorSupplement
+  invoiceItem.doctorSupplement = Number(((invoicingCode.doctorSupplement || 0) * 100).toFixed(0))
   if (invoicingCode.eidReadingHour && invoicingCode.eidReadingValue) {
     invoiceItem.eidItem = new EIDItem({
       deviceType: "1",
@@ -156,16 +153,14 @@ function toInvoiceItem(
   invoiceItem.invoiceRef = uuidBase36(invoicingCode.id!!)
 
   invoiceItem.override3rdPayerCode = invoicingCode.override3rdPayerCode
-  invoiceItem.patientFee = invoicingCode.patientIntervention
+  invoiceItem.patientFee = Number(((invoicingCode.patientIntervention || 0) * 100).toFixed(0))
   invoiceItem.percentNorm = InvoiceItem.PercentNormEnum.None
   invoiceItem.personalInterventionCoveredByThirdPartyCode =
     invoicingCode.cancelPatientInterventionReason
   invoiceItem.prescriberNihii = invoicingCode.prescriberNihii
   invoiceItem.prescriberNorm = getPrescriberNorm(invoicingCode.prescriberNorm || 0)
-  invoiceItem.reimbursedAmount = invoicingCode.reimbursement
-  invoiceItem.relatedCode = invoicingCode.relatedCode
-    ? Number(invoicingCode.relatedCode)
-    : undefined
+  invoiceItem.reimbursedAmount = Number(((invoicingCode.reimbursement || 0) * 100).toFixed(0))
+  invoiceItem.relatedCode = Number(invoicingCode.relatedCode)
   invoiceItem.sideCode = getSideCode(invoicingCode.side || 0)
   invoiceItem.timeOfDay = getTimeOfDay(invoicingCode.timeOfDay || 0)
   invoiceItem.units = invoicingCode.units
