@@ -90,5 +90,7 @@ export class MessageDto {
 
   externalRef?: string
 
+  senderReferences?: { [key: string]: string }
+
   encryptedSelf?: string
 }
