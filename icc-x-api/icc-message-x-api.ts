@@ -85,7 +85,7 @@ export class IccMessageXApi extends iccMessageApi {
     return this.initDelegations(message, null, user)
   }
 
-  extractErrorMessage(es?: { itemId: string; error?: ErrorDetail }): string | undefined {
+  extractErrorMessage(es?: { itemId: string | null; error?: ErrorDetail }): string | undefined {
     const e = es && es.error
     return e &&
       (e.rejectionCode1 ||
@@ -219,7 +219,7 @@ export class IccMessageXApi extends iccMessageApi {
       (["920999"].includes(messageType) ? 1 << 12 /*STATUS_REJECTED*/ : 0) |
       (["920900", "920098", "920099"].includes(messageType) ? 1 << 17 /*STATUS_ACCEPTED*/ : 0)
 
-    const invoicingErrors: Array<{ itemId: string; error?: ErrorDetail }> =
+    const invoicingErrors: Array<{ itemId: string | null; error?: ErrorDetail }> =
       messageType === "920900"
         ? _.compact(
             _.flatMap((parsedRecords as File920900Data).records, r =>
@@ -247,7 +247,7 @@ export class IccMessageXApi extends iccMessageApi {
       if (!msgsForHcp.length) {
         throw new Error(`Cannot find parent with ref ${ref}`)
       }
-      const parent: MessageDto = msgsForHcp[0]
+      const parentMessage: MessageDto = msgsForHcp[0]
       return this.newInstance(user, {
         // tslint:disable-next-line:no-bitwise
         status: (1 << 1) /*STATUS_UNREAD*/ | statuses,
@@ -259,7 +259,7 @@ export class IccMessageXApi extends iccMessageApi {
         recipientsType: "org.taktik.icure.entities.HealthcareParty",
         received: +new Date(),
         subject: messageType,
-        parentId: parent.id,
+        parentId: parentMessage.id,
         senderReferences: {
           inputReference: efactMessage.commonOutput!!.inputReference,
           outputReference: efactMessage.commonOutput!!.outputReference,
@@ -311,7 +311,7 @@ export class IccMessageXApi extends iccMessageApi {
             .then(
               () =>
                 ["920999", "920099", "920900"].includes(messageType)
-                  ? this.invoiceApi.getInvoices(new ListOfIdsDto({ ids: parent.invoiceIds }))
+                  ? this.invoiceApi.getInvoices(new ListOfIdsDto({ ids: parentMessage.invoiceIds }))
                   : Promise.resolve([])
             )
             .then((invoices: Array<models.InvoiceDto>) => {
@@ -325,7 +325,7 @@ export class IccMessageXApi extends iccMessageApi {
                       ic.accepted = false
                       ic.canceled = true
                       ic.pending = false
-                      ic.error = this.extractErrorMessage(errStruct)
+                      ic.error = (errStruct && this.extractErrorMessage(errStruct)) || undefined
                       ;(
                         newInvoice ||
                         (newInvoice = new InvoiceDto(
@@ -381,6 +381,10 @@ export class IccMessageXApi extends iccMessageApi {
                     : [this.invoiceApi.modifyInvoice(iv)]
                 })
               )
+            })
+            .then(() => {
+              parentMessage.status = (parentMessage.status || 0) | statuses
+              this.modifyMessage(parentMessage)
             })
             .then(() => msg)
         )
