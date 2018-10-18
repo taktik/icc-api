@@ -321,7 +321,7 @@ export class IccMessageXApi extends iccMessageApi {
                   let newInvoice: InvoiceDto | null = null
                   _.each(iv.invoicingCodes, ic => {
                     const errStruct = invoicingErrors.find(it => it.itemId === ic.id)
-                    if (rejectAll || errStruct) {
+                    if ((rejectAll || errStruct) && !ic.canceled) {
                       ic.logicalId = ic.logicalId || this.crypto.randomUuid()
                       ic.accepted = false
                       ic.canceled = true
