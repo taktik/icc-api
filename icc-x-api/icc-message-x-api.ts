@@ -99,16 +99,16 @@ export class IccMessageXApi extends iccMessageApi {
         e.rejectionCode3 ||
         e.rejectionDescr3)
       ? _.compact([
-          e.rejectionCode1 || (e.rejectionDescr1 && e.rejectionDescr1.trim().length)
+          Number(e.rejectionCode1) || (e.rejectionDescr1 && e.rejectionDescr1.trim().length)
             ? `${e.rejectionCode1 || "XXXXXX"}: ${e.rejectionDescr1 || "-"}`
             : null,
-          e.rejectionCode2 || (e.rejectionDescr2 && e.rejectionDescr2.trim().length)
+          Number(e.rejectionCode2) || (e.rejectionDescr2 && e.rejectionDescr2.trim().length)
             ? `${e.rejectionCode2 || "XXXXXX"}: ${e.rejectionDescr2 || "-"}`
             : null,
-          e.rejectionCode3 || (e.rejectionDescr3 && e.rejectionDescr3.trim().length)
+          Number(e.rejectionCode3) || (e.rejectionDescr3 && e.rejectionDescr3.trim().length)
             ? `${e.rejectionCode3 || "XXXXXX"}: ${e.rejectionDescr3 || "-"}`
             : null
-        ]).join(",")
+        ]).join("; ")
       : undefined
   }
 
@@ -220,7 +220,7 @@ export class IccMessageXApi extends iccMessageApi {
       (["920900", "920098", "920099"].includes(messageType) ? 1 << 17 /*STATUS_ERROR*/ : 0)
 
     const invoicingErrors: Array<{ itemId: string | null; error?: ErrorDetail }> =
-      messageType === "920900"
+      messageType !== "920900" && messageType !== "931000"
         ? _.compact(
             _.flatMap((parsedRecords as File920900Data).records, r =>
               r.items.map(
@@ -322,6 +322,7 @@ export class IccMessageXApi extends iccMessageApi {
                   _.each(iv.invoicingCodes, ic => {
                     const errStruct = invoicingErrors.find(it => it.itemId === ic.id)
                     if (rejectAll || errStruct) {
+                      ic.logicalId = ic.logicalId || this.crypto.randomUuid()
                       ic.accepted = false
                       ic.canceled = true
                       ic.pending = false
@@ -360,6 +361,7 @@ export class IccMessageXApi extends iccMessageApi {
                       ).invoicingCodes = (newInvoice.invoicingCodes || []).concat(
                         _.assign({}, ic, {
                           id: this.crypto.randomUuid(),
+                          logicalId: ic.logicalId,
                           accepted: false,
                           canceled: false,
                           pending: true,
