@@ -165,7 +165,7 @@ function toInvoiceItem(
   invoiceItem.prescriberNihii = invoicingCode.prescriberNihii
   invoiceItem.prescriberNorm = getPrescriberNorm(invoicingCode.prescriberNorm || 0)
   invoiceItem.reimbursedAmount = Number(((invoicingCode.reimbursement || 0) * 100).toFixed(0))
-  invoiceItem.relatedCode = Number(invoicingCode.relatedCode)
+  invoiceItem.relatedCode = Number(invoicingCode.relatedCode || 0)
   invoiceItem.sideCode = getSideCode(invoicingCode.side || 0)
   invoiceItem.timeOfDay = getTimeOfDay(invoicingCode.timeOfDay || 0)
   invoiceItem.units = invoicingCode.units || 1

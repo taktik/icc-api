@@ -217,7 +217,7 @@ export class IccMessageXApi extends iccMessageApi {
       (["931000", "920999"].includes(messageType) ? 1 << 9 /*STATUS_RECEIVED*/ : 0) |
       (["931000"].includes(messageType) ? 1 << 10 /*STATUS_ACCEPTED_FOR_TREATMENT*/ : 0) |
       (["920999"].includes(messageType) ? 1 << 12 /*STATUS_REJECTED*/ : 0) |
-      (["920900", "920098", "920099"].includes(messageType) ? 1 << 17 /*STATUS_ACCEPTED*/ : 0)
+      (["920900", "920098", "920099"].includes(messageType) ? 1 << 17 /*STATUS_ERROR*/ : 0)
 
     const invoicingErrors: Array<{ itemId: string | null; error?: ErrorDetail }> =
       messageType === "920900"
