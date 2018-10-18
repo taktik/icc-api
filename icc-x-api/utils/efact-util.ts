@@ -168,7 +168,7 @@ function toInvoiceItem(
   invoiceItem.relatedCode = Number(invoicingCode.relatedCode)
   invoiceItem.sideCode = getSideCode(invoicingCode.side || 0)
   invoiceItem.timeOfDay = getTimeOfDay(invoicingCode.timeOfDay || 0)
-  invoiceItem.units = invoicingCode.units
+  invoiceItem.units = invoicingCode.units || 1
 
   return invoiceItem
 }
