@@ -19,6 +19,7 @@ import { UuidEncoder } from "./uuid-encoder"
 export interface InvoiceWithPatient {
   invoiceDto: InvoiceDto
   patientDto: PatientDto
+  aggregatedInvoice?: InvoiceDto
 }
 
 const base36UUID = new UuidEncoder()
@@ -81,13 +82,17 @@ export function toInvoiceBatch(
           invoicesBatch.batchRef = batchRef
           invoicesBatch.fileRef = fileRef
           invoicesBatch.invoices = _.map(invoices, (invWithPat: InvoiceWithPatient) => {
+            const invoice = invWithPat.aggregatedInvoice
+              ? invWithPat.aggregatedInvoice
+              : invWithPat.invoiceDto
+
             const ins = insurances.find(
               i => i.id === getInsurability(invWithPat.patientDto).insuranceId
             )
             if (!ins) {
               throw "Insurance is invalid for patient " + invWithPat.patientDto.id
             }
-            return toInvoice(hcp.nihii!!, invWithPat.invoiceDto, invWithPat.patientDto, ins)
+            return toInvoice(hcp.nihii!!, invoice, invWithPat.patientDto, ins)
           })
           invoicesBatch.invoicingMonth =
             toMoment(invoices[0].invoiceDto.invoiceDate!!)!!.month() + 1
@@ -160,10 +165,10 @@ function toInvoiceItem(
   invoiceItem.prescriberNihii = invoicingCode.prescriberNihii
   invoiceItem.prescriberNorm = getPrescriberNorm(invoicingCode.prescriberNorm || 0)
   invoiceItem.reimbursedAmount = Number(((invoicingCode.reimbursement || 0) * 100).toFixed(0))
-  invoiceItem.relatedCode = Number(invoicingCode.relatedCode)
+  invoiceItem.relatedCode = Number(invoicingCode.relatedCode || 0)
   invoiceItem.sideCode = getSideCode(invoicingCode.side || 0)
   invoiceItem.timeOfDay = getTimeOfDay(invoicingCode.timeOfDay || 0)
-  invoiceItem.units = invoicingCode.units
+  invoiceItem.units = invoicingCode.units || 1
 
   return invoiceItem
 }
@@ -219,14 +224,20 @@ export function uuidBase36Half(uuid: string): string {
   return _.padStart(rawEndcode, 13, "0")
 }
 
-export function decodeBase36Uuid(base36: string): string {
-  const decoded: string = base36UUID.decode(base36)
-  if (base36.length !== 13) {
-    return decoded
-  } else {
-    const truncated = decoded.substr(19, decoded.length)
-    const raw = truncated.replace(/-/g, "")
-    const formatted = raw.substr(0, 8) + "-" + raw.substring(8, 12) + "-" + raw.substring(12, 16)
-    return formatted
+export function decodeBase36Uuid(base36: string): string | null {
+  try {
+    const decoded: string = base36UUID.decode(base36)
+    if (base36.length !== 13) {
+      return decoded
+    } else {
+      const truncated = decoded.substr(19, decoded.length)
+      const raw = truncated.replace(/-/g, "")
+      const formatted = raw.substr(0, 8) + "-" + raw.substring(8, 12) + "-" + raw.substring(12, 16)
+      return formatted
+    }
+  } catch (e) {
+    console.log("Cannot interpret: " + base36, e)
   }
+
+  return null
 }
