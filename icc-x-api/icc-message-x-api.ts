@@ -337,6 +337,8 @@ export class IccMessageXApi extends iccMessageApi {
                             "invoiceType",
                             "secretForeignKeys",
                             "cryptedForeignKeys",
+                            "delegations",
+                            "encryptionKeys",
                             "paid",
                             "author",
                             "responsible",
