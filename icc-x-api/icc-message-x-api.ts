@@ -143,96 +143,7 @@ export class IccMessageXApi extends iccMessageApi {
     hcp: HealthcarePartyDto,
     efactMessage: EfactMessage
   ): Promise<MessageDto> {
-    const messageType = efactMessage.detail!!.substr(0, 6)
-    const parser: EfactMessageReader | null =
-      messageType === "920098"
-        ? new EfactMessage920098Reader(efactMessage)
-        : messageType === "920099"
-          ? new EfactMessage920099Reader(efactMessage)
-          : messageType === "920900"
-            ? new EfactMessage920900Reader(efactMessage)
-            : messageType === "920999"
-              ? new EfactMessage920999Reader(efactMessage)
-              : messageType === "931000"
-                ? new EfactMessage931000Reader(efactMessage)
-                : null
-
-    if (!parser) {
-      return Promise.reject(new Error(`Unsupported message type ${messageType}`))
-    }
-
-    const parsedRecords = parser.read()
-
-    if (!parsedRecords) {
-      return Promise.reject(new Error("Cannot parse..."))
-    }
-
-    const errors = (parsedRecords.et10 && parsedRecords.et10.errorDetail
-      ? [parsedRecords.et10.errorDetail]
-      : []
-    )
-      .concat(
-        _.flatMap(parsedRecords.records, r => {
-          const errors: Array<ErrorDetail> = []
-
-          if (r.et20 && r.et20.errorDetail) {
-            errors.push(r.et20.errorDetail)
-          }
-          _.each(r.items, i => {
-            if (i.et50 && i.et50.errorDetail) errors.push(i.et50.errorDetail)
-            if (i.et51 && i.et51.errorDetail) errors.push(i.et51.errorDetail)
-            if (i.et52 && i.et52.errorDetail) errors.push(i.et52.errorDetail)
-          })
-          if (r.et80 && r.et80.errorDetail) {
-            errors.push(r.et80.errorDetail)
-          }
-
-          return errors
-        })
-      )
-      .concat(
-        parsedRecords.et90 && parsedRecords.et90.errorDetail ? [parsedRecords.et90.errorDetail] : []
-      )
-
     const ref = Number(efactMessage.commonOutput!!.inputReference!!) % 10000000000
-
-    const acceptedButRejected =
-      (parsedRecords.et91 &&
-        Number(parsedRecords.et91.acceptedAmountAccount1) +
-          Number(parsedRecords.et91.acceptedAmountAccount2) ===
-          0) ||
-      false
-
-    const statuses =
-      (["920999", "920099"].includes(messageType) ||
-      (["920900"].includes(messageType) && acceptedButRejected)
-        ? 1 << 17 /*STATUS_ERROR*/
-        : 0) |
-      (["920900"].includes(messageType) && !errors.length && !acceptedButRejected
-        ? 1 << 15 /*STATUS_SUCCESS*/
-        : 0) |
-      (["920900", "920098"].includes(messageType) && errors.length && !acceptedButRejected
-        ? 1 << 16 /*STATUS_WARNING*/
-        : 0) |
-      (["931000", "920999"].includes(messageType) ? 1 << 9 /*STATUS_RECEIVED*/ : 0) |
-      (["931000"].includes(messageType) ? 1 << 10 /*STATUS_ACCEPTED_FOR_TREATMENT*/ : 0) |
-      (["920999"].includes(messageType) ? 1 << 12 /*STATUS_REJECTED*/ : 0) |
-      (["920900", "920098", "920099"].includes(messageType) ? 1 << 17 /*STATUS_ERROR*/ : 0)
-
-    const invoicingErrors: Array<{ itemId: string | null; error?: ErrorDetail }> =
-      messageType !== "920900" && messageType !== "931000"
-        ? _.compact(
-            _.flatMap((parsedRecords as File920900Data).records, r =>
-              r.items.map(
-                i =>
-                  i.et50 &&
-                  i.et50.itemReference &&
-                  ({ itemId: decodeBase36Uuid(i.et50.itemReference), error: i.et50.errorDetail } ||
-                    null)
-              )
-            )
-          )
-        : []
 
     return this.findMessagesByTransportGuid(
       "EFACT:BATCH:" + ref,
@@ -248,6 +159,101 @@ export class IccMessageXApi extends iccMessageApi {
         throw new Error(`Cannot find parent with ref ${ref}`)
       }
       const parentMessage: MessageDto = msgsForHcp[0]
+
+      const messageType = efactMessage.detail!!.substr(0, 6)
+      const parser: EfactMessageReader | null =
+        messageType === "920098"
+          ? new EfactMessage920098Reader(efactMessage)
+          : messageType === "920099"
+            ? new EfactMessage920099Reader(efactMessage)
+            : messageType === "920900"
+              ? new EfactMessage920900Reader(efactMessage)
+              : messageType === "920999"
+                ? new EfactMessage920999Reader(efactMessage)
+                : messageType === "931000"
+                  ? new EfactMessage931000Reader(efactMessage)
+                  : null
+
+      if (!parser) {
+        throw Error(`Unsupported message type ${messageType}`)
+      }
+
+      const parsedRecords = parser.read()
+
+      if (!parsedRecords) {
+        throw new Error("Cannot parse...")
+      }
+
+      const errors = (parsedRecords.et10 && parsedRecords.et10.errorDetail
+        ? [parsedRecords.et10.errorDetail]
+        : []
+      )
+        .concat(
+          _.flatMap(parsedRecords.records, r => {
+            const errors: Array<ErrorDetail> = []
+
+            if (r.et20 && r.et20.errorDetail) {
+              errors.push(r.et20.errorDetail)
+            }
+            _.each(r.items, i => {
+              if (i.et50 && i.et50.errorDetail) errors.push(i.et50.errorDetail)
+              if (i.et51 && i.et51.errorDetail) errors.push(i.et51.errorDetail)
+              if (i.et52 && i.et52.errorDetail) errors.push(i.et52.errorDetail)
+            })
+            if (r.et80 && r.et80.errorDetail) {
+              errors.push(r.et80.errorDetail)
+            }
+
+            return errors
+          })
+        )
+        .concat(
+          parsedRecords.et90 && parsedRecords.et90.errorDetail
+            ? [parsedRecords.et90.errorDetail]
+            : []
+        )
+
+      const acceptedButRejected =
+        (parsedRecords.et91 &&
+          Number(parsedRecords.et91.acceptedAmountAccount1) +
+            Number(parsedRecords.et91.acceptedAmountAccount2) ===
+            0) ||
+        false
+
+      const statuses =
+        (["920999", "920099"].includes(messageType) ||
+        (["920900"].includes(messageType) && acceptedButRejected)
+          ? 1 << 17 /*STATUS_ERROR*/
+          : 0) |
+        (["920900"].includes(messageType) && !errors.length && !acceptedButRejected
+          ? 1 << 15 /*STATUS_SUCCESS*/
+          : 0) |
+        (["920900", "920098"].includes(messageType) && errors.length && !acceptedButRejected
+          ? 1 << 16 /*STATUS_WARNING*/
+          : 0) |
+        (["931000", "920999"].includes(messageType) ? 1 << 9 /*STATUS_RECEIVED*/ : 0) |
+        (["931000"].includes(messageType) ? 1 << 10 /*STATUS_ACCEPTED_FOR_TREATMENT*/ : 0) |
+        (["920999"].includes(messageType) ? 1 << 12 /*STATUS_REJECTED*/ : 0) |
+        (["920900", "920098", "920099"].includes(messageType) ? 1 << 17 /*STATUS_ERROR*/ : 0)
+
+      const invoicingErrors: Array<{ itemId: string | null; error?: ErrorDetail }> =
+        messageType !== "920900" && messageType !== "931000"
+          ? _.compact(
+              _.flatMap((parsedRecords as File920900Data).records, r =>
+                r.items.map(
+                  i =>
+                    i.et50 &&
+                    i.et50.itemReference &&
+                    ({
+                      itemId: decodeBase36Uuid(i.et50.itemReference),
+                      error: i.et50.errorDetail
+                    } ||
+                      null)
+                )
+              )
+            )
+          : []
+
       return this.newInstance(user, {
         // tslint:disable-next-line:no-bitwise
         status: (1 << 1) /*STATUS_UNREAD*/ | statuses,
@@ -337,6 +343,8 @@ export class IccMessageXApi extends iccMessageApi {
                             "invoiceType",
                             "secretForeignKeys",
                             "cryptedForeignKeys",
+                            "delegations",
+                            "encryptionKeys",
                             "paid",
                             "author",
                             "responsible",
@@ -402,9 +410,8 @@ export class IccMessageXApi extends iccMessageApi {
             })
             .then(() => {
               parentMessage.status = (parentMessage.status || 0) | statuses
-              this.modifyMessage(parentMessage)
+              return this.modifyMessage(parentMessage)
             })
-            .then(() => msg)
         )
     })
   }
