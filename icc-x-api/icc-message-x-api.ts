@@ -123,6 +123,8 @@ export class IccMessageXApi extends iccMessageApi {
       return Promise.reject(new Error("Invalid tack"))
     }
 
+    // Need to check if message exists and change status
+
     return this.receiptApi
       .createReceipt(
         new ReceiptDto({
@@ -318,8 +320,8 @@ export class IccMessageXApi extends iccMessageApi {
                 _.flatMap(invoices, iv => {
                   let newInvoice: InvoiceDto | null = null
                   _.each(iv.invoicingCodes, ic => {
-                    // If the invoicing code is already cancelled, to not treat it
-                    if (ic.canceled) {
+                    // If the invoicing code is already treated, do not treat it
+                    if (ic.canceled || ic.accepted) {
                       return
                     }
 
@@ -330,6 +332,7 @@ export class IccMessageXApi extends iccMessageApi {
                       ic.accepted = false
                       ic.canceled = true
                       ic.pending = false
+                      ic.resent = false
                       ic.error = (errStruct && this.extractErrorMessage(errStruct)) || undefined
                       ;(
                         newInvoice ||
@@ -378,6 +381,7 @@ export class IccMessageXApi extends iccMessageApi {
                       ic.accepted = true
                       ic.canceled = false
                       ic.pending = false
+                      ic.resent = false
                       ic.error = undefined
 
                       let record51 =
