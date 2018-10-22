@@ -41,7 +41,8 @@ import {
   EfactMessage931000Reader,
   EfactMessageReader,
   File920900Data,
-  ET92Data
+  ET92Data,
+  ET20_80Data
 } from "./utils/efact-parser"
 import { ErrorDetail } from "fhc-api/dist/model/ErrorDetail"
 
@@ -214,46 +215,36 @@ export class IccMessageXApi extends iccMessageApi {
             : []
         )
 
-      const acceptedButRejected =
-        (parsedRecords.et91 &&
-          Number(parsedRecords.et91.acceptedAmountAccount1) +
-            Number(parsedRecords.et91.acceptedAmountAccount2) ===
-            0) ||
-        false
-
       const statuses =
-        (["920999", "920099"].includes(messageType) ||
-        (["920900"].includes(messageType) && acceptedButRejected)
-          ? 1 << 17 /*STATUS_ERROR*/
-          : 0) |
-        (["920900"].includes(messageType) && !errors.length && !acceptedButRejected
-          ? 1 << 15 /*STATUS_SUCCESS*/
-          : 0) |
-        (["920900", "920098"].includes(messageType) && errors.length && !acceptedButRejected
+        (["920999", "920099"].includes(messageType) ? 1 << 17 /*STATUS_ERROR*/ : 0) |
+        (["920900", "920098"].includes(messageType) && errors.length
           ? 1 << 16 /*STATUS_WARNING*/
           : 0) |
-        (["931000", "920999"].includes(messageType) ? 1 << 9 /*STATUS_RECEIVED*/ : 0) |
-        (["931000"].includes(messageType) ? 1 << 10 /*STATUS_ACCEPTED_FOR_TREATMENT*/ : 0) |
+        (["920900"].includes(messageType) && !errors.length ? 1 << 15 /*STATUS_SUCCESS*/ : 0) |
         (["920999"].includes(messageType) ? 1 << 12 /*STATUS_REJECTED*/ : 0) |
-        (["920900", "920098", "920099"].includes(messageType) ? 1 << 17 /*STATUS_ERROR*/ : 0)
+        (["920900", "920098", "920099"].includes(messageType) ? 1 << 11 /*STATUS_ACCEPTED*/ : 0) |
+        (["931000"].includes(messageType) ? 1 << 10 /*STATUS_ACCEPTED_FOR_TREATMENT*/ : 0) |
+        (["931000", "920999"].includes(messageType) ? 1 << 9 /*STATUS_RECEIVED*/ : 0)
 
-      const invoicingErrors: Array<{ itemId: string | null; error?: ErrorDetail }> =
-        messageType !== "920900" && messageType !== "931000"
-          ? _.compact(
-              _.flatMap((parsedRecords as File920900Data).records, r =>
-                r.items.map(
-                  i =>
-                    i.et50 &&
-                    i.et50.itemReference &&
-                    ({
-                      itemId: decodeBase36Uuid(i.et50.itemReference.trim()),
-                      error: i.et50.errorDetail
-                    } ||
-                      null)
-                )
+      const invoicingErrors: Array<{
+        itemId: string | null
+        error?: ErrorDetail
+      }> = parsedRecords.records
+        ? _.compact(
+            _.flatMap(parsedRecords.records as ET20_80Data[], r =>
+              r.items.map(
+                i =>
+                  i.et50 &&
+                  i.et50.itemReference &&
+                  ({
+                    itemId: decodeBase36Uuid(i.et50.itemReference.trim()),
+                    error: i.et50.errorDetail
+                  } ||
+                    null)
               )
             )
-          : []
+          )
+        : []
 
       return this.newInstance(user, {
         // tslint:disable-next-line:no-bitwise
@@ -306,7 +297,7 @@ export class IccMessageXApi extends iccMessageApi {
                 this.documentXApi.setAttachment(
                   jsonDoc.id!!,
                   undefined /*TODO provide keys for encryption*/,
-                  <any>utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(efactMessage.message)))
+                  <any>utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(efactMessage)))
                 ),
                 this.documentXApi.setAttachment(
                   jsonParsedDoc.id!!,
@@ -317,7 +308,7 @@ export class IccMessageXApi extends iccMessageApi {
             )
             .then(
               () =>
-                ["920999", "920099", "920900"].includes(messageType)
+                ["920999", "920099", "920098", "920900"].includes(messageType)
                   ? this.invoiceApi.getInvoices(new ListOfIdsDto({ ids: parentMessage.invoiceIds }))
                   : Promise.resolve([])
             )
