@@ -123,23 +123,52 @@ export class IccMessageXApi extends iccMessageApi {
       return Promise.reject(new Error("Invalid tack"))
     }
 
-    // Need to check if message exists and change status
+    const refStr = _.get(efactMessage, "tack.appliesTo", "")
+      .split(":")
+      .pop()
+    if (!refStr) {
+      return Promise.reject(
+        new Error(`Cannot find onput reference from tack: ${_.get(efactMessage, "tack.appliesTo")}`)
+      )
+    }
+    const ref = Number(refStr!!) % 10000000000
 
-    return this.receiptApi
-      .createReceipt(
-        new ReceiptDto({
-          references: [
-            `mycarenet:efact:inputReference:${efactMessage.tack.appliesTo}`,
-            efactMessage.tack!!.appliesTo,
-            efactMessage.tack!!.reference
-          ]
+    return this.findMessagesByTransportGuid(
+      "EFACT:BATCH:" + ref,
+      false,
+      undefined,
+      undefined,
+      100
+    ).then(parents => {
+      const msgsForHcp = ((parents && parents.rows) || []).filter(
+        (p: MessageDto) => p.responsible === hcp.id
+      )
+      if (!msgsForHcp.length) {
+        throw new Error(`Cannot find parent with ref ${ref}`)
+      }
+      const parentMessage: MessageDto = msgsForHcp[0]
+
+      return this.receiptApi
+        .createReceipt(
+          new ReceiptDto({
+            documentId: parentMessage.id,
+            references: [
+              `mycarenet:efact:inputReference:${ref}`,
+              efactMessage.tack!!.appliesTo,
+              efactMessage.tack!!.reference
+            ]
+          })
+        )
+        .then(rcpt =>
+          this.receiptApi.setAttachment(rcpt.id, "tack", undefined, <any>(
+            utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(efactMessage.tack)))
+          ))
+        )
+        .then(() => {
+          parentMessage.status = parentMessage.status!! | (1 << 8) /*STATUS_SUBMITTED*/
+          return this.modifyMessage(parentMessage)
         })
-      )
-      .then(rcpt =>
-        this.receiptApi.setAttachment(rcpt.id, "tack", undefined, <any>(
-          utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(efactMessage.tack)))
-        ))
-      )
+    })
   }
 
   processEfactMessage(
@@ -509,7 +538,7 @@ export class IccMessageXApi extends iccMessageApi {
                     this.createMessage(
                       Object.assign(message, {
                         sent: sentDate,
-                        status: (message.status || 0) | (1 << 8),
+                        status: (message.status || 0) | (1 << 7) /*STATUS_SENT*/,
                         metas: {
                           ioFederationCode: batch.ioFederationCode,
                           numericalRef: batch.numericalRef,
