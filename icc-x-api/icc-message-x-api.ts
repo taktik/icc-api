@@ -40,7 +40,8 @@ import {
   EfactMessage920999Reader,
   EfactMessage931000Reader,
   EfactMessageReader,
-  File920900Data
+  File920900Data,
+  ET92Data
 } from "./utils/efact-parser"
 import { ErrorDetail } from "fhc-api/dist/model/ErrorDetail"
 
@@ -410,6 +411,15 @@ export class IccMessageXApi extends iccMessageApi {
             })
             .then(() => {
               parentMessage.status = (parentMessage.status || 0) | statuses
+
+              if (parsedRecords.et92) {
+                let et92 = parsedRecords.et92 as ET92Data
+                parentMessage.metas = _.assign(parentMessage.metas || {}, {
+                  totalAskedAmount: et92.totalAskedAmount,
+                  totalAcceptedAmount: et92.totalAcceptedAmount,
+                  totalRejectedAmount: et92.totalRejectedAmount
+                })
+              }
               return this.modifyMessage(parentMessage)
             })
         )
