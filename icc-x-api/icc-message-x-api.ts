@@ -245,7 +245,7 @@ export class IccMessageXApi extends iccMessageApi {
                     i.et50 &&
                     i.et50.itemReference &&
                     ({
-                      itemId: decodeBase36Uuid(i.et50.itemReference),
+                      itemId: decodeBase36Uuid(i.et50.itemReference.trim()),
                       error: i.et50.errorDetail
                     } ||
                       null)
