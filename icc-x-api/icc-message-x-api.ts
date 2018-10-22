@@ -318,8 +318,14 @@ export class IccMessageXApi extends iccMessageApi {
                 _.flatMap(invoices, iv => {
                   let newInvoice: InvoiceDto | null = null
                   _.each(iv.invoicingCodes, ic => {
+                    // If the invoicing code is already cancelled, to not treat it
+                    if (ic.canceled) {
+                      return
+                    }
+
+                    // Error from the ET50 linked to the invoice
                     const errStruct = invoicingErrors.find(it => it.itemId === ic.id)
-                    if ((rejectAll || errStruct) && !ic.canceled) {
+                    if (rejectAll || errStruct) {
                       ic.logicalId = ic.logicalId || this.crypto.randomUuid()
                       ic.accepted = false
                       ic.canceled = true
