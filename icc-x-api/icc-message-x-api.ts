@@ -41,6 +41,7 @@ import {
   EfactMessage931000Reader,
   EfactMessageReader,
   File920900Data,
+  ET91Data,
   ET92Data,
   ET20_80Data
 } from "./utils/efact-parser"
@@ -447,12 +448,21 @@ export class IccMessageXApi extends iccMessageApi {
             .then(() => {
               parentMessage.status = (parentMessage.status || 0) | statuses
 
+              if (parsedRecords.et91) {
+                let et91s = parsedRecords.et91 as Array<ET91Data>
+                parentMessage.metas = _.assign(parentMessage.metas || {}, {
+                  paymentReferenceAccount1: _(et91s)
+                    .map(et91 => et91.paymentReferenceAccount1)
+                    .uniq()
+                    .join(", ")
+                })
+              }
               if (parsedRecords.et92) {
                 let et92 = parsedRecords.et92 as ET92Data
                 parentMessage.metas = _.assign(parentMessage.metas || {}, {
-                  totalAskedAmount: et92.totalAskedAmount,
-                  totalAcceptedAmount: et92.totalAcceptedAmount,
-                  totalRejectedAmount: et92.totalRejectedAmount
+                  totalAskedAmount: Number(et92.totalAskedAmount) / 100,
+                  totalAcceptedAmount: Number(et92.totalAcceptedAmount) / 100,
+                  totalRejectedAmount: Number(et92.totalRejectedAmount) / 100
                 })
               }
               return this.modifyMessage(parentMessage)
