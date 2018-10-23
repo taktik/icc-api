@@ -91,27 +91,55 @@ export class IccMessageXApi extends iccMessageApi {
     return this.initDelegations(message, null, user)
   }
 
-  extractErrorMessage(es?: { itemId: string | null; error?: ErrorDetail }): string | undefined {
-    const e = es && es.error
-    return e &&
-      (e.rejectionCode1 ||
-        e.rejectionDescr1 ||
-        e.rejectionCode2 ||
-        e.rejectionDescr2 ||
-        e.rejectionCode3 ||
-        e.rejectionDescr3)
+  extractErrorMessage(error?: ErrorDetail): string | undefined {
+    if (!error) return
+
+    const code1 = Number(error.rejectionCode1)
+    const code2 = Number(error.rejectionCode2)
+    const code3 = Number(error.rejectionCode3)
+    const desc1 = (error.rejectionDescr1 && error.rejectionDescr1.trim()) || ""
+    const desc2 = (error.rejectionDescr2 && error.rejectionDescr2.trim()) || ""
+    const desc3 = (error.rejectionDescr3 && error.rejectionDescr3.trim()) || ""
+
+    return code1 || code2 || code3 || desc1 || desc2 || desc3
       ? _.compact([
-          Number(e.rejectionCode1) || (e.rejectionDescr1 && e.rejectionDescr1.trim().length)
-            ? `${e.rejectionCode1 || "XXXXXX"}: ${e.rejectionDescr1 || "-"}`
-            : null,
-          Number(e.rejectionCode2) || (e.rejectionDescr2 && e.rejectionDescr2.trim().length)
-            ? `${e.rejectionCode2 || "XXXXXX"}: ${e.rejectionDescr2 || "-"}`
-            : null,
-          Number(e.rejectionCode3) || (e.rejectionDescr3 && e.rejectionDescr3.trim().length)
-            ? `${e.rejectionCode3 || "XXXXXX"}: ${e.rejectionDescr3 || "-"}`
-            : null
+          code1 || desc1.length ? `${code1 || "XXXXXX"}: ${desc1 || " — "}` : null,
+          code2 || desc2.length ? `${code2 || "XXXXXX"}: ${desc2 || " — "}` : null,
+          code3 || desc3.length ? `${code3 || "XXXXXX"}: ${desc3 || " — "}` : null
         ]).join("; ")
       : undefined
+  }
+
+  extractErrors(parsedRecords: any): string[] {
+    const errors: ErrorDetail[] = (parsedRecords.et10 && parsedRecords.et10.errorDetail
+      ? [parsedRecords.et10.errorDetail]
+      : []
+    )
+      .concat(
+        _.flatMap(parsedRecords.records as ET20_80Data[], r => {
+          const errors: Array<ErrorDetail> = []
+
+          if (r.et20 && r.et20.errorDetail) {
+            errors.push(r.et20.errorDetail)
+          }
+          _.each(r.items, i => {
+            if (i.et50 && i.et50.errorDetail) errors.push(i.et50.errorDetail)
+            if (i.et51 && i.et51.errorDetail) errors.push(i.et51.errorDetail)
+            if (i.et52 && i.et52.errorDetail) errors.push(i.et52.errorDetail)
+          })
+          if (r.et80 && r.et80.errorDetail) {
+            errors.push(r.et80.errorDetail)
+          }
+          return errors
+        })
+      )
+      .concat(
+        parsedRecords.et90 && parsedRecords.et90.errorDetail ? [parsedRecords.et90.errorDetail] : []
+      )
+
+    const errorMessages = _.compact(_.map(errors, error => this.extractErrorMessage(error)))
+
+    return errorMessages
   }
 
   processTack(
@@ -217,34 +245,7 @@ export class IccMessageXApi extends iccMessageApi {
         throw new Error("Cannot parse...")
       }
 
-      const errors = (parsedRecords.et10 && parsedRecords.et10.errorDetail
-        ? [parsedRecords.et10.errorDetail]
-        : []
-      )
-        .concat(
-          _.flatMap(parsedRecords.records, r => {
-            const errors: Array<ErrorDetail> = []
-
-            if (r.et20 && r.et20.errorDetail) {
-              errors.push(r.et20.errorDetail)
-            }
-            _.each(r.items, i => {
-              if (i.et50 && i.et50.errorDetail) errors.push(i.et50.errorDetail)
-              if (i.et51 && i.et51.errorDetail) errors.push(i.et51.errorDetail)
-              if (i.et52 && i.et52.errorDetail) errors.push(i.et52.errorDetail)
-            })
-            if (r.et80 && r.et80.errorDetail) {
-              errors.push(r.et80.errorDetail)
-            }
-
-            return errors
-          })
-        )
-        .concat(
-          parsedRecords.et90 && parsedRecords.et90.errorDetail
-            ? [parsedRecords.et90.errorDetail]
-            : []
-        )
+      const errors = this.extractErrors(parsedRecords)
 
       const statuses =
         (["920999", "920099"].includes(messageType) ? 1 << 17 /*STATUS_ERROR*/ : 0) |
@@ -365,7 +366,8 @@ export class IccMessageXApi extends iccMessageApi {
                       ic.canceled = true
                       ic.pending = false
                       ic.resent = false
-                      ic.error = (errStruct && this.extractErrorMessage(errStruct)) || undefined
+                      ic.error =
+                        (errStruct && this.extractErrorMessage(errStruct.error)) || undefined
                       ;(
                         newInvoice ||
                         (newInvoice = new InvoiceDto(
