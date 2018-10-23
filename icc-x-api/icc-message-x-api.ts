@@ -339,12 +339,14 @@ export class IccMessageXApi extends iccMessageApi {
             )
             .then(
               () =>
-                ["920999", "920099", "920098", "920900"].includes(messageType)
+                ["920999", "920099", "920900"].includes(messageType)
                   ? this.invoiceApi.getInvoices(new ListOfIdsDto({ ids: parentMessage.invoiceIds }))
                   : Promise.resolve([])
             )
             .then((invoices: Array<models.InvoiceDto>) => {
+              // RejectAll if "920999", "920099"
               const rejectAll = (statuses & (1 << 17)) /*STATUS_ERROR*/ > 0
+
               return Promise.all(
                 _.flatMap(invoices, iv => {
                   let newInvoice: InvoiceDto | null = null
@@ -354,8 +356,9 @@ export class IccMessageXApi extends iccMessageApi {
                       return
                     }
 
-                    // Error from the ET50 linked to the invoice
+                    // Error from the ET50 linked to the invoicingCode
                     const errStruct = invoicingErrors.find(it => it.itemId === ic.id)
+
                     if (rejectAll || errStruct) {
                       ic.logicalId = ic.logicalId || this.crypto.randomUuid()
                       ic.accepted = false
