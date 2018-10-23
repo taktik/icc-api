@@ -1,12 +1,9 @@
 import { iccReceiptApi } from "../icc-api/iccApi"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 import { utils } from "./crypto/utils"
-import { AES } from "./crypto/AES"
 
-import moment from "moment"
 import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
-import * as fhcmodels from "fhc-api/dist/model/models"
 import { XHR } from "../icc-api/api/XHR"
 import {
   AgreementResponse,
@@ -134,17 +131,20 @@ export class IccReceiptXApi extends iccReceiptApi {
       | InsurabilityInfoDto,
     user: models.UserDto,
     docId: string,
-    refs: Array<string>
+    refs: Array<string> = []
   ) {
     return this.newInstance(user, {
       documentId: docId,
       references: refs.concat(
         object.commonOutput
-          ? [
-              `mycarenet:efact:inputReference:${object.commonOutput.inputReference}`,
-              `mycarenet:efact:outputReference:${object.commonOutput.outputReference}`,
-              `mycarenet:efact:nipReference:${object.commonOutput.nipReference}`
-            ]
+          ? _.compact([
+              object.commonOutput.inputReference &&
+                `mycarenet:efact:inputReference:${object.commonOutput.inputReference}`,
+              object.commonOutput.inputReference &&
+                `mycarenet:efact:outputReference:${object.commonOutput.outputReference}`,
+              object.commonOutput.inputReference &&
+                `mycarenet:efact:nipReference:${object.commonOutput.nipReference}`
+            ])
           : []
       )
     })
@@ -152,7 +152,7 @@ export class IccReceiptXApi extends iccReceiptApi {
       .then(rcpt =>
         this.setAttachment(
           rcpt.id,
-          "tack",
+          "soapConversation",
           undefined,
           utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(object.mycarenetConversation)))
         )
