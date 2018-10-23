@@ -164,19 +164,21 @@ export interface ET92Data {
   totalRejectedAmount: string
 }
 
+export interface ET20_80Data {
+  et20: ET20Data
+  items: Array<{
+    et50?: ET50Data | undefined
+    et51?: ET51Data | undefined
+    et52?: ET52Data | undefined
+  }>
+  et80?: ET80Data
+}
+
 export interface File920900Data {
   zone200: Zone200Data
   zone300: Zone300Data
   et10: ET10Data
-  records: Array<{
-    et20: ET20Data
-    items: Array<{
-      et50?: ET50Data | undefined
-      et51?: ET51Data | undefined
-      et52?: ET52Data | undefined
-    }>
-    et80?: ET80Data
-  }>
+  records: Array<ET20_80Data>
   et90: ET90Data
   et91: Array<ET91Data>
   et92: ET92Data
@@ -190,15 +192,7 @@ export interface File920099Data {
   zone200: Zone200Data
   zone300: Zone300Data
   et10: ET10Data
-  records: Array<{
-    et20: ET20Data
-    items: Array<{
-      et50?: ET50Data | undefined
-      et51?: ET51Data | undefined
-      et52?: ET52Data | undefined
-    }>
-    et80?: ET80Data
-  }>
+  records: Array<ET20_80Data>
   et90: ET90Data
 }
 
@@ -206,15 +200,7 @@ export interface File920098Data {
   zone200: Zone200Data
   zone300: Zone300Data
   et10: ET10Data
-  records: Array<{
-    et20: ET20Data
-    items: Array<{
-      et50?: ET50Data | undefined
-      et51?: ET51Data | undefined
-      et52?: ET52Data | undefined
-    }>
-    et80?: ET80Data
-  }>
+  records: Array<ET20_80Data>
   et90: ET90Data
 }
 
