@@ -42,12 +42,13 @@ import {
   File920900Data
 } from "./utils/efact-parser"
 import { ErrorDetail } from "fhc-api/dist/model/ErrorDetail"
+import { IccReceiptXApi } from "./icc-receipt-x-api"
 
 export class IccMessageXApi extends iccMessageApi {
   private crypto: IccCryptoXApi
   private insuranceApi: iccInsuranceApi
   private entityReferenceApi: iccEntityrefApi
-  private receiptApi: iccReceiptApi
+  private receiptApi: IccReceiptXApi
   private invoiceApi: iccInvoiceApi
 
   constructor(
@@ -56,7 +57,7 @@ export class IccMessageXApi extends iccMessageApi {
     crypto: IccCryptoXApi,
     insuranceApi: iccInsuranceApi,
     entityReferenceApi: iccEntityrefApi,
-    receiptApi: iccReceiptApi,
+    receiptApi: IccReceiptXApi,
     invoiceApi: iccInvoiceApi
   ) {
     super(host, headers)
@@ -506,22 +507,15 @@ export class IccMessageXApi extends iccMessageApi {
                         ])
                       )
                       .then(() =>
-                        this.receiptApi.createReceipt(
-                          new ReceiptDto({
-                            documentId: message.id,
-                            references: [
-                              `mycarenet:efact:inputReference:${res.inputReference}`,
-                              res.tack!!.appliesTo,
-                              res.tack!!.reference
-                            ]
-                          })
-                        )
-                      )
-                      .then(rcpt =>
-                        this.receiptApi.setAttachment(
-                          rcpt.id,
+                        this.receiptApi.logReceipt(
+                          user,
+                          message.id!!,
+                          [
+                            `mycarenet:efact:inputReference:${res.inputReference}`,
+                            res.tack!!.appliesTo!!,
+                            res.tack!!.reference!!
+                          ],
                           "tack",
-                          undefined,
                           utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.tack)))
                         )
                       )

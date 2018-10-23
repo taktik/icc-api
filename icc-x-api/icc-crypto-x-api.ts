@@ -353,7 +353,8 @@ export class IccCryptoXApi {
       | models.ContactDto
       | models.InvoiceDto
       | models.DocumentDto
-      | models.HealthElementDto,
+      | models.HealthElementDto
+      | models.ReceiptDto,
     ownerId: string,
     delegateId: string,
     secretDelegationKey: string,
@@ -381,6 +382,7 @@ export class IccCryptoXApi {
       | models.DocumentDto
       | models.InvoiceDto
       | models.HealthElementDto
+      | models.ReceiptDto
       | null,
     hcpartyId: string
   ): Promise<Array<string>> {
@@ -400,8 +402,8 @@ export class IccCryptoXApi {
     }
     return this.extractSfks(hcpartyId, document.id!, dels)
   }
-             
-   extractCryptedFKs(
+
+  extractCryptedFKs(
     document:
       | models.PatientDto
       | models.MessageDto
@@ -409,6 +411,7 @@ export class IccCryptoXApi {
       | models.DocumentDto
       | models.InvoiceDto
       | models.HealthElementDto
+      | models.ReceiptDto
       | null,
     hcpartyId: string
   ): Promise<Array<string>> {
@@ -436,6 +439,7 @@ export class IccCryptoXApi {
       | models.ContactDto
       | models.DocumentDto
       | models.InvoiceDto
+      | models.ReceiptDto
       | models.HealthElementDto,
     hcpartyId: string
   ): Promise<Array<string>> {
