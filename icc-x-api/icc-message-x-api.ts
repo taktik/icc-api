@@ -41,6 +41,7 @@ import {
   EfactMessage931000Reader,
   EfactMessageReader,
   File920900Data,
+  ET10Data,
   ET91Data,
   ET92Data,
   ET20_80Data
@@ -264,18 +265,22 @@ export class IccMessageXApi extends iccMessageApi {
         error?: ErrorDetail
       }> = parsedRecords.records
         ? _.compact(
-            _.flatMap(parsedRecords.records as ET20_80Data[], r =>
-              r.items.map(
-                i =>
-                  i.et50 &&
-                  i.et50.itemReference &&
-                  ({
+            _.flatMap(parsedRecords.records as ET20_80Data[], r => {
+              const errors: Array<{ itemId: string | null; error?: ErrorDetail }> = []
+              if (r.et20 && r.et20.errorDetail)
+                errors.push({
+                  itemId: decodeBase36Uuid(r.et20.reference.trim()),
+                  error: r.et20.errorDetail
+                })
+              _.each(r.items, i => {
+                if (i.et50 && i.et50.errorDetail)
+                  errors.push({
                     itemId: decodeBase36Uuid(i.et50.itemReference.trim()),
                     error: i.et50.errorDetail
-                  } ||
-                    null)
-              )
-            )
+                  })
+              })
+              return errors
+            })
           )
         : []
 
@@ -448,6 +453,12 @@ export class IccMessageXApi extends iccMessageApi {
             .then(() => {
               parentMessage.status = (parentMessage.status || 0) | statuses
 
+              if (parsedRecords.et10 && parsedRecords.et10.errorDetail) {
+                let et10 = parsedRecords.et10 as ET10Data
+                parentMessage.metas = _.assign(parentMessage.metas || {}, {
+                  errors: this.extractErrorMessage(et10.errorDetail)
+                })
+              }
               if (parsedRecords.et91) {
                 let et91s = parsedRecords.et91 as Array<ET91Data>
                 parentMessage.metas = _.assign(parentMessage.metas || {}, {
