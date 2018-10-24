@@ -240,6 +240,28 @@ export class iccInvoiceApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.InvoiceDto(it)))
       .catch(err => this.handleError(err))
   }
+  listByHcPartyEfactArchived(
+    hcPartyId: string,
+    from?: number,
+    to?: number
+  ): Promise<Array<models.InvoiceDto> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/invoice/byHcParty/{hcPartyId}/efact/archived".replace("{hcPartyId}", hcPartyId + "") +
+      "?ts=" +
+      new Date().getTime() +
+      (from ? "&from=" + from : "") +
+      (to ? "&to=" + to : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.InvoiceDto(it)))
+      .catch(err => this.handleError(err))
+  }
   listByHcPartyEfactStatus(
     hcPartyId: string,
     pending?: boolean,
@@ -282,6 +304,28 @@ export class iccInvoiceApi {
     const _url =
       this.host +
       "/invoice/byHcParty/{hcPartyId}/efact/tobecorrected".replace("{hcPartyId}", hcPartyId + "") +
+      "?ts=" +
+      new Date().getTime() +
+      (from ? "&from=" + from : "") +
+      (to ? "&to=" + to : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.InvoiceDto(it)))
+      .catch(err => this.handleError(err))
+  }
+  listByHcPartyEfactTreated(
+    hcPartyId: string,
+    from?: number,
+    to?: number
+  ): Promise<Array<models.InvoiceDto> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/invoice/byHcParty/{hcPartyId}/efact/treated".replace("{hcPartyId}", hcPartyId + "") +
       "?ts=" +
       new Date().getTime() +
       (from ? "&from=" + from : "") +
