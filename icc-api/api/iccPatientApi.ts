@@ -266,6 +266,29 @@ export class iccPatientApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.PatientDto(it)))
       .catch(err => this.handleError(err))
   }
+  listByHcPartyNameContainsFuzzyDateOfBirth(
+    hcPartyId: string,
+    name: string,
+    birthdate: number
+  ): Promise<models.PatientPaginatedList | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/patient/byHcPartyNameAndBirth/{hcPartyId}/{name}/{birthdate}"
+        .replace("{hcPartyId}", hcPartyId + "")
+        .replace("{name}", name + "")
+        .replace("{birthdate}", birthdate + "") +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => new models.PatientPaginatedList(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
   listDeletedPatients(
     startDate?: number,
     endDate?: number,
@@ -312,6 +335,29 @@ export class iccPatientApi {
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.PatientPaginatedList(it)))
+      .catch(err => this.handleError(err))
+  }
+  listOfHcPartyNameContainsFuzzyDateOfBirth(
+    hcPartyId: string,
+    name: string,
+    birthdate: number
+  ): Promise<models.PatientPaginatedList | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/patient/ofHcPartyNameAndBirth/{hcPartyId}/{name}/{birthdate}"
+        .replace("{hcPartyId}", hcPartyId + "")
+        .replace("{name}", name + "")
+        .replace("{birthdate}", birthdate + "") +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => new models.PatientPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
   listOfMergesAfter(date: number): Promise<Array<models.PatientDto> | any> {
