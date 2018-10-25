@@ -7,6 +7,7 @@ import {
 } from "../icc-api/iccApi"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 import { IccDocumentXApi } from "./icc-document-x-api"
+import { IccInvoiceXApi } from "./icc-invoice-x-api"
 
 import * as _ from "lodash"
 import { XHR } from "../icc-api/api/XHR"
@@ -54,6 +55,7 @@ export class IccMessageXApi extends iccMessageApi {
   private entityReferenceApi: iccEntityrefApi
   private receiptApi: iccReceiptApi
   private invoiceApi: iccInvoiceApi
+  private invoiceXApi: IccInvoiceXApi
   private documentXApi: IccDocumentXApi
 
   constructor(
@@ -64,6 +66,7 @@ export class IccMessageXApi extends iccMessageApi {
     entityReferenceApi: iccEntityrefApi,
     receiptApi: iccReceiptApi,
     invoiceApi: iccInvoiceApi,
+    invoiceXApi: IccInvoiceXApi,
     documentXApi: IccDocumentXApi
   ) {
     super(host, headers)
@@ -73,6 +76,7 @@ export class IccMessageXApi extends iccMessageApi {
     this.receiptApi = receiptApi
     this.invoiceApi = invoiceApi
     this.documentXApi = documentXApi
+    this.invoiceXApi = invoiceXApi
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -201,10 +205,12 @@ export class IccMessageXApi extends iccMessageApi {
     })
   }
 
+  // Pass invoicePrefix if you want to generate the invoice reference from entityRef
   processEfactMessage(
     user: UserDto,
     hcp: HealthcarePartyDto,
-    efactMessage: EfactMessage
+    efactMessage: EfactMessage,
+    invoicePrefix?: string
   ): Promise<MessageDto> {
     const ref = Number(efactMessage.commonOutput!!.inputReference!!) % 10000000000
 
@@ -444,9 +450,34 @@ export class IccMessageXApi extends iccMessageApi {
                         ic.reimbursement
                     }
                   })
-                  return newInvoice
-                    ? [this.invoiceApi.createInvoice(newInvoice), this.invoiceApi.modifyInvoice(iv)]
-                    : [this.invoiceApi.modifyInvoice(iv)]
+
+                  if (newInvoice && invoicePrefix) {
+                    return [
+                      this.invoiceXApi
+                        .getNextInvoiceReference(invoicePrefix, this.entityReferenceApi)
+                        .then(reference => {
+                          newInvoice.invoiceReference = reference.toString().padStart(6, "0")
+                          return Promise.all([
+                            this.invoiceApi.createInvoice(newInvoice),
+                            this.invoiceApi.modifyInvoice(iv)
+                          ]).then(([newInvoiceCreated, oldInvoiceModified]) => {
+                            return this.invoiceXApi.createInvoiceReference(
+                              reference,
+                              newInvoiceCreated.id,
+                              invoicePrefix,
+                              this.entityReferenceApi
+                            )
+                          })
+                        })
+                    ]
+                  } else {
+                    return newInvoice
+                      ? [
+                          this.invoiceApi.createInvoice(newInvoice),
+                          this.invoiceApi.modifyInvoice(iv)
+                        ]
+                      : [this.invoiceApi.modifyInvoice(iv)]
+                  }
                 })
               )
             })
