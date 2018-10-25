@@ -1,4 +1,4 @@
-import { iccInvoiceApi } from "../icc-api/iccApi"
+import { iccInvoiceApi, iccEntityrefApi } from "../icc-api/iccApi"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 
 import * as _ from "lodash"
@@ -111,6 +111,27 @@ export class IccInvoiceXApi extends iccInvoiceApi {
       )
       return promise
     })
+  }
+
+  getNextInvoiceReference(prefix: string, entityrefApi: iccEntityrefApi): Promise<number> {
+    return entityrefApi.getLatest(prefix).then((entRef: models.EntityReference) => {
+      if (!entRef || !entRef.id.startsWith(prefix)) return 1
+      return Number(entRef.id.split(":")[3]) + 1
+    })
+  }
+
+  createInvoiceReference(
+    nextReference: number,
+    docId: string,
+    prefix: string,
+    entityrefApi: iccEntityrefApi
+  ): Promise<models.EntityReference> {
+    return entityrefApi.createEntityReference(
+      new models.EntityReference({
+        id: prefix + nextReference.toString().padStart(6, "0"),
+        docId
+      })
+    )
   }
 
   /**
