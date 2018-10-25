@@ -453,22 +453,12 @@ export class IccMessageXApi extends iccMessageApi {
 
                   if (newInvoice && invoicePrefix) {
                     return [
-                      this.invoiceXApi
-                        .getNextInvoiceReference(invoicePrefix, this.entityReferenceApi)
-                        .then(reference => {
-                          newInvoice.invoiceReference = reference.toString().padStart(6, "0")
-                          return Promise.all([
-                            this.invoiceApi.createInvoice(newInvoice),
-                            this.invoiceApi.modifyInvoice(iv)
-                          ]).then(([newInvoiceCreated, oldInvoiceModified]) => {
-                            return this.invoiceXApi.createInvoiceReference(
-                              reference,
-                              newInvoiceCreated.id,
-                              invoicePrefix,
-                              this.entityReferenceApi
-                            )
-                          })
-                        })
+                      this.invoiceXApi.createInvoiceWithPrefix(
+                        newInvoice,
+                        invoicePrefix,
+                        this.entityReferenceApi
+                      ),
+                      this.invoiceApi.modifyInvoice(iv)
                     ]
                   } else {
                     return newInvoice

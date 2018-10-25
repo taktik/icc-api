@@ -4,6 +4,7 @@ import { IccCryptoXApi } from "./icc-crypto-x-api"
 import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
 import { XHR } from "../icc-api/api/XHR"
+import { InvoiceDto } from "../icc-api/model/models"
 
 export class IccInvoiceXApi extends iccInvoiceApi {
   crypto: IccCryptoXApi
@@ -110,6 +111,26 @@ export class IccInvoiceXApi extends iccInvoiceApi {
           ))
       )
       return promise
+    })
+  }
+
+  createInvoiceWithPrefix(
+    invoice: InvoiceDto,
+    prefix: string,
+    entityrefApi: iccEntityrefApi
+  ): Promise<InvoiceDto> {
+    return this.getNextInvoiceReference(prefix, entityrefApi).then(reference => {
+      invoice.invoiceReference = reference.toString().padStart(6, "0")
+      return this.createInvoice(invoice).then(newInvoiceCreated => {
+        return this.createInvoiceReference(
+          reference,
+          newInvoiceCreated.id,
+          prefix,
+          entityrefApi
+        ).then(() => {
+          return newInvoiceCreated
+        })
+      })
     })
   }
 
