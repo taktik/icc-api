@@ -8,10 +8,17 @@ import { InvoiceDto } from "../icc-api/model/models"
 
 export class IccInvoiceXApi extends iccInvoiceApi {
   crypto: IccCryptoXApi
+  entityrefApi: iccEntityrefApi
 
-  constructor(host: string, headers: Array<XHR.Header>, crypto: IccCryptoXApi) {
+  constructor(
+    host: string,
+    headers: Array<XHR.Header>,
+    crypto: IccCryptoXApi,
+    entityrefApi: iccEntityrefApi
+  ) {
     super(host, headers)
     this.crypto = crypto
+    this.entityrefApi = entityrefApi
   }
 
   newInstance(
@@ -114,19 +121,18 @@ export class IccInvoiceXApi extends iccInvoiceApi {
     })
   }
 
-  createInvoiceWithPrefix(
-    invoice: InvoiceDto,
-    prefix: string,
-    entityrefApi: iccEntityrefApi
-  ): Promise<InvoiceDto> {
-    return this.getNextInvoiceReference(prefix, entityrefApi).then(reference => {
+  createInvoice(invoice: InvoiceDto, prefix?: string): Promise<InvoiceDto> {
+    if (!prefix) {
+      return this.createInvoice(invoice)
+    }
+    return this.getNextInvoiceReference(prefix, this.entityrefApi).then(reference => {
       invoice.invoiceReference = reference.toString().padStart(6, "0")
       return this.createInvoice(invoice).then(newInvoiceCreated => {
         return this.createInvoiceReference(
           reference,
           newInvoiceCreated.id,
           prefix,
-          entityrefApi
+          this.entityrefApi
         ).then(() => {
           return newInvoiceCreated
         })

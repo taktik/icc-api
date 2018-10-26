@@ -453,11 +453,7 @@ export class IccMessageXApi extends iccMessageApi {
 
                   if (newInvoice && invoicePrefix) {
                     return [
-                      this.invoiceXApi.createInvoiceWithPrefix(
-                        newInvoice,
-                        invoicePrefix,
-                        this.entityReferenceApi
-                      ),
+                      this.invoiceXApi.createInvoice(newInvoice, invoicePrefix),
                       this.invoiceApi.modifyInvoice(iv)
                     ]
                   } else {
