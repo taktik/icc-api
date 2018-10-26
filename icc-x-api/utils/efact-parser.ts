@@ -2,13 +2,13 @@ import { EfactMessage } from "fhc-api/dist/model/EfactMessage"
 import { ErrorDetail } from "fhc-api/dist/model/ErrorDetail"
 import { Record } from "fhc-api/dist/model/Record"
 
-export interface Zone200Data {
+export interface Zone200Data extends ETData {
   isTest: boolean
   hcpMessageRef: string
   mutualityMessageReference: string
 }
 
-export interface Zone300Data {
+export interface Zone300Data extends ETData {
   sendingNumber: string
   invoiceReference: string
   mutualityContactLastName: string
@@ -20,7 +20,7 @@ export interface Zone300Data {
   invoiceRejectionType: string
 }
 
-export interface Zone300Short {
+export interface Zone300Short extends ETData {
   sendingNumber: string
   invoiceReference: string
   mutualityContactLastName: string
@@ -30,7 +30,7 @@ export interface Zone300Short {
   invoiceMode: string
 }
 
-export interface Zone300Stub {
+export interface Zone300Stub extends ETData {
   messageType: string
 }
 
@@ -274,6 +274,7 @@ export abstract class EfactMessageReader {
     }
 
     return {
+      errorDetail: zone200.errorDetail,
       isTest: testMessage,
       hcpMessageRef: healthcarePartyMessageReferenceNumber,
       mutualityMessageReference: oaMessageReference
@@ -347,6 +348,7 @@ export abstract class EfactMessageReader {
     }
 
     return {
+      errorDetail: zone300.errorDetail,
       sendingNumber: sendingNumber,
       invoiceReference: invoiceReference,
       mutualityContactLastName: oaContactLastName,
@@ -435,6 +437,7 @@ export abstract class EfactMessageReader {
     }
 
     return {
+      errorDetail: zone300.errorDetail,
       sendingNumber: sendingNumber,
       invoiceReference: invoiceReference,
       mutualityContactLastName: oaContactLastName,

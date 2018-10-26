@@ -42,13 +42,17 @@ import {
   EfactMessage931000Reader,
   EfactMessageReader,
   File920900Data,
-  ET10Data,
   ET91Data,
   ET92Data,
   ET20_80Data
 } from "./utils/efact-parser"
 import { ErrorDetail } from "fhc-api/dist/model/ErrorDetail"
 
+interface StructError {
+  itemId: string | null
+  error: ErrorDetail
+  record: string
+}
 export class IccMessageXApi extends iccMessageApi {
   private crypto: IccCryptoXApi
   private insuranceApi: iccInsuranceApi
@@ -266,23 +270,41 @@ export class IccMessageXApi extends iccMessageApi {
         (["931000"].includes(messageType) ? 1 << 10 /*STATUS_ACCEPTED_FOR_TREATMENT*/ : 0) |
         (["931000", "920999"].includes(messageType) ? 1 << 9 /*STATUS_RECEIVED*/ : 0)
 
-      const invoicingErrors: Array<{
-        itemId: string | null
-        error?: ErrorDetail
-      }> = parsedRecords.records
+      const batchErrors: ErrorDetail[] | undefined = _.compact([
+        _.get(parsedRecords, "records.zone200.errorDetail"),
+        _.get(parsedRecords, "records.zone300.errorDetail"),
+        _.get(parsedRecords, "records.et10.errorDetail")
+      ])
+
+      const invoicingErrors: StructError[] = parsedRecords.records
         ? _.compact(
             _.flatMap(parsedRecords.records as ET20_80Data[], r => {
-              const errors: Array<{ itemId: string | null; error?: ErrorDetail }> = []
+              const errors: StructError[] = []
               if (r.et20 && r.et20.errorDetail)
                 errors.push({
                   itemId: decodeBase36Uuid(r.et20.reference.trim()),
-                  error: r.et20.errorDetail
+                  error: r.et20.errorDetail,
+                  record: "ET20"
                 })
               _.each(r.items, i => {
+                let ref = _.get(i, "et50.itemReference") || _.get(r, "et20.reference")
                 if (i.et50 && i.et50.errorDetail)
                   errors.push({
-                    itemId: decodeBase36Uuid(i.et50.itemReference.trim()),
-                    error: i.et50.errorDetail
+                    itemId: ref && decodeBase36Uuid(ref.trim()),
+                    error: i.et50.errorDetail,
+                    record: "ET50"
+                  })
+                if (i.et51 && i.et51.errorDetail)
+                  errors.push({
+                    itemId: ref && decodeBase36Uuid(ref.trim()),
+                    error: i.et51.errorDetail,
+                    record: "ET51"
+                  })
+                if (i.et52 && i.et52.errorDetail)
+                  errors.push({
+                    itemId: ref && decodeBase36Uuid(ref.trim()),
+                    error: i.et52.errorDetail,
+                    record: "ET52"
                   })
               })
               return errors
@@ -362,6 +384,13 @@ export class IccMessageXApi extends iccMessageApi {
 
               return Promise.all(
                 _.flatMap(invoices, iv => {
+                  iv.error =
+                    _(invoicingErrors)
+                      .filter(it => it.itemId === iv.id)
+                      .map(e => this.extractErrorMessage(e.error))
+                      .compact()
+                      .join("; ") || undefined
+
                   let newInvoice: InvoiceDto | null = null
                   _.each(iv.invoicingCodes, ic => {
                     // If the invoicing code is already treated, do not treat it
@@ -369,17 +398,20 @@ export class IccMessageXApi extends iccMessageApi {
                       return
                     }
 
-                    // Error from the ET50 linked to the invoicingCode
-                    const errStruct = invoicingErrors.find(it => it.itemId === ic.id)
+                    // Error from the ET50/51/52 linked to the invoicingCode
+                    const errStruct = invoicingErrors.filter(it => it.itemId === ic.id)
 
-                    if (rejectAll || errStruct) {
+                    if (rejectAll || errStruct.length) {
                       ic.logicalId = ic.logicalId || this.crypto.randomUuid()
                       ic.accepted = false
                       ic.canceled = true
                       ic.pending = false
                       ic.resent = false
                       ic.error =
-                        (errStruct && this.extractErrorMessage(errStruct.error)) || undefined
+                        _(errStruct)
+                          .map(e => this.extractErrorMessage(e.error))
+                          .compact()
+                          .join("; ") || undefined
                       ;(
                         newInvoice ||
                         (newInvoice = new InvoiceDto(
@@ -451,29 +483,24 @@ export class IccMessageXApi extends iccMessageApi {
                     }
                   })
 
-                  if (newInvoice && invoicePrefix) {
-                    return [
-                      this.invoiceXApi.createInvoice(newInvoice, invoicePrefix),
-                      this.invoiceApi.modifyInvoice(iv)
-                    ]
-                  } else {
-                    return newInvoice
-                      ? [
-                          this.invoiceApi.createInvoice(newInvoice),
-                          this.invoiceApi.modifyInvoice(iv)
-                        ]
-                      : [this.invoiceApi.modifyInvoice(iv)]
-                  }
+                  return newInvoice
+                    ? [
+                        this.invoiceXApi.createInvoice(newInvoice, invoicePrefix),
+                        this.invoiceApi.modifyInvoice(iv)
+                      ]
+                    : [this.invoiceApi.modifyInvoice(iv)]
                 })
               )
             })
             .then(() => {
               parentMessage.status = (parentMessage.status || 0) | statuses
 
-              if (parsedRecords.et10 && parsedRecords.et10.errorDetail) {
-                let et10 = parsedRecords.et10 as ET10Data
+              if (batchErrors.length) {
                 parentMessage.metas = _.assign(parentMessage.metas || {}, {
-                  errors: this.extractErrorMessage(et10.errorDetail)
+                  errors: _(batchErrors)
+                    .map(this.extractErrorMessage)
+                    .compact()
+                    .join("; ")
                 })
               }
               if (parsedRecords.et91) {
