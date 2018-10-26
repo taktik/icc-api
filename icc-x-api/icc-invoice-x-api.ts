@@ -127,7 +127,7 @@ export class IccInvoiceXApi extends iccInvoiceApi {
     }
     return this.getNextInvoiceReference(prefix, this.entityrefApi).then(reference => {
       invoice.invoiceReference = reference.toString().padStart(6, "0")
-      return this.createInvoice(invoice).then(newInvoiceCreated => {
+      return super.createInvoice(invoice).then(newInvoiceCreated => {
         return this.createInvoiceReference(
           reference,
           newInvoiceCreated.id,
