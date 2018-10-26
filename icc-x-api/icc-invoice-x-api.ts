@@ -123,7 +123,7 @@ export class IccInvoiceXApi extends iccInvoiceApi {
 
   createInvoice(invoice: InvoiceDto, prefix?: string): Promise<InvoiceDto> {
     if (!prefix) {
-      return this.createInvoice(invoice)
+      return super.createInvoice(invoice)
     }
     return this.getNextInvoiceReference(prefix, this.entityrefApi).then(reference => {
       invoice.invoiceReference = reference.toString().padStart(6, "0")
