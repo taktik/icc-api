@@ -258,26 +258,18 @@ export class IccPatientXApi extends iccPatientApi {
     const normalNumber = /^[0-9][0-9](([0][0-9])|([1][0-2]))(([0-2][0-9])|([3][0-1]))(([0-9]{2}[1-9])|([0-9][1-9][0-9])|([1-9][0-9]{2}))(([0-8][0-9])|([9][0-7]))$/.test(
       ssin
     )
-      ? true
-      : false
     const bisNumber = /^[0-9][0-9](([2][0-9])|([3][0-2]))(([0-2][0-9])|([3][0-1]))[0-9]{3}(([0-8][0-9])|([9][0-7]))$/.test(
       ssin
     )
-      ? true
-      : false
     const terNumber = /^[0-9][0-9](([4][0-9])|([5][0-2]))(([0-2][0-9])|([3][0-1]))[0-9]{3}(([0-8][0-9])|([9][0-7]))$/.test(
       ssin
     )
-      ? true
-      : false
 
     if (normalNumber || bisNumber || terNumber) {
       isValidNiss =
         97 - (Number(ssin.substr(0, 9)) % 97) === Number(ssin.substr(9, 2))
           ? true
           : 97 - (Number("2" + ssin.substr(0, 9)) % 97) === Number(ssin.substr(9, 2))
-            ? true
-            : false
     }
 
     return isValidNiss
