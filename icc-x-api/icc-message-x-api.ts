@@ -208,7 +208,14 @@ export class IccMessageXApi extends iccMessageApi {
           })
       })
       promMsg = promMsg.then(acc => {
-        return this.saveMessageInDb(user, dmgsMsgList, hcp, docXApi, dmgsMsgList.date).then(msg => {
+        return this.saveMessageInDb(
+          user,
+          "Inscription",
+          dmgsMsgList,
+          hcp,
+          docXApi,
+          dmgsMsgList.date
+        ).then(msg => {
           dmgsMsgList.valueHash && msgHashes.push(dmgsMsgList.valueHash)
           acc.push(msg)
           return acc
@@ -229,6 +236,7 @@ export class IccMessageXApi extends iccMessageApi {
       promMsg = promMsg.then(acc => {
         return this.saveMessageInDb(
           user,
+          "Closure",
           closure,
           hcp,
           docXApi,
@@ -251,12 +259,18 @@ export class IccMessageXApi extends iccMessageApi {
           claim: ext.claim
         })
       promMsg = promMsg.then(acc => {
-        return this.saveMessageInDb(user, ext, hcp, docXApi, ext.encounterDate, ext.inss).then(
-          msg => {
-            acc.push(msg)
-            return acc
-          }
-        )
+        return this.saveMessageInDb(
+          user,
+          "Extension",
+          ext,
+          hcp,
+          docXApi,
+          ext.encounterDate,
+          ext.inss
+        ).then(msg => {
+          acc.push(msg)
+          return acc
+        })
       })
     })
 
@@ -320,6 +334,7 @@ export class IccMessageXApi extends iccMessageApi {
 
   private saveMessageInDb(
     user: UserDto,
+    msgName: string,
     dmgMessage: DmgsList | DmgClosure | DmgExtension,
     hcp: HealthcarePartyDto,
     docXApi: IccDocumentXApi,
@@ -336,8 +351,8 @@ export class IccMessageXApi extends iccMessageApi {
       recipientsType: "org.taktik.icure.entities.HealthcareParty",
       received: +new Date(),
       subject: inss
-        ? `Closure from IO ${dmgMessage.io}`
-        : `Closure from IO ${dmgMessage.io} for ${inss}`,
+        ? `${msgName} from IO ${dmgMessage.io} for ${inss}`
+        : `${msgName} from IO ${dmgMessage.io}`,
       senderReferences: {
         inputReference: dmgMessage.commonOutput && dmgMessage.commonOutput.inputReference,
         outputReference: dmgMessage.commonOutput && dmgMessage.commonOutput.outputReference,
