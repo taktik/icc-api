@@ -58,6 +58,13 @@ export namespace XHR {
           : {}
       )
     ).then(function(response) {
+      if (response.status >= 400) {
+        const e = new Error(response.statusText)
+        e.status = response.status
+        e.code = response.status
+        e.headers = response.headers
+        throw e
+      }
       const ct = response.headers.get("content-type") || "text/plain"
       return (ct === "application/octet-stream"
         ? response.arrayBuffer()
