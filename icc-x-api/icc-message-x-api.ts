@@ -81,9 +81,8 @@ export class IccMessageXApi extends iccMessageApi {
     entityReferenceApi: iccEntityrefApi,
     invoiceApi: iccInvoiceApi,
     invoiceXApi: IccInvoiceXApi,
-    documentXApi: IccDocumentXApi
+    documentXApi: IccDocumentXApi,
     receiptApi: IccReceiptXApi,
-    invoiceApi: iccInvoiceApi,
     patientApi: IccPatientXApi
   ) {
     super(host, headers)
@@ -95,6 +94,44 @@ export class IccMessageXApi extends iccMessageApi {
     this.documentXApi = documentXApi
     this.invoiceXApi = invoiceXApi
     this.patientApi = patientApi
+  }
+
+  initDelegations(
+    message: models.MessageDto,
+    parentObject: any,
+    user: models.UserDto,
+    secretForeignKey?: string
+  ): Promise<models.MessageDto> {
+    return this.crypto
+      .initObjectDelegations(
+        message,
+        parentObject,
+        user.healthcarePartyId!,
+        secretForeignKey || null
+      )
+      .then(initData => {
+        _.extend(message, { delegations: initData.delegations })
+
+        let promise = Promise.resolve(message)
+        ;(user.autoDelegations
+          ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
+          : []
+        ).forEach(
+          delegateId =>
+            (promise = promise
+              .then(patient =>
+                this.crypto.appendObjectDelegations(
+                  message,
+                  parentObject,
+                  user.healthcarePartyId!,
+                  delegateId,
+                  initData.secretId
+                )
+              )
+              .then(extraData => _.extend(message, { delegations: extraData.delegations })))
+        )
+        return promise
+      })
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -315,25 +352,23 @@ export class IccMessageXApi extends iccMessageApi {
             name: `${msg.subject}_content.json`
           })
           .then(doc =>
-            docXApi.setAttachment(
-              doc.id!!,
-              undefined /*TODO provide keys for encryption*/,
+            docXApi.setAttachment(doc.id!!, undefined /*TODO provide keys for encryption*/, <any>(
               utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(dmgMessage)))
-            )
+            ))
           )
           .then(() => msg)
       })
   }
 
-  extractErrorMessage(es?: { itemId: string | null; error?: ErrorDetail }): string | undefined {
-    const e = es && es.error
-    return e &&
-      (e.rejectionCode1 ||
-        e.rejectionDescr1 ||
-        e.rejectionCode2 ||
-        e.rejectionDescr2 ||
-        e.rejectionCode3 ||
-        e.rejectionDescr3)
+  // extractErrorMessage(es?: { itemId: string | null; error?: ErrorDetail }): string | undefined {
+  //   const e = es && es.error
+  //   return e &&
+  //     (e.rejectionCode1 ||
+  //       e.rejectionDescr1 ||
+  //       e.rejectionCode2 ||
+  //       e.rejectionDescr2 ||
+  //       e.rejectionCode3 ||
+  //       e.rejectionDescr3)
   extractErrorMessage(error?: ErrorDetail): string | undefined {
     if (!error) return
 
@@ -853,30 +888,33 @@ export class IccMessageXApi extends iccMessageApi {
                     )
                       .then(msg =>
                         Promise.all([
-                          docXApi.newInstance(user, msg, {
+                          this.documentXApi.newInstance(user, msg, {
                             mainUti: "public.json",
                             name: "920000_records"
                           }),
-                          docXApi.newInstance(user, msg, {
+                          this.documentXApi.newInstance(user, msg, {
                             mainUti: "public.plain-text",
                             name: "920000"
                           })
                         ])
                       )
                       .then(([jsonDoc, doc]) =>
-                        Promise.all([docXApi.createDocument(jsonDoc), docXApi.createDocument(doc)])
+                        Promise.all([
+                          this.documentXApi.createDocument(jsonDoc),
+                          this.documentXApi.createDocument(doc)
+                        ])
                       )
                       .then(([jsonDoc, doc]) =>
                         Promise.all([
-                          docXApi.setAttachment(
+                          this.documentXApi.setAttachment(
                             jsonDoc.id!!,
                             undefined /*TODO provide keys for encryption*/,
-                            utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.records!!)))
+                            <any>utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.records!!)))
                           ),
-                          docXApi.setAttachment(
+                          this.documentXApi.setAttachment(
                             doc.id!!,
                             undefined /*TODO provide keys for encryption*/,
-                            utils.ua2ArrayBuffer(utils.text2ua(res.detail!!))
+                            <any>utils.ua2ArrayBuffer(utils.text2ua(res.detail!!))
                           )
                         ])
                       )
@@ -891,7 +929,7 @@ export class IccMessageXApi extends iccMessageApi {
                           ],
                           "tack",
                           utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.tack)))
-                        ))
+                        )
                       )
                       .then(() => message)
                   )
@@ -906,43 +944,5 @@ export class IccMessageXApi extends iccMessageApi {
           throw errors
         })
     })
-  }
-
-  initDelegations(
-    message: models.MessageDto,
-    parentObject: any,
-    user: models.UserDto,
-    secretForeignKey?: string
-  ): Promise<models.MessageDto> {
-    return this.crypto
-      .initObjectDelegations(
-        message,
-        parentObject,
-        user.healthcarePartyId!,
-        secretForeignKey || null
-      )
-      .then(initData => {
-        _.extend(message, { delegations: initData.delegations })
-
-        let promise = Promise.resolve(message)
-        ;(user.autoDelegations
-          ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
-          : []
-        ).forEach(
-          delegateId =>
-            (promise = promise
-              .then(patient =>
-                this.crypto.appendObjectDelegations(
-                  message,
-                  parentObject,
-                  user.healthcarePartyId!,
-                  delegateId,
-                  initData.secretId
-                )
-              )
-              .then(extraData => _.extend(message, { delegations: extraData.delegations })))
-        )
-        return promise
-      })
   }
 }
