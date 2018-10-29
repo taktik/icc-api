@@ -34,6 +34,19 @@ export namespace XHR {
     }
   }
 
+  export class XHRError extends Error {
+    status: number
+    code: number
+    headers: Headers
+
+    constructor(message: string, status: number, code: number, headers: Headers) {
+      super(message)
+      this.status = status
+      this.code = code
+      this.headers = headers
+    }
+  }
+
   export function sendCommand(
     method: string,
     url: string,
@@ -72,18 +85,12 @@ export namespace XHR {
       )
     ).then(function(response) {
       if (response.status >= 400) {
-        const e = new XHRError(
-          response.statusText,
-          response.status,
-          response.status,
-          response.headers
-        )
-        throw e
+        throw new XHRError(response.statusText, response.status, response.status, response.headers)
       }
       const ct = response.headers.get("content-type") || "text/plain"
-      return (ct === "application/octet-stream"
+      return (ct.startsWith("application/octet-stream")
         ? response.arrayBuffer()
-        : ct === "application/json"
+        : ct.startsWith("application/json")
           ? response.json()
           : response.text()
       ).then(d => new Data(response.status, ct, d))
