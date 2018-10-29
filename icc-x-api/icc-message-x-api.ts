@@ -297,6 +297,7 @@ export class IccMessageXApi extends iccMessageApi {
             mainUti: "public.json",
             name: `${msg.subject}_content.json`
           })
+          .then(doc => docXApi.createDocument(doc))
           .then(doc =>
             docXApi.setAttachment(
               doc.id!!,
