@@ -351,6 +351,7 @@ export class IccMessageXApi extends iccMessageApi {
             mainUti: "public.json",
             name: `${msg.subject}_content.json`
           })
+          .then(doc => docXApi.createDocument(doc))
           .then(doc =>
             docXApi.setAttachment(doc.id!!, undefined /*TODO provide keys for encryption*/, <any>(
               utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(dmgMessage)))
