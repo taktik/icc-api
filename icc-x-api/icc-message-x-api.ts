@@ -20,6 +20,7 @@ import {
   MessageDto,
   PatientDto,
   PatientHealthCarePartyDto,
+  PatientPaginatedList,
   ReceiptDto,
   ReferralPeriod,
   UserDto
@@ -239,9 +240,9 @@ export class IccMessageXApi extends iccMessageApi {
                 })
               })
             )
-            .then((pats: Array<PatientDto>) =>
+            .then((pats: PatientPaginatedList) =>
               this.patientApi.bulkUpdatePatients(
-                pats.map(p => {
+                (pats.rows || []).map(p => {
                   const actions = _.sortBy(patsDmgs[p.ssin!!], "date")
                   const latestAction = actions[actions.length - 1]
                   let phcp =
