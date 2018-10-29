@@ -14,11 +14,16 @@ import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
 import {
   EntityReference,
+  Filter,
+  FilterChain,
   HealthcarePartyDto,
   InvoiceDto,
   ListOfIdsDto,
   MessageDto,
+  PatientDto,
+  PatientHealthCarePartyDto,
   ReceiptDto,
+  ReferralPeriod,
   UserDto
 } from "../icc-api/model/models"
 import {
@@ -47,6 +52,11 @@ import {
   ET20_80Data
 } from "./utils/efact-parser"
 import { ErrorDetail } from "fhc-api/dist/model/ErrorDetail"
+import { IccReceiptXApi } from "./icc-receipt-x-api"
+import { DmgsList } from "fhc-api/dist/model/DmgsList"
+import { DmgClosure } from "fhc-api/dist/model/DmgClosure"
+import { DmgExtension } from "fhc-api/dist/model/DmgExtension"
+import { IccPatientXApi } from "./icc-patient-x-api"
 
 interface StructError {
   itemId: string | null
@@ -57,10 +67,11 @@ export class IccMessageXApi extends iccMessageApi {
   private crypto: IccCryptoXApi
   private insuranceApi: iccInsuranceApi
   private entityReferenceApi: iccEntityrefApi
-  private receiptApi: iccReceiptApi
+  private receiptApi: IccReceiptXApi
   private invoiceApi: iccInvoiceApi
   private invoiceXApi: IccInvoiceXApi
   private documentXApi: IccDocumentXApi
+  private patientApi: IccPatientXApi
 
   constructor(
     host: string,
@@ -68,10 +79,12 @@ export class IccMessageXApi extends iccMessageApi {
     crypto: IccCryptoXApi,
     insuranceApi: iccInsuranceApi,
     entityReferenceApi: iccEntityrefApi,
-    receiptApi: iccReceiptApi,
     invoiceApi: iccInvoiceApi,
     invoiceXApi: IccInvoiceXApi,
     documentXApi: IccDocumentXApi
+    receiptApi: IccReceiptXApi,
+    invoiceApi: iccInvoiceApi,
+    patientApi: IccPatientXApi
   ) {
     super(host, headers)
     this.crypto = crypto
@@ -81,6 +94,7 @@ export class IccMessageXApi extends iccMessageApi {
     this.invoiceApi = invoiceApi
     this.documentXApi = documentXApi
     this.invoiceXApi = invoiceXApi
+    this.patientApi = patientApi
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -101,6 +115,225 @@ export class IccMessageXApi extends iccMessageApi {
     return this.initDelegations(message, null, user)
   }
 
+  processDmgMessagesList(
+    user: UserDto,
+    hcp: HealthcarePartyDto,
+    list: DmgsList,
+    docXApi: IccDocumentXApi
+  ): Promise<Array<Array<string>>> {
+    const ackHashes: Array<string> = []
+    let promAck: Promise<ReceiptDto | null> = Promise.resolve(null)
+    _.each(list.acks, ack => {
+      promAck = promAck
+        .then(() =>
+          this.receiptApi.logSCReceipt(ack, user, hcp.id!!, [`nip:pin:valuehash:${ack.valueHash}`])
+        )
+        .then(receipt => {
+          ack.valueHash && ackHashes.push(ack.valueHash)
+          return receipt
+        })
+    })
+
+    const patsDmgs: { [key: string]: any } = {}
+    const msgHashes: Array<string> = []
+
+    let promMsg: Promise<Array<MessageDto>> = promAck.then(() => [])
+    _.each(list.lists, dmgsMsgList => {
+      _.each(dmgsMsgList.inscriptions, i => {
+        i.inss &&
+          (patsDmgs[i.inss] || (patsDmgs[i.inss] = [])).push({
+            date: i.from,
+            from: i.from,
+            to: i.to,
+            hcp: i.hcParty,
+            payments: (i.payment1Amount
+              ? [
+                  {
+                    amount: i.payment1Amount,
+                    currency: i.payment1Currency,
+                    date: i.payment1Date,
+                    ref: i.payment1Ref
+                  }
+                ]
+              : []
+            ).concat(
+              i.payment2Amount
+                ? [
+                    {
+                      amount: i.payment2Amount,
+                      currency: i.payment2Currency,
+                      date: i.payment2Date,
+                      ref: i.payment2Ref
+                    }
+                  ]
+                : []
+            )
+          })
+      })
+      promMsg = promMsg.then(acc => {
+        return this.saveMessageInDb(user, dmgsMsgList, hcp, docXApi, dmgsMsgList.date).then(msg => {
+          dmgsMsgList.valueHash && msgHashes.push(dmgsMsgList.valueHash)
+          acc.push(msg)
+          return acc
+        })
+      })
+    })
+
+    _.each(list.closures, closure => {
+      closure.inss &&
+        (patsDmgs[closure.inss] || (patsDmgs[closure.inss] = [])).push({
+          date: closure.endOfPreviousDmg,
+          closure: true,
+          endOfPreviousDmg: closure.endOfPreviousDmg,
+          beginOfNewDmg: closure.beginOfNewDmg,
+          previousHcp: closure.previousHcParty,
+          newHcp: closure.newHcParty
+        })
+      promMsg = promMsg.then(acc => {
+        return this.saveMessageInDb(
+          user,
+          closure,
+          hcp,
+          docXApi,
+          closure.endOfPreviousDmg,
+          closure.inss
+        ).then(msg => {
+          closure.valueHash && msgHashes.push(closure.valueHash)
+          acc.push(msg)
+          return acc
+        })
+      })
+    })
+
+    _.each(list.extensions, ext => {
+      ext.inss &&
+        (patsDmgs[ext.inss] || (patsDmgs[ext.inss] = [])).push({
+          date: ext.encounterDate,
+          from: ext.encounterDate,
+          hcp: ext.hcParty,
+          claim: ext.claim
+        })
+      promMsg = promMsg.then(acc => {
+        return this.saveMessageInDb(user, ext, hcp, docXApi, ext.encounterDate, ext.inss).then(
+          msg => {
+            acc.push(msg)
+            return acc
+          }
+        )
+      })
+    })
+
+    return promMsg.then(acc =>
+      Promise.all(
+        _.chunk(Object.keys(patsDmgs), 100).map(ssins =>
+          this.patientApi
+            .filterBy(
+              undefined,
+              undefined,
+              1000,
+              0,
+              undefined,
+              false,
+              new FilterChain({
+                filter: new Filter({
+                  $type: "PatientByHcPartyAndSsinsFilter",
+                  healthcarePartyId: user.healthcarePartyId,
+                  ssins: ssins
+                })
+              })
+            )
+            .then((pats: Array<PatientDto>) =>
+              this.patientApi.bulkUpdatePatients(
+                pats.map(p => {
+                  const actions = _.sortBy(patsDmgs[p.ssin!!], "date")
+                  const latestAction = actions[actions.length - 1]
+                  let phcp =
+                    (p.patientHealthCareParties || (p.patientHealthCareParties = [])) &&
+                    p.patientHealthCareParties.find(
+                      phcp => phcp.healthcarePartyId === user.healthcarePartyId
+                    )
+                  if (!phcp) {
+                    p.patientHealthCareParties.push(
+                      (phcp = new PatientHealthCarePartyDto({
+                        healthcarePartyId: user.healthcarePartyId,
+                        referralPeriods: []
+                      }))
+                    )
+                  }
+                  if (latestAction && !latestAction.closure) {
+                    const rp =
+                      phcp.referralPeriods && phcp.referralPeriods.find(per => !per.endDate)
+                    rp &&
+                      (rp.endDate = latestAction.date)(
+                        phcp.referralPeriods || (phcp.referralPeriods = [])
+                      ).push(new ReferralPeriod({ startDate: latestAction.date }))
+                  } else if (latestAction && latestAction.closure) {
+                    const rp =
+                      phcp && phcp.referralPeriods && phcp.referralPeriods.find(per => !per.endDate)
+                    rp && (rp.endDate = latestAction.date)
+                  }
+                  return p
+                })
+              )
+            )
+        )
+      ).then(() => [ackHashes, msgHashes])
+    )
+  }
+
+  private saveMessageInDb(
+    user: UserDto,
+    dmgMessage: DmgsList | DmgClosure | DmgExtension,
+    hcp: HealthcarePartyDto,
+    docXApi: IccDocumentXApi,
+    date?: Date,
+    inss?: string
+  ) {
+    return this.newInstance(user, {
+      // tslint:disable-next-line:no-bitwise
+      transportGuid: "GMD:IN:" + dmgMessage.reference,
+      fromAddress: "IO:" + dmgMessage.io,
+      sent: date && +date,
+      toHealthcarePartyId: hcp.id,
+      recipients: [hcp.id],
+      recipientsType: "org.taktik.icure.entities.HealthcareParty",
+      received: +new Date(),
+      subject: inss
+        ? `Closure from IO ${dmgMessage.io}`
+        : `Closure from IO ${dmgMessage.io} for ${inss}`,
+      senderReferences: {
+        inputReference: dmgMessage.commonOutput && dmgMessage.commonOutput.inputReference,
+        outputReference: dmgMessage.commonOutput && dmgMessage.commonOutput.outputReference,
+        nipReference: dmgMessage.commonOutput && dmgMessage.commonOutput.nipReference
+      }
+    })
+      .then(msg => this.createMessage(msg))
+      .then(msg => {
+        return docXApi
+          .newInstance(user, msg, {
+            mainUti: "public.json",
+            name: `${msg.subject}_content.json`
+          })
+          .then(doc =>
+            docXApi.setAttachment(
+              doc.id!!,
+              undefined /*TODO provide keys for encryption*/,
+              utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(dmgMessage)))
+            )
+          )
+          .then(() => msg)
+      })
+  }
+
+  extractErrorMessage(es?: { itemId: string | null; error?: ErrorDetail }): string | undefined {
+    const e = es && es.error
+    return e &&
+      (e.rejectionCode1 ||
+        e.rejectionDescr1 ||
+        e.rejectionCode2 ||
+        e.rejectionDescr2 ||
+        e.rejectionCode3 ||
+        e.rejectionDescr3)
   extractErrorMessage(error?: ErrorDetail): string | undefined {
     if (!error) return
 
@@ -620,50 +853,43 @@ export class IccMessageXApi extends iccMessageApi {
                     )
                       .then(msg =>
                         Promise.all([
-                          this.documentXApi.newInstance(user, msg, {
-                            mainUti: "public.plain-text",
-                            name: "920000"
-                          }),
-                          this.documentXApi.newInstance(user, msg, {
+                          docXApi.newInstance(user, msg, {
                             mainUti: "public.json",
                             name: "920000_records"
+                          }),
+                          docXApi.newInstance(user, msg, {
+                            mainUti: "public.plain-text",
+                            name: "920000"
                           })
                         ])
                       )
-                      .then(([doc, jsonDoc]) =>
-                        Promise.all([
-                          this.documentXApi.createDocument(doc),
-                          this.documentXApi.createDocument(jsonDoc)
-                        ])
+                      .then(([jsonDoc, doc]) =>
+                        Promise.all([docXApi.createDocument(jsonDoc), docXApi.createDocument(doc)])
                       )
-                      .then(([doc, jsonDoc]) =>
+                      .then(([jsonDoc, doc]) =>
                         Promise.all([
-                          this.documentXApi.setAttachment(
-                            doc.id!!,
-                            undefined /*TODO provide keys for encryption*/,
-                            <any>utils.ua2ArrayBuffer(utils.text2ua(res.detail!!))
-                          ),
-                          this.documentXApi.setAttachment(
+                          docXApi.setAttachment(
                             jsonDoc.id!!,
                             undefined /*TODO provide keys for encryption*/,
-                            <any>utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.records!!)))
+                            utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.records!!)))
+                          ),
+                          docXApi.setAttachment(
+                            doc.id!!,
+                            undefined /*TODO provide keys for encryption*/,
+                            utils.ua2ArrayBuffer(utils.text2ua(res.detail!!))
                           )
                         ])
                       )
                       .then(() =>
-                        this.receiptApi.createReceipt(
-                          new ReceiptDto({
-                            documentId: message.id,
-                            references: [
-                              `mycarenet:efact:inputReference:${res.inputReference}`,
-                              res.tack!!.appliesTo,
-                              res.tack!!.reference
-                            ]
-                          })
-                        )
-                      )
-                      .then(rcpt =>
-                        this.receiptApi.setAttachment(rcpt.id, "tack", undefined, <any>(
+                        this.receiptApi.logReceipt(
+                          user,
+                          message.id!!,
+                          [
+                            `mycarenet:efact:inputReference:${res.inputReference}`,
+                            res.tack!!.appliesTo!!,
+                            res.tack!!.reference!!
+                          ],
+                          "tack",
                           utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.tack)))
                         ))
                       )
