@@ -3,6 +3,13 @@ export namespace XHR {
     status: number
     code: number
     headers: Headers
+
+    constructor(message: string, status: number, code: number, headers: Headers) {
+      super(message)
+      this.code = code
+      this.status = status
+      this.headers = headers
+    }
   }
 
   export class Header {
@@ -65,10 +72,12 @@ export namespace XHR {
       )
     ).then(function(response) {
       if (response.status >= 400) {
-        const e = new XHRError(response.statusText)
-        e.status = response.status
-        e.code = response.status
-        e.headers = response.headers
+        const e = new XHRError(
+          response.statusText,
+          response.status,
+          response.status,
+          response.headers
+        )
         throw e
       }
       const ct = response.headers.get("content-type") || "text/plain"
