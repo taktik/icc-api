@@ -252,22 +252,46 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
 
-  checkInami(inami : String): Boolean{
-    const num_inami = inami.replace(new RegExp("[^(0-9)]", "g"),'');
+  checkInami(inami : String): Boolean {
+    const num_inami = inami.replace(new RegExp("[^(0-9)]", "g"), '');
 
-    const checkDigit = num_inami.substr(6,2);
-    const numSansCheck = num_inami.substr(0,6);
+    const checkDigit = num_inami.substr(6, 2);
+    const numSansCheck = num_inami.substr(0, 6);
     let retour = false;
 
     //modulo du niss
-    const modINAMI = parseInt(numSansCheck)% 97;
+    const modINAMI = parseInt(numSansCheck) % 97;
 
     //obtention du num de check 97 - le resultat du mod
     const checkDigit_2 = (97 - modINAMI);
 
-    if(parseInt(checkDigit) == checkDigit_2) {
+    if (parseInt(checkDigit) == checkDigit_2) {
       retour = true;
     }
     return retour;
+  }
+
+  isValidSsin(ssin: string) {
+    ssin = ssin.replace(new RegExp("[^(0-9)]", "g"), "")
+    let isValidNiss = false
+
+    const normalNumber = /^[0-9][0-9](([0][0-9])|([1][0-2]))(([0-2][0-9])|([3][0-1]))(([0-9]{2}[1-9])|([0-9][1-9][0-9])|([1-9][0-9]{2}))(([0-8][0-9])|([9][0-7]))$/.test(
+      ssin
+    )
+    const bisNumber = /^[0-9][0-9](([2][0-9])|([3][0-2]))(([0-2][0-9])|([3][0-1]))[0-9]{3}(([0-8][0-9])|([9][0-7]))$/.test(
+      ssin
+    )
+    const terNumber = /^[0-9][0-9](([4][0-9])|([5][0-2]))(([0-2][0-9])|([3][0-1]))[0-9]{3}(([0-8][0-9])|([9][0-7]))$/.test(
+      ssin
+    )
+
+    if (normalNumber || bisNumber || terNumber) {
+      isValidNiss =
+        97 - (Number(ssin.substr(0, 9)) % 97) === Number(ssin.substr(9, 2))
+          ? true
+          : 97 - (Number("2" + ssin.substr(0, 9)) % 97) === Number(ssin.substr(9, 2))
+    }
+
+    return isValidNiss
   }
 }
