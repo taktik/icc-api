@@ -1,4 +1,10 @@
 export namespace XHR {
+  export class XHRError extends Error {
+    status: number
+    code: number
+    headers: Headers
+  }
+
   export class Header {
     header: string
     data: string
@@ -59,7 +65,7 @@ export namespace XHR {
       )
     ).then(function(response) {
       if (response.status >= 400) {
-        const e = new Error(response.statusText)
+        const e = new XHRError(response.statusText)
         e.status = response.status
         e.code = response.status
         e.headers = response.headers
