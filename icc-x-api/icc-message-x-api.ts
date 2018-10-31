@@ -119,7 +119,7 @@ export class IccMessageXApi extends iccMessageApi {
 
     let promMsg: Promise<Array<MessageDto>> = promAck.then(() => [])
     _.each(list.lists, dmgsMsgList => {
-      const metas = {}
+      const metas = { type: "list" }
       _.each(dmgsMsgList.inscriptions, i => {
         i.inss &&
           (patsDmgs[i.inss] || (patsDmgs[i.inss] = [])).push({
@@ -170,6 +170,7 @@ export class IccMessageXApi extends iccMessageApi {
 
     _.each(list.closures, closure => {
       const metas = {
+        type: "closure",
         date:
           (closure.endOfPreviousDmg && moment(closure.endOfPreviousDmg).format("DD/MM/YYYY")) ||
           null,
@@ -204,6 +205,7 @@ export class IccMessageXApi extends iccMessageApi {
 
     _.each(list.extensions, ext => {
       const metas = {
+        type: "extension",
         date: (ext.encounterDate && moment(ext.encounterDate).format("DD/MM/YYYY")) || null,
         from: (ext.encounterDate && moment(ext.encounterDate).format("DD/MM/YYYY")) || null,
         hcp: this.makeHcp(ext.hcParty),
