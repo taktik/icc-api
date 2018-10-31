@@ -1,13 +1,8 @@
-import {
-  iccEntityrefApi,
-  iccInsuranceApi,
-  iccMessageApi,
-  iccReceiptApi,
-  iccInvoiceApi
-} from "../icc-api/iccApi"
+import { iccEntityrefApi, iccInsuranceApi, iccInvoiceApi, iccMessageApi } from "../icc-api/iccApi"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 
 import * as _ from "lodash"
+import moment from "moment"
 import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
 import {
@@ -18,16 +13,16 @@ import {
   InvoiceDto,
   ListOfIdsDto,
   MessageDto,
-  PatientDto,
   PatientHealthCarePartyDto,
+  PatientPaginatedList,
   ReceiptDto,
   ReferralPeriod,
   UserDto
 } from "../icc-api/model/models"
 import {
+  decodeBase36Uuid,
   InvoiceWithPatient,
   toInvoiceBatch,
-  decodeBase36Uuid,
   uuidBase36,
   uuidBase36Half
 } from "./utils/efact-util"
@@ -52,6 +47,8 @@ import { DmgsList } from "fhc-api/dist/model/DmgsList"
 import { DmgClosure } from "fhc-api/dist/model/DmgClosure"
 import { DmgExtension } from "fhc-api/dist/model/DmgExtension"
 import { IccPatientXApi } from "./icc-patient-x-api"
+import { HcpartyType } from "fhc-api/dist/model/HcpartyType"
+import { IDHCPARTY } from "fhc-api/dist/model/IDHCPARTY"
 
 export class IccMessageXApi extends iccMessageApi {
   private crypto: IccCryptoXApi
@@ -122,13 +119,14 @@ export class IccMessageXApi extends iccMessageApi {
 
     let promMsg: Promise<Array<MessageDto>> = promAck.then(() => [])
     _.each(list.lists, dmgsMsgList => {
+      const metas = {}
       _.each(dmgsMsgList.inscriptions, i => {
         i.inss &&
           (patsDmgs[i.inss] || (patsDmgs[i.inss] = [])).push({
-            date: i.from,
-            from: i.from,
+            date: moment(i.from).format("DD/MM/YYYY"),
+            from: moment(i.from).format("DD/MM/YYYY"),
             to: i.to,
-            hcp: i.hcParty,
+            hcp: this.makeHcp(i.hcParty),
             payments: (i.payment1Amount
               ? [
                   {
@@ -154,7 +152,15 @@ export class IccMessageXApi extends iccMessageApi {
           })
       })
       promMsg = promMsg.then(acc => {
-        return this.saveMessageInDb(user, dmgsMsgList, hcp, docXApi, dmgsMsgList.date).then(msg => {
+        return this.saveMessageInDb(
+          user,
+          "List",
+          dmgsMsgList,
+          hcp,
+          metas,
+          docXApi,
+          dmgsMsgList.date
+        ).then(msg => {
           dmgsMsgList.valueHash && msgHashes.push(dmgsMsgList.valueHash)
           acc.push(msg)
           return acc
@@ -163,20 +169,28 @@ export class IccMessageXApi extends iccMessageApi {
     })
 
     _.each(list.closures, closure => {
-      closure.inss &&
-        (patsDmgs[closure.inss] || (patsDmgs[closure.inss] = [])).push({
-          date: closure.endOfPreviousDmg,
-          closure: true,
-          endOfPreviousDmg: closure.endOfPreviousDmg,
-          beginOfNewDmg: closure.beginOfNewDmg,
-          previousHcp: closure.previousHcParty,
-          newHcp: closure.newHcParty
-        })
+      const metas = {
+        date:
+          (closure.endOfPreviousDmg && moment(closure.endOfPreviousDmg).format("DD/MM/YYYY")) ||
+          null,
+        closure: "true",
+        endOfPreviousDmg:
+          (closure.endOfPreviousDmg && moment(closure.endOfPreviousDmg).format("DD/MM/YYYY")) ||
+          null,
+        beginOfNewDmg:
+          (closure.beginOfNewDmg && moment(closure.beginOfNewDmg).format("DD/MM/YYYY")) || null,
+        previousHcp: this.makeHcp(closure.previousHcParty),
+        newHcp: this.makeHcp(closure.newHcParty),
+        ssin: closure.inss || null
+      }
+      closure.inss && (patsDmgs[closure.inss] || (patsDmgs[closure.inss] = [])).push(metas)
       promMsg = promMsg.then(acc => {
         return this.saveMessageInDb(
           user,
+          "Closure",
           closure,
           hcp,
+          metas,
           docXApi,
           closure.endOfPreviousDmg,
           closure.inss
@@ -189,20 +203,29 @@ export class IccMessageXApi extends iccMessageApi {
     })
 
     _.each(list.extensions, ext => {
-      ext.inss &&
-        (patsDmgs[ext.inss] || (patsDmgs[ext.inss] = [])).push({
-          date: ext.encounterDate,
-          from: ext.encounterDate,
-          hcp: ext.hcParty,
-          claim: ext.claim
-        })
+      const metas = {
+        date: (ext.encounterDate && moment(ext.encounterDate).format("DD/MM/YYYY")) || null,
+        from: (ext.encounterDate && moment(ext.encounterDate).format("DD/MM/YYYY")) || null,
+        hcp: this.makeHcp(ext.hcParty),
+        claim: ext.claim || null,
+        ssin: ext.inss || null
+      }
+      ext.inss && (patsDmgs[ext.inss] || (patsDmgs[ext.inss] = [])).push(metas)
       promMsg = promMsg.then(acc => {
-        return this.saveMessageInDb(user, ext, hcp, docXApi, ext.encounterDate, ext.inss).then(
-          msg => {
-            acc.push(msg)
-            return acc
-          }
-        )
+        return this.saveMessageInDb(
+          user,
+          "Extension",
+          ext,
+          hcp,
+          metas,
+          docXApi,
+          ext.encounterDate,
+          ext.inss
+        ).then(msg => {
+          ext.valueHash && msgHashes.push(ext.valueHash)
+          acc.push(msg)
+          return acc
+        })
       })
     })
 
@@ -225,9 +248,10 @@ export class IccMessageXApi extends iccMessageApi {
                 })
               })
             )
-            .then((pats: Array<PatientDto>) =>
+            .then((pats: PatientPaginatedList) =>
               this.patientApi.bulkUpdatePatients(
-                pats.map(p => {
+                (pats.rows || []).map(p => {
+                  msgHashes
                   const actions = _.sortBy(patsDmgs[p.ssin!!], "date")
                   const latestAction = actions[actions.length - 1]
                   let phcp =
@@ -264,10 +288,21 @@ export class IccMessageXApi extends iccMessageApi {
     )
   }
 
+  private makeHcp(hcParty: HcpartyType | null | undefined) {
+    if (!hcParty) {
+      return null
+    }
+    return `${hcParty.firstname || ""} ${hcParty.familyname || ""} [${(hcParty.ids &&
+      (hcParty.ids.find(id => id.s === IDHCPARTY.SEnum.IDHCPARTY) || {}).value) ||
+      "-"}]`
+  }
+
   private saveMessageInDb(
     user: UserDto,
+    msgName: string,
     dmgMessage: DmgsList | DmgClosure | DmgExtension,
     hcp: HealthcarePartyDto,
+    metas: { [key: string]: string | null },
     docXApi: IccDocumentXApi,
     date?: Date,
     inss?: string
@@ -275,15 +310,16 @@ export class IccMessageXApi extends iccMessageApi {
     return this.newInstance(user, {
       // tslint:disable-next-line:no-bitwise
       transportGuid: "GMD:IN:" + dmgMessage.reference,
-      fromAddress: "IO:" + dmgMessage.io,
+      fromAddress: dmgMessage.io,
       sent: date && +date,
       toHealthcarePartyId: hcp.id,
       recipients: [hcp.id],
       recipientsType: "org.taktik.icure.entities.HealthcareParty",
       received: +new Date(),
+      metas: metas,
       subject: inss
-        ? `Closure from IO ${dmgMessage.io}`
-        : `Closure from IO ${dmgMessage.io} for ${inss}`,
+        ? `${msgName} from IO ${dmgMessage.io} for ${inss}`
+        : `${msgName} from IO ${dmgMessage.io}`,
       senderReferences: {
         inputReference: dmgMessage.commonOutput && dmgMessage.commonOutput.inputReference,
         outputReference: dmgMessage.commonOutput && dmgMessage.commonOutput.outputReference,
@@ -297,6 +333,7 @@ export class IccMessageXApi extends iccMessageApi {
             mainUti: "public.json",
             name: `${msg.subject}_content.json`
           })
+          .then(doc => docXApi.createDocument(doc))
           .then(doc =>
             docXApi.setAttachment(
               doc.id!!,

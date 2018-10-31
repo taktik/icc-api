@@ -24,21 +24,23 @@
 
 import * as models from "./models"
 
-export class MeasureDto {
+export class MedicalHouseContractDto {
   constructor(json: JSON | any) {
-    Object.assign(this as MeasureDto, json)
+    Object.assign(this as MedicalHouseContractDto, json)
   }
-  value?: number
+  mmNihii?: string
 
-  min?: number
+  startOfContract?: number
 
-  max?: number
+  startOfCoverage?: number
 
-  ref?: number
+  endOfContract?: number
 
-  unit?: string
+  endOfCoverage?: number
 
-  unitCodes?: Array<models.CodeDto>
+  kine?: boolean
 
-  comment?: string
+  gp?: boolean
+
+  nurse?: boolean
 }

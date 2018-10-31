@@ -110,6 +110,8 @@ export class InvoiceDto {
 
   careProviderType?: string
 
+  error?: string
+
   receipts?: { [key: string]: string }
 
   encryptedSelf?: string
