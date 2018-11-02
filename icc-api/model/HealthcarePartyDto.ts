@@ -72,6 +72,8 @@ export class HealthcarePartyDto {
 
   convention?: number
 
+  userId?: string
+
   notes?: string
 
   sendFormats?: { [key: string]: string }

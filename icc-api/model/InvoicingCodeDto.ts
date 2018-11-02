@@ -96,6 +96,8 @@ export class InvoicingCodeDto {
 
   resent?: boolean
 
+  archived?: boolean
+
   insuranceJustification?: number
 
   cancelPatientInterventionReason?: number
