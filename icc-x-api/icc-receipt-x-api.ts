@@ -116,7 +116,7 @@ export class IccReceiptXApi extends iccReceiptApi {
   ) {
     return this.newInstance(user, { documentId: docId, references: refs })
       .then(rcpt => this.createReceipt(rcpt))
-      .then(rcpt => this.setAttachment(rcpt.id, blobType, undefined, blob))
+      .then(rcpt => this.setAttachment(rcpt.id, blobType, undefined, <any>blob))
   }
 
   logSCReceipt(
@@ -150,12 +150,9 @@ export class IccReceiptXApi extends iccReceiptApi {
     })
       .then(rcpt => this.createReceipt(rcpt))
       .then(rcpt =>
-        this.setAttachment(
-          rcpt.id,
-          "soapConversation",
-          undefined,
+        this.setAttachment(rcpt.id, "soapConversation", undefined, <any>(
           utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(object.mycarenetConversation)))
-        )
+        ))
       )
   }
 }

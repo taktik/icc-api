@@ -1,17 +1,4 @@
 export namespace XHR {
-  export class XHRError extends Error {
-    status: number
-    code: number
-    headers: Headers
-
-    constructor(message: string, status: number, code: number, headers: Headers) {
-      super(message)
-      this.code = code
-      this.status = status
-      this.headers = headers
-    }
-  }
-
   export class Header {
     header: string
     data: string
