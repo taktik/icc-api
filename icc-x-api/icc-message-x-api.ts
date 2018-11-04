@@ -447,7 +447,6 @@ export class IccMessageXApi extends iccMessageApi {
                         ))
                       ).invoicingCodes = (newInvoice.invoicingCodes || []).concat(
                         _.assign({}, ic, {
-                          id: this.crypto.randomUuid(),
                           logicalId: ic.logicalId,
                           accepted: false,
                           canceled: false,
