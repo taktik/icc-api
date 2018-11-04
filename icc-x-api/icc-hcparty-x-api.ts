@@ -15,7 +15,12 @@ export class IccHcpartyXApi extends iccHcpartyApi {
 
   modifyHealthcareParty(body?: HealthcarePartyDto): Promise<HealthcarePartyDto | any> {
     body && body.id && delete this.cache[body.id]
-    return super.modifyHealthcareParty(body)
+    return super
+      .modifyHealthcareParty(body)
+      .then(
+        hcp =>
+          (this.cache[hcp.id] = [+Date() + this.CACHE_RETENTION_IN_MS, Promise.resolve(hcp)])[1]
+      )
   }
 
   getHealthcareParty(healthcarePartyId: string): Promise<HealthcarePartyDto | any> {
