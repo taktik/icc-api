@@ -1,10 +1,4 @@
-import {
-  iccEntityrefApi,
-  iccInsuranceApi,
-  iccMessageApi,
-  iccReceiptApi,
-  iccInvoiceApi
-} from "../icc-api/iccApi"
+import { iccEntityrefApi, iccInsuranceApi, iccMessageApi, iccReceiptApi } from "../icc-api/iccApi"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 import { IccDocumentXApi } from "./icc-document-x-api"
 import { IccInvoiceXApi } from "./icc-invoice-x-api"
@@ -58,7 +52,6 @@ export class IccMessageXApi extends iccMessageApi {
   private insuranceApi: iccInsuranceApi
   private entityReferenceApi: iccEntityrefApi
   private receiptApi: iccReceiptApi
-  private invoiceApi: iccInvoiceApi
   private invoiceXApi: IccInvoiceXApi
   private documentXApi: IccDocumentXApi
 
@@ -69,7 +62,6 @@ export class IccMessageXApi extends iccMessageApi {
     insuranceApi: iccInsuranceApi,
     entityReferenceApi: iccEntityrefApi,
     receiptApi: iccReceiptApi,
-    invoiceApi: iccInvoiceApi,
     invoiceXApi: IccInvoiceXApi,
     documentXApi: IccDocumentXApi
   ) {
@@ -78,9 +70,8 @@ export class IccMessageXApi extends iccMessageApi {
     this.insuranceApi = insuranceApi
     this.entityReferenceApi = entityReferenceApi
     this.receiptApi = receiptApi
-    this.invoiceApi = invoiceApi
-    this.documentXApi = documentXApi
     this.invoiceXApi = invoiceXApi
+    this.documentXApi = documentXApi
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -375,7 +366,9 @@ export class IccMessageXApi extends iccMessageApi {
             .then(
               () =>
                 ["920999", "920099", "920900"].includes(messageType)
-                  ? this.invoiceApi.getInvoices(new ListOfIdsDto({ ids: parentMessage.invoiceIds }))
+                  ? this.invoiceXApi.getInvoices(
+                      new ListOfIdsDto({ ids: parentMessage.invoiceIds })
+                    )
                   : Promise.resolve([])
             )
             .then((invoices: Array<models.InvoiceDto>) => {
@@ -485,9 +478,9 @@ export class IccMessageXApi extends iccMessageApi {
                   return newInvoice
                     ? [
                         this.invoiceXApi.createInvoice(newInvoice, invoicePrefix),
-                        this.invoiceApi.modifyInvoice(iv)
+                        this.invoiceXApi.modifyInvoice(iv)
                       ]
-                    : [this.invoiceApi.modifyInvoice(iv)]
+                    : [this.invoiceXApi.modifyInvoice(iv)]
                 })
               )
             })
@@ -583,7 +576,7 @@ export class IccMessageXApi extends iccMessageApi {
                       totalAmount += code.reimbursement || 0
                     })
                     iv.invoiceDto.sentDate = sentDate
-                    return this.invoiceApi.modifyInvoice(iv.invoiceDto).catch((err: any) => {
+                    return this.invoiceXApi.modifyInvoice(iv.invoiceDto).catch((err: any) => {
                       errors.push(`efac-management.CANNOT_UPDATE_INVOICE.${iv.invoiceDto.id}`)
                     })
                   })
