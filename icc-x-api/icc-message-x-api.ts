@@ -399,6 +399,31 @@ export class IccMessageXApi extends iccMessageApi {
       })
   }
 
+  saveDmgListRequestInDb(
+    user: UserDto,
+    tack: string,
+    resultMajor: string,
+    appliesTo: string,
+    hcp: HealthcarePartyDto,
+    date?: Date,
+    inss?: string
+  ) {
+    return this.newInstance(user, {
+      // tslint:disable-next-line:no-bitwise
+      transportGuid: "GMD:OUT:LIST" + appliesTo,
+      sent: date && +date,
+      toHealthcarePartyId: hcp.id,
+      recipients: [hcp.id],
+      recipientsType: "org.taktik.icure.entities.HealthcareParty",
+      received: +new Date(),
+      metas: { tack: tack, resultMajor: resultMajor },
+      subject: inss ? `Dmg list request for ${inss}` : `Dmg list request`,
+      senderReferences: {
+        inputReference: appliesTo && _.last(appliesTo.split(":"))
+      }
+    }).then(msg => this.createMessage(msg))
+  }
+
   // extractErrorMessage(es?: { itemId: string | null; error?: ErrorDetail }): string | undefined {
   //   const e = es && es.error
   //   return e &&
