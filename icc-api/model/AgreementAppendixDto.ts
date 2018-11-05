@@ -24,28 +24,15 @@
 
 import * as models from "./models"
 
-export class PatientHealthCarePartyDto {
+export class AgreementAppendixDto {
   constructor(json: JSON | any) {
-    Object.assign(this as PatientHealthCarePartyDto, json)
+    Object.assign(this as AgreementAppendixDto, json)
   }
-  type?: PatientHealthCarePartyDto.TypeEnum
+  docSeq?: number
 
-  referral?: boolean
+  verseSeq?: number
 
-  healthcarePartyId?: string
+  documentId?: string
 
-  sendFormats?: { [key: string]: string }
-
-  referralPeriods?: Array<models.ReferralPeriod>
-}
-export namespace PatientHealthCarePartyDto {
-  export enum TypeEnum {
-    Doctor = <any>"doctor",
-    Referral = <any>"referral",
-    Medicalhouse = <any>"medicalhouse",
-    Retirementhome = <any>"retirementhome",
-    Hospital = <any>"hospital",
-    Other = <any>"other",
-    Referringphysician = <any>"referringphysician"
-  }
+  path?: string
 }

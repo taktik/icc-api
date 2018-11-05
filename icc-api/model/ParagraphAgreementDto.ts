@@ -24,28 +24,53 @@
 
 import * as models from "./models"
 
-export class PatientHealthCarePartyDto {
+export class ParagraphAgreementDto {
   constructor(json: JSON | any) {
-    Object.assign(this as PatientHealthCarePartyDto, json)
+    Object.assign(this as ParagraphAgreementDto, json)
   }
-  type?: PatientHealthCarePartyDto.TypeEnum
+  timestamp?: number
 
-  referral?: boolean
+  paragraph?: string
 
-  healthcarePartyId?: string
+  careProviderReference?: string
 
-  sendFormats?: { [key: string]: string }
+  decisionReference?: string
 
-  referralPeriods?: Array<models.ReferralPeriod>
-}
-export namespace PatientHealthCarePartyDto {
-  export enum TypeEnum {
-    Doctor = <any>"doctor",
-    Referral = <any>"referral",
-    Medicalhouse = <any>"medicalhouse",
-    Retirementhome = <any>"retirementhome",
-    Hospital = <any>"hospital",
-    Other = <any>"other",
-    Referringphysician = <any>"referringphysician"
-  }
+  start?: number
+
+  end?: number
+
+  quantityValue?: number
+
+  quantityUnit?: string
+
+  ioRequestReference?: string
+
+  responseType?: string
+
+  refusalJustification?: { [key: string]: string }
+
+  verses?: Array<number>
+
+  coverageType?: string
+
+  unitNumber?: number
+
+  strength?: number
+
+  strengthUnit?: string
+
+  restUnitNumber?: number
+
+  restStrength?: number
+
+  restStrengthUnit?: string
+
+  agreementAppendices?: Array<models.AgreementAppendixDto>
+
+  documentId?: string
+
+  accepted?: boolean
+
+  inTreatment?: boolean
 }
