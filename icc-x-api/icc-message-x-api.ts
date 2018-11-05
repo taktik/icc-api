@@ -70,7 +70,7 @@ export class IccMessageXApi extends iccMessageApi {
   private crypto: IccCryptoXApi
   private insuranceApi: iccInsuranceApi
   private entityReferenceApi: iccEntityrefApi
-  private receiptApi: iccReceiptApi
+  private receiptXApi: IccReceiptXApi
   private invoiceXApi: IccInvoiceXApi
   private documentXApi: IccDocumentXApi
   private patientApi: IccPatientXApi
@@ -83,14 +83,14 @@ export class IccMessageXApi extends iccMessageApi {
     entityReferenceApi: iccEntityrefApi,
     invoiceXApi: IccInvoiceXApi,
     documentXApi: IccDocumentXApi,
-    receiptApi: IccReceiptXApi,
+    receiptXApi: IccReceiptXApi,
     patientApi: IccPatientXApi
   ) {
     super(host, headers)
     this.crypto = crypto
     this.insuranceApi = insuranceApi
     this.entityReferenceApi = entityReferenceApi
-    this.receiptApi = receiptApi
+    this.receiptXApi = receiptXApi
     this.invoiceXApi = invoiceXApi
     this.documentXApi = documentXApi
     this.patientApi = patientApi
@@ -163,7 +163,7 @@ export class IccMessageXApi extends iccMessageApi {
     _.each(list.acks, ack => {
       promAck = promAck
         .then(() =>
-          this.receiptApi.logSCReceipt(ack, user, hcp.id!!, [`nip:pin:valuehash:${ack.valueHash}`])
+          this.receiptXApi.logSCReceipt(ack, user, hcp.id!!, [`nip:pin:valuehash:${ack.valueHash}`])
         )
         .then(receipt => {
           ack.valueHash && ackHashes.push(ack.valueHash)
@@ -521,7 +521,7 @@ export class IccMessageXApi extends iccMessageApi {
       }
       const parentMessage: MessageDto = msgsForHcp[0]
 
-      return this.receiptApi
+      return this.receiptXApi
         .createReceipt(
           new ReceiptDto({
             documentId: parentMessage.id,
@@ -533,7 +533,7 @@ export class IccMessageXApi extends iccMessageApi {
           })
         )
         .then(rcpt =>
-          this.receiptApi.setAttachment(rcpt.id, "tack", undefined, <any>(
+          this.receiptXApi.setAttachment(rcpt.id, "tack", undefined, <any>(
             utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(efactMessage.tack)))
           ))
         )
@@ -987,7 +987,7 @@ export class IccMessageXApi extends iccMessageApi {
                         ])
                       )
                       .then(() =>
-                        this.receiptApi.logReceipt(
+                        this.receiptXApi.logReceipt(
                           user,
                           message.id!!,
                           [
