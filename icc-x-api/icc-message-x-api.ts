@@ -826,7 +826,11 @@ export class IccMessageXApi extends iccMessageApi {
                   initData.secretId
                 )
               )
-              .then(extraData => _.extend(message, { delegations: extraData.delegations })))
+              .then(extraData => _.extend(message, { delegations: extraData.delegations }))
+              .catch(e => {
+                console.log(e)
+                return message
+              }))
         )
         return promise
       })

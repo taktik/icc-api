@@ -58,9 +58,9 @@ export class IccHelementXApi extends iccHelementApi {
         ).forEach(
           delegateId =>
             (promise = promise
-              .then(contact =>
+              .then(helement =>
                 this.crypto.appendObjectDelegations(
-                  contact,
+                  helement,
                   patient,
                   user.healthcarePartyId!,
                   delegateId,
@@ -72,7 +72,11 @@ export class IccHelementXApi extends iccHelementApi {
                   delegations: extraData.delegations,
                   cryptedForeignKeys: extraData.cryptedForeignKeys
                 })
-              ))
+              )
+              .catch(e => {
+                console.log(e)
+                return helement
+              }))
         )
         return promise
       })

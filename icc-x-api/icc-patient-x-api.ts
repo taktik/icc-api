@@ -88,7 +88,11 @@ export class IccPatientXApi extends iccPatientApi {
                   initData.secretId
                 )
               )
-              .then(extraData => _.extend(patient, { delegations: extraData.delegations })))
+              .then(extraData => _.extend(patient, { delegations: extraData.delegations }))
+              .catch(e => {
+                console.log(e)
+                return patient
+              }))
         )
         return promise
       })
@@ -145,14 +149,19 @@ export class IccPatientXApi extends iccPatientApi {
                   let markerPromise: Promise<any> = Promise.resolve(null)
                   delegateIds.forEach(delegateId => {
                     markerPromise = markerPromise.then(() =>
-                      this.crypto.addDelegationsAndEncryptionKeys(
-                        null,
-                        p,
-                        ownerId,
-                        delegateId,
-                        psfks[0],
-                        peks[0]
-                      )
+                      this.crypto
+                        .addDelegationsAndEncryptionKeys(
+                          null,
+                          p,
+                          ownerId,
+                          delegateId,
+                          psfks[0],
+                          peks[0]
+                        )
+                        .catch(e => {
+                          console.log(e)
+                          return p
+                        })
                     )
                     hes.forEach(
                       x =>
@@ -161,14 +170,19 @@ export class IccPatientXApi extends iccPatientApi {
                             this.crypto.extractDelegationsSFKs(x, ownerId),
                             this.crypto.extractEncryptionsSKs(x, ownerId)
                           ]).then(([sfks, eks]) =>
-                            this.crypto.addDelegationsAndEncryptionKeys(
-                              p,
-                              x,
-                              ownerId,
-                              delegateId,
-                              sfks[0],
-                              eks[0]
-                            )
+                            this.crypto
+                              .addDelegationsAndEncryptionKeys(
+                                p,
+                                x,
+                                ownerId,
+                                delegateId,
+                                sfks[0],
+                                eks[0]
+                              )
+                              .catch(e => {
+                                console.log(e)
+                                return x
+                              })
                           )
                         ))
                     )
@@ -179,14 +193,19 @@ export class IccPatientXApi extends iccPatientApi {
                             this.crypto.extractDelegationsSFKs(x, ownerId),
                             this.crypto.extractEncryptionsSKs(x, ownerId)
                           ]).then(([sfks, eks]) =>
-                            this.crypto.addDelegationsAndEncryptionKeys(
-                              p,
-                              x,
-                              ownerId,
-                              delegateId,
-                              sfks[0],
-                              eks[0]
-                            )
+                            this.crypto
+                              .addDelegationsAndEncryptionKeys(
+                                p,
+                                x,
+                                ownerId,
+                                delegateId,
+                                sfks[0],
+                                eks[0]
+                              )
+                              .catch(e => {
+                                console.log(e)
+                                return x
+                              })
                           )
                         ))
                     )
@@ -197,14 +216,19 @@ export class IccPatientXApi extends iccPatientApi {
                             this.crypto.extractDelegationsSFKs(x, ownerId),
                             this.crypto.extractEncryptionsSKs(x, ownerId)
                           ]).then(([sfks, eks]) =>
-                            this.crypto.addDelegationsAndEncryptionKeys(
-                              p,
-                              x,
-                              ownerId,
-                              delegateId,
-                              sfks[0],
-                              eks[0]
-                            )
+                            this.crypto
+                              .addDelegationsAndEncryptionKeys(
+                                p,
+                                x,
+                                ownerId,
+                                delegateId,
+                                sfks[0],
+                                eks[0]
+                              )
+                              .catch(e => {
+                                console.log(e)
+                                return x
+                              })
                           )
                         ))
                     )
@@ -215,14 +239,19 @@ export class IccPatientXApi extends iccPatientApi {
                             this.crypto.extractDelegationsSFKs(x, ownerId),
                             this.crypto.extractEncryptionsSKs(x, ownerId)
                           ]).then(([sfks, eks]) =>
-                            this.crypto.addDelegationsAndEncryptionKeys(
-                              p,
-                              x,
-                              ownerId,
-                              delegateId,
-                              sfks[0],
-                              eks[0]
-                            )
+                            this.crypto
+                              .addDelegationsAndEncryptionKeys(
+                                p,
+                                x,
+                                ownerId,
+                                delegateId,
+                                sfks[0],
+                                eks[0]
+                              )
+                              .catch(e => {
+                                console.log(e)
+                                return x
+                              })
                           )
                         ))
                     )

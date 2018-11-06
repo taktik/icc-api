@@ -71,7 +71,11 @@ export class IccFormXApi extends iccFormApi {
                   delegations: extraData.delegations,
                   cryptedForeignKeys: extraData.cryptedForeignKeys
                 })
-              ))
+              )
+              .catch(e => {
+                console.log(e)
+                return form
+              }))
         )
         return promise
       })
