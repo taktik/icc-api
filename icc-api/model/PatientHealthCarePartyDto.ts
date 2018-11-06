@@ -45,6 +45,7 @@ export namespace PatientHealthCarePartyDto {
     Medicalhouse = <any>"medicalhouse",
     Retirementhome = <any>"retirementhome",
     Hospital = <any>"hospital",
-    Other = <any>"other"
+    Other = <any>"other",
+    Referringphysician = <any>"referringphysician"
   }
 }

@@ -176,6 +176,7 @@ export class iccPatientApi {
       .catch(err => this.handleError(err))
   }
   findByNameBirthSsinAuto(
+    healthcarePartyId?: string,
     filterValue?: string,
     startKey?: string,
     startDocumentId?: string,
@@ -189,6 +190,7 @@ export class iccPatientApi {
       "/patient/byNameBirthSsinAuto" +
       "?ts=" +
       new Date().getTime() +
+      (healthcarePartyId ? "&healthcarePartyId=" + healthcarePartyId : "") +
       (filterValue ? "&filterValue=" + filterValue : "") +
       (startKey ? "&startKey=" + startKey : "") +
       (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
