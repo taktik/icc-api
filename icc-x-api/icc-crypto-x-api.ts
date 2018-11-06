@@ -602,7 +602,7 @@ export class IccCryptoXApi {
                   ])
               )
               .then(() => this.hcpartyBaseApi.modifyHealthcareParty(owner))
-          : Promise.reject(new Error("Missing delegate public key"))
+          : Promise.reject(new Error(`Missing public key for delegate ${delegateId}`))
     )
   }
 
