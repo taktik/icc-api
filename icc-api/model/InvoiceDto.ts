@@ -104,11 +104,23 @@ export class InvoiceDto {
 
   internshipCdHcParty?: string
 
+  supervisorNihii?: string
+
+  supervisorSsin?: string
+
+  supervisorLastName?: string
+
+  supervisorFirstName?: string
+
+  supervisorCdHcParty?: string
+
   longDelayJustification?: number
 
   creditNote?: boolean
 
   careProviderType?: string
+
+  error?: string
 
   receipts?: { [key: string]: string }
 

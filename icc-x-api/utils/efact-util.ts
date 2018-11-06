@@ -149,11 +149,11 @@ function toInvoiceItem(
       readType: "1",
       readDate: invoiceItem.dateCode,
       readHour: invoicingCode.eidReadingHour,
-      readValue: invoicingCode.eidReadingValue
+      readvalue: invoicingCode.eidReadingValue
     })
   }
   invoiceItem.gnotionNihii = invoiceDto.gnotionNihii
-  invoiceItem.insuranceRef = invoicingCode.contract
+  invoiceItem.insuranceRef = invoicingCode.contract || undefined // Must be != ""
   invoiceItem.insuranceRefDate = invoicingCode.contractDate || invoiceItem.dateCode
   invoiceItem.invoiceRef = uuidBase36(invoicingCode.id!!)
 

@@ -120,11 +120,15 @@ export class PatientDto {
 
   patientHealthCareParties?: Array<models.PatientHealthCarePartyDto>
 
+  medicalHouseContracts?: Array<models.MedicalHouseContractDto>
+
   financialInstitutionInformation?: Array<models.FinancialInstitutionInformationDto>
 
   parameters?: { [key: string]: Array<string> }
 
   patientProfessions?: Array<models.CodeDto>
+
+  openNote?: boolean
 
   encryptedSelf?: string
 }
