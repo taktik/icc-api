@@ -281,10 +281,11 @@ export class IccMessageXApi extends iccMessageApi {
                     moment(latestAction.date, "DD/MM/YYYY").format("YYYYMMDD")
                   )
                   if (latestAction && !latestAction.closure) {
-                    rp && (rp.endDate = actionDate)
+                    rp.endDate = actionDate
                     phcp.referralPeriods.push(new ReferralPeriod({ startDate: actionDate }))
                   } else if (latestAction && latestAction.closure) {
-                    rp && (rp.endDate = actionDate)
+                    rp.endDate = actionDate
+                    rp.comment = `-> ${latestAction.newHcp}`
                   }
                   return p
                 })
