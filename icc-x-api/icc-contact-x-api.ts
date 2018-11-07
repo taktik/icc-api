@@ -80,20 +80,23 @@ export class IccContactXApi extends iccContactApi {
         ;(user.autoDelegations
           ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
           : []
-        ).forEach(delegateId =>
-          (promise = promise.then(contact =>
-            this.crypto.addDelegationsAndEncryptionKeys(
-              patient,
-              contact,
-              user.healthcarePartyId!,
-              delegateId,
-              dels.secretId,
-              eks.secretId
-            )
-          )).catch(e => {
-            console.log(e)
-            return contact
-          })
+        ).forEach(
+          delegateId =>
+            (promise = promise.then(contact =>
+              this.crypto
+                .addDelegationsAndEncryptionKeys(
+                  patient,
+                  contact,
+                  user.healthcarePartyId!,
+                  delegateId,
+                  dels.secretId,
+                  eks.secretId
+                )
+                .catch(e => {
+                  console.log(e)
+                  return contact
+                })
+            ))
         )
         return promise
       })

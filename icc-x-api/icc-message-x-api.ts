@@ -253,9 +253,9 @@ export class IccMessageXApi extends iccMessageApi {
             .then((pats: PatientPaginatedList) =>
               this.patientApi.bulkUpdatePatients(
                 (pats.rows || []).map(p => {
-                  msgHashes
                   const actions = _.sortBy(patsDmgs[p.ssin!!], "date")
                   const latestAction = actions[actions.length - 1]
+
                   let phcp =
                     (p.patientHealthCareParties || (p.patientHealthCareParties = [])) &&
                     p.patientHealthCareParties.find(
@@ -269,16 +269,18 @@ export class IccMessageXApi extends iccMessageApi {
                       }))
                     )
                   }
+                  if (!phcp.referralPeriods) {
+                    phcp.referralPeriods = []
+                  }
+
+                  const rp =
+                    (phcp.referralPeriods && phcp.referralPeriods.find(per => !per.endDate)) ||
+                    (phcp.referralPeriods[phcp.referralPeriods.length] = new ReferralPeriod({}))
+
                   if (latestAction && !latestAction.closure) {
-                    const rp =
-                      phcp.referralPeriods && phcp.referralPeriods.find(per => !per.endDate)
-                    rp &&
-                      (rp.endDate = latestAction.date)(
-                        phcp.referralPeriods || (phcp.referralPeriods = [])
-                      ).push(new ReferralPeriod({ startDate: latestAction.date }))
+                    rp && (rp.endDate = latestAction.date)
+                    phcp.referralPeriods.push(new ReferralPeriod({ startDate: latestAction.date }))
                   } else if (latestAction && latestAction.closure) {
-                    const rp =
-                      phcp && phcp.referralPeriods && phcp.referralPeriods.find(per => !per.endDate)
                     rp && (rp.endDate = latestAction.date)
                   }
                   return p
@@ -817,21 +819,21 @@ export class IccMessageXApi extends iccMessageApi {
           : []
         ).forEach(
           delegateId =>
-            (promise = promise
-              .then(patient =>
-                this.crypto.appendObjectDelegations(
+            (promise = promise.then(patient =>
+              this.crypto
+                .appendObjectDelegations(
                   message,
                   parentObject,
                   user.healthcarePartyId!,
                   delegateId,
                   initData.secretId
                 )
-              )
-              .then(extraData => _.extend(message, { delegations: extraData.delegations }))
-              .catch(e => {
-                console.log(e)
-                return message
-              }))
+                .then(extraData => _.extend(message, { delegations: extraData.delegations || {} }))
+                .catch(e => {
+                  console.log(e)
+                  return message
+                })
+            ))
         )
         return promise
       })
