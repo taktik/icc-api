@@ -294,7 +294,8 @@ export class IccMessageXApi extends iccMessageApi {
     if (!hcParty) {
       return null
     }
-    return `${hcParty.firstname || ""} ${hcParty.familyname || ""} [${(hcParty.ids &&
+    return `${hcParty.firstname || ""} ${hcParty.familyname || ""} ${hcParty.name ||
+      ""} [${(hcParty.ids &&
       (hcParty.ids.find(id => id.s === IDHCPARTY.SEnum.IDHCPARTY) || {}).value) ||
       "-"}]`
   }
@@ -826,7 +827,11 @@ export class IccMessageXApi extends iccMessageApi {
                   initData.secretId
                 )
               )
-              .then(extraData => _.extend(message, { delegations: extraData.delegations })))
+              .then(extraData => _.extend(message, { delegations: extraData.delegations }))
+              .catch(e => {
+                console.log(e)
+                return message
+              }))
         )
         return promise
       })

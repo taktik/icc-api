@@ -88,7 +88,11 @@ export class IccPatientXApi extends iccPatientApi {
                   initData.secretId
                 )
               )
-              .then(extraData => _.extend(patient, { delegations: extraData.delegations })))
+              .then(extraData => _.extend(patient, { delegations: extraData.delegations }))
+              .catch(e => {
+                console.log(e)
+                return patient
+              }))
         )
         return promise
       })
@@ -144,32 +148,44 @@ export class IccPatientXApi extends iccPatientApi {
                 ).then(docs => {
                   let markerPromise: Promise<any> = Promise.resolve(null)
                   delegateIds.forEach(delegateId => {
-                    markerPromise = markerPromise.then(() =>
-                      this.crypto.addDelegationsAndEncryptionKeys(
-                        null,
-                        p,
-                        ownerId,
-                        delegateId,
-                        psfks[0],
-                        peks[0]
-                      )
-                    )
+                    markerPromise = markerPromise.then(() => {
+                      console.log(`share ${p.id} to ${delegateId}`)
+                      return this.crypto
+                        .addDelegationsAndEncryptionKeys(
+                          null,
+                          p,
+                          ownerId,
+                          delegateId,
+                          psfks[0],
+                          peks[0]
+                        )
+                        .catch(e => {
+                          console.log(e)
+                          return p
+                        })
+                    })
                     hes.forEach(
                       x =>
                         (markerPromise = markerPromise.then(() =>
                           Promise.all([
                             this.crypto.extractDelegationsSFKs(x, ownerId),
                             this.crypto.extractEncryptionsSKs(x, ownerId)
-                          ]).then(([sfks, eks]) =>
-                            this.crypto.addDelegationsAndEncryptionKeys(
-                              p,
-                              x,
-                              ownerId,
-                              delegateId,
-                              sfks[0],
-                              eks[0]
-                            )
-                          )
+                          ]).then(([sfks, eks]) => {
+                            console.log(`share ${x.id} to ${delegateId}`)
+                            return this.crypto
+                              .addDelegationsAndEncryptionKeys(
+                                p,
+                                x,
+                                ownerId,
+                                delegateId,
+                                sfks[0],
+                                eks[0]
+                              )
+                              .catch(e => {
+                                console.log(e)
+                                return x
+                              })
+                          })
                         ))
                     )
                     ctcsStubs.forEach(
@@ -178,16 +194,22 @@ export class IccPatientXApi extends iccPatientApi {
                           Promise.all([
                             this.crypto.extractDelegationsSFKs(x, ownerId),
                             this.crypto.extractEncryptionsSKs(x, ownerId)
-                          ]).then(([sfks, eks]) =>
-                            this.crypto.addDelegationsAndEncryptionKeys(
-                              p,
-                              x,
-                              ownerId,
-                              delegateId,
-                              sfks[0],
-                              eks[0]
-                            )
-                          )
+                          ]).then(([sfks, eks]) => {
+                            console.log(`share ${p.id} to ${delegateId}`)
+                            return this.crypto
+                              .addDelegationsAndEncryptionKeys(
+                                p,
+                                x,
+                                ownerId,
+                                delegateId,
+                                sfks[0],
+                                eks[0]
+                              )
+                              .catch(e => {
+                                console.log(e)
+                                return x
+                              })
+                          })
                         ))
                     )
                     ivs.forEach(
@@ -196,16 +218,22 @@ export class IccPatientXApi extends iccPatientApi {
                           Promise.all([
                             this.crypto.extractDelegationsSFKs(x, ownerId),
                             this.crypto.extractEncryptionsSKs(x, ownerId)
-                          ]).then(([sfks, eks]) =>
-                            this.crypto.addDelegationsAndEncryptionKeys(
-                              p,
-                              x,
-                              ownerId,
-                              delegateId,
-                              sfks[0],
-                              eks[0]
-                            )
-                          )
+                          ]).then(([sfks, eks]) => {
+                            console.log(`share ${p.id} to ${delegateId}`)
+                            return this.crypto
+                              .addDelegationsAndEncryptionKeys(
+                                p,
+                                x,
+                                ownerId,
+                                delegateId,
+                                sfks[0],
+                                eks[0]
+                              )
+                              .catch(e => {
+                                console.log(e)
+                                return x
+                              })
+                          })
                         ))
                     )
                     docs.forEach(
@@ -214,26 +242,42 @@ export class IccPatientXApi extends iccPatientApi {
                           Promise.all([
                             this.crypto.extractDelegationsSFKs(x, ownerId),
                             this.crypto.extractEncryptionsSKs(x, ownerId)
-                          ]).then(([sfks, eks]) =>
-                            this.crypto.addDelegationsAndEncryptionKeys(
-                              p,
-                              x,
-                              ownerId,
-                              delegateId,
-                              sfks[0],
-                              eks[0]
-                            )
-                          )
+                          ]).then(([sfks, eks]) => {
+                            console.log(`share ${p.id} to ${delegateId}`)
+                            return this.crypto
+                              .addDelegationsAndEncryptionKeys(
+                                p,
+                                x,
+                                ownerId,
+                                delegateId,
+                                sfks[0],
+                                eks[0]
+                              )
+                              .catch(e => {
+                                console.log(e)
+                                return x
+                              })
+                          })
                         ))
                     )
                   })
                   return markerPromise
                     .then(() => {
-                      this.contactApi.setContactsDelegations(ctcsStubs)
+                      console.log("scd")
+                      return this.contactApi.setContactsDelegations(ctcsStubs)
                     })
-                    .then(() => this.helementApi.setHealthElementsDelegations(hes))
-                    .then(() => this.invoiceApi.setInvoicesDelegations(ivs))
-                    .then(() => this.documentApi.setDocumentsDelegations(docs))
+                    .then(() => {
+                      console.log("shed")
+                      return this.helementApi.setHealthElementsDelegations(hes)
+                    })
+                    .then(() => {
+                      console.log("sid")
+                      return this.invoiceApi.setInvoicesDelegations(ivs)
+                    })
+                    .then(() => {
+                      console.log("sdd")
+                      return this.documentApi.setDocumentsDelegations(docs)
+                    })
                     .then(() => this.modifyPatient(p))
                 })
               })
