@@ -277,11 +277,14 @@ export class IccMessageXApi extends iccMessageApi {
                     (phcp.referralPeriods && phcp.referralPeriods.find(per => !per.endDate)) ||
                     (phcp.referralPeriods[phcp.referralPeriods.length] = new ReferralPeriod({}))
 
+                  const actionDate = Number(
+                    moment(latestAction.date, "DD/MM/YYYY").format("YYYYMMDD")
+                  )
                   if (latestAction && !latestAction.closure) {
-                    rp && (rp.endDate = latestAction.date)
-                    phcp.referralPeriods.push(new ReferralPeriod({ startDate: latestAction.date }))
+                    rp && (rp.endDate = actionDate)
+                    phcp.referralPeriods.push(new ReferralPeriod({ startDate: actionDate }))
                   } else if (latestAction && latestAction.closure) {
-                    rp && (rp.endDate = latestAction.date)
+                    rp && (rp.endDate = actionDate)
                   }
                   return p
                 })
