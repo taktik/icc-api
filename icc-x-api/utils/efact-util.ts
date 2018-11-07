@@ -126,6 +126,8 @@ function toInvoice(
     return toInvoiceItem(nihiiHealthcareProvider, patientDto, invoiceDto, invoicingCodeDto)
   })
   invoice.patient = toPatient(patientDto)
+  invoice.ignorePrescriptionDate = !!invoiceDto.longDelayJustification
+
   // TODO : fix me later
   invoice.reason = Invoice.ReasonEnum.Other
 
