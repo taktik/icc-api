@@ -80,18 +80,20 @@ export class IccContactXApi extends iccContactApi {
         ;(user.autoDelegations
           ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
           : []
-        ).forEach(
-          delegateId =>
-            (promise = promise.then(contact =>
-              this.crypto.addDelegationsAndEncryptionKeys(
-                patient,
-                contact,
-                user.healthcarePartyId!,
-                delegateId,
-                dels.secretId,
-                eks.secretId
-              )
-            ))
+        ).forEach(delegateId =>
+          (promise = promise.then(contact =>
+            this.crypto.addDelegationsAndEncryptionKeys(
+              patient,
+              contact,
+              user.healthcarePartyId!,
+              delegateId,
+              dels.secretId,
+              eks.secretId
+            )
+          )).catch(e => {
+            console.log(e)
+            return contact
+          })
         )
         return promise
       })
@@ -731,9 +733,9 @@ export class IccContactXApi extends iccContactApi {
         //Create or assign subcontacts for all pairs he/poa (can be null/null)
         let destinationSubcontact = ctc.subContacts!.find(
           sc =>
-            (formId == undefined || sc.formId === formId) &&
-            sc.planOfActionId === poaId &&
-            sc.healthElementId === heId
+            (!formId || sc.formId === formId) &&
+            ((!poaId && !sc.planOfActionId) || sc.planOfActionId === poaId) &&
+            ((!heId && !sc.healthElementId) || sc.healthElementId === heId)
         )
         if (!destinationSubcontact) {
           ctc.subContacts!.push(

@@ -96,44 +96,6 @@ export class IccMessageXApi extends iccMessageApi {
     this.patientApi = patientApi
   }
 
-  initDelegations(
-    message: models.MessageDto,
-    parentObject: any,
-    user: models.UserDto,
-    secretForeignKey?: string
-  ): Promise<models.MessageDto> {
-    return this.crypto
-      .initObjectDelegations(
-        message,
-        parentObject,
-        user.healthcarePartyId!,
-        secretForeignKey || null
-      )
-      .then(initData => {
-        _.extend(message, { delegations: initData.delegations })
-
-        let promise = Promise.resolve(message)
-        ;(user.autoDelegations
-          ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
-          : []
-        ).forEach(
-          delegateId =>
-            (promise = promise
-              .then(patient =>
-                this.crypto.appendObjectDelegations(
-                  message,
-                  parentObject,
-                  user.healthcarePartyId!,
-                  delegateId,
-                  initData.secretId
-                )
-              )
-              .then(extraData => _.extend(message, { delegations: extraData.delegations })))
-        )
-        return promise
-      })
-  }
-
   // noinspection JSUnusedGlobalSymbols
   newInstance(user: models.UserDto, p: any) {
     const message = _.extend(
@@ -353,7 +315,8 @@ export class IccMessageXApi extends iccMessageApi {
     if (!hcParty) {
       return null
     }
-    return `${hcParty.firstname || ""} ${hcParty.familyname || ""} [${(hcParty.ids &&
+    return `${hcParty.firstname || ""} ${hcParty.familyname || ""} ${hcParty.name ||
+      ""} [${(hcParty.ids &&
       (hcParty.ids.find(id => id.s === IDHCPARTY.SEnum.IDHCPARTY) || {}).value) ||
       "-"}]`
   }
@@ -1014,5 +977,47 @@ export class IccMessageXApi extends iccMessageApi {
           throw errors
         })
     })
+  }
+
+  initDelegations(
+    message: models.MessageDto,
+    parentObject: any,
+    user: models.UserDto,
+    secretForeignKey?: string
+  ): Promise<models.MessageDto> {
+    return this.crypto
+      .initObjectDelegations(
+        message,
+        parentObject,
+        user.healthcarePartyId!,
+        secretForeignKey || null
+      )
+      .then(initData => {
+        _.extend(message, { delegations: initData.delegations })
+
+        let promise = Promise.resolve(message)
+        ;(user.autoDelegations
+          ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
+          : []
+        ).forEach(
+          delegateId =>
+            (promise = promise
+              .then(patient =>
+                this.crypto.appendObjectDelegations(
+                  message,
+                  parentObject,
+                  user.healthcarePartyId!,
+                  delegateId,
+                  initData.secretId
+                )
+              )
+              .then(extraData => _.extend(message, { delegations: extraData.delegations }))
+              .catch(e => {
+                console.log(e)
+                return message
+              }))
+        )
+        return promise
+      })
   }
 }

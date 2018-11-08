@@ -520,15 +520,20 @@ export class IccDocumentXApi extends iccDocumentApi {
           : []
         ).forEach(
           delegateId =>
-            (promise = promise.then(contact =>
-              this.crypto.addDelegationsAndEncryptionKeys(
-                message,
-                contact,
-                user.healthcarePartyId!,
-                delegateId,
-                dels.secretId,
-                eks.secretId
-              )
+            (promise = promise.then(document =>
+              this.crypto
+                .addDelegationsAndEncryptionKeys(
+                  message,
+                  document,
+                  user.healthcarePartyId!,
+                  delegateId,
+                  dels.secretId,
+                  eks.secretId
+                )
+                .catch(e => {
+                  console.log(e)
+                  return document
+                })
             ))
         )
         return promise

@@ -81,14 +81,19 @@ export class IccInvoiceXApi extends iccInvoiceApi {
         ).forEach(
           delegateId =>
             (promise = promise.then(invoice =>
-              this.crypto.addDelegationsAndEncryptionKeys(
-                patient,
-                invoice,
-                user.healthcarePartyId!,
-                delegateId,
-                dels.secretId,
-                eks.secretId
-              )
+              this.crypto
+                .addDelegationsAndEncryptionKeys(
+                  patient,
+                  invoice,
+                  user.healthcarePartyId!,
+                  delegateId,
+                  dels.secretId,
+                  eks.secretId
+                )
+                .catch(e => {
+                  console.log(e)
+                  return invoice
+                })
             ))
         )
         return promise

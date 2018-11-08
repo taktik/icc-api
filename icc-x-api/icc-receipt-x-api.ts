@@ -67,14 +67,19 @@ export class IccReceiptXApi extends iccReceiptApi {
       ).forEach(
         delegateId =>
           (promise = promise.then(receipt =>
-            this.crypto.addDelegationsAndEncryptionKeys(
-              null,
-              receipt,
-              user.healthcarePartyId!,
-              delegateId,
-              dels.secretId,
-              eks.secretId
-            )
+            this.crypto
+              .addDelegationsAndEncryptionKeys(
+                null,
+                receipt,
+                user.healthcarePartyId!,
+                delegateId,
+                dels.secretId,
+                eks.secretId
+              )
+              .catch(e => {
+                console.log(e)
+                return receipt
+              })
           ))
       )
       return promise
