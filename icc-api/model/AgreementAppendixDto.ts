@@ -24,37 +24,15 @@
 
 import * as models from "./models"
 
-export class MedicationDto {
+export class AgreementAppendixDto {
   constructor(json: JSON | any) {
-    Object.assign(this as MedicationDto, json)
+    Object.assign(this as AgreementAppendixDto, json)
   }
-  compoundPrescription?: string
+  docSeq?: number
 
-  substanceProduct?: models.SubstanceproductDto
+  verseSeq?: number
 
-  medicinalProduct?: models.MedicinalproductDto
+  documentId?: string
 
-  numberOfPackages?: number
-
-  batch?: string
-
-  instructionForPatient?: string
-
-  commentForDelivery?: string
-
-  duration?: models.DurationDto
-
-  beginMoment?: number
-
-  endMoment?: number
-
-  knownUsage?: boolean
-
-  frequency?: models.CodeDto
-
-  regimen?: Array<models.RegimenItemDto>
-
-  options?: { [key: string]: models.ContentDto }
-
-  agreements?: { [key: string]: models.ParagraphAgreementDto }
+  path?: string
 }

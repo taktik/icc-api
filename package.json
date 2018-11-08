@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@types/base64-js": "^1.2.5",
-    "@types/lodash": "^4.14.109",
+    "@types/lodash": "^4.14.116",
     "husky": "^0.14.3",
     "prettier": "^1.13.5",
     "pretty-quick": "^1.6.0",
@@ -26,7 +26,7 @@
     "genloc": "java -classpath swagger-codegen-cli.jar io.swagger.codegen.SwaggerCodegen generate -i http://127.0.0.1:16043/rest/v1/swagger.json -l typescript --additional-properties classPrefix=icc -o ./icc-api",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "prepublish": "rm -rf dist && npm run build",
+    "prepublishOnly": "rm -rf dist && npm run build",
     "precommit": "pretty-quick --staged"
   },
   "repository": {
