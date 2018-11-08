@@ -40,6 +40,8 @@ export class ParagraphAgreementDto {
 
   end?: number
 
+  cancelationDate?: number
+
   quantityValue?: number
 
   quantityUnit?: string
@@ -69,6 +71,8 @@ export class ParagraphAgreementDto {
   agreementAppendices?: Array<models.AgreementAppendixDto>
 
   documentId?: string
+
+  canceled?: boolean
 
   accepted?: boolean
 
