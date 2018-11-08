@@ -577,30 +577,33 @@ export class IccCryptoXApi {
     return Promise.all([
       this.hcpartyBaseApi.getHealthcareParty(ownerId),
       this.hcpartyBaseApi.getHealthcareParty(delegateId)
-    ]).then(([owner, delegate]) =>
-      this.AES.generateCryptoKey(true)
-        .then(AESKey => {
-          const ownerPubKey = utils.spkiToJwk(utils.hex2ua(owner.publicKey!))
-          const delegatePubKey = utils.spkiToJwk(utils.hex2ua(delegate.publicKey!))
+    ]).then(
+      ([owner, delegate]) =>
+        delegate.publicKey
+          ? this.AES.generateCryptoKey(true)
+              .then(AESKey => {
+                const ownerPubKey = utils.spkiToJwk(utils.hex2ua(owner.publicKey!))
+                const delegatePubKey = utils.spkiToJwk(utils.hex2ua(delegate.publicKey!))
 
-          return Promise.all([
-            this.RSA.importKey("jwk", ownerPubKey, ["encrypt"]),
-            this.RSA.importKey("jwk", delegatePubKey, ["encrypt"])
-          ]).then(([ownerImportedKey, delegateImportedKey]) =>
-            Promise.all([
-              this.RSA.encrypt(ownerImportedKey, this.utils.hex2ua(AESKey as string)),
-              this.RSA.encrypt(delegateImportedKey, this.utils.hex2ua(AESKey as string))
-            ])
-          )
-        })
-        .then(
-          ([ownerKey, delegateKey]) =>
-            (owner.hcPartyKeys[delegateId] = [
-              this.utils.ua2hex(ownerKey),
-              this.utils.ua2hex(delegateKey)
-            ])
-        )
-        .then(() => this.hcpartyBaseApi.modifyHealthcareParty(owner))
+                return Promise.all([
+                  this.RSA.importKey("jwk", ownerPubKey, ["encrypt"]),
+                  this.RSA.importKey("jwk", delegatePubKey, ["encrypt"])
+                ]).then(([ownerImportedKey, delegateImportedKey]) =>
+                  Promise.all([
+                    this.RSA.encrypt(ownerImportedKey, this.utils.hex2ua(AESKey as string)),
+                    this.RSA.encrypt(delegateImportedKey, this.utils.hex2ua(AESKey as string))
+                  ])
+                )
+              })
+              .then(
+                ([ownerKey, delegateKey]) =>
+                  (owner.hcPartyKeys[delegateId] = [
+                    this.utils.ua2hex(ownerKey),
+                    this.utils.ua2hex(delegateKey)
+                  ])
+              )
+              .then(() => this.hcpartyBaseApi.modifyHealthcareParty(owner))
+          : Promise.reject(new Error(`Missing public key for delegate ${delegateId}`))
     )
   }
 
