@@ -1,6 +1,7 @@
 export * from "./icc-bedrugs-x-api"
 export * from "./icc-bekmehr-x-api"
 export * from "./icc-calendar-item-x-api"
+export * from "./icc-classification-x-api"
 export * from "./icc-code-x-api"
 export * from "./icc-contact-x-api"
 export * from "./icc-crypto-x-api"
