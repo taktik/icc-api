@@ -1,6 +1,6 @@
 {
   "name": "icc-api",
-  "version": "1.0.69",
+  "version": "1.0.70",
   "description": "Typescript version of iCure standalone API client",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
