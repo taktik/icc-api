@@ -6,17 +6,20 @@ import { utils } from "./crypto/utils"
 import { AES } from "./crypto/AES"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 import { iccCalendarItemApi } from "../icc-api/iccApi"
+import { XHR } from "../icc-api/api/XHR"
+import Header = XHR.Header
+import { CalendarItemDto, UserDto } from "../icc-api/model/models"
 
 export class IccCalendarItemXApi extends iccCalendarItemApi {
   i18n: any = i18n
   crypto: IccCryptoXApi
 
-  constructor(host, headers, crypto) {
+  constructor(host: string, headers: Array<Header>, crypto: IccCryptoXApi) {
     super(host, headers)
     this.crypto = crypto
   }
 
-  newInstance(user, ci) {
+  newInstance(user: UserDto, ci: CalendarItemDto) {
     const calendarItem = _.extend(
       {
         id: this.crypto.randomUuid(),
@@ -32,7 +35,7 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
     )
 
     return this.crypto
-      .initObjectDelegations(calendarItem, null, user.healthcarePartyId, null)
+      .initObjectDelegations(calendarItem, null, user.healthcarePartyId!, null)
       .then(initData => {
         _.extend(calendarItem, { delegations: initData.delegations })
 
@@ -47,7 +50,7 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
                 this.crypto.appendObjectDelegations(
                   patient,
                   null,
-                  user.healthcarePartyId,
+                  user.healthcarePartyId!,
                   delegateId,
                   initData.secretId
                 )

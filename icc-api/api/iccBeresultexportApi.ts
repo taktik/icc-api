@@ -50,7 +50,7 @@ export class iccBeresultexportApi {
     ref: string,
     mustCrypt?: boolean,
     body?: Array<string>
-  ): Promise<any | Boolean> {
+  ): Promise<ArrayBuffer | any> {
     let _body = null
     _body = body
 
@@ -70,7 +70,7 @@ export class iccBeresultexportApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/octet-stream"))
     return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }
   exportMedidoc(
@@ -81,7 +81,7 @@ export class iccBeresultexportApi {
     ref: string,
     mustCrypt?: boolean,
     body?: Array<string>
-  ): Promise<any | Boolean> {
+  ): Promise<ArrayBuffer | any> {
     let _body = null
     _body = body
 
@@ -101,7 +101,7 @@ export class iccBeresultexportApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/octet-stream"))
     return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }
 }

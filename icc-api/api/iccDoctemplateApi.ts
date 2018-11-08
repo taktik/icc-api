@@ -141,7 +141,7 @@ export class iccDoctemplateApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.DocumentTemplateDto(it)))
       .catch(err => this.handleError(err))
   }
-  getAttachment(documentTemplateId: string, attachmentId: string): Promise<any | Boolean> {
+  getAttachment(documentTemplateId: string, attachmentId: string): Promise<ArrayBuffer | any> {
     let _body = null
 
     const _url =
@@ -156,10 +156,10 @@ export class iccDoctemplateApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }
-  getAttachmentText(documentTemplateId: string, attachmentId: string): Promise<any | Boolean> {
+  getAttachmentText(documentTemplateId: string, attachmentId: string): Promise<ArrayBuffer | any> {
     let _body = null
 
     const _url =
@@ -174,7 +174,7 @@ export class iccDoctemplateApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }
   getDocumentTemplate(documentTemplateId: string): Promise<models.DocumentTemplateDto | any> {

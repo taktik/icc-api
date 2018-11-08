@@ -151,7 +151,7 @@ export class iccIcureApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .then(doc => true)
       .catch(err => this.handleError(err))
   }
   resolveFormsConflicts(): Promise<any | Boolean> {
@@ -163,7 +163,7 @@ export class iccIcureApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .then(doc => true)
       .catch(err => this.handleError(err))
   }
   resolveHealthElementsConflicts(): Promise<any | Boolean> {
@@ -175,7 +175,7 @@ export class iccIcureApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .then(doc => true)
       .catch(err => this.handleError(err))
   }
   resolveInvoicesConflicts(): Promise<any | Boolean> {
@@ -187,7 +187,7 @@ export class iccIcureApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .then(doc => true)
       .catch(err => this.handleError(err))
   }
   resolveMessagesConflicts(): Promise<any | Boolean> {
@@ -199,7 +199,7 @@ export class iccIcureApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .then(doc => true)
       .catch(err => this.handleError(err))
   }
   resolvePatientsConflicts(): Promise<any | Boolean> {
@@ -211,7 +211,7 @@ export class iccIcureApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .then(doc => true)
       .catch(err => this.handleError(err))
   }
 }

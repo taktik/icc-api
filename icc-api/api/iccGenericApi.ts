@@ -57,7 +57,7 @@ export class iccGenericApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("DELETE", _url, headers, _body)
-      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .then(doc => true)
       .catch(err => this.handleError(err))
   }
   getDoc(className: string, id: string): Promise<models.StoredDto | any> {

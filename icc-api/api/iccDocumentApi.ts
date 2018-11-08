@@ -152,7 +152,7 @@ export class iccDocumentApi {
     documentId: string,
     attachmentId: string,
     enckeys?: string
-  ): Promise<any | Boolean> {
+  ): Promise<ArrayBuffer | any> {
     let _body = null
 
     const _url =
@@ -168,7 +168,7 @@ export class iccDocumentApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }
   getDocument(documentId: string): Promise<models.DocumentDto | any> {
@@ -257,7 +257,7 @@ export class iccDocumentApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .then(doc => true)
       .catch(err => this.handleError(err))
   }
 }

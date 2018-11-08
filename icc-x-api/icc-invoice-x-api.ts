@@ -111,7 +111,7 @@ export class IccInvoiceXApi extends iccInvoiceApi {
         ? (user.autoDelegations.all || []).concat(user.autoDelegations.financialInformation || [])
         : []
       ).forEach(
-        delegateId =>
+        () =>
           (promise = promise.then(invoice =>
             this.crypto
               .appendEncryptionKeys(invoice, user.healthcarePartyId!, eks.secretId)
@@ -147,8 +147,8 @@ export class IccInvoiceXApi extends iccInvoiceApi {
 
   getNextInvoiceReference(prefix: string, entityrefApi: iccEntityrefApi): Promise<number> {
     return entityrefApi.getLatest(prefix).then((entRef: models.EntityReference) => {
-      if (!entRef || !entRef.id.startsWith(prefix)) return 1
-      return Number(entRef.id.split(":")[3]) + 1
+      if (!entRef || !entRef.id!.startsWith(prefix)) return 1
+      return Number(entRef.id!.split(":")[3]) + 1
     })
   }
 

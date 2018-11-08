@@ -95,7 +95,7 @@ export class iccBemikronoApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .then(doc => true)
       .catch(err => this.handleError(err))
   }
   register(userId: string, body?: models.MikronoCredentialsDto): Promise<any | Boolean> {
@@ -112,7 +112,7 @@ export class iccBemikronoApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body)
-      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .then(doc => true)
       .catch(err => this.handleError(err))
   }
   sendMessage(body?: models.EmailOrSmsMessageDto): Promise<any | Boolean> {
@@ -125,7 +125,7 @@ export class iccBemikronoApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .then(doc => true)
       .catch(err => this.handleError(err))
   }
   setUserCredentials(userId: string, body?: models.MikronoCredentialsDto): Promise<any | Boolean> {
@@ -142,7 +142,7 @@ export class iccBemikronoApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body)
-      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .then(doc => true)
       .catch(err => this.handleError(err))
   }
 }
