@@ -275,7 +275,7 @@ export class IccMessageXApi extends iccMessageApi {
               this.patientApi.bulkUpdatePatients(
                 (pats.rows || []).map(p => {
                   const actions = _.sortBy(patsDmgs[p.ssin!!], "date")
-                  const latestAction = actions[actions.length - 1]
+                  const latestAction = actions.length && actions[actions.length - 1]
 
                   let phcp =
                     (p.patientHealthCareParties || (p.patientHealthCareParties = [])) &&
@@ -301,12 +301,17 @@ export class IccMessageXApi extends iccMessageApi {
                   const actionDate = Number(
                     moment(latestAction.date, "DD/MM/YYYY").format("YYYYMMDD")
                   )
-                  if (latestAction && !latestAction.closure) {
-                    rp.endDate = actionDate
-                    phcp.referralPeriods.push(new ReferralPeriod({ startDate: actionDate }))
-                  } else if (latestAction && latestAction.closure) {
-                    rp.endDate = actionDate
-                    rp.comment = `-> ${latestAction.newHcp}`
+
+                  if (latestAction) {
+                    if (latestAction.closure) {
+                      rp.endDate = actionDate
+                      rp.comment = `-> ${latestAction.newHcp}`
+                    } else {
+                      if (actionDate > (rp.startDate || 0)) {
+                        rp.endDate = actionDate
+                        phcp.referralPeriods.push(new ReferralPeriod({ startDate: actionDate }))
+                      }
+                    }
                   }
                   return p
                 })
