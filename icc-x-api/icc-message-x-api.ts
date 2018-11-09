@@ -591,32 +591,46 @@ export class IccMessageXApi extends iccMessageApi {
         ? _.compact(
             _.flatMap(parsedRecords.records as ET20_80Data[], r => {
               const errors: StructError[] = []
-              if (r.et20 && r.et20.errorDetail)
+              let ref = r.et20 && r.et20.reference.trim()
+              if (r.et20 && r.et20.errorDetail) {
                 errors.push({
-                  itemId: decodeBase36Uuid(r.et20.reference.trim()),
+                  itemId: decodeBase36Uuid(ref),
                   error: r.et20.errorDetail,
                   record: "ET20"
                 })
+                if (r.et80 && r.et80.errorDetail) {
+                  errors.push({
+                    itemId: decodeBase36Uuid(ref),
+                    error: r.et80.errorDetail,
+                    record: "ET80"
+                  })
+                }
+              }
+
               _.each(r.items, i => {
-                let ref = _.get(i, "et50.itemReference") || _.get(r, "et20.reference")
-                if (i.et50 && i.et50.errorDetail)
+                let ref = _.get(r, "et20.reference") //fallback
+                if (i.et50 && i.et50.errorDetail) {
+                  ref = _.get(i, "et50.itemReference")
                   errors.push({
                     itemId: ref && decodeBase36Uuid(ref.trim()),
                     error: i.et50.errorDetail,
                     record: "ET50"
                   })
-                if (i.et51 && i.et51.errorDetail)
+                }
+                if (i.et51 && i.et51.errorDetail) {
                   errors.push({
                     itemId: ref && decodeBase36Uuid(ref.trim()),
                     error: i.et51.errorDetail,
                     record: "ET51"
                   })
-                if (i.et52 && i.et52.errorDetail)
+                }
+                if (i.et52 && i.et52.errorDetail) {
                   errors.push({
                     itemId: ref && decodeBase36Uuid(ref.trim()),
                     error: i.et52.errorDetail,
                     record: "ET52"
                   })
+                }
               })
               return errors
             })
@@ -712,16 +726,16 @@ export class IccMessageXApi extends iccMessageApi {
                     }
 
                     // Error from the ET50/51/52 linked to the invoicingCode
-                    const errStruct = invoicingErrors.filter(it => it.itemId === ic.id)
+                    const errStructs = invoicingErrors.filter(it => it.itemId === ic.id)
 
-                    if (rejectAll || errStruct.length) {
+                    if (rejectAll || errStructs.length) {
                       ic.logicalId = ic.logicalId || this.crypto.randomUuid()
                       ic.accepted = false
                       ic.canceled = true
                       ic.pending = false
                       ic.resent = false
                       ic.error =
-                        _(errStruct)
+                        _(errStructs)
                           .map(e => this.extractErrorMessage(e.error))
                           .compact()
                           .join("; ") || undefined
@@ -912,7 +926,7 @@ export class IccMessageXApi extends iccMessageApi {
                       transportGuid: "EFACT:BATCH:" + batch.numericalRef,
                       sent: timeEncode(new Date()),
                       fromHealthcarePartyId: hcp.id,
-                      recipients: [fed.code],
+                      recipients: [fed.id],
                       recipientsType: "org.taktik.icure.entities.Insurance"
                     })
                   )
