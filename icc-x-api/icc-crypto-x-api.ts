@@ -2,7 +2,6 @@ import { iccHcpartyApi } from "../icc-api/iccApi"
 import { AES, AESUtils } from "./crypto/AES"
 import { RSA, RSAUtils } from "./crypto/RSA"
 import { utils, UtilsClass } from "./crypto/utils"
-import * as UuidEncoder from "uuid-encoder"
 
 import * as _ from "lodash"
 import { XHR } from "../icc-api/api/XHR"

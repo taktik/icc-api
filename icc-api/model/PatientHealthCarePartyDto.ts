@@ -40,7 +40,6 @@ export class PatientHealthCarePartyDto {
 }
 export namespace PatientHealthCarePartyDto {
   export enum TypeEnum {
-    ReferringPhysician = <any>"referringphysician",
     Doctor = <any>"doctor",
     Referral = <any>"referral",
     Medicalhouse = <any>"medicalhouse",

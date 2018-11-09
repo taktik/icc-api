@@ -46,7 +46,7 @@ export class iccBekmehrApi {
     patientId: string,
     language?: string,
     body?: models.SoftwareMedicalFileExportDto
-  ): Promise<any | Boolean> {
+  ): Promise<ArrayBuffer | any> {
     let _body = null
     _body = body
 
@@ -61,14 +61,14 @@ export class iccBekmehrApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }
   generateSumehr(
     patientId: string,
     language?: string,
     body?: models.SumehrExportInfoDto
-  ): Promise<any | Boolean> {
+  ): Promise<ArrayBuffer | any> {
     let _body = null
     _body = body
 
@@ -83,14 +83,14 @@ export class iccBekmehrApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }
   generateSumehrPlusPlus(
     patientId: string,
     language?: string,
     body?: models.SumehrExportInfoDto
-  ): Promise<any | Boolean> {
+  ): Promise<ArrayBuffer | any> {
     let _body = null
     _body = body
 
@@ -105,7 +105,7 @@ export class iccBekmehrApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }
   getSumehrContent(
@@ -222,7 +222,7 @@ export class iccBekmehrApi {
     patientId: string,
     language?: string,
     body?: models.SumehrExportInfoDto
-  ): Promise<any | Boolean> {
+  ): Promise<ArrayBuffer | any> {
     let _body = null
     _body = body
 
@@ -237,7 +237,7 @@ export class iccBekmehrApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }
 }

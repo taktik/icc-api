@@ -86,7 +86,7 @@ export class iccMessageApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("DELETE", _url, headers, _body)
-      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .then(doc => true)
       .catch(err => this.handleError(err))
   }
   deleteMessagesBatch(body?: models.ListOfIdsDto): Promise<any | Boolean> {
@@ -99,7 +99,7 @@ export class iccMessageApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .then(doc => true)
       .catch(err => this.handleError(err))
   }
   findByHCPartyPatientSecretFKeys(secretFKeys?: string): Promise<Array<models.MessageDto> | any> {

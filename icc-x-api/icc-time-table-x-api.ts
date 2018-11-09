@@ -3,17 +3,21 @@ import * as i18n from "./rsrc/contact.i18n"
 import * as _ from "lodash"
 import { iccTimeTableApi } from "../icc-api/iccApi"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
+import { XHR } from "../icc-api/api/XHR"
+import Header = XHR.Header
+import { UserDto } from "../icc-api/model/UserDto"
+import { TimeTableDto } from "../icc-api/model/TimeTableDto"
 
 export class IccTimeTableXApi extends iccTimeTableApi {
   i18n: any = i18n
   crypto: IccCryptoXApi
 
-  constructor(host, headers, crypto) {
+  constructor(host: string, headers: Array<Header>, crypto: IccCryptoXApi) {
     super(host, headers)
     this.crypto = crypto
   }
 
-  newInstance(user, tt) {
+  newInstance(user: UserDto, tt: TimeTableDto) {
     const timeTable = _.extend(
       {
         id: this.crypto.randomUuid(),
@@ -29,7 +33,7 @@ export class IccTimeTableXApi extends iccTimeTableApi {
     )
 
     return this.crypto
-      .initObjectDelegations(timeTable, null, user.healthcarePartyId, null)
+      .initObjectDelegations(timeTable, null, user.healthcarePartyId!, null)
       .then(initData => {
         _.extend(timeTable, { delegations: initData.delegations })
 
@@ -44,7 +48,7 @@ export class IccTimeTableXApi extends iccTimeTableApi {
                 this.crypto.appendObjectDelegations(
                   patient,
                   null,
-                  user.healthcarePartyId,
+                  user.healthcarePartyId!,
                   delegateId,
                   initData.secretId
                 )
