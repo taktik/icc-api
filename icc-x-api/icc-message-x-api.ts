@@ -156,6 +156,31 @@ export class IccMessageXApi extends iccMessageApi {
     _.each(list.acks, ack => {
       promAck = promAck
         .then(() =>
+          this.findMessagesByTransportGuid(
+            "GMD:OUT:" + ack.appliesTo,
+            false,
+            undefined,
+            undefined,
+            100
+          )
+        )
+        .then(parents => {
+          const parent: MessageDto = parents[0]
+          if (parent) {
+            _.assign(parent.metas, {
+              tacks: _.assign(
+                parent.metas!.tacks || {},
+                _.fromPairs([[ack.io, (moment(ack.date) || moment()).format("YYYYMMDD")]])
+              )
+            })
+            this.modifyMessage(parent)
+          }
+        })
+        .catch(e => {
+          console.log(e)
+          return null
+        })
+        .then(() =>
           this.receiptXApi.logSCReceipt(ack, user, hcp.id!!, "dmg", "listAck", [
             `nip:pin:valuehash:${ack.valueHash}`
           ])
