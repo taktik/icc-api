@@ -62,5 +62,9 @@ export class ReceiptDto {
 
   documentId?: string
 
+  category?: string
+
+  subCategory?: string
+
   encryptedSelf?: string
 }

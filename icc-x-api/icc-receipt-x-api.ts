@@ -121,7 +121,7 @@ export class IccReceiptXApi extends iccReceiptApi {
   ) {
     return this.newInstance(user, { documentId: docId, references: refs })
       .then(rcpt => this.createReceipt(rcpt))
-      .then(rcpt => this.setAttachment(rcpt.id, blobType, undefined, blob))
+      .then(rcpt => this.setAttachment(rcpt.id, blobType, undefined, <any>blob))
   }
 
   logSCReceipt(
@@ -136,9 +136,13 @@ export class IccReceiptXApi extends iccReceiptApi {
       | InsurabilityInfoDto,
     user: models.UserDto,
     docId: string,
+    cat: string,
+    subcat: string,
     refs: Array<string> = []
   ) {
     return this.newInstance(user, {
+      category: cat,
+      subCategory: subcat,
       documentId: docId,
       references: refs.concat(
         object.commonOutput
@@ -155,12 +159,9 @@ export class IccReceiptXApi extends iccReceiptApi {
     })
       .then(rcpt => this.createReceipt(rcpt))
       .then(rcpt =>
-        this.setAttachment(
-          rcpt.id,
-          "soapConversation",
-          undefined,
+        this.setAttachment(rcpt.id, "soapConversation", undefined, <any>(
           utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(object.mycarenetConversation)))
-        )
+        ))
       )
   }
 }

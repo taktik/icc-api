@@ -1,16 +1,24 @@
-import { iccInvoiceApi } from "../icc-api/iccApi"
+import { iccInvoiceApi, iccEntityrefApi } from "../icc-api/iccApi"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 
 import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
 import { XHR } from "../icc-api/api/XHR"
+import { InvoiceDto } from "../icc-api/model/models"
 
 export class IccInvoiceXApi extends iccInvoiceApi {
   crypto: IccCryptoXApi
+  entityrefApi: iccEntityrefApi
 
-  constructor(host: string, headers: Array<XHR.Header>, crypto: IccCryptoXApi) {
+  constructor(
+    host: string,
+    headers: Array<XHR.Header>,
+    crypto: IccCryptoXApi,
+    entityrefApi: iccEntityrefApi
+  ) {
     super(host, headers)
     this.crypto = crypto
+    this.entityrefApi = entityrefApi
   }
 
   newInstance(
@@ -103,7 +111,7 @@ export class IccInvoiceXApi extends iccInvoiceApi {
         ? (user.autoDelegations.all || []).concat(user.autoDelegations.financialInformation || [])
         : []
       ).forEach(
-        delegateId =>
+        () =>
           (promise = promise.then(invoice =>
             this.crypto
               .appendEncryptionKeys(invoice, user.healthcarePartyId!, eks.secretId)
@@ -116,6 +124,46 @@ export class IccInvoiceXApi extends iccInvoiceApi {
       )
       return promise
     })
+  }
+
+  createInvoice(invoice: InvoiceDto, prefix?: string): Promise<InvoiceDto> {
+    if (!prefix) {
+      return super.createInvoice(invoice)
+    }
+    return this.getNextInvoiceReference(prefix, this.entityrefApi).then(reference => {
+      invoice.invoiceReference = reference.toString().padStart(6, "0")
+      return super.createInvoice(invoice).then(newInvoiceCreated => {
+        return this.createInvoiceReference(
+          reference,
+          newInvoiceCreated.id,
+          prefix,
+          this.entityrefApi
+        ).then(() => {
+          return newInvoiceCreated
+        })
+      })
+    })
+  }
+
+  getNextInvoiceReference(prefix: string, entityrefApi: iccEntityrefApi): Promise<number> {
+    return entityrefApi.getLatest(prefix).then((entRef: models.EntityReference) => {
+      if (!entRef || !entRef.id!.startsWith(prefix)) return 1
+      return Number(entRef.id!.split(":")[3]) + 1
+    })
+  }
+
+  createInvoiceReference(
+    nextReference: number,
+    docId: string,
+    prefix: string,
+    entityrefApi: iccEntityrefApi
+  ): Promise<models.EntityReference> {
+    return entityrefApi.createEntityReference(
+      new models.EntityReference({
+        id: prefix + nextReference.toString().padStart(6, "0"),
+        docId
+      })
+    )
   }
 
   /**

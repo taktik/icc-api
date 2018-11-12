@@ -128,5 +128,7 @@ export class PatientDto {
 
   patientProfessions?: Array<models.CodeDto>
 
+  openNote?: boolean
+
   encryptedSelf?: string
 }

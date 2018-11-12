@@ -122,6 +122,14 @@ export class InvoiceDto {
 
   error?: string
 
+  encounterLocationName?: string
+
+  encounterLocationNihii?: string
+
+  encounterLocationNorm?: number
+
+  prescriptionDate?: number
+
   receipts?: { [key: string]: string }
 
   encryptedSelf?: string

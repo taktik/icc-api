@@ -2,13 +2,13 @@ import { EfactMessage } from "fhc-api/dist/model/EfactMessage"
 import { ErrorDetail } from "fhc-api/dist/model/ErrorDetail"
 import { Record } from "fhc-api/dist/model/Record"
 
-export interface Zone200Data {
+export interface Zone200Data extends ETData {
   isTest: boolean
   hcpMessageRef: string
   mutualityMessageReference: string
 }
 
-export interface Zone300Data {
+export interface Zone300Data extends ETData {
   sendingNumber: string
   invoiceReference: string
   mutualityContactLastName: string
@@ -20,7 +20,7 @@ export interface Zone300Data {
   invoiceRejectionType: string
 }
 
-export interface Zone300Short {
+export interface Zone300Short extends ETData {
   sendingNumber: string
   invoiceReference: string
   mutualityContactLastName: string
@@ -30,7 +30,7 @@ export interface Zone300Short {
   invoiceMode: string
 }
 
-export interface Zone300Stub {
+export interface Zone300Stub extends ETData {
   messageType: string
 }
 
@@ -164,19 +164,21 @@ export interface ET92Data {
   totalRejectedAmount: string
 }
 
+export interface ET20_80Data {
+  et20: ET20Data
+  items: Array<{
+    et50?: ET50Data | undefined
+    et51?: ET51Data | undefined
+    et52?: ET52Data | undefined
+  }>
+  et80?: ET80Data
+}
+
 export interface File920900Data {
   zone200: Zone200Data
   zone300: Zone300Data
   et10: ET10Data
-  records: Array<{
-    et20: ET20Data
-    items: Array<{
-      et50?: ET50Data | undefined
-      et51?: ET51Data | undefined
-      et52?: ET52Data | undefined
-    }>
-    et80?: ET80Data
-  }>
+  records: Array<ET20_80Data>
   et90: ET90Data
   et91: Array<ET91Data>
   et92: ET92Data
@@ -190,15 +192,7 @@ export interface File920099Data {
   zone200: Zone200Data
   zone300: Zone300Data
   et10: ET10Data
-  records: Array<{
-    et20: ET20Data
-    items: Array<{
-      et50?: ET50Data | undefined
-      et51?: ET51Data | undefined
-      et52?: ET52Data | undefined
-    }>
-    et80?: ET80Data
-  }>
+  records: Array<ET20_80Data>
   et90: ET90Data
 }
 
@@ -206,15 +200,7 @@ export interface File920098Data {
   zone200: Zone200Data
   zone300: Zone300Data
   et10: ET10Data
-  records: Array<{
-    et20: ET20Data
-    items: Array<{
-      et50?: ET50Data | undefined
-      et51?: ET51Data | undefined
-      et52?: ET52Data | undefined
-    }>
-    et80?: ET80Data
-  }>
+  records: Array<ET20_80Data>
   et90: ET90Data
 }
 
@@ -288,6 +274,7 @@ export abstract class EfactMessageReader {
     }
 
     return {
+      errorDetail: zone200.errorDetail,
       isTest: testMessage,
       hcpMessageRef: healthcarePartyMessageReferenceNumber,
       mutualityMessageReference: oaMessageReference
@@ -361,6 +348,7 @@ export abstract class EfactMessageReader {
     }
 
     return {
+      errorDetail: zone300.errorDetail,
       sendingNumber: sendingNumber,
       invoiceReference: invoiceReference,
       mutualityContactLastName: oaContactLastName,
@@ -449,6 +437,7 @@ export abstract class EfactMessageReader {
     }
 
     return {
+      errorDetail: zone300.errorDetail,
       sendingNumber: sendingNumber,
       invoiceReference: invoiceReference,
       mutualityContactLastName: oaContactLastName,
@@ -1715,7 +1704,8 @@ export class EfactMessage920900Reader extends EfactMessageReader {
         const items = []
         while (
           rawRecords[i].zones!![0].value === "50" ||
-          this.message.message!![i].zones!![0].value === "51"
+          rawRecords[i].zones!![0].value === "51" ||
+          rawRecords[i].zones!![0].value === "52"
         ) {
           let et50
           let et51
@@ -1806,8 +1796,7 @@ export class EfactMessage920099Reader extends EfactMessageReader {
         const et20 = this.readET20(rawRecords[i])
         i++
         const items = []
-        while (rawRecords[i].zones!![0].value === "50") {
-          // || this.message.message[i].zones[0].value === '51'
+        while (rawRecords[i].zones!![0].value === "50" || rawRecords[i].zones!![0].value === "51") {
           let et50
           let et51
           let et52
@@ -1879,9 +1868,9 @@ export class EfactMessage920098Reader extends EfactMessageReader {
         const items = []
         while (
           rawRecords[i].zones!![0].value === "50" ||
-          this.message.message!![i].zones!![0].value === "52"
+          rawRecords[i].zones!![0].value === "51" ||
+          rawRecords[i].zones!![0].value === "52"
         ) {
-          // || this.message.message[i].zones[0].value === '51'
           let et50
           let et51
           let et52

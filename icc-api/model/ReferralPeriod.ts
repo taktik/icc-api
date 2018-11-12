@@ -31,4 +31,6 @@ export class ReferralPeriod {
   startDate?: number
 
   endDate?: number
+
+  comment?: string
 }
