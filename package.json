@@ -5,17 +5,19 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "dependencies": {
-    "@types/moment": "^2.13.0",
     "base64-js": "^1.3.0",
     "fhc-api": "^1.0.29",
     "libphonenumber-js": "^1.5.1",
     "lodash": "^4.17.10",
     "moment": "^2.22.1",
-    "uuid-encoder": "^1.1.0"
+    "uuid-encoder": "^1.1.0",
+    "text-encoding": "^0.7.0"
   },
   "devDependencies": {
+    "@types/moment": "^2.13.0",
     "@types/base64-js": "^1.2.5",
     "@types/lodash": "^4.14.116",
+    "@types/text-encoding": "0.0.34",
     "husky": "^0.14.3",
     "prettier": "^1.13.5",
     "pretty-quick": "^1.6.0",
