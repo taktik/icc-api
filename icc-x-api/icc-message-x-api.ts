@@ -60,6 +60,7 @@ import { DmgExtension } from "fhc-api/dist/model/DmgExtension"
 import { IccPatientXApi } from "./icc-patient-x-api"
 import { HcpartyType } from "fhc-api/dist/model/HcpartyType"
 import { IDHCPARTY } from "fhc-api/dist/model/IDHCPARTY"
+import { GenAsyncResponse } from "fhc-api/dist/model/GenAsyncResponse"
 
 interface StructError {
   itemId: string | null
@@ -114,6 +115,36 @@ export class IccMessageXApi extends iccMessageApi {
     return this.initDelegations(message, null, user)
   }
 
+  saveDmgsListRequest(user: models.UserDto, req: GenAsyncResponse): Promise<MessageDto> {
+    return this.newInstance(user, {
+      // tslint:disable-next-line:no-bitwise
+      transportGuid:
+        "GMD:OUT:" + (req.commonOutput && req.commonOutput.inputReference) || req.tack!.appliesTo,
+      fromHealthcarePartyId: user.healthcarePartyId,
+      sent: +new Date(),
+      metas: { type: "listrequest" },
+      subject: "Lists request",
+      senderReferences: req.commonOutput
+    })
+      .then(msg => this.createMessage(msg))
+      .then(msg => {
+        return this.documentXApi
+          .newInstance(user, msg, {
+            mainUti: "public.json",
+            name: `${msg.subject}_content.json`
+          })
+          .then(doc => this.documentXApi.createDocument(doc))
+          .then(doc =>
+            this.documentXApi.setAttachment(
+              doc.id!!,
+              undefined /*TODO provide keys for encryption*/,
+              <any>utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(req)))
+            )
+          )
+          .then(() => msg)
+      })
+  }
+
   processDmgMessagesList(
     user: UserDto,
     hcp: HealthcarePartyDto,
@@ -125,7 +156,9 @@ export class IccMessageXApi extends iccMessageApi {
     _.each(list.acks, ack => {
       promAck = promAck
         .then(() =>
-          this.receiptXApi.logSCReceipt(ack, user, hcp.id!!, [`nip:pin:valuehash:${ack.valueHash}`])
+          this.receiptXApi.logSCReceipt(ack, user, hcp.id!!, "dmg", "listAck", [
+            `nip:pin:valuehash:${ack.valueHash}`
+          ])
         )
         .then(receipt => {
           ack.valueHash && ackHashes.push(ack.valueHash)
