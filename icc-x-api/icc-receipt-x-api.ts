@@ -136,9 +136,13 @@ export class IccReceiptXApi extends iccReceiptApi {
       | InsurabilityInfoDto,
     user: models.UserDto,
     docId: string,
+    cat: string,
+    subcat: string,
     refs: Array<string> = []
   ) {
     return this.newInstance(user, {
+      category: cat,
+      subCategory: subcat,
       documentId: docId,
       references: refs.concat(
         object.commonOutput

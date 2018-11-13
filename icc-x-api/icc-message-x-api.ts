@@ -1,10 +1,4 @@
-import {
-  iccEntityrefApi,
-  iccInsuranceApi,
-  iccReceiptApi,
-  iccInvoiceApi,
-  iccMessageApi
-} from "../icc-api/iccApi"
+import { iccEntityrefApi, iccInsuranceApi, iccMessageApi } from "../icc-api/iccApi"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 import { IccDocumentXApi } from "./icc-document-x-api"
 import { IccInvoiceXApi } from "./icc-invoice-x-api"
@@ -60,6 +54,7 @@ import { DmgExtension } from "fhc-api/dist/model/DmgExtension"
 import { IccPatientXApi } from "./icc-patient-x-api"
 import { HcpartyType } from "fhc-api/dist/model/HcpartyType"
 import { IDHCPARTY } from "fhc-api/dist/model/IDHCPARTY"
+import { GenAsyncResponse } from "fhc-api/dist/model/GenAsyncResponse"
 
 interface StructError {
   itemId: string | null
@@ -152,6 +147,41 @@ export class IccMessageXApi extends iccMessageApi {
     return this.initDelegations(message, null, user)
   }
 
+  saveDmgsListRequest(user: models.UserDto, req: GenAsyncResponse): Promise<MessageDto> {
+    return this.newInstance(user, {
+      // tslint:disable-next-line:no-bitwise
+      transportGuid:
+        "GMD:OUT:" +
+        (
+          (req.commonOutput && req.commonOutput.inputReference) ||
+          req.tack!.appliesTo ||
+          ""
+        ).replace("urn:nip:reference:input:", ""),
+      fromHealthcarePartyId: user.healthcarePartyId,
+      sent: +new Date(),
+      metas: { type: "listrequest" },
+      subject: "Lists request",
+      senderReferences: req.commonOutput
+    })
+      .then(msg => this.createMessage(msg))
+      .then(msg => {
+        return this.documentXApi
+          .newInstance(user, msg, {
+            mainUti: "public.json",
+            name: `${msg.subject}_content.json`
+          })
+          .then(doc => this.documentXApi.createDocument(doc))
+          .then(doc =>
+            this.documentXApi.setAttachment(
+              doc.id!!,
+              undefined /*TODO provide keys for encryption*/,
+              <any>utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(req)))
+            )
+          )
+          .then(() => msg)
+      })
+  }
+
   processDmgMessagesList(
     user: UserDto,
     hcp: HealthcarePartyDto,
@@ -165,7 +195,34 @@ export class IccMessageXApi extends iccMessageApi {
     _.each(list.acks, ack => {
       promAck = promAck
         .then(() =>
-          this.receiptXApi.logSCReceipt(ack, user, hcp.id!!, [`nip:pin:valuehash:${ack.valueHash}`])
+          this.findMessagesByTransportGuid(
+            "GMD:OUT:" + (ack.appliesTo || "").replace("urn:nip:reference:input:", ""),
+            false,
+            undefined,
+            undefined,
+            100
+          )
+        )
+        .then(parents => {
+          const parent: MessageDto = parents[0]
+          if (parent) {
+            _.assign(parent.metas, {
+              tacks: _.assign(
+                parent.metas!.tacks || {},
+                _.fromPairs([[ack.io, (moment(ack.date) || moment()).format("YYYYMMDD")]])
+              )
+            })
+            return this.modifyMessage(parent)
+          }
+        })
+        .catch(e => {
+          console.log(e)
+          return null
+        })
+        .then(() =>
+          this.receiptXApi.logSCReceipt(ack, user, hcp.id!!, "dmg", "listAck", [
+            `nip:pin:valuehash:${ack.valueHash}`
+          ])
         )
         .then(receipt => {
           ack.valueHash && ackHashes.push(ack.valueHash)
@@ -211,18 +268,30 @@ export class IccMessageXApi extends iccMessageApi {
           })
       })
       promMsg = promMsg.then(acc => {
-        return this.saveMessageInDb(
-          user,
-          "List",
-          dmgsMsgList,
-          hcp,
-          metas,
-          docXApi,
-          dmgsMsgList.date
-        ).then(msg => {
-          dmgsMsgList.valueHash && msgHashes.push(dmgsMsgList.valueHash)
-          acc.push(msg)
-          return acc
+        return this.findMessagesByTransportGuid(
+          "GMD:OUT:" + (dmgsMsgList.appliesTo || "").replace("urn:nip:reference:input:", ""),
+          false,
+          undefined,
+          undefined,
+          100
+        ).then(parents => {
+          const parent: MessageDto = parents[0]
+
+          return this.saveMessageInDb(
+            user,
+            "List",
+            dmgsMsgList,
+            hcp,
+            metas,
+            docXApi,
+            dmgsMsgList.date,
+            undefined,
+            parent && parent.id
+          ).then(msg => {
+            dmgsMsgList.valueHash && msgHashes.push(dmgsMsgList.valueHash)
+            acc.push(msg)
+            return acc
+          })
         })
       })
     })
@@ -366,7 +435,8 @@ export class IccMessageXApi extends iccMessageApi {
     metas: { [key: string]: string | null },
     docXApi: IccDocumentXApi,
     date?: Date,
-    inss?: string
+    inss?: string,
+    parentId?: string
   ) {
     return this.newInstance(user, {
       // tslint:disable-next-line:no-bitwise
@@ -378,6 +448,7 @@ export class IccMessageXApi extends iccMessageApi {
       recipientsType: "org.taktik.icure.entities.HealthcareParty",
       received: +new Date(),
       metas: metas,
+      parentId: parentId,
       subject: inss
         ? `${msgName} from IO ${dmgMessage.io} for ${inss}`
         : `${msgName} from IO ${dmgMessage.io}`,
@@ -608,32 +679,46 @@ export class IccMessageXApi extends iccMessageApi {
         ? _.compact(
             _.flatMap(parsedRecords.records as ET20_80Data[], r => {
               const errors: StructError[] = []
-              if (r.et20 && r.et20.errorDetail)
+              let ref = r.et20 && r.et20.reference.trim()
+              if (r.et20 && r.et20.errorDetail) {
                 errors.push({
-                  itemId: decodeBase36Uuid(r.et20.reference.trim()),
+                  itemId: decodeBase36Uuid(ref),
                   error: r.et20.errorDetail,
                   record: "ET20"
                 })
+                if (r.et80 && r.et80.errorDetail) {
+                  errors.push({
+                    itemId: decodeBase36Uuid(ref),
+                    error: r.et80.errorDetail,
+                    record: "ET80"
+                  })
+                }
+              }
+
               _.each(r.items, i => {
-                let ref = _.get(i, "et50.itemReference") || _.get(r, "et20.reference")
-                if (i.et50 && i.et50.errorDetail)
+                let ref = _.get(r, "et20.reference") //fallback
+                if (i.et50 && i.et50.errorDetail) {
+                  ref = _.get(i, "et50.itemReference")
                   errors.push({
                     itemId: ref && decodeBase36Uuid(ref.trim()),
                     error: i.et50.errorDetail,
                     record: "ET50"
                   })
-                if (i.et51 && i.et51.errorDetail)
+                }
+                if (i.et51 && i.et51.errorDetail) {
                   errors.push({
                     itemId: ref && decodeBase36Uuid(ref.trim()),
                     error: i.et51.errorDetail,
                     record: "ET51"
                   })
-                if (i.et52 && i.et52.errorDetail)
+                }
+                if (i.et52 && i.et52.errorDetail) {
                   errors.push({
                     itemId: ref && decodeBase36Uuid(ref.trim()),
                     error: i.et52.errorDetail,
                     record: "ET52"
                   })
+                }
               })
               return errors
             })
@@ -729,16 +814,16 @@ export class IccMessageXApi extends iccMessageApi {
                     }
 
                     // Error from the ET50/51/52 linked to the invoicingCode
-                    const errStruct = invoicingErrors.filter(it => it.itemId === ic.id)
+                    const errStructs = invoicingErrors.filter(it => it.itemId === ic.id)
 
-                    if (rejectAll || errStruct.length) {
+                    if (rejectAll || errStructs.length) {
                       ic.logicalId = ic.logicalId || this.crypto.randomUuid()
                       ic.accepted = false
                       ic.canceled = true
                       ic.pending = false
                       ic.resent = false
                       ic.error =
-                        _(errStruct)
+                        _(errStructs)
                           .map(e => this.extractErrorMessage(e.error))
                           .compact()
                           .join("; ") || undefined
@@ -929,7 +1014,7 @@ export class IccMessageXApi extends iccMessageApi {
                       transportGuid: "EFACT:BATCH:" + batch.numericalRef,
                       sent: timeEncode(new Date()),
                       fromHealthcarePartyId: hcp.id,
-                      recipients: [fed.code],
+                      recipients: [fed.id],
                       recipientsType: "org.taktik.icure.entities.Insurance"
                     })
                   )
