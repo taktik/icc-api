@@ -259,8 +259,6 @@ export class IccMessageXApi extends iccMessageApi {
       })
     })
 
-    _.each(list.inscriptions, inscription => {})
-
     _.each(list.closures, closure => {
       const metas = {
         type: "closure",
