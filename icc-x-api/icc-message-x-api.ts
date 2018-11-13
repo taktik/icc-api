@@ -226,42 +226,36 @@ export class IccMessageXApi extends iccMessageApi {
       })
       promMsg = promMsg.then(acc => {
         let ref = (dmgsMsgList.appliesTo || "").replace("urn:nip:reference:input:", "")
-        return this.findMessagesByTransportGuid(
-          `GMD:OUT:${ref}`,
-          false,
-          undefined,
-          undefined,
-          100
-        ).then(parents => {
-          const msgsForHcp = ((parents && parents.rows) || []).filter(
-            (p: MessageDto) => p.responsible === hcp.id
-          )
-          if (!msgsForHcp.length) {
-            throw new Error(`Cannot find parent with ref ${ref}`)
-          }
-          const parent: MessageDto = msgsForHcp[0]
+        return this.findMessagesByTransportGuid(`GMD:OUT:${ref}`, false, undefined, undefined, 100)
+          .then(parents => {
+            const msgsForHcp = ((parents && parents.rows) || []).filter(
+              (p: MessageDto) => p.responsible === hcp.id
+            )
+            if (!msgsForHcp.length) {
+              throw new Error(`Cannot find parent with ref ${ref}`)
+            }
+            const parent: MessageDto = msgsForHcp[0]
 
-          return this.saveMessageInDb(
-            user,
-            "List",
-            dmgsMsgList,
-            hcp,
-            metas,
-            docXApi,
-            dmgsMsgList.date,
-            undefined,
-            parent && parent.id
-          )
-            .then(msg => {
+            return this.saveMessageInDb(
+              user,
+              "List",
+              dmgsMsgList,
+              hcp,
+              metas,
+              docXApi,
+              dmgsMsgList.date,
+              undefined,
+              parent && parent.id
+            ).then(msg => {
               dmgsMsgList.valueHash && msgHashes.push(dmgsMsgList.valueHash)
               acc.push(msg)
               return acc
             })
-            .catch(e => {
-              console.log(e)
-              return acc
-            })
-        })
+          })
+          .catch(e => {
+            console.log(e)
+            return acc
+          })
       })
     })
 
