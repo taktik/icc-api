@@ -153,27 +153,24 @@ export class IccMessageXApi extends iccMessageApi {
     const ackHashes: Array<string> = []
     let promAck: Promise<ReceiptDto | null> = Promise.resolve(null)
     _.each(list.acks, ack => {
+      const ref = (ack.appliesTo || "").replace("urn:nip:reference:input:", "")
       promAck = promAck
         .then(() =>
-          this.findMessagesByTransportGuid(
-            "GMD:OUT:" + (ack.appliesTo || "").replace("urn:nip:reference:input:", ""),
-            false,
-            undefined,
-            undefined,
-            100
-          )
+          this.findMessagesByTransportGuid(`GMD:OUT:${ref}`, false, undefined, undefined, 100)
         )
         .then(parents => {
-          const parent: MessageDto = parents[0]
-          if (parent) {
-            _.assign(parent.metas, {
-              tacks: _.assign(
-                parent.metas!.tacks || {},
-                _.fromPairs([[ack.io, (moment(ack.date) || moment()).format("YYYYMMDD")]])
-              )
-            })
-            return this.modifyMessage(parent)
+          const msgsForHcp = ((parents && parents.rows) || []).filter(
+            (p: MessageDto) => p.responsible === hcp.id
+          )
+          if (!msgsForHcp.length) {
+            throw new Error(`Cannot find parent with ref ${ref}`)
           }
+          const parent: MessageDto = msgsForHcp[0]
+          ;(parent.metas || (parent.metas = {}))[`tack.${ack.io}`] = (
+            (ack.date && moment(ack.date)) ||
+            moment()
+          ).format("YYYYMMDDHHmmss")
+          return this.modifyMessage(parent)
         })
         .catch(e => {
           console.log(e)
@@ -228,14 +225,21 @@ export class IccMessageXApi extends iccMessageApi {
           })
       })
       promMsg = promMsg.then(acc => {
+        let ref = (dmgsMsgList.appliesTo || "").replace("urn:nip:reference:input:", "")
         return this.findMessagesByTransportGuid(
-          "GMD:OUT:" + (dmgsMsgList.appliesTo || "").replace("urn:nip:reference:input:", ""),
+          `GMD:OUT:${ref}`,
           false,
           undefined,
           undefined,
           100
         ).then(parents => {
-          const parent: MessageDto = parents[0]
+          const msgsForHcp = ((parents && parents.rows) || []).filter(
+            (p: MessageDto) => p.responsible === hcp.id
+          )
+          if (!msgsForHcp.length) {
+            throw new Error(`Cannot find parent with ref ${ref}`)
+          }
+          const parent: MessageDto = msgsForHcp[0]
 
           return this.saveMessageInDb(
             user,
@@ -247,11 +251,16 @@ export class IccMessageXApi extends iccMessageApi {
             dmgsMsgList.date,
             undefined,
             parent && parent.id
-          ).then(msg => {
-            dmgsMsgList.valueHash && msgHashes.push(dmgsMsgList.valueHash)
-            acc.push(msg)
-            return acc
-          })
+          )
+            .then(msg => {
+              dmgsMsgList.valueHash && msgHashes.push(dmgsMsgList.valueHash)
+              acc.push(msg)
+              return acc
+            })
+            .catch(e => {
+              console.log(e)
+              return acc
+            })
         })
       })
     })
