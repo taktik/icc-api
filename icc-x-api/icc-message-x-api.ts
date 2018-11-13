@@ -1,10 +1,4 @@
-import {
-  iccEntityrefApi,
-  iccInsuranceApi,
-  iccReceiptApi,
-  iccInvoiceApi,
-  iccMessageApi
-} from "../icc-api/iccApi"
+import { iccEntityrefApi, iccInsuranceApi, iccMessageApi } from "../icc-api/iccApi"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 import { IccDocumentXApi } from "./icc-document-x-api"
 import { IccInvoiceXApi } from "./icc-invoice-x-api"
@@ -119,7 +113,12 @@ export class IccMessageXApi extends iccMessageApi {
     return this.newInstance(user, {
       // tslint:disable-next-line:no-bitwise
       transportGuid:
-        "GMD:OUT:" + (req.commonOutput && req.commonOutput.inputReference) || req.tack!.appliesTo,
+        "GMD:OUT:" +
+        (
+          (req.commonOutput && req.commonOutput.inputReference) ||
+          req.tack!.appliesTo ||
+          ""
+        ).replace("urn:nip:reference:input:", ""),
       fromHealthcarePartyId: user.healthcarePartyId,
       sent: +new Date(),
       metas: { type: "listrequest" },
@@ -157,7 +156,7 @@ export class IccMessageXApi extends iccMessageApi {
       promAck = promAck
         .then(() =>
           this.findMessagesByTransportGuid(
-            "GMD:OUT:" + ack.appliesTo,
+            "GMD:OUT:" + (ack.appliesTo || "").replace("urn:nip:reference:input:", ""),
             false,
             undefined,
             undefined,
@@ -173,7 +172,7 @@ export class IccMessageXApi extends iccMessageApi {
                 _.fromPairs([[ack.io, (moment(ack.date) || moment()).format("YYYYMMDD")]])
               )
             })
-            this.modifyMessage(parent)
+            return this.modifyMessage(parent)
           }
         })
         .catch(e => {
@@ -229,23 +228,33 @@ export class IccMessageXApi extends iccMessageApi {
           })
       })
       promMsg = promMsg.then(acc => {
-        return this.saveMessageInDb(
-          user,
-          "List",
-          dmgsMsgList,
-          hcp,
-          metas,
-          docXApi,
-          dmgsMsgList.date
-        ).then(msg => {
-          dmgsMsgList.valueHash && msgHashes.push(dmgsMsgList.valueHash)
-          acc.push(msg)
-          return acc
+        return this.findMessagesByTransportGuid(
+          "GMD:OUT:" + (dmgsMsgList.appliesTo || "").replace("urn:nip:reference:input:", ""),
+          false,
+          undefined,
+          undefined,
+          100
+        ).then(parents => {
+          const parent: MessageDto = parents[0]
+
+          return this.saveMessageInDb(
+            user,
+            "List",
+            dmgsMsgList,
+            hcp,
+            metas,
+            docXApi,
+            dmgsMsgList.date,
+            undefined,
+            parent && parent.id
+          ).then(msg => {
+            dmgsMsgList.valueHash && msgHashes.push(dmgsMsgList.valueHash)
+            acc.push(msg)
+            return acc
+          })
         })
       })
     })
-
-    _.each(list.inscriptions, inscription => {})
 
     _.each(list.closures, closure => {
       const metas = {
@@ -398,7 +407,8 @@ export class IccMessageXApi extends iccMessageApi {
     metas: { [key: string]: string | null },
     docXApi: IccDocumentXApi,
     date?: Date,
-    inss?: string
+    inss?: string,
+    parentId?: string
   ) {
     return this.newInstance(user, {
       // tslint:disable-next-line:no-bitwise
@@ -410,6 +420,7 @@ export class IccMessageXApi extends iccMessageApi {
       recipientsType: "org.taktik.icure.entities.HealthcareParty",
       received: +new Date(),
       metas: metas,
+      parentId: parentId,
       subject: inss
         ? `${msgName} from IO ${dmgMessage.io} for ${inss}`
         : `${msgName} from IO ${dmgMessage.io}`,
