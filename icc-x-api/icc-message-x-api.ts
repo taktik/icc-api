@@ -109,7 +109,11 @@ export class IccMessageXApi extends iccMessageApi {
     return this.initDelegations(message, null, user)
   }
 
-  saveDmgsListRequest(user: models.UserDto, req: GenAsyncResponse): Promise<MessageDto> {
+  saveDmgsListRequest(
+    user: models.UserDto,
+    req: GenAsyncResponse,
+    requestDate?: number
+  ): Promise<MessageDto> {
     return this.newInstance(user, {
       // tslint:disable-next-line:no-bitwise
       transportGuid:
@@ -121,7 +125,11 @@ export class IccMessageXApi extends iccMessageApi {
         ).replace("urn:nip:reference:input:", ""),
       fromHealthcarePartyId: user.healthcarePartyId,
       sent: +new Date(),
-      metas: { type: "listrequest", date: moment().format("DD/MM/YYYY") },
+      metas: {
+        type: "listrequest",
+        date: moment().format("DD/MM/YYYY"),
+        requestDate: requestDate ? moment(requestDate).format("DD/MM/YYYY") : ""
+      },
       subject: "Lists request",
       senderReferences: req.commonOutput
     })
