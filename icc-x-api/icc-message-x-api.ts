@@ -121,7 +121,7 @@ export class IccMessageXApi extends iccMessageApi {
         ).replace("urn:nip:reference:input:", ""),
       fromHealthcarePartyId: user.healthcarePartyId,
       sent: +new Date(),
-      metas: { type: "listrequest" },
+      metas: { type: "listrequest", date: moment().format("DD/MM/YYYY") },
       subject: "Lists request",
       senderReferences: req.commonOutput
     })
@@ -346,7 +346,9 @@ export class IccMessageXApi extends iccMessageApi {
             .then((pats: PatientPaginatedList) =>
               this.patientApi.bulkUpdatePatients(
                 (pats.rows || []).map(p => {
-                  const actions = _.sortBy(patsDmgs[p.ssin!!], "date")
+                  const actions = _.sortBy(patsDmgs[p.ssin!!], a =>
+                    moment(a.date, "DD/MM/YYYY").format("YYYYMMDD")
+                  )
                   const latestAction = actions.length && actions[actions.length - 1]
 
                   let phcp =
