@@ -181,7 +181,7 @@ export class IccMessageXApi extends iccMessageApi {
           return this.modifyMessage(parent)
         })
         .catch(e => {
-          console.log(e)
+          console.log(e.message)
           return null
         })
         .then(() =>
@@ -261,7 +261,7 @@ export class IccMessageXApi extends iccMessageApi {
             })
           })
           .catch(e => {
-            console.log(e)
+            console.log(e.message)
             return acc
           })
       })
@@ -283,7 +283,10 @@ export class IccMessageXApi extends iccMessageApi {
           (closure.beginOfNewDmg && moment(closure.beginOfNewDmg).format("DD/MM/YYYY")) || null,
         previousHcp: this.makeHcp(closure.previousHcParty),
         newHcp: this.makeHcp(closure.newHcParty),
-        ssin: closure.inss || null
+        ssin: closure.inss || null,
+        firstName: closure.firstName || null,
+        lastName: closure.lastName || null,
+        io: closure.io || null
       }
       closure.inss && (patsDmgs[closure.inss] || (patsDmgs[closure.inss] = [])).push(metas)
       promMsg = promMsg.then(acc => {
@@ -311,7 +314,10 @@ export class IccMessageXApi extends iccMessageApi {
         from: (ext.encounterDate && moment(ext.encounterDate).format("DD/MM/YYYY")) || null,
         hcp: this.makeHcp(ext.hcParty),
         claim: ext.claim || null,
-        ssin: ext.inss || null
+        ssin: ext.inss || null,
+        firstName: ext.firstName || null,
+        lastName: ext.lastName || null,
+        io: ext.io || null
       }
       ext.inss && (patsDmgs[ext.inss] || (patsDmgs[ext.inss] = [])).push(metas)
       promMsg = promMsg.then(acc => {
