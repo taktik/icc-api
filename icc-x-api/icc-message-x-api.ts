@@ -96,6 +96,44 @@ export class IccMessageXApi extends iccMessageApi {
     this.patientApi = patientApi
   }
 
+  initDelegations(
+    message: models.MessageDto,
+    parentObject: any,
+    user: models.UserDto,
+    secretForeignKey?: string
+  ): Promise<models.MessageDto> {
+    return this.crypto
+      .initObjectDelegations(
+        message,
+        parentObject,
+        user.healthcarePartyId!,
+        secretForeignKey || null
+      )
+      .then(initData => {
+        _.extend(message, { delegations: initData.delegations })
+
+        let promise = Promise.resolve(message)
+        ;(user.autoDelegations
+          ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
+          : []
+        ).forEach(
+          delegateId =>
+            (promise = promise
+              .then(patient =>
+                this.crypto.appendObjectDelegations(
+                  message,
+                  parentObject,
+                  user.healthcarePartyId!,
+                  delegateId,
+                  initData.secretId
+                )
+              )
+              .then(extraData => _.extend(message, { delegations: extraData.delegations })))
+        )
+        return promise
+      })
+  }
+
   // noinspection JSUnusedGlobalSymbols
   newInstance(user: models.UserDto, p: any) {
     const message = _.extend(
@@ -122,6 +160,8 @@ export class IccMessageXApi extends iccMessageApi {
   ): Promise<Array<Array<string>>> {
     const ackHashes: Array<string> = []
     let promAck: Promise<ReceiptDto | null> = Promise.resolve(null)
+
+    //  Synchronize acks with the existing request tack
     _.each(list.acks, ack => {
       promAck = promAck
         .then(() =>
@@ -186,8 +226,6 @@ export class IccMessageXApi extends iccMessageApi {
         })
       })
     })
-
-    _.each(list.inscriptions, inscription => {})
 
     _.each(list.closures, closure => {
       const metas = {
@@ -274,9 +312,9 @@ export class IccMessageXApi extends iccMessageApi {
             .then((pats: PatientPaginatedList) =>
               this.patientApi.bulkUpdatePatients(
                 (pats.rows || []).map(p => {
+                  msgHashes
                   const actions = _.sortBy(patsDmgs[p.ssin!!], "date")
-                  const latestAction = actions.length && actions[actions.length - 1]
-
+                  const latestAction = actions[actions.length - 1]
                   let phcp =
                     (p.patientHealthCareParties || (p.patientHealthCareParties = [])) &&
                     p.patientHealthCareParties.find(
@@ -290,28 +328,17 @@ export class IccMessageXApi extends iccMessageApi {
                       }))
                     )
                   }
-                  if (!phcp.referralPeriods) {
-                    phcp.referralPeriods = []
-                  }
-
-                  const rp =
-                    (phcp.referralPeriods && phcp.referralPeriods.find(per => !per.endDate)) ||
-                    (phcp.referralPeriods[phcp.referralPeriods.length] = new ReferralPeriod({}))
-
-                  const actionDate = Number(
-                    moment(latestAction.date, "DD/MM/YYYY").format("YYYYMMDD")
-                  )
-
-                  if (latestAction) {
-                    if (latestAction.closure) {
-                      rp.endDate = actionDate
-                      rp.comment = `-> ${latestAction.newHcp}`
-                    } else {
-                      if (actionDate > (rp.startDate || 0)) {
-                        rp.endDate = actionDate
-                        phcp.referralPeriods.push(new ReferralPeriod({ startDate: actionDate }))
-                      }
-                    }
+                  if (latestAction && !latestAction.closure) {
+                    const rp =
+                      phcp.referralPeriods && phcp.referralPeriods.find(per => !per.endDate)
+                    rp &&
+                      (rp.endDate = latestAction.date)(
+                        phcp.referralPeriods || (phcp.referralPeriods = [])
+                      ).push(new ReferralPeriod({ startDate: latestAction.date }))
+                  } else if (latestAction && latestAction.closure) {
+                    const rp =
+                      phcp && phcp.referralPeriods && phcp.referralPeriods.find(per => !per.endDate)
+                    rp && (rp.endDate = latestAction.date)
                   }
                   return p
                 })
@@ -326,8 +353,7 @@ export class IccMessageXApi extends iccMessageApi {
     if (!hcParty) {
       return null
     }
-    return `${hcParty.firstname || ""} ${hcParty.familyname || ""} ${hcParty.name ||
-      ""} [${(hcParty.ids &&
+    return `${hcParty.firstname || ""} ${hcParty.familyname || ""} [${(hcParty.ids &&
       (hcParty.ids.find(id => id.s === IDHCPARTY.SEnum.IDHCPARTY) || {}).value) ||
       "-"}]`
   }
@@ -403,15 +429,6 @@ export class IccMessageXApi extends iccMessageApi {
     }).then(msg => this.createMessage(msg))
   }
 
-  // extractErrorMessage(es?: { itemId: string | null; error?: ErrorDetail }): string | undefined {
-  //   const e = es && es.error
-  //   return e &&
-  //     (e.rejectionCode1 ||
-  //       e.rejectionDescr1 ||
-  //       e.rejectionCode2 ||
-  //       e.rejectionDescr2 ||
-  //       e.rejectionCode3 ||
-  //       e.rejectionDescr3)
   extractErrorMessage(error?: ErrorDetail): string | undefined {
     if (!error) return
 
@@ -988,47 +1005,5 @@ export class IccMessageXApi extends iccMessageApi {
           throw errors
         })
     })
-  }
-
-  initDelegations(
-    message: models.MessageDto,
-    parentObject: any,
-    user: models.UserDto,
-    secretForeignKey?: string
-  ): Promise<models.MessageDto> {
-    return this.crypto
-      .initObjectDelegations(
-        message,
-        parentObject,
-        user.healthcarePartyId!,
-        secretForeignKey || null
-      )
-      .then(initData => {
-        _.extend(message, { delegations: initData.delegations })
-
-        let promise = Promise.resolve(message)
-        ;(user.autoDelegations
-          ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
-          : []
-        ).forEach(
-          delegateId =>
-            (promise = promise.then(patient =>
-              this.crypto
-                .appendObjectDelegations(
-                  message,
-                  parentObject,
-                  user.healthcarePartyId!,
-                  delegateId,
-                  initData.secretId
-                )
-                .then(extraData => _.extend(message, { delegations: extraData.delegations || {} }))
-                .catch(e => {
-                  console.log(e)
-                  return message
-                })
-            ))
-        )
-        return promise
-      })
   }
 }
