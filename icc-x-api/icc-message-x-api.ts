@@ -1,10 +1,4 @@
-import {
-  iccEntityrefApi,
-  iccInsuranceApi,
-  iccReceiptApi,
-  iccInvoiceApi,
-  iccMessageApi
-} from "../icc-api/iccApi"
+import { iccEntityrefApi, iccInsuranceApi, iccMessageApi } from "../icc-api/iccApi"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 import { IccDocumentXApi } from "./icc-document-x-api"
 import { IccInvoiceXApi } from "./icc-invoice-x-api"
@@ -119,10 +113,15 @@ export class IccMessageXApi extends iccMessageApi {
     return this.newInstance(user, {
       // tslint:disable-next-line:no-bitwise
       transportGuid:
-        "GMD:OUT:" + (req.commonOutput && req.commonOutput.inputReference) || req.tack!.appliesTo,
+        "GMD:OUT:" +
+        (
+          (req.commonOutput && req.commonOutput.inputReference) ||
+          req.tack!.appliesTo ||
+          ""
+        ).replace("urn:nip:reference:input:", ""),
       fromHealthcarePartyId: user.healthcarePartyId,
       sent: +new Date(),
-      metas: { type: "listrequest" },
+      metas: { type: "listrequest", date: moment().format("DD/MM/YYYY") },
       subject: "Lists request",
       senderReferences: req.commonOutput
     })
@@ -154,7 +153,29 @@ export class IccMessageXApi extends iccMessageApi {
     const ackHashes: Array<string> = []
     let promAck: Promise<ReceiptDto | null> = Promise.resolve(null)
     _.each(list.acks, ack => {
+      const ref = (ack.appliesTo || "").replace("urn:nip:reference:input:", "")
       promAck = promAck
+        .then(() =>
+          this.findMessagesByTransportGuid(`GMD:OUT:${ref}`, false, undefined, undefined, 100)
+        )
+        .then(parents => {
+          const msgsForHcp = ((parents && parents.rows) || []).filter(
+            (p: MessageDto) => p.responsible === hcp.id
+          )
+          if (!msgsForHcp.length) {
+            throw new Error(`Cannot find parent with ref ${ref}`)
+          }
+          const parent: MessageDto = msgsForHcp[0]
+          ;(parent.metas || (parent.metas = {}))[`tack.${ack.io}`] = (
+            (ack.date && moment(ack.date)) ||
+            moment()
+          ).format("YYYYMMDDHHmmss")
+          return this.modifyMessage(parent)
+        })
+        .catch(e => {
+          console.log(e)
+          return null
+        })
         .then(() =>
           this.receiptXApi.logSCReceipt(ack, user, hcp.id!!, "dmg", "listAck", [
             `nip:pin:valuehash:${ack.valueHash}`
@@ -204,23 +225,39 @@ export class IccMessageXApi extends iccMessageApi {
           })
       })
       promMsg = promMsg.then(acc => {
-        return this.saveMessageInDb(
-          user,
-          "List",
-          dmgsMsgList,
-          hcp,
-          metas,
-          docXApi,
-          dmgsMsgList.date
-        ).then(msg => {
-          dmgsMsgList.valueHash && msgHashes.push(dmgsMsgList.valueHash)
-          acc.push(msg)
-          return acc
-        })
+        let ref = (dmgsMsgList.appliesTo || "").replace("urn:nip:reference:input:", "")
+        return this.findMessagesByTransportGuid(`GMD:OUT:${ref}`, false, undefined, undefined, 100)
+          .then(parents => {
+            const msgsForHcp = ((parents && parents.rows) || []).filter(
+              (p: MessageDto) => p.responsible === hcp.id
+            )
+            if (!msgsForHcp.length) {
+              throw new Error(`Cannot find parent with ref ${ref}`)
+            }
+            const parent: MessageDto = msgsForHcp[0]
+
+            return this.saveMessageInDb(
+              user,
+              "List",
+              dmgsMsgList,
+              hcp,
+              metas,
+              docXApi,
+              dmgsMsgList.date,
+              undefined,
+              parent && parent.id
+            ).then(msg => {
+              dmgsMsgList.valueHash && msgHashes.push(dmgsMsgList.valueHash)
+              acc.push(msg)
+              return acc
+            })
+          })
+          .catch(e => {
+            console.log(e)
+            return acc
+          })
       })
     })
-
-    _.each(list.inscriptions, inscription => {})
 
     _.each(list.closures, closure => {
       const metas = {
@@ -307,7 +344,9 @@ export class IccMessageXApi extends iccMessageApi {
             .then((pats: PatientPaginatedList) =>
               this.patientApi.bulkUpdatePatients(
                 (pats.rows || []).map(p => {
-                  const actions = _.sortBy(patsDmgs[p.ssin!!], "date")
+                  const actions = _.sortBy(patsDmgs[p.ssin!!], a =>
+                    moment(a.date, "DD/MM/YYYY").format("YYYYMMDD")
+                  )
                   const latestAction = actions.length && actions[actions.length - 1]
 
                   let phcp =
@@ -373,7 +412,8 @@ export class IccMessageXApi extends iccMessageApi {
     metas: { [key: string]: string | null },
     docXApi: IccDocumentXApi,
     date?: Date,
-    inss?: string
+    inss?: string,
+    parentId?: string
   ) {
     return this.newInstance(user, {
       // tslint:disable-next-line:no-bitwise
@@ -385,6 +425,7 @@ export class IccMessageXApi extends iccMessageApi {
       recipientsType: "org.taktik.icure.entities.HealthcareParty",
       received: +new Date(),
       metas: metas,
+      parentId: parentId,
       subject: inss
         ? `${msgName} from IO ${dmgMessage.io} for ${inss}`
         : `${msgName} from IO ${dmgMessage.io}`,
@@ -559,7 +600,7 @@ export class IccMessageXApi extends iccMessageApi {
     hcp: HealthcarePartyDto,
     efactMessage: EfactMessage,
     invoicePrefix?: string
-  ): Promise<MessageDto> {
+  ): Promise<{ message: MessageDto; invoices: Array<InvoiceDto> }> {
     const ref = Number(efactMessage.commonOutput!!.inputReference!!) % 10000000000
 
     return this.findMessagesByTransportGuid(
@@ -851,7 +892,7 @@ export class IccMessageXApi extends iccMessageApi {
                 })
               )
             })
-            .then(() => {
+            .then(invoices => {
               parentMessage.status = (parentMessage.status || 0) | statuses
 
               if (batchErrors.length) {
@@ -879,7 +920,10 @@ export class IccMessageXApi extends iccMessageApi {
                   totalRejectedAmount: Number(et92.totalRejectedAmount) / 100
                 })
               }
-              return this.modifyMessage(parentMessage)
+              return Promise.all([this.modifyMessage(parentMessage)].concat(invoices)).then(
+                ([message, ...invoices]) =>
+                  ({ message, invoices } as { message: MessageDto; invoices: Array<InvoiceDto> })
+              )
             })
         )
     })
