@@ -118,7 +118,9 @@ export class iccClassificationTemplateApi {
       .then(doc => new models.ClassificationTemplateDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  getClassificationTemplateByIds(ids: string): Promise<models.ClassificationTemplateDto | any> {
+  getClassificationTemplateByIds(
+    ids: string
+  ): Promise<Array<models.ClassificationTemplateDto> | any> {
     let _body = null
 
     const _url =
@@ -131,7 +133,7 @@ export class iccClassificationTemplateApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => new models.ClassificationTemplateDto(doc.body as JSON))
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.ClassificationTemplateDto(it)))
       .catch(err => this.handleError(err))
   }
   modifyClassificationTemplate(
