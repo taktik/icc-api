@@ -600,7 +600,7 @@ export class IccMessageXApi extends iccMessageApi {
     hcp: HealthcarePartyDto,
     efactMessage: EfactMessage,
     invoicePrefix?: string
-  ): Promise<MessageDto> {
+  ): Promise<{ message: MessageDto; invoices: Array<InvoiceDto> }> {
     const ref = Number(efactMessage.commonOutput!!.inputReference!!) % 10000000000
 
     return this.findMessagesByTransportGuid(
@@ -892,7 +892,7 @@ export class IccMessageXApi extends iccMessageApi {
                 })
               )
             })
-            .then(() => {
+            .then(invoices => {
               parentMessage.status = (parentMessage.status || 0) | statuses
 
               if (batchErrors.length) {
@@ -920,7 +920,10 @@ export class IccMessageXApi extends iccMessageApi {
                   totalRejectedAmount: Number(et92.totalRejectedAmount) / 100
                 })
               }
-              return this.modifyMessage(parentMessage)
+              return Promise.all([this.modifyMessage(parentMessage)].concat(invoices)).then(
+                ([message, ...invoices]) =>
+                  ({ message, invoices } as { message: MessageDto; invoices: Array<InvoiceDto> })
+              )
             })
         )
     })
