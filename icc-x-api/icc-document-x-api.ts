@@ -552,11 +552,11 @@ export class IccDocumentXApi extends iccDocumentApi {
         : []
       ).forEach(
         delegateId =>
-          (promise = promise.then(contact =>
+          (promise = promise.then(document =>
             this.crypto
-              .appendEncryptionKeys(contact, user.healthcarePartyId!, eks.secretId)
+              .appendEncryptionKeys(document, user.healthcarePartyId!, delegateId, eks.secretId)
               .then(extraEks => {
-                return _.extend(contact, {
+                return _.extend(document, {
                   encryptionKeys: extraEks.encryptionKeys
                 })
               })

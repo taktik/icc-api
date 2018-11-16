@@ -139,6 +139,15 @@ export class IccCryptoXApi {
       delegations[healthcarePartyId].forEach(function(delegation) {
         delegatorIds[delegation.owner!] = true
       })
+    } else {
+      return this.hcpartyBaseApi
+        .getHealthcareParty(healthcarePartyId)
+        .then(
+          hcp =>
+            hcp.parentId
+              ? this.decryptAndImportAesHcPartyKeysInDelegations(hcp.parentId, delegations)
+              : Promise.resolve([])
+        )
     }
 
     return this.decryptAndImportAesHcPartyKeysForDelegators(
@@ -328,6 +337,7 @@ export class IccCryptoXApi {
   appendEncryptionKeys(
     modifiedObject: any,
     ownerId: string,
+    delegateId: string,
     secretIdOfModifiedObject: string
   ): Promise<{
     encryptionKeys: { [key: string]: Array<models.DelegationDto> }
@@ -337,9 +347,16 @@ export class IccCryptoXApi {
       return Promise.resolve({ encryptionKeys: modifiedObject.encryptionKeys, secretId: null })
     }
     return this.getHealthcareParty(ownerId)
-      .then(owner => owner.hcPartyKeys![ownerId][0])
+      .then(owner => {
+        if (!owner.hcPartyKeys![delegateId]) {
+          return this.generateKeyForDelegate(ownerId, delegateId).then(
+            owner => owner.hcPartyKeys![delegateId][0]
+          )
+        }
+        return Promise.resolve(owner.hcPartyKeys![delegateId][0])
+      })
       .then(encryptedHcPartyKey =>
-        this.decryptHcPartyKey(ownerId, ownerId, encryptedHcPartyKey, true)
+        this.decryptHcPartyKey(ownerId, delegateId, encryptedHcPartyKey, true)
       )
       .then(importedAESHcPartyKey =>
         this.AES.encrypt(
@@ -356,7 +373,7 @@ export class IccCryptoXApi {
               [
                 {
                   owner: ownerId,
-                  delegatedTo: ownerId,
+                  delegatedTo: delegateId,
                   key: this.utils.ua2hex(encryptedEncryptionKeys)
                 }
               ]
@@ -383,7 +400,7 @@ export class IccCryptoXApi {
   ) {
     return Promise.all([
       this.appendObjectDelegations(child, parent, ownerId, delegateId, secretDelegationKey),
-      this.appendEncryptionKeys(child, ownerId, secretEncryptionKey)
+      this.appendEncryptionKeys(child, ownerId, delegateId, secretEncryptionKey)
     ]).then(extraData => {
       const extraDels = extraData[0]
       const extraEks = extraData[1]
@@ -612,7 +629,7 @@ export class IccCryptoXApi {
   generateKeyForDelegate(ownerId: string, delegateId: string) {
     return Promise.all([
       this.getHealthcareParty(ownerId),
-      this.hcpartyBaseApi.getHealthcareParty(delegateId)
+      this.getHealthcareParty(delegateId)
     ]).then(
       ([owner, delegate]) =>
         delegate.publicKey

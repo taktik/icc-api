@@ -116,7 +116,7 @@ export class IccContactXApi extends iccContactApi {
         delegateId =>
           (promise = promise.then(contact =>
             this.crypto
-              .appendEncryptionKeys(contact, user.healthcarePartyId!, eks.secretId)
+              .appendEncryptionKeys(contact, user.healthcarePartyId!, delegateId, eks.secretId)
               .then(extraEks => {
                 return _.extend(contact, {
                   encryptionKeys: extraEks.encryptionKeys
@@ -214,7 +214,9 @@ export class IccContactXApi extends iccContactApi {
     hcPartyId?: string,
     formId?: string
   ): Promise<Array<models.ContactDto> | any> {
-    return super.findByHCPartyFormId(hcPartyId, formId).then(ctcs => this.encrypt(user, ctcs))
+    return super
+      .findByHCPartyFormId(hcPartyId, formId)
+      .then(ctcs => this.decrypt(user.healthcarePartyId!, ctcs))
   }
 
   findByHCPartyFormIdsWithUser(
@@ -222,7 +224,9 @@ export class IccContactXApi extends iccContactApi {
     hcPartyId?: string,
     body?: models.ListOfIdsDto
   ): Promise<Array<models.ContactDto> | any> {
-    return super.findByHCPartyFormIds(hcPartyId, body).then(ctcs => this.encrypt(user, ctcs))
+    return super
+      .findByHCPartyFormIds(hcPartyId, body)
+      .then(ctcs => this.decrypt(user.healthcarePartyId!, ctcs))
   }
 
   getContactWithUser(user: models.UserDto, contactId: string): Promise<models.ContactDto | any> {

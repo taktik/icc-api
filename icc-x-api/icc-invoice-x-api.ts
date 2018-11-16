@@ -111,10 +111,10 @@ export class IccInvoiceXApi extends iccInvoiceApi {
         ? (user.autoDelegations.all || []).concat(user.autoDelegations.financialInformation || [])
         : []
       ).forEach(
-        () =>
+        delegateId =>
           (promise = promise.then(invoice =>
             this.crypto
-              .appendEncryptionKeys(invoice, user.healthcarePartyId!, eks.secretId)
+              .appendEncryptionKeys(invoice, user.healthcarePartyId!, delegateId, eks.secretId)
               .then(extraEks => {
                 return _.extend(invoice, {
                   encryptionKeys: extraEks.encryptionKeys
