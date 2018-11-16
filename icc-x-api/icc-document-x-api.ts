@@ -499,7 +499,7 @@ export class IccDocumentXApi extends iccDocumentApi {
             document,
             message,
             user.healthcarePartyId!,
-            secretForeignKeys[0]
+            secretForeignKeys.extractedKeys[0]
           ),
           this.crypto.initEncryptionKeys(document, user.healthcarePartyId!)
         ])
@@ -552,11 +552,11 @@ export class IccDocumentXApi extends iccDocumentApi {
         : []
       ).forEach(
         delegateId =>
-          (promise = promise.then(contact =>
+          (promise = promise.then(document =>
             this.crypto
-              .appendEncryptionKeys(contact, user.healthcarePartyId!, eks.secretId)
+              .appendEncryptionKeys(document, user.healthcarePartyId!, delegateId, eks.secretId)
               .then(extraEks => {
-                return _.extend(contact, {
+                return _.extend(document, {
                   encryptionKeys: extraEks.encryptionKeys
                 })
               })
@@ -571,7 +571,10 @@ export class IccDocumentXApi extends iccDocumentApi {
     return this.crypto
       .extractDelegationsSFKs(message, hcpartyId)
       .then(secretForeignKeys =>
-        this.findByHCPartyMessageSecretFKeys(hcpartyId, secretForeignKeys.join(","))
+        this.findByHCPartyMessageSecretFKeys(
+          secretForeignKeys.hcpartyId,
+          secretForeignKeys.extractedKeys.join(",")
+        )
       )
       .then(documents => this.decrypt(hcpartyId, documents))
       .then(function(decryptedForms) {

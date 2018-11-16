@@ -96,7 +96,7 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
             contact,
             patient,
             user.healthcarePartyId!,
-            secretForeignKeys[0]
+            secretForeignKeys.extractedKeys[0]
           ),
           this.crypto.initEncryptionKeys(contact, user.healthcarePartyId!)
         ])
@@ -160,7 +160,7 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
         delegateId =>
           (promise = promise.then(item =>
             this.crypto
-              .appendEncryptionKeys(item, user.healthcarePartyId!, eks.secretId)
+              .appendEncryptionKeys(item, user.healthcarePartyId!, delegateId, eks.secretId)
               .then(extraEks => {
                 return _.extend(item, {
                   encryptionKeys: extraEks.encryptionKeys

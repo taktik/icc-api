@@ -100,7 +100,7 @@ export class IccReceiptXApi extends iccReceiptApi {
         delegateId =>
           (promise = promise.then(receipt =>
             this.crypto
-              .appendEncryptionKeys(receipt, user.healthcarePartyId!, eks.secretId)
+              .appendEncryptionKeys(receipt, user.healthcarePartyId!, delegateId, eks.secretId)
               .then(extraEks => {
                 return _.extend(receipt, {
                   encryptionKeys: extraEks.encryptionKeys
