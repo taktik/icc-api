@@ -707,13 +707,7 @@ export class IccMessageXApi extends iccMessageApi {
                     record: "ET50"
                   })
                 }
-                if (i.et51 && i.et51.errorDetail) {
-                  errors.push({
-                    itemId: ref && decodeBase36Uuid(ref.trim()),
-                    error: i.et51.errorDetail,
-                    record: "ET51"
-                  })
-                }
+                // Error from ET51 shouldn't be treated
                 if (i.et52 && i.et52.errorDetail) {
                   errors.push({
                     itemId: ref && decodeBase36Uuid(ref.trim()),
