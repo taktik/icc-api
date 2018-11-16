@@ -116,15 +116,6 @@ export class IccCryptoXApi {
       delegations[healthcarePartyId].forEach(function(delegation) {
         delegatorIds[delegation.owner!] = true
       })
-    } else {
-      return this.hcpartyBaseApi
-        .getHealthcareParty(healthcarePartyId)
-        .then(
-          hcp =>
-            hcp.parentId
-              ? this.decryptAndImportAesHcPartyKeysInDelegations(hcp.parentId, delegations)
-              : Promise.resolve([])
-        )
     }
 
     return this.decryptAndImportAesHcPartyKeysForDelegators(
