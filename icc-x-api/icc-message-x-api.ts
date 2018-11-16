@@ -874,7 +874,7 @@ export class IccMessageXApi extends iccMessageApi {
                       ic.resent = false
                       ic.error = undefined
 
-                      let record50: ET50Data | boolean =
+                      let record50: ET50Data | false =
                         messageType === "920900" &&
                         _.compact(
                           _.flatMap((parsedRecords as File920900Data).records, r =>
@@ -887,15 +887,8 @@ export class IccMessageXApi extends iccMessageApi {
                           )
                         )[0]
 
-                      if (
-                        record50 &&
-                        record50.montantInterventionAssurance &&
-                        record50.errorDetail &&
-                        record50.errorDetail.zone114
-                      ) {
-                        let paidAmount =
-                          Number(record50.montantInterventionAssurance) -
-                          Number(record50.errorDetail.zone114)
+                      if (record50 && _.get(record50, "errorDetail.zone114")) {
+                        let paidAmount = Number(record50.errorDetail!!.zone114)
                         ic.paid = Number((paidAmount / 100).toFixed(2))
                       } else {
                         ic.paid = ic.reimbursement
