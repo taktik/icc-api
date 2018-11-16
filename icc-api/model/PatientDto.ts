@@ -98,6 +98,8 @@ export class PatientDto {
 
   note?: string
 
+  administrativeNote?: string
+
   warning?: string
 
   nationality?: string
@@ -127,8 +129,6 @@ export class PatientDto {
   parameters?: { [key: string]: Array<string> }
 
   patientProfessions?: Array<models.CodeDto>
-
-  openNote?: boolean
 
   encryptedSelf?: string
 }
