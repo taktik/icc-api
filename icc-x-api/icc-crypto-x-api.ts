@@ -11,7 +11,30 @@ export class IccCryptoXApi {
   hcPartyKeysCache: {
     [key: string]: { delegatorId: string; key: CryptoKey }
   } = {}
+  hcPartiesRequestsCache: { [key: string]: Promise<models.HealthcarePartyDto> } = {}
   hcPartyKeysRequestsCache: { [key: string]: Promise<any> } = {}
+
+  emptyHcpCache(hcpartyId: string) {
+    delete this.hcPartiesRequestsCache[hcpartyId]
+    delete this.hcPartyKeysRequestsCache[hcpartyId]
+  }
+
+  private getHealthcareParty(hcpartyId: string): Promise<models.HealthcarePartyDto> {
+    return (
+      this.hcPartiesRequestsCache[hcpartyId] ||
+      (this.hcPartiesRequestsCache[hcpartyId] = this.hcpartyBaseApi.getHealthcareParty(hcpartyId))
+    )
+  }
+
+  private getHcPartyKeysForDelegate(delegateHcPartyId: string): Promise<{ [key: string]: string }> {
+    return (
+      this.hcPartyKeysRequestsCache[delegateHcPartyId] ||
+      (this.hcPartyKeysRequestsCache[
+        delegateHcPartyId
+      ] = this.hcpartyBaseApi.getHcPartyKeysForDelegate(delegateHcPartyId))
+    )
+  }
+
   keychainLocalStoreIdPrefix: String = "org.taktik.icure.ehealth.keychain."
 
   hcpartyBaseApi: iccHcpartyApi
@@ -275,8 +298,7 @@ export class IccCryptoXApi {
     secretId: string
   }> {
     const secretId = this.randomUuid()
-    return this.hcpartyBaseApi
-      .getHcPartyKeysForDelegate(ownerId)
+    return this.getHcPartyKeysForDelegate(ownerId)
       .then(encryptedHcPartyKey =>
         this.decryptHcPartyKey(ownerId, ownerId, encryptedHcPartyKey[ownerId], true)
       )
@@ -314,9 +336,8 @@ export class IccCryptoXApi {
     if (!secretIdOfModifiedObject) {
       return Promise.resolve({ encryptionKeys: modifiedObject.encryptionKeys, secretId: null })
     }
-    return this.hcpartyBaseApi
-      .getHealthcareParty(ownerId)
-      .then(owner => owner.hcPartyKeys[ownerId][0])
+    return this.getHealthcareParty(ownerId)
+      .then(owner => owner.hcPartyKeys![ownerId][0])
       .then(encryptedHcPartyKey =>
         this.decryptHcPartyKey(ownerId, ownerId, encryptedHcPartyKey, true)
       )
@@ -385,9 +406,9 @@ export class IccCryptoXApi {
       | models.ReceiptDto
       | null,
     hcpartyId: string
-  ): Promise<Array<string>> {
+  ): Promise<{ extractedKeys: Array<string>; hcpartyId: string }> {
     if (!document) {
-      return Promise.resolve([])
+      return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
     }
     const dels = document.delegations
     if (!dels || !dels[hcpartyId] || dels[hcpartyId].length <= 0) {
@@ -398,11 +419,12 @@ export class IccCryptoXApi {
           document.id +
           ")"
       )
-      return Promise.resolve([])
+      return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
     }
     return this.extractSfks(hcpartyId, document.id!, dels)
   }
 
+  // noinspection JSUnusedGlobalSymbols
   extractCryptedFKs(
     document:
       | models.PatientDto
@@ -414,9 +436,9 @@ export class IccCryptoXApi {
       | models.ReceiptDto
       | null,
     hcpartyId: string
-  ): Promise<Array<string>> {
+  ): Promise<{ extractedKeys: Array<string>; hcpartyId: string }> {
     if (!document) {
-      return Promise.resolve([])
+      return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
     }
     const dels = document.cryptedForeignKeys
     if (!dels || !dels[hcpartyId] || dels[hcpartyId].length <= 0) {
@@ -427,7 +449,7 @@ export class IccCryptoXApi {
           document.id +
           ")"
       )
-      return Promise.resolve([])
+      return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
     }
     return this.extractSfks(hcpartyId, document.id!, dels)
   }
@@ -442,9 +464,9 @@ export class IccCryptoXApi {
       | models.ReceiptDto
       | models.HealthElementDto,
     hcpartyId: string
-  ): Promise<Array<string>> {
+  ): Promise<{ extractedKeys: Array<string>; hcpartyId: string }> {
     if (!document.encryptionKeys) {
-      return Promise.resolve([])
+      return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
     }
     const eks = document.encryptionKeys
     if (!eks || !eks[hcpartyId] || eks[hcpartyId].length <= 0) {
@@ -455,7 +477,7 @@ export class IccCryptoXApi {
           document.id +
           ")"
       )
-      return Promise.resolve([])
+      return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
     }
     return this.extractSfks(hcpartyId, document.id!, eks)
   }
@@ -464,13 +486,24 @@ export class IccCryptoXApi {
     hcpartyId: string,
     objectId: string,
     delegations: { [key: string]: Array<models.DelegationDto> }
-  ): Promise<Array<string>> {
-    return this.decryptAndImportAesHcPartyKeysInDelegations(hcpartyId, delegations).then(
-      decryptedAndImportedAesHcPartyKeys => {
-        var collatedAesKeys: { [key: string]: CryptoKey } = {}
-        decryptedAndImportedAesHcPartyKeys.forEach(k => (collatedAesKeys[k.delegatorId] = k.key))
-        return this.decryptDelegationsSFKs(delegations[hcpartyId], collatedAesKeys, objectId!)
-      }
+  ): Promise<{ extractedKeys: Array<string>; hcpartyId: string }> {
+    return this.getHealthcareParty(hcpartyId).then(hcp =>
+      this.decryptAndImportAesHcPartyKeysInDelegations(hcpartyId, delegations)
+        .then(decryptedAndImportedAesHcPartyKeys => {
+          var collatedAesKeys: { [key: string]: CryptoKey } = {}
+          decryptedAndImportedAesHcPartyKeys.forEach(k => (collatedAesKeys[k.delegatorId] = k.key))
+          return this.decryptDelegationsSFKs(delegations[hcpartyId], collatedAesKeys, objectId!)
+        })
+        .then(
+          extractedKeys =>
+            hcp.parentId
+              ? this.extractSfks(hcp.parentId, objectId, delegations).then(parentResponse =>
+                  _.assign(parentResponse, {
+                    extractedKeys: parentResponse.extractedKeys.concat(extractedKeys)
+                  })
+                )
+              : { extractedKeys: extractedKeys, hcpartyId: hcpartyId }
+        )
     )
   }
 
@@ -524,6 +557,7 @@ export class IccCryptoXApi {
       })
   }
 
+  // noinspection JSUnusedGlobalSymbols
   loadKeyPairsAsJwkInBrowserLocalStorage(healthcarePartyId: string, privKey: JsonWebKey) {
     return this.hcpartyBaseApi
       .getPublicKey(healthcarePartyId)
@@ -544,6 +578,7 @@ export class IccCryptoXApi {
       })
   }
 
+  // noinspection JSUnusedGlobalSymbols
   loadKeyPairsInBrowserLocalStorage(healthcarePartyId: string, file: Blob) {
     const fr = new FileReader()
     return new Promise((resolve: (() => void), reject) => {
@@ -560,6 +595,7 @@ export class IccCryptoXApi {
     })
   }
 
+  // noinspection JSUnusedGlobalSymbols
   saveKeychainInBrowserLocalStorage(id: string, keychain: number) {
     localStorage.setItem(
       this.keychainLocalStoreIdPrefix + id,
@@ -567,6 +603,7 @@ export class IccCryptoXApi {
     )
   }
 
+  // noinspection JSUnusedGlobalSymbols
   loadKeychainFromBrowserLocalStorage(id: String) {
     const lsItem = localStorage.getItem("org.taktik.icure.ehealth.keychain." + id)
     return lsItem && this.utils.base64toByteArray(lsItem)
@@ -574,7 +611,7 @@ export class IccCryptoXApi {
 
   generateKeyForDelegate(ownerId: string, delegateId: string) {
     return Promise.all([
-      this.hcpartyBaseApi.getHealthcareParty(ownerId),
+      this.getHealthcareParty(ownerId),
       this.hcpartyBaseApi.getHealthcareParty(delegateId)
     ]).then(
       ([owner, delegate]) =>
@@ -596,18 +633,24 @@ export class IccCryptoXApi {
               })
               .then(
                 ([ownerKey, delegateKey]) =>
-                  (owner.hcPartyKeys[delegateId] = [
+                  (owner.hcPartyKeys![delegateId] = [
                     this.utils.ua2hex(ownerKey),
                     this.utils.ua2hex(delegateKey)
                   ])
               )
-              .then(() => this.hcpartyBaseApi.modifyHealthcareParty(owner))
+              .then(() =>
+                this.hcpartyBaseApi.modifyHealthcareParty(owner).then(hcp => {
+                  this.emptyHcpCache(hcp.id)
+                  return hcp
+                })
+              )
           : Promise.reject(new Error(`Missing public key for delegate ${delegateId}`))
     )
   }
 
+  // noinspection JSUnusedGlobalSymbols
   checkPrivateKeyValidity(hcp: models.HealthcarePartyDto): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
+    return new Promise<boolean>(resolve => {
       this.RSA.importKey("jwk", utils.spkiToJwk(utils.hex2ua(hcp.publicKey!)), ["encrypt"])
         .then(k => this.RSA.encrypt(k, this.utils.utf82ua("shibboleth")))
         .then(cipher => {

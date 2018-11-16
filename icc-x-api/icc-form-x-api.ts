@@ -40,7 +40,7 @@ export class IccFormXApi extends iccFormApi {
           form,
           patient,
           user.healthcarePartyId!,
-          secretForeignKeys[0]
+          secretForeignKeys.extractedKeys[0]
         )
       )
       .then(initData => {
@@ -101,7 +101,10 @@ export class IccFormXApi extends iccFormApi {
     return this.crypto
       .extractDelegationsSFKs(patient, hcpartyId)
       .then(secretForeignKeys =>
-        this.findByHCPartyPatientSecretFKeys(hcpartyId, secretForeignKeys.join(","))
+        this.findByHCPartyPatientSecretFKeys(
+          secretForeignKeys.hcpartyId,
+          secretForeignKeys.extractedKeys.join(",")
+        )
       )
       .then(forms => this.decrypt(hcpartyId, forms))
       .then(function(decryptedForms) {

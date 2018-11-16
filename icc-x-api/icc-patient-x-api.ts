@@ -102,11 +102,11 @@ export class IccPatientXApi extends iccPatientApi {
     return this.getPatient(patId).then((p: models.PatientDto) => {
       const psfksPromise =
         p.delegations && p.delegations[ownerId] && p.delegations[ownerId].length
-          ? this.crypto.extractDelegationsSFKs(p, ownerId)
+          ? this.crypto.extractDelegationsSFKs(p, ownerId).then(xks => xks.extractedKeys)
           : Promise.resolve([])
       const peksPromise =
         p.encryptionKeys && p.encryptionKeys[ownerId] && p.encryptionKeys[ownerId].length
-          ? this.crypto.extractEncryptionsSKs(p, ownerId)
+          ? this.crypto.extractEncryptionsSKs(p, ownerId).then(xks => xks.extractedKeys)
           : Promise.resolve([])
 
       return Promise.all([psfksPromise, peksPromise]).then(
@@ -178,8 +178,8 @@ export class IccPatientXApi extends iccPatientApi {
                                 x,
                                 ownerId,
                                 delegateId,
-                                sfks[0],
-                                eks[0]
+                                sfks.extractedKeys[0],
+                                eks.extractedKeys[0]
                               )
                               .catch(e => {
                                 console.log(e)
@@ -202,8 +202,8 @@ export class IccPatientXApi extends iccPatientApi {
                                 x,
                                 ownerId,
                                 delegateId,
-                                sfks[0],
-                                eks[0]
+                                sfks.extractedKeys[0],
+                                eks.extractedKeys[0]
                               )
                               .catch(e => {
                                 console.log(e)
@@ -226,8 +226,8 @@ export class IccPatientXApi extends iccPatientApi {
                                 x,
                                 ownerId,
                                 delegateId,
-                                sfks[0],
-                                eks[0]
+                                sfks.extractedKeys[0],
+                                eks.extractedKeys[0]
                               )
                               .catch(e => {
                                 console.log(e)
@@ -250,8 +250,8 @@ export class IccPatientXApi extends iccPatientApi {
                                 x,
                                 ownerId,
                                 delegateId,
-                                sfks[0],
-                                eks[0]
+                                sfks.extractedKeys[0],
+                                eks.extractedKeys[0]
                               )
                               .catch(e => {
                                 console.log(e)

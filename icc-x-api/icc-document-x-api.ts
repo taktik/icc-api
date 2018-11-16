@@ -499,7 +499,7 @@ export class IccDocumentXApi extends iccDocumentApi {
             document,
             message,
             user.healthcarePartyId!,
-            secretForeignKeys[0]
+            secretForeignKeys.extractedKeys[0]
           ),
           this.crypto.initEncryptionKeys(document, user.healthcarePartyId!)
         ])
@@ -571,7 +571,10 @@ export class IccDocumentXApi extends iccDocumentApi {
     return this.crypto
       .extractDelegationsSFKs(message, hcpartyId)
       .then(secretForeignKeys =>
-        this.findByHCPartyMessageSecretFKeys(hcpartyId, secretForeignKeys.join(","))
+        this.findByHCPartyMessageSecretFKeys(
+          secretForeignKeys.hcpartyId,
+          secretForeignKeys.extractedKeys.join(",")
+        )
       )
       .then(documents => this.decrypt(hcpartyId, documents))
       .then(function(decryptedForms) {

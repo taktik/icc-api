@@ -96,7 +96,7 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
             contact,
             patient,
             user.healthcarePartyId!,
-            secretForeignKeys[0]
+            secretForeignKeys.extractedKeys[0]
           ),
           this.crypto.initEncryptionKeys(contact, user.healthcarePartyId!)
         ])
