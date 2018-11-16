@@ -82,6 +82,7 @@ export interface ET20Data extends ETData {
 export interface ET50Data extends ETData {
   recordOrderNumber: string
   sex: string
+  montantInterventionAssurance: string
   units: string
   prescriberNihii: string
   itemReference: string
@@ -769,6 +770,7 @@ export abstract class EfactMessageReader {
     this.log("PrestationRelativePartie1et2", et50.zones!![i].value)
     i++
     this.log("SigneMontantInterventionDeLassurance", et50.zones!![i].value)
+    const montantInterventionAssurance = et50.zones!![i].value
     i++
     this.log("DatePrescriptionPartie1et2", et50.zones!![i].value)
     i++
@@ -848,6 +850,7 @@ export abstract class EfactMessageReader {
       errorDetail: et50.errorDetail,
       recordOrderNumber,
       sex,
+      montantInterventionAssurance,
       units,
       prescriberNihii,
       itemReference,

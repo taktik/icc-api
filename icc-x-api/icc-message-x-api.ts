@@ -42,6 +42,7 @@ import {
   EfactMessage931000Reader,
   EfactMessageReader,
   File920900Data,
+  ET50Data,
   ET91Data,
   ET92Data,
   ET20_80Data
@@ -109,7 +110,11 @@ export class IccMessageXApi extends iccMessageApi {
     return this.initDelegations(message, null, user)
   }
 
-  saveDmgsListRequest(user: models.UserDto, req: GenAsyncResponse): Promise<MessageDto> {
+  saveDmgsListRequest(
+    user: models.UserDto,
+    req: GenAsyncResponse,
+    requestDate?: number
+  ): Promise<MessageDto> {
     return this.newInstance(user, {
       // tslint:disable-next-line:no-bitwise
       transportGuid:
@@ -121,7 +126,11 @@ export class IccMessageXApi extends iccMessageApi {
         ).replace("urn:nip:reference:input:", ""),
       fromHealthcarePartyId: user.healthcarePartyId,
       sent: +new Date(),
-      metas: { type: "listrequest", date: moment().format("DD/MM/YYYY") },
+      metas: {
+        type: "listrequest",
+        date: moment().format("DD/MM/YYYY"),
+        requestDate: requestDate ? moment(requestDate).format("DD/MM/YYYY") : ""
+      },
       subject: "Lists request",
       senderReferences: req.commonOutput
     })
@@ -173,7 +182,7 @@ export class IccMessageXApi extends iccMessageApi {
           return this.modifyMessage(parent)
         })
         .catch(e => {
-          console.log(e)
+          console.log(e.message)
           return null
         })
         .then(() =>
@@ -253,7 +262,7 @@ export class IccMessageXApi extends iccMessageApi {
             })
           })
           .catch(e => {
-            console.log(e)
+            console.log(e.message)
             return acc
           })
       })
@@ -273,7 +282,10 @@ export class IccMessageXApi extends iccMessageApi {
           (closure.beginOfNewDmg && moment(closure.beginOfNewDmg).format("DD/MM/YYYY")) || null,
         previousHcp: this.makeHcp(closure.previousHcParty),
         newHcp: this.makeHcp(closure.newHcParty),
-        ssin: closure.inss || null
+        ssin: closure.inss || null,
+        firstName: closure.firstName || null,
+        lastName: closure.lastName || null,
+        io: closure.io || null
       }
       closure.inss && (patsDmgs[closure.inss] || (patsDmgs[closure.inss] = [])).push(metas)
       promMsg = promMsg.then(acc => {
@@ -301,7 +313,10 @@ export class IccMessageXApi extends iccMessageApi {
         from: (ext.encounterDate && moment(ext.encounterDate).format("DD/MM/YYYY")) || null,
         hcp: this.makeHcp(ext.hcParty),
         claim: ext.claim || null,
-        ssin: ext.inss || null
+        ssin: ext.inss || null,
+        firstName: ext.firstName || null,
+        lastName: ext.lastName || null,
+        io: ext.io || null
       }
       ext.inss && (patsDmgs[ext.inss] || (patsDmgs[ext.inss] = [])).push(metas)
       promMsg = promMsg.then(acc => {
@@ -691,13 +706,7 @@ export class IccMessageXApi extends iccMessageApi {
                     record: "ET50"
                   })
                 }
-                if (i.et51 && i.et51.errorDetail) {
-                  errors.push({
-                    itemId: ref && decodeBase36Uuid(ref.trim()),
-                    error: i.et51.errorDetail,
-                    record: "ET51"
-                  })
-                }
+                // Error from ET51 shouldn't be treated
                 if (i.et52 && i.et52.errorDetail) {
                   errors.push({
                     itemId: ref && decodeBase36Uuid(ref.trim()),
@@ -800,19 +809,20 @@ export class IccMessageXApi extends iccMessageApi {
                     }
 
                     // Error from the ET50/51/52 linked to the invoicingCode
-                    const errStructs = invoicingErrors.filter(it => it.itemId === ic.id)
+                    const codeError =
+                      _(invoicingErrors)
+                        .filter(it => it.itemId === ic.id)
+                        .map(e => this.extractErrorMessage(e.error))
+                        .compact()
+                        .join("; ") || undefined
 
-                    if (rejectAll || errStructs.length) {
+                    if (rejectAll || codeError) {
                       ic.logicalId = ic.logicalId || this.crypto.randomUuid()
                       ic.accepted = false
                       ic.canceled = true
                       ic.pending = false
                       ic.resent = false
-                      ic.error =
-                        _(errStructs)
-                          .map(e => this.extractErrorMessage(e.error))
-                          .compact()
-                          .join("; ") || undefined
+                      ic.error = codeError
                       ;(
                         newInvoice ||
                         (newInvoice = new InvoiceDto(
@@ -863,24 +873,25 @@ export class IccMessageXApi extends iccMessageApi {
                       ic.resent = false
                       ic.error = undefined
 
-                      let record51 =
+                      let record50: ET50Data | false =
                         messageType === "920900" &&
                         _.compact(
                           _.flatMap((parsedRecords as File920900Data).records, r =>
                             r.items!!.map(
                               i =>
-                                i &&
-                                i.et50 &&
-                                decodeBase36Uuid(i.et50.itemReference) === ic.id &&
-                                i.et51
+                                _.get(i, "et50.itemReference") &&
+                                decodeBase36Uuid(i.et50!!.itemReference.trim()) === ic.id &&
+                                i.et50
                             )
                           )
                         )[0]
-                      ic.paid =
-                        (record51 &&
-                          record51.reimbursementAmount &&
-                          Number((Number(record51.reimbursementAmount) / 100).toFixed(2))) ||
-                        ic.reimbursement
+
+                      if (record50 && _.get(record50, "errorDetail.zone114")) {
+                        let paidAmount = Number(record50.errorDetail!!.zone114)
+                        ic.paid = Number((paidAmount / 100).toFixed(2))
+                      } else {
+                        ic.paid = ic.reimbursement
+                      }
                     }
                   })
 

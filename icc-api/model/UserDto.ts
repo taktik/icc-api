@@ -82,11 +82,11 @@ export class UserDto {
 
   applicationTokens?: { [key: string]: string }
 
+  parents?: Array<string>
+
   virtualHosts?: Array<string>
 
   virtualHostDependency?: UserDto.VirtualHostDependencyEnum
-
-  parents?: Array<string>
 }
 export namespace UserDto {
   export enum TypeEnum {
