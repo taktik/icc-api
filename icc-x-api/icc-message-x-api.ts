@@ -42,6 +42,7 @@ import {
   EfactMessage931000Reader,
   EfactMessageReader,
   File920900Data,
+  ET50Data,
   ET91Data,
   ET92Data,
   ET20_80Data
@@ -810,19 +811,20 @@ export class IccMessageXApi extends iccMessageApi {
                     }
 
                     // Error from the ET50/51/52 linked to the invoicingCode
-                    const errStructs = invoicingErrors.filter(it => it.itemId === ic.id)
+                    const codeError =
+                      _(invoicingErrors)
+                        .filter(it => it.itemId === ic.id)
+                        .map(e => this.extractErrorMessage(e.error))
+                        .compact()
+                        .join("; ") || undefined
 
-                    if (rejectAll || errStructs.length) {
+                    if (rejectAll || codeError) {
                       ic.logicalId = ic.logicalId || this.crypto.randomUuid()
                       ic.accepted = false
                       ic.canceled = true
                       ic.pending = false
                       ic.resent = false
-                      ic.error =
-                        _(errStructs)
-                          .map(e => this.extractErrorMessage(e.error))
-                          .compact()
-                          .join("; ") || undefined
+                      ic.error = codeError
                       ;(
                         newInvoice ||
                         (newInvoice = new InvoiceDto(
@@ -872,24 +874,32 @@ export class IccMessageXApi extends iccMessageApi {
                       ic.resent = false
                       ic.error = undefined
 
-                      let record51 =
+                      let record50: ET50Data | boolean =
                         messageType === "920900" &&
                         _.compact(
                           _.flatMap((parsedRecords as File920900Data).records, r =>
                             r.items!!.map(
                               i =>
-                                i &&
-                                i.et50 &&
-                                decodeBase36Uuid(i.et50.itemReference) === ic.id &&
-                                i.et51
+                                _.get(i, "et50.itemReference") &&
+                                decodeBase36Uuid(i.et50!!.itemReference.trim()) === ic.id &&
+                                i.et50
                             )
                           )
                         )[0]
-                      ic.paid =
-                        (record51 &&
-                          record51.reimbursementAmount &&
-                          Number((Number(record51.reimbursementAmount) / 100).toFixed(2))) ||
-                        ic.reimbursement
+
+                      if (
+                        record50 &&
+                        record50.montantInterventionAssurance &&
+                        record50.errorDetail &&
+                        record50.errorDetail.zone114
+                      ) {
+                        let paidAmount =
+                          Number(record50.montantInterventionAssurance) -
+                          Number(record50.errorDetail.zone114)
+                        ic.paid = Number((paidAmount / 100).toFixed(2))
+                      } else {
+                        ic.paid = ic.reimbursement
+                      }
                     }
                   })
 
