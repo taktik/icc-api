@@ -6,12 +6,12 @@
   "types": "dist/index.d.ts",
   "dependencies": {
     "base64-js": "^1.3.0",
-    "fhc-api": "^1.0.31",
+    "fhc-api": "^1.0.32",
     "libphonenumber-js": "^1.5.1",
     "lodash": "^4.17.10",
     "moment": "^2.22.1",
-    "uuid-encoder": "^1.1.0",
-    "text-encoding": "^0.7.0"
+    "text-encoding": "^0.7.0",
+    "uuid-encoder": "^1.1.0"
   },
   "devDependencies": {
     "@types/moment": "^2.13.0",
