@@ -369,7 +369,7 @@ export class IccCryptoXApi {
           _.cloneDeep(modifiedObject.encryptionKeys),
           _.fromPairs([
             [
-              ownerId,
+              delegateId,
               [
                 {
                   owner: ownerId,
