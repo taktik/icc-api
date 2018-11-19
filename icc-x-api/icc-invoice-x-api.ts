@@ -59,7 +59,7 @@ export class IccInvoiceXApi extends iccInvoiceApi {
             invoice,
             patient,
             user.healthcarePartyId!,
-            secretForeignKeys[0]
+            secretForeignKeys.extractedKeys[0]
           ),
           this.crypto.initEncryptionKeys(invoice, user.healthcarePartyId!)
         ])
@@ -111,10 +111,10 @@ export class IccInvoiceXApi extends iccInvoiceApi {
         ? (user.autoDelegations.all || []).concat(user.autoDelegations.financialInformation || [])
         : []
       ).forEach(
-        () =>
+        delegateId =>
           (promise = promise.then(invoice =>
             this.crypto
-              .appendEncryptionKeys(invoice, user.healthcarePartyId!, eks.secretId)
+              .appendEncryptionKeys(invoice, user.healthcarePartyId!, delegateId, eks.secretId)
               .then(extraEks => {
                 return _.extend(invoice, {
                   encryptionKeys: extraEks.encryptionKeys
@@ -185,7 +185,10 @@ export class IccInvoiceXApi extends iccInvoiceApi {
     return this.crypto
       .extractDelegationsSFKs(patient, hcpartyId)
       .then(secretForeignKeys =>
-        this.findByHCPartyPatientSecretFKeys(hcpartyId, secretForeignKeys.join(","))
+        this.findByHCPartyPatientSecretFKeys(
+          secretForeignKeys.hcpartyId,
+          secretForeignKeys.extractedKeys.join(",")
+        )
       )
       .then(invoices => this.decrypt(hcpartyId, invoices))
       .then(function(decryptedInvoices) {

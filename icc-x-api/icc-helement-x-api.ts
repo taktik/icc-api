@@ -41,7 +41,7 @@ export class IccHelementXApi extends iccHelementApi {
           helement,
           patient,
           user.healthcarePartyId!,
-          secretForeignKeys[0]
+          secretForeignKeys.extractedKeys[0]
         )
       )
       .then(initData => {
@@ -97,58 +97,36 @@ export class IccHelementXApi extends iccHelementApi {
    *
    * @param hcpartyId
    * @param patient (Promise)
+   * @param keepObsoleteVersions
    */
 
   findBy(hcpartyId: string, patient: models.PatientDto, keepObsoleteVersions: boolean = false) {
-    if (
-      !patient.delegations ||
-      !patient.delegations[hcpartyId] ||
-      !(patient.delegations[hcpartyId].length > 0)
-    ) {
-      throw "There is not delegation for this healthcare party(" +
-        hcpartyId +
-        ") in patient(" +
-        patient.id +
-        ")"
-    }
-
     return this.crypto
-      .decryptAndImportAesHcPartyKeysInDelegations(hcpartyId, patient.delegations)
-      .then(
-        (
-          decryptedAndImportedAesHcPartyKeys: Array<{
-            delegatorId: string
-            key: CryptoKey
-          }>
-        ) => {
-          var collatedAesKeys: { [key: string]: CryptoKey } = {}
-          decryptedAndImportedAesHcPartyKeys.forEach(k => (collatedAesKeys[k.delegatorId] = k.key))
-
-          return this.crypto
-            .decryptDelegationsSFKs(patient.delegations![hcpartyId], collatedAesKeys, patient.id!)
-            .then((secretForeignKeys: Array<string>) =>
-              this.findByHCPartyPatientSecretFKeys(hcpartyId, secretForeignKeys.join(","))
-            )
-            .then((helements: Array<models.HealthElementDto>) => this.decrypt(hcpartyId, helements))
-            .then((decryptedHelements: Array<models.HealthElementDto>) => {
-              const byIds: { [key: string]: models.HealthElementDto } = {}
-
-              if (keepObsoleteVersions) {
-                return decryptedHelements
-              } else {
-                decryptedHelements.forEach(he => {
-                  if (he.healthElementId) {
-                    const phe = byIds[he.healthElementId]
-                    if (!phe || !phe.modified || (he.modified && phe.modified < he.modified)) {
-                      byIds[he.healthElementId] = he
-                    }
-                  }
-                })
-                return _.values(byIds).filter((s: any) => !s.endOfLife)
-              }
-            })
-        }
+      .extractDelegationsSFKs(patient, hcpartyId)
+      .then(secretForeignKeys =>
+        this.findByHCPartyPatientSecretFKeys(
+          secretForeignKeys.hcpartyId,
+          secretForeignKeys.extractedKeys.join(",")
+        )
       )
+      .then(helements => this.decrypt(hcpartyId, helements))
+      .then((decryptedHelements: Array<models.HealthElementDto>) => {
+        const byIds: { [key: string]: models.HealthElementDto } = {}
+
+        if (keepObsoleteVersions) {
+          return decryptedHelements
+        } else {
+          decryptedHelements.forEach(he => {
+            if (he.healthElementId) {
+              const phe = byIds[he.healthElementId]
+              if (!phe || !phe.modified || (he.modified && phe.modified < he.modified)) {
+                byIds[he.healthElementId] = he
+              }
+            }
+          })
+          return _.values(byIds).filter((s: any) => !s.endOfLife)
+        }
+      })
   }
 
   decrypt(

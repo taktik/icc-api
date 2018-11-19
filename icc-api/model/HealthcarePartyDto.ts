@@ -72,6 +72,8 @@ export class HealthcarePartyDto {
 
   userId?: string
 
+  parentId?: string
+
   supervisorId?: string
 
   notes?: string
