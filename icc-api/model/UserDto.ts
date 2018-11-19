@@ -85,8 +85,6 @@ export class UserDto {
   virtualHosts?: Array<string>
 
   virtualHostDependency?: UserDto.VirtualHostDependencyEnum
-
-  parents?: Array<string>
 }
 export namespace UserDto {
   export enum TypeEnum {

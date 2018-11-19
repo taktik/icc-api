@@ -9,6 +9,7 @@ import { iccDocumentApi } from "../icc-api/iccApi"
 import * as _ from "lodash"
 import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
+import { DocumentDto, ListOfIdsDto } from "../icc-api/model/models"
 
 // noinspection JSUnusedGlobalSymbols
 export class IccPatientXApi extends iccPatientApi {
@@ -143,143 +144,143 @@ export class IccPatientXApi extends iccPatientApi {
                     )
                 )
 
-                return Promise.all(
-                  Object.keys(docIds).map(dId => this.documentApi.getDocument(dId))
-                ).then(docs => {
-                  let markerPromise: Promise<any> = Promise.resolve(null)
-                  delegateIds.forEach(delegateId => {
-                    markerPromise = markerPromise.then(() => {
-                      console.log(`share ${p.id} to ${delegateId}`)
-                      return this.crypto
-                        .addDelegationsAndEncryptionKeys(
-                          null,
-                          p,
-                          ownerId,
-                          delegateId,
-                          psfks[0],
-                          peks[0]
-                        )
-                        .catch(e => {
-                          console.log(e)
-                          return p
-                        })
+                return this.documentApi
+                  .getDocuments(new ListOfIdsDto({ ids: Object.keys(docIds) }))
+                  .then(docs => {
+                    let markerPromise: Promise<any> = Promise.resolve(null)
+                    delegateIds.forEach(delegateId => {
+                      markerPromise = markerPromise.then(() => {
+                        console.log(`share ${p.id} to ${delegateId}`)
+                        return this.crypto
+                          .addDelegationsAndEncryptionKeys(
+                            null,
+                            p,
+                            ownerId,
+                            delegateId,
+                            psfks[0],
+                            peks[0]
+                          )
+                          .catch(e => {
+                            console.log(e)
+                            return p
+                          })
+                      })
+                      hes.forEach(
+                        x =>
+                          (markerPromise = markerPromise.then(() =>
+                            Promise.all([
+                              this.crypto.extractDelegationsSFKs(x, ownerId),
+                              this.crypto.extractEncryptionsSKs(x, ownerId)
+                            ]).then(([sfks, eks]) => {
+                              console.log(`share ${x.id} to ${delegateId}`)
+                              return this.crypto
+                                .addDelegationsAndEncryptionKeys(
+                                  p,
+                                  x,
+                                  ownerId,
+                                  delegateId,
+                                  sfks.extractedKeys[0],
+                                  eks.extractedKeys[0]
+                                )
+                                .catch(e => {
+                                  console.log(e)
+                                  return x
+                                })
+                            })
+                          ))
+                      )
+                      ctcsStubs.forEach(
+                        x =>
+                          (markerPromise = markerPromise.then(() =>
+                            Promise.all([
+                              this.crypto.extractDelegationsSFKs(x, ownerId),
+                              this.crypto.extractEncryptionsSKs(x, ownerId)
+                            ]).then(([sfks, eks]) => {
+                              console.log(`share ${p.id} to ${delegateId}`)
+                              return this.crypto
+                                .addDelegationsAndEncryptionKeys(
+                                  p,
+                                  x,
+                                  ownerId,
+                                  delegateId,
+                                  sfks.extractedKeys[0],
+                                  eks.extractedKeys[0]
+                                )
+                                .catch(e => {
+                                  console.log(e)
+                                  return x
+                                })
+                            })
+                          ))
+                      )
+                      ivs.forEach(
+                        x =>
+                          (markerPromise = markerPromise.then(() =>
+                            Promise.all([
+                              this.crypto.extractDelegationsSFKs(x, ownerId),
+                              this.crypto.extractEncryptionsSKs(x, ownerId)
+                            ]).then(([sfks, eks]) => {
+                              console.log(`share ${p.id} to ${delegateId}`)
+                              return this.crypto
+                                .addDelegationsAndEncryptionKeys(
+                                  p,
+                                  x,
+                                  ownerId,
+                                  delegateId,
+                                  sfks.extractedKeys[0],
+                                  eks.extractedKeys[0]
+                                )
+                                .catch(e => {
+                                  console.log(e)
+                                  return x
+                                })
+                            })
+                          ))
+                      )
+                      docs.forEach(
+                        (x: DocumentDto) =>
+                          (markerPromise = markerPromise.then(() =>
+                            Promise.all([
+                              this.crypto.extractDelegationsSFKs(x, ownerId),
+                              this.crypto.extractEncryptionsSKs(x, ownerId)
+                            ]).then(([sfks, eks]) => {
+                              console.log(`share ${p.id} to ${delegateId}`)
+                              return this.crypto
+                                .addDelegationsAndEncryptionKeys(
+                                  p,
+                                  x,
+                                  ownerId,
+                                  delegateId,
+                                  sfks.extractedKeys[0],
+                                  eks.extractedKeys[0]
+                                )
+                                .catch(e => {
+                                  console.log(e)
+                                  return x
+                                })
+                            })
+                          ))
+                      )
                     })
-                    hes.forEach(
-                      x =>
-                        (markerPromise = markerPromise.then(() =>
-                          Promise.all([
-                            this.crypto.extractDelegationsSFKs(x, ownerId),
-                            this.crypto.extractEncryptionsSKs(x, ownerId)
-                          ]).then(([sfks, eks]) => {
-                            console.log(`share ${x.id} to ${delegateId}`)
-                            return this.crypto
-                              .addDelegationsAndEncryptionKeys(
-                                p,
-                                x,
-                                ownerId,
-                                delegateId,
-                                sfks.extractedKeys[0],
-                                eks.extractedKeys[0]
-                              )
-                              .catch(e => {
-                                console.log(e)
-                                return x
-                              })
-                          })
-                        ))
-                    )
-                    ctcsStubs.forEach(
-                      x =>
-                        (markerPromise = markerPromise.then(() =>
-                          Promise.all([
-                            this.crypto.extractDelegationsSFKs(x, ownerId),
-                            this.crypto.extractEncryptionsSKs(x, ownerId)
-                          ]).then(([sfks, eks]) => {
-                            console.log(`share ${p.id} to ${delegateId}`)
-                            return this.crypto
-                              .addDelegationsAndEncryptionKeys(
-                                p,
-                                x,
-                                ownerId,
-                                delegateId,
-                                sfks.extractedKeys[0],
-                                eks.extractedKeys[0]
-                              )
-                              .catch(e => {
-                                console.log(e)
-                                return x
-                              })
-                          })
-                        ))
-                    )
-                    ivs.forEach(
-                      x =>
-                        (markerPromise = markerPromise.then(() =>
-                          Promise.all([
-                            this.crypto.extractDelegationsSFKs(x, ownerId),
-                            this.crypto.extractEncryptionsSKs(x, ownerId)
-                          ]).then(([sfks, eks]) => {
-                            console.log(`share ${p.id} to ${delegateId}`)
-                            return this.crypto
-                              .addDelegationsAndEncryptionKeys(
-                                p,
-                                x,
-                                ownerId,
-                                delegateId,
-                                sfks.extractedKeys[0],
-                                eks.extractedKeys[0]
-                              )
-                              .catch(e => {
-                                console.log(e)
-                                return x
-                              })
-                          })
-                        ))
-                    )
-                    docs.forEach(
-                      x =>
-                        (markerPromise = markerPromise.then(() =>
-                          Promise.all([
-                            this.crypto.extractDelegationsSFKs(x, ownerId),
-                            this.crypto.extractEncryptionsSKs(x, ownerId)
-                          ]).then(([sfks, eks]) => {
-                            console.log(`share ${p.id} to ${delegateId}`)
-                            return this.crypto
-                              .addDelegationsAndEncryptionKeys(
-                                p,
-                                x,
-                                ownerId,
-                                delegateId,
-                                sfks.extractedKeys[0],
-                                eks.extractedKeys[0]
-                              )
-                              .catch(e => {
-                                console.log(e)
-                                return x
-                              })
-                          })
-                        ))
-                    )
+                    return markerPromise
+                      .then(() => {
+                        console.log("scd")
+                        return this.contactApi.setContactsDelegations(ctcsStubs)
+                      })
+                      .then(() => {
+                        console.log("shed")
+                        return this.helementApi.setHealthElementsDelegations(hes)
+                      })
+                      .then(() => {
+                        console.log("sid")
+                        return this.invoiceApi.setInvoicesDelegations(ivs)
+                      })
+                      .then(() => {
+                        console.log("sdd")
+                        return this.documentApi.setDocumentsDelegations(docs)
+                      })
+                      .then(() => this.modifyPatient(p))
                   })
-                  return markerPromise
-                    .then(() => {
-                      console.log("scd")
-                      return this.contactApi.setContactsDelegations(ctcsStubs)
-                    })
-                    .then(() => {
-                      console.log("shed")
-                      return this.helementApi.setHealthElementsDelegations(hes)
-                    })
-                    .then(() => {
-                      console.log("sid")
-                      return this.invoiceApi.setInvoicesDelegations(ivs)
-                    })
-                    .then(() => {
-                      console.log("sdd")
-                      return this.documentApi.setDocumentsDelegations(docs)
-                    })
-                    .then(() => this.modifyPatient(p))
-                })
               })
             : this.modifyPatient(
                 Object.assign(p, {

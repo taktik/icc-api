@@ -132,14 +132,15 @@ export class IccCryptoXApi {
 
   decryptAndImportAesHcPartyKeysInDelegations(
     healthcarePartyId: string,
-    delegations: { [key: string]: Array<models.DelegationDto> }
+    delegations: { [key: string]: Array<models.DelegationDto> },
+    fallbackOnParent = true
   ): Promise<Array<{ delegatorId: string; key: CryptoKey }>> {
     const delegatorIds: { [key: string]: boolean } = {}
-    if (delegations[healthcarePartyId]) {
+    if (delegations[healthcarePartyId] && delegations[healthcarePartyId].length) {
       delegations[healthcarePartyId].forEach(function(delegation) {
         delegatorIds[delegation.owner!] = true
       })
-    } else {
+    } else if (fallbackOnParent) {
       return this.hcpartyBaseApi
         .getHealthcareParty(healthcarePartyId)
         .then(
@@ -505,7 +506,7 @@ export class IccCryptoXApi {
     delegations: { [key: string]: Array<models.DelegationDto> }
   ): Promise<{ extractedKeys: Array<string>; hcpartyId: string }> {
     return this.getHealthcareParty(hcpartyId).then(hcp =>
-      this.decryptAndImportAesHcPartyKeysInDelegations(hcpartyId, delegations)
+      this.decryptAndImportAesHcPartyKeysInDelegations(hcpartyId, delegations, false)
         .then(decryptedAndImportedAesHcPartyKeys => {
           var collatedAesKeys: { [key: string]: CryptoKey } = {}
           decryptedAndImportedAesHcPartyKeys.forEach(k => (collatedAesKeys[k.delegatorId] = k.key))
