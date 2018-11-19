@@ -623,7 +623,7 @@ export class IccCryptoXApi {
   // noinspection JSUnusedGlobalSymbols
   loadKeychainFromBrowserLocalStorage(id: String) {
     const lsItem = localStorage.getItem("org.taktik.icure.ehealth.keychain." + id)
-    return lsItem && this.utils.base64toByteArray(lsItem)
+    return lsItem !== null ? this.utils.base64toByteArray(lsItem) : null
   }
 
   generateKeyForDelegate(ownerId: string, delegateId: string) {
