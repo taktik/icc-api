@@ -818,6 +818,7 @@ export class IccMessageXApi extends iccMessageApi {
                         (newInvoice = new InvoiceDto(
                           _.pick(iv, [
                             "invoiceDate",
+                            "error",
                             "recipientType",
                             "recipientId",
                             "invoiceType",
