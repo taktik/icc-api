@@ -455,19 +455,24 @@ export class IccPatientXApi extends iccPatientApi {
         !p.delegations[user.healthcarePartyId!].length
     )
 
-    let prom: Promise<Array<models.PatientDto>> = Promise.resolve([])
+    let prom: Promise<{ [key: string]: models.PatientDto }> = Promise.resolve({})
     patsWithMissingDelegations.forEach(p => {
       prom = prom.then(acc =>
         this.initDelegations(p, user).then(p =>
           this.modifyPatientWithUser(user, p).then(mp => {
-            acc.push(mp || p)
+            acc[p.id!] = mp || p
             return acc
           })
         )
       )
     })
 
-    return prom
+    return prom.then((acc: { [key: string]: models.PatientDto }) =>
+      pats.map(p => {
+        const fixed = acc[p.id!]
+        return fixed || p
+      })
+    )
   }
 
   share(
