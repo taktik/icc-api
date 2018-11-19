@@ -32,3 +32,5 @@ export * from "./api/iccReplicationApi"
 export * from "./api/iccTarificationApi"
 export * from "./api/iccTimeTableApi"
 export * from "./api/iccUserApi"
+
+export { XHR } from "./api/XHR"
