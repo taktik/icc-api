@@ -215,7 +215,7 @@ export interface File920999Data {
 export abstract class EfactMessageReader {
   message: EfactMessage
   abstract fileType: string
-  private log: Function = (x: any) => {
+  private log: Function = (m: string, x: any) => {
     return x
   }
 

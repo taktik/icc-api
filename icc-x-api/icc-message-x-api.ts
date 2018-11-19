@@ -903,6 +903,7 @@ export class IccMessageXApi extends iccMessageApi {
                     .join("; ")
                 })
               }
+
               if (parsedRecords.et91) {
                 let et91s = parsedRecords.et91 as Array<ET91Data>
                 parentMessage.metas = _.assign(parentMessage.metas || {}, {
