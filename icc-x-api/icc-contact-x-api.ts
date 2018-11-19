@@ -152,10 +152,6 @@ export class IccContactXApi extends iccContactApi {
           secretForeignKeys.extractedKeys.join(",")
         )
       )
-      .then(contacts => this.decrypt(hcpartyId, contacts))
-      .then(function(decryptedContacts) {
-        return decryptedContacts
-      })
   }
 
   filterBy(
@@ -164,37 +160,48 @@ export class IccContactXApi extends iccContactApi {
     limit?: number,
     body?: models.FilterChain
   ): Promise<models.ContactPaginatedList | any> {
-    throw "Cannot call a method that returns contacts without providing a user for decryption"
+    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
   }
 
   findByHCPartyFormId(
     hcPartyId?: string,
     formId?: string
   ): Promise<Array<models.ContactDto> | any> {
-    throw "Cannot call a method that returns contacts without providing a user for decryption"
+    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
   }
 
   findByHCPartyFormIds(
     hcPartyId?: string,
     body?: models.ListOfIdsDto
   ): Promise<Array<models.ContactDto> | any> {
-    throw "Cannot call a method that returns contacts without providing a user for decryption"
+    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
   }
 
   getContact(contactId: string): Promise<models.ContactDto | any> {
-    throw "Cannot call a method that returns contacts without providing a user for decryption"
+    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
   }
 
   getContacts(body?: models.ListOfIdsDto): Promise<Array<models.ContactDto> | any> {
-    throw "Cannot call a method that returns contacts without providing a user for decryption"
+    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
   }
 
   modifyContact(body?: ContactDto): Promise<ContactDto | any> {
-    throw "Cannot call a method that modify contacts without providing a user for decryption"
+    throw "Cannot call a method that modify contacts without providing a user for de/encryption"
   }
 
   createContact(body?: ContactDto): Promise<ContactDto | any> {
-    throw "Cannot call a method that modify contacts without providing a user for decryption"
+    throw "Cannot call a method that modify contacts without providing a user for de/encryption"
+  }
+
+  findByHCPartyPatientSecretFKeys(
+    hcPartyId: string,
+    secretFKeys?: string,
+    planOfActionIds?: string,
+    skipClosedContacts?: boolean
+  ): Promise<Array<models.ContactDto> | any> {
+    return super
+      .findByHCPartyPatientSecretFKeys(hcPartyId, secretFKeys, planOfActionIds, skipClosedContacts)
+      .then(contacts => this.decrypt(hcPartyId, contacts))
   }
 
   filterByWithUser(
@@ -206,7 +213,7 @@ export class IccContactXApi extends iccContactApi {
   ): Promise<models.ContactPaginatedList | any> {
     return super
       .filterBy(startKey, startDocumentId, limit, body)
-      .then(ctcs => this.encrypt(user, ctcs))
+      .then(ctcs => this.decrypt(user.healthcarePartyId!, ctcs))
   }
 
   findByHCPartyFormIdWithUser(
