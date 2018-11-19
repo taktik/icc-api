@@ -15,6 +15,7 @@ import { isPatientHospitalized, getInsurability } from "./insurability-util"
 import * as _ from "lodash"
 import { iccInsuranceApi } from "../../icc-api/api/iccInsuranceApi"
 import { UuidEncoder } from "./uuid-encoder"
+import moment from "moment"
 
 export interface InvoiceWithPatient {
   invoiceDto: InvoiceDto
@@ -99,7 +100,7 @@ export function toInvoiceBatch(
           invoicesBatch.invoicingYear = toMoment(invoices[0].invoiceDto.invoiceDate!!)!!.year()
           invoicesBatch.ioFederationCode = fedCodes[0]
           invoicesBatch.numericalRef =
-            invoicesBatch.invoicingYear * 1000000 + Number(fedCodes[0]) * 1000 + batchNumber
+            moment().get("year") * 1000000 + Number(fedCodes[0]) * 1000 + batchNumber
           invoicesBatch.sender = toInvoiceSender(hcp)
           invoicesBatch.uniqueSendNumber = batchNumber
 
