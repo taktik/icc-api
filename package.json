@@ -38,9 +38,9 @@
     "printWidth": 100
   },
   "author": "Taktik sa - B12 Consulting",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/b12consulting/icc-api/issues"
+    "url": "https://github.com/taktik/icc-api/issues"
   },
-  "homepage": "https://github.com/b12consulting/icc-api#readme"
+  "homepage": "https://github.com/taktik/icc-api#readme"
 }
