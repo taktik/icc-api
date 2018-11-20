@@ -1,7 +1,7 @@
 import { iccReceiptApi } from "../icc-api/iccApi"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 import { utils } from "./crypto/utils"
-
+import moment from "moment"
 import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
 import { XHR } from "../icc-api/api/XHR"
@@ -148,13 +148,14 @@ export class IccReceiptXApi extends iccReceiptApi {
         object.commonOutput
           ? _.compact([
               object.commonOutput.inputReference &&
-                `mycarenet:efact:inputReference:${object.commonOutput.inputReference}`,
+                `mycarenet:${cat}:inputReference:${object.commonOutput.inputReference}`,
               object.commonOutput.inputReference &&
-                `mycarenet:efact:outputReference:${object.commonOutput.outputReference}`,
+                `mycarenet:${cat}:outputReference:${object.commonOutput.outputReference}`,
               object.commonOutput.inputReference &&
-                `mycarenet:efact:nipReference:${object.commonOutput.nipReference}`
+                `mycarenet:${cat}:nipReference:${object.commonOutput.nipReference}`
             ])
-          : []
+          : [],
+        ["date:" + moment().format("YYYYMMDDHHmmss")]
       )
     })
       .then(rcpt => this.createReceipt(rcpt))
