@@ -341,7 +341,8 @@ export class IccMessageXApi extends iccMessageApi {
       Promise.all(
         _.chunk(Object.keys(patsDmgs), 100).map(ssins =>
           this.patientApi
-            .filterBy(
+            .filterByWithUser(
+              user,
               undefined,
               undefined,
               1000,

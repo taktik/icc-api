@@ -82,6 +82,10 @@ export class InvoiceDto {
 
   thirdPartyReference?: string
 
+  thirdPartyPaymentJustification?: string
+
+  thirdPartyPaymentReason?: string
+
   gnotionNihii?: string
 
   gnotionSsin?: string
