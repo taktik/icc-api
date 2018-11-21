@@ -24,57 +24,25 @@
 
 import * as models from "./models"
 
-export class ParagraphAgreementDto {
+export class Payment {
   constructor(json: JSON | any) {
-    Object.assign(this as ParagraphAgreementDto, json)
+    Object.assign(this as Payment, json)
   }
-  timestamp?: number
+  paymentDate?: number
 
-  paragraph?: string
+  paymentType?: Payment.PaymentTypeEnum
 
-  careProviderReference?: string
-
-  decisionReference?: string
-
-  start?: number
-
-  end?: number
-
-  cancelationDate?: number
-
-  quantityValue?: number
-
-  quantityUnit?: string
-
-  ioRequestReference?: string
-
-  responseType?: string
-
-  refusalJustification?: { [key: string]: string }
-
-  verses?: Array<number>
-
-  coverageType?: string
-
-  unitNumber?: number
-
-  strength?: number
-
-  strengthUnit?: string
-
-  restUnitNumber?: number
-
-  restStrength?: number
-
-  restStrengthUnit?: string
-
-  agreementAppendices?: Array<models.AgreementAppendixDto>
-
-  documentId?: string
-
-  canceled?: boolean
-
-  accepted?: boolean
-
-  inTreatment?: boolean
+  paid?: number
+}
+export namespace Payment {
+  export enum PaymentTypeEnum {
+    Cash = <any>"cash",
+    Wired = <any>"wired",
+    Insurance = <any>"insurance",
+    Creditcard = <any>"creditcard",
+    Debitcard = <any>"debitcard",
+    Paypal = <any>"paypal",
+    Bitcoin = <any>"bitcoin",
+    Other = <any>"other"
+  }
 }

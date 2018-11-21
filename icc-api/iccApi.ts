@@ -1,5 +1,6 @@
 export * from "./api/iccAccesslogApi"
 export * from "./api/iccAgendaApi"
+export * from "./api/iccArticleApi"
 export * from "./api/iccAuthApi"
 export * from "./api/iccBedrugsApi"
 export * from "./api/iccBekmehrApi"
@@ -32,5 +33,3 @@ export * from "./api/iccReplicationApi"
 export * from "./api/iccTarificationApi"
 export * from "./api/iccTimeTableApi"
 export * from "./api/iccUserApi"
-
-export { XHR } from "./api/XHR"

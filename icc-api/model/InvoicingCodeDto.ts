@@ -114,6 +114,8 @@ export class InvoicingCodeDto {
 
   locationCdHcParty?: string
 
+  prescriptionDate?: number
+
   status?: number
 }
 export namespace InvoicingCodeDto {
