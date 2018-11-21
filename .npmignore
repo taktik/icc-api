@@ -1,2 +1,5 @@
 node_modules
 .idea/
+swagger-codegen-cli.jar
+./icc-api
+./icc-x-api
