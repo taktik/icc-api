@@ -106,17 +106,17 @@ export class IccPatientXApi extends iccPatientApi {
       : Promise.resolve(null)
   }
 
-  filterBy(
-    startKey?: string,
-    startDocumentId?: string,
-    limit?: number,
-    skip?: number,
-    sort?: string,
-    desc?: boolean,
-    body?: models.FilterChain
-  ): Promise<models.PatientPaginatedList | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
-  }
+  // filterBy(
+  //   startKey?: string,
+  //   startDocumentId?: string,
+  //   limit?: number,
+  //   skip?: number,
+  //   sort?: string,
+  //   desc?: boolean,
+  //   body?: models.FilterChain
+  // ): Promise<models.PatientPaginatedList | any> {
+  //   throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+  // }
 
   filterByWithUser(
     user: models.UserDto,
