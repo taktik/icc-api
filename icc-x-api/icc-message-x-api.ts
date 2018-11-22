@@ -806,7 +806,7 @@ export class IccMessageXApi extends iccMessageApi {
                   _.each(iv.invoicingCodes, ic => {
                     // If the invoicing code is already treated, do not treat it
                     if (ic.canceled || ic.accepted) {
-                      return
+                      //return
                     }
 
                     // Error from the ET50/51/52 linked to the invoicingCode
@@ -816,6 +816,19 @@ export class IccMessageXApi extends iccMessageApi {
                         .map(e => this.extractErrorMessage(e.error))
                         .compact()
                         .join("; ") || undefined
+
+                    let record50: ET50Data | false =
+                      messageType === "920900" &&
+                      _.compact(
+                        _.flatMap((parsedRecords as File920900Data).records, r =>
+                          r.items!!.map(
+                            i =>
+                              _.get(i, "et50.itemReference") &&
+                              decodeBase36Uuid(i.et50!!.itemReference.trim()) === ic.id &&
+                              i.et50
+                          )
+                        )
+                      )[0]
 
                     if (rejectAll || codeError) {
                       ic.logicalId = ic.logicalId || this.crypto.randomUuid()
@@ -829,6 +842,7 @@ export class IccMessageXApi extends iccMessageApi {
                         (newInvoice = new InvoiceDto(
                           _.pick(iv, [
                             "invoiceDate",
+                            "error",
                             "recipientType",
                             "recipientId",
                             "invoiceType",
@@ -839,6 +853,11 @@ export class IccMessageXApi extends iccMessageApi {
                             "paid",
                             "author",
                             "responsible",
+                            "invoicePeriod",
+                            "careProviderType",
+                            "thirdPartyPaymentJustification",
+                            "creditNote",
+                            "longDelayJustification",
                             //
                             "groupId",
                             "sentMediumType",
@@ -867,25 +886,19 @@ export class IccMessageXApi extends iccMessageApi {
                           resent: true
                         })
                       )
+
+                      if (record50 && _.get(record50, "errorDetail.zone114")) {
+                        let paidAmount = Number(record50.errorDetail!!.zone114)
+                        ic.paid = Number((paidAmount / 100).toFixed(2))
+                      } else {
+                        ic.paid = 0
+                      }
                     } else {
                       ic.accepted = true
                       ic.canceled = false
                       ic.pending = false
                       ic.resent = false
                       ic.error = undefined
-
-                      let record50: ET50Data | false =
-                        messageType === "920900" &&
-                        _.compact(
-                          _.flatMap((parsedRecords as File920900Data).records, r =>
-                            r.items!!.map(
-                              i =>
-                                _.get(i, "et50.itemReference") &&
-                                decodeBase36Uuid(i.et50!!.itemReference.trim()) === ic.id &&
-                                i.et50
-                            )
-                          )
-                        )[0]
 
                       if (record50 && _.get(record50, "errorDetail.zone114")) {
                         let paidAmount = Number(record50.errorDetail!!.zone114)
@@ -916,6 +929,7 @@ export class IccMessageXApi extends iccMessageApi {
                     .join("; ")
                 })
               }
+
               if (parsedRecords.et91) {
                 let et91s = parsedRecords.et91 as Array<ET91Data>
                 parentMessage.metas = _.assign(parentMessage.metas || {}, {
