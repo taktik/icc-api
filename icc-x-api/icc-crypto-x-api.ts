@@ -429,14 +429,8 @@ export class IccCryptoXApi {
       return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
     }
     const dels = document.delegations
-    if (!dels || !dels[hcpartyId] || dels[hcpartyId].length <= 0) {
-      console.log(
-        "There is no delegation for this healthcare party (" +
-          hcpartyId +
-          ") in document (" +
-          document.id +
-          ")"
-      )
+    if (!dels || !Object.keys(dels).length) {
+      console.log(`There is no delegation in document (${document.id})`)
       return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
     }
     return this.extractSfks(hcpartyId, document.id!, dels)
@@ -458,18 +452,12 @@ export class IccCryptoXApi {
     if (!document) {
       return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
     }
-    const dels = document.cryptedForeignKeys
-    if (!dels || !dels[hcpartyId] || dels[hcpartyId].length <= 0) {
-      console.log(
-        "There is no cryptedForeignKeys for this healthcare party (" +
-          hcpartyId +
-          ") in document (" +
-          document.id +
-          ")"
-      )
+    const cfks = document.cryptedForeignKeys
+    if (!cfks || !Object.keys(cfks).length) {
+      console.log(`There is no cryptedForeignKeys in document (${document.id})`)
       return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
     }
-    return this.extractSfks(hcpartyId, document.id!, dels)
+    return this.extractSfks(hcpartyId, document.id!, cfks)
   }
 
   extractEncryptionsSKs(
@@ -487,14 +475,8 @@ export class IccCryptoXApi {
       return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
     }
     const eks = document.encryptionKeys
-    if (!eks || !eks[hcpartyId] || eks[hcpartyId].length <= 0) {
-      console.log(
-        "There is no encryption key for this healthcare party (" +
-          hcpartyId +
-          ") in document (" +
-          document.id +
-          ")"
-      )
+    if (!eks || !Object.keys(eks).length) {
+      console.log(`There is no encryption key in document (${document.id})`)
       return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
     }
     return this.extractSfks(hcpartyId, document.id!, eks)
