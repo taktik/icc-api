@@ -112,6 +112,8 @@ export class InvoiceDto {
 
   internshipCdHcParty?: string
 
+  internshipCbe?: string
+
   supervisorNihii?: string
 
   supervisorSsin?: string
@@ -121,6 +123,8 @@ export class InvoiceDto {
   supervisorFirstName?: string
 
   supervisorCdHcParty?: string
+
+  supervisorCbe?: string
 
   longDelayJustification?: number
 
