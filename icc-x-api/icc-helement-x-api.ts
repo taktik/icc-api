@@ -109,7 +109,6 @@ export class IccHelementXApi extends iccHelementApi {
           secretForeignKeys.extractedKeys.join(",")
         )
       )
-      .then(helements => this.decrypt(hcpartyId, helements))
       .then((decryptedHelements: Array<models.HealthElementDto>) => {
         const byIds: { [key: string]: models.HealthElementDto } = {}
 
@@ -127,6 +126,15 @@ export class IccHelementXApi extends iccHelementApi {
           return _.values(byIds).filter((s: any) => !s.endOfLife)
         }
       })
+  }
+
+  findByHCPartyPatientSecretFKeys(
+    hcPartyId: string,
+    secretFKeys?: string
+  ): Promise<Array<models.ContactDto> | any> {
+    return super
+      .findByHCPartyPatientSecretFKeys(hcPartyId, secretFKeys)
+      .then(helements => this.decrypt(hcPartyId, helements))
   }
 
   decrypt(
