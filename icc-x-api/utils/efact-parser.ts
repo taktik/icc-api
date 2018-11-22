@@ -82,6 +82,7 @@ export interface ET20Data extends ETData {
 export interface ET50Data extends ETData {
   recordOrderNumber: string
   sex: string
+  montantInterventionAssurance: string
   units: string
   prescriberNihii: string
   itemReference: string
@@ -124,6 +125,7 @@ export interface ET90Data extends ETData {
   sendingNumber: string
   financialAccountNumber2: string
   thirdPartyNumber: string
+  signeAndTotalAmountCptA: string
   invoicingYear: string
   invoicingMonth: string
   invoiceReference: string
@@ -214,7 +216,9 @@ export interface File920999Data {
 export abstract class EfactMessageReader {
   message: EfactMessage
   abstract fileType: string
-  private log: Function = () => {}
+  private log: Function = (x: any) => {
+    return x
+  }
 
   constructor(message: EfactMessage, debug: boolean = false) {
     if (!message) {
@@ -241,34 +245,25 @@ export abstract class EfactMessageReader {
     this.log("responseType", zone200.zones!![i].value)
     this.fileType = zone200.zones!![i].value
     i++
-    this.log("errorCode", zone200.zones!![i].value)
-    i++
-    this.log("N version format message premiere version 01", zone200.zones!![i].value)
-    i++
-    this.log("errorCode", zone200.zones!![i].value)
-    i++
+    this.log("errorCode", zone200.zones!![i++].value)
+    this.log("N version format message premiere version 01", zone200.zones!![i++].value)
+    this.log("errorCode", zone200.zones!![i++].value)
     this.log("Type message 12 prod/92 test", zone200.zones!![i].value)
     const testMessage: boolean = zone200.zones!![i].value === "92"
     i++
-    this.log("Code erreur", zone200.zones!![i].value)
-    i++
-    this.log("Statut message = code erreur si erreur !! IN - OUT !!", zone200.zones!![i].value)
-    i++
-    this.log("Code erreur", zone200.zones!![i].value)
-    i++
-    this.log("Reference numerique message prestataire", zone200.zones!![i].value)
-    const healthcarePartyMessageReferenceNumber = zone200.zones!![i].value
-    i++
-    this.log("Code erreur", zone200.zones!![i].value)
-    i++
-    this.log("Reference message OA", zone200.zones!![i].value)
-    const oaMessageReference = zone200.zones!![i].value
-    i++
-    this.log("Code erreur", zone200.zones!![i].value)
-    i++
-    this.log("reserve", zone200.zones!![i].value)
-    i++
+    this.log("Code erreur", zone200.zones!![i++].value)
+    this.log("Statut message = code erreur si erreur !! IN - OUT !!", zone200.zones!![i++].value)
+    this.log("Code erreur", zone200.zones!![i++].value)
+    const healthcarePartyMessageReferenceNumber = this.log(
+      "Reference numerique message prestataire",
+      zone200.zones!![i++].value
+    )
 
+    this.log("Code erreur", zone200.zones!![i++].value)
+    const oaMessageReference = this.log("Reference message OA", zone200.zones!![i++].value)
+
+    this.log("Code erreur", zone200.zones!![i++].value)
+    this.log("reserve", zone200.zones!![i++].value)
     if (zone200.zones!!.length !== i) {
       throw Error("Zone 200: The parsing is not matching the available number of zones.")
     }
@@ -283,66 +278,43 @@ export abstract class EfactMessageReader {
 
   readZone300(zone300: Record): Zone300Data {
     let i = 0
-    this.log("Lien T10 Z22&23 Annee et mois facturation", zone300.zones!![i].value)
-    i++
-    this.log("Code erreur", zone300.zones!![i].value)
-    i++
-    this.log("Numro d'envoi", zone300.zones!![i].value)
-    const sendingNumber = zone300.zones!![i].value
-    i++
-    this.log("Code erreur", zone300.zones!![i].value)
-    i++
-    this.log("Lien T10 Z25 Date cration facture", zone300.zones!![i].value)
-    i++
-    this.log("Code erreur", zone300.zones!![i].value)
-    i++
-    this.log("Reference facture", zone300.zones!![i].value)
-    const invoiceReference = zone300.zones!![i].value
-    i++
-    this.log("Code erreur", zone300.zones!![i].value)
-    i++
-    this.log("Lien T10 Z4 Numro version instructions", zone300.zones!![i].value)
-    i++
-    this.log("Code erreur", zone300.zones!![i].value)
-    i++
-    this.log("Nom personne contact OA", zone300.zones!![i].value)
-    const oaContactLastName = zone300.zones!![i].value
-    i++
-    this.log("Code erreur", zone300.zones!![i].value)
-    i++
-    this.log("Prnom personne de contact OA", zone300.zones!![i].value)
-    const oaContactFirstName = zone300.zones!![i].value
-    i++
-    this.log("Code erreur", zone300.zones!![i].value)
-    i++
-    this.log("Numro telephone personne contact OA", zone300.zones!![i].value)
-    const oaContactPhoneNumber = zone300.zones!![i].value
-    i++
-    this.log("Code erreur", zone300.zones!![i].value)
-    i++
-    this.log("Type de facture", zone300.zones!![i].value)
-    const invoiceType = zone300.zones!![i].value
-    i++
-    this.log("Code erreur", zone300.zones!![i].value)
-    i++
-    this.log("Mode facturation", zone300.zones!![i].value)
-    const invoiceMode = zone300.zones!![i].value
-    i++
-    this.log("Code erreur", zone300.zones!![i].value)
-    i++
-    this.log("Pourcentage erreurs", zone300.zones!![i].value)
-    const errorPercentage = zone300.zones!![i].value
-    i++
-    this.log("Code erreur", zone300.zones!![i].value)
-    i++
-    this.log("Type refus facturation", zone300.zones!![i].value)
-    const invoiceRejectionType = zone300.zones!![i].value
-    i++
-    this.log("Code erreur", zone300.zones!![i].value)
-    i++
-    this.log("reserve", zone300.zones!![i].value)
-    i++
+    this.log("Lien T10 Z22&23 Annee et mois facturation", zone300.zones!![i++].value)
+    this.log("Code erreur", zone300.zones!![i++].value)
+    const sendingNumber = this.log("Numro d'envoi", zone300.zones!![i++].value)
 
+    this.log("Code erreur", zone300.zones!![i++].value)
+    this.log("Lien T10 Z25 Date cration facture", zone300.zones!![i++].value)
+    this.log("Code erreur", zone300.zones!![i++].value)
+    const invoiceReference = this.log("Reference facture", zone300.zones!![i++].value)
+
+    this.log("Code erreur", zone300.zones!![i++].value)
+    this.log("Lien T10 Z4 Numro version instructions", zone300.zones!![i++].value)
+    this.log("Code erreur", zone300.zones!![i++].value)
+    const oaContactLastName = this.log("Nom personne contact OA", zone300.zones!![i++].value)
+
+    this.log("Code erreur", zone300.zones!![i++].value)
+    const oaContactFirstName = this.log("Prnom personne de contact OA", zone300.zones!![i++].value)
+
+    this.log("Code erreur", zone300.zones!![i++].value)
+    const oaContactPhoneNumber = this.log(
+      "Numro telephone personne contact OA",
+      zone300.zones!![i++].value
+    )
+
+    this.log("Code erreur", zone300.zones!![i++].value)
+    const invoiceType = this.log("Type de facture", zone300.zones!![i++].value)
+
+    this.log("Code erreur", zone300.zones!![i++].value)
+    const invoiceMode = this.log("Mode facturation", zone300.zones!![i++].value)
+
+    this.log("Code erreur", zone300.zones!![i++].value)
+    const errorPercentage = this.log("Pourcentage erreurs", zone300.zones!![i++].value)
+
+    this.log("Code erreur", zone300.zones!![i++].value)
+    const invoiceRejectionType = this.log("Type refus facturation", zone300.zones!![i++].value)
+
+    this.log("Code erreur", zone300.zones!![i++].value)
+    this.log("reserve", zone300.zones!![i++].value)
     if (zone300.zones!!.length !== i) {
       throw Error("Zone 300: The parsing is not matching the available number of zones.")
     }
@@ -363,14 +335,13 @@ export abstract class EfactMessageReader {
 
   readZone300Stub(zone300: Record): Zone300Stub {
     let i = 0
-    this.log("Nom du message visé par cette communication", zone300.zones!![i].value)
-    const messageType = zone300.zones!![i].value
-    i++
-    this.log("Code erreur", zone300.zones!![i].value)
-    i++
-    this.log("reserve", zone300.zones!![i].value)
-    i++
+    const messageType = this.log(
+      "Nom du message visé par cette communication",
+      zone300.zones!![i++].value
+    )
 
+    this.log("Code erreur", zone300.zones!![i++].value)
+    this.log("reserve", zone300.zones!![i++].value)
     if (zone300.zones!!.length !== i) {
       throw Error("Zone 300: The parsing is not matching the available number of zones.")
     }
@@ -382,56 +353,37 @@ export abstract class EfactMessageReader {
 
   readZone300Short(zone300: Record): Zone300Short {
     let i = 0
-    this.log("Lien T10 Z22&23 Annee et mois facturation", zone300.zones!![i].value)
-    i++
-    this.log("Code erreur", zone300.zones!![i].value)
-    i++
-    this.log("Numro d'envoi", zone300.zones!![i].value)
-    const sendingNumber = zone300.zones!![i].value
-    i++
-    this.log("Code erreur", zone300.zones!![i].value)
-    i++
-    this.log("Lien T10 Z25 Date cration facture", zone300.zones!![i].value)
-    i++
-    this.log("Code erreur", zone300.zones!![i].value)
-    i++
-    this.log("Reference facture", zone300.zones!![i].value)
-    const invoiceReference = zone300.zones!![i].value
-    i++
-    this.log("Code erreur", zone300.zones!![i].value)
-    i++
-    this.log("Lien T10 Z4 Numro version instructions", zone300.zones!![i].value)
-    i++
-    this.log("Code erreur", zone300.zones!![i].value)
-    i++
-    this.log("Nom personne contact OA", zone300.zones!![i].value)
-    const oaContactLastName = zone300.zones!![i].value
-    i++
-    this.log("Code erreur", zone300.zones!![i].value)
-    i++
-    this.log("Prnom personne de contact OA", zone300.zones!![i].value)
-    const oaContactFirstName = zone300.zones!![i].value
-    i++
-    this.log("Code erreur", zone300.zones!![i].value)
-    i++
-    this.log("Numro telephone personne contact OA", zone300.zones!![i].value)
-    const oaContactPhoneNumber = zone300.zones!![i].value
-    i++
-    this.log("Code erreur", zone300.zones!![i].value)
-    i++
-    this.log("Type de facture", zone300.zones!![i].value)
-    const invoiceType = zone300.zones!![i].value
-    i++
-    this.log("Code erreur", zone300.zones!![i].value)
-    i++
-    this.log("Mode facturation", zone300.zones!![i].value)
-    const invoiceMode = zone300.zones!![i].value
-    i++
-    this.log("Code erreur", zone300.zones!![i].value)
-    i++
-    this.log("reserve", zone300.zones!![i].value)
-    i++
+    this.log("Lien T10 Z22&23 Annee et mois facturation", zone300.zones!![i++].value)
+    this.log("Code erreur", zone300.zones!![i++].value)
+    const sendingNumber = this.log("Numro d'envoi", zone300.zones!![i++].value)
 
+    this.log("Code erreur", zone300.zones!![i++].value)
+    this.log("Lien T10 Z25 Date cration facture", zone300.zones!![i++].value)
+    this.log("Code erreur", zone300.zones!![i++].value)
+    const invoiceReference = this.log("Reference facture", zone300.zones!![i++].value)
+
+    this.log("Code erreur", zone300.zones!![i++].value)
+    this.log("Lien T10 Z4 Numro version instructions", zone300.zones!![i++].value)
+    this.log("Code erreur", zone300.zones!![i++].value)
+    const oaContactLastName = this.log("Nom personne contact OA", zone300.zones!![i++].value)
+
+    this.log("Code erreur", zone300.zones!![i++].value)
+    const oaContactFirstName = this.log("Prnom personne de contact OA", zone300.zones!![i++].value)
+
+    this.log("Code erreur", zone300.zones!![i++].value)
+    const oaContactPhoneNumber = this.log(
+      "Numro telephone personne contact OA",
+      zone300.zones!![i++].value
+    )
+
+    this.log("Code erreur", zone300.zones!![i++].value)
+    const invoiceType = this.log("Type de facture", zone300.zones!![i++].value)
+
+    this.log("Code erreur", zone300.zones!![i++].value)
+    const invoiceMode = this.log("Mode facturation", zone300.zones!![i++].value)
+
+    this.log("Code erreur", zone300.zones!![i++].value)
+    this.log("reserve", zone300.zones!![i++].value)
     if (zone300.zones!!.length !== i) {
       throw Error("Zone 300: The parsing is not matching the available number of zones.")
     }
@@ -458,121 +410,79 @@ export abstract class EfactMessageReader {
       )
     }
     i++
-    this.log("NumeroOrdreEnregistrement", et10.zones!![i].value)
-    i++
-    this.log("NombreNumerosComptesFinanciers", et10.zones!![i].value)
-    i++
-    this.log("VersionFichier", et10.zones!![i].value)
-    const fileVersion = et10.zones!![i].value
-    i++
-    this.log("NumeroCompteFinancierAPartie1et2", et10.zones!![i].value)
-    const financialAccountNumber1 = et10.zones!![i].value
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("NumeroDeLenvoi", et10.zones!![i].value)
-    const sendingNumber = et10.zones!![i].value
-    i++
-    this.log("NumeroCompteFinancierB", et10.zones!![i].value)
-    const financialAccountNumber2 = et10.zones!![i].value
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("CodeSuppressionFacturePapier", et10.zones!![i].value)
-    const deletionCodePaperInvoice = et10.zones!![i].value
-    i++
-    this.log("CodeFichierDeDecompte", et10.zones!![i].value)
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("ContenuDeLaFacturation", et10.zones!![i].value)
-    i++
-    this.log("NumeroTiersPayant", et10.zones!![i].value)
-    const thirdPartyNumber = et10.zones!![i].value
-    i++
-    this.log("NumeroDaccreditationCin", et10.zones!![i].value)
-    const accreditationCinNumber = et10.zones!![i].value
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("AnneeDeFacturation", et10.zones!![i].value)
-    const invoicingYear = et10.zones!![i].value
-    i++
-    this.log("MoisDeFacturation", et10.zones!![i].value)
-    const invoicingMonth = et10.zones!![i].value
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("DateDeCreationPartie1et2", et10.zones!![i].value)
-    i++
-    this.log("BCE", et10.zones!![i].value)
-    i++
-    this.log("ReferenceDeLetablissement", et10.zones!![i].value)
-    const invoiceReference = et10.zones!![i].value
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("BicCompteFinancierAPartie1_2_3et4", et10.zones!![i].value)
-    const bic1 = et10.zones!![i].value
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("IbanCompteFinancierAPartie1_2_3_4_5et6", et10.zones!![i].value)
-    const iban1 = et10.zones!![i].value
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("BicCompteFinancierB", et10.zones!![i].value)
-    const bic2 = et10.zones!![i].value
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("IbanCompteFinancierBPartie1_2_3et4", et10.zones!![i].value)
-    const iban2 = et10.zones!![i].value
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("Reserve", et10.zones!![i].value)
-    i++
-    this.log("Chiffres de controle de l'enregistrement", et10.zones!![i].value)
-    const recordControlNumber = et10.zones!![i].value
-    i++
+    this.log("NumeroOrdreEnregistrement", et10.zones!![i++].value)
+    this.log("NombreNumerosComptesFinanciers", et10.zones!![i++].value)
+    const fileVersion = this.log("VersionFichier", et10.zones!![i++].value)
+
+    const financialAccountNumber1 = this.log(
+      "NumeroCompteFinancierAPartie1et2",
+      et10.zones!![i++].value
+    )
+
+    this.log("Reserve", et10.zones!![i++].value)
+    const sendingNumber = this.log("NumeroDeLenvoi", et10.zones!![i++].value)
+
+    const financialAccountNumber2 = this.log("NumeroCompteFinancierB", et10.zones!![i++].value)
+
+    this.log("Reserve", et10.zones!![i++].value)
+    const deletionCodePaperInvoice = this.log(
+      "CodeSuppressionFacturePapier",
+      et10.zones!![i++].value
+    )
+
+    this.log("CodeFichierDeDecompte", et10.zones!![i++].value)
+    this.log("Reserve", et10.zones!![i++].value)
+    this.log("Reserve", et10.zones!![i++].value)
+    this.log("ContenuDeLaFacturation", et10.zones!![i++].value)
+    const thirdPartyNumber = this.log("NumeroTiersPayant", et10.zones!![i++].value)
+
+    const accreditationCinNumber = this.log("NumeroDaccreditationCin", et10.zones!![i++].value)
+
+    this.log("Reserve", et10.zones!![i++].value)
+    this.log("Reserve", et10.zones!![i++].value)
+    this.log("Reserve", et10.zones!![i++].value)
+    this.log("Reserve", et10.zones!![i++].value)
+    this.log("Reserve", et10.zones!![i++].value)
+    this.log("Reserve", et10.zones!![i++].value)
+    const invoicingYear = this.log("AnneeDeFacturation", et10.zones!![i++].value)
+
+    const invoicingMonth = this.log("MoisDeFacturation", et10.zones!![i++].value)
+
+    this.log("Reserve", et10.zones!![i++].value)
+    this.log("DateDeCreationPartie1et2", et10.zones!![i++].value)
+    this.log("BCE", et10.zones!![i++].value)
+    const invoiceReference = this.log("ReferenceDeLetablissement", et10.zones!![i++].value)
+
+    this.log("Reserve", et10.zones!![i++].value)
+    this.log("Reserve", et10.zones!![i++].value)
+    const bic1 = this.log("BicCompteFinancierAPartie1_2_3et4", et10.zones!![i++].value)
+
+    this.log("Reserve", et10.zones!![i++].value)
+    const iban1 = this.log("IbanCompteFinancierAPartie1_2_3_4_5et6", et10.zones!![i++].value)
+
+    this.log("Reserve", et10.zones!![i++].value)
+    const bic2 = this.log("BicCompteFinancierB", et10.zones!![i++].value)
+
+    this.log("Reserve", et10.zones!![i++].value)
+    this.log("Reserve", et10.zones!![i++].value)
+    this.log("Reserve", et10.zones!![i++].value)
+    this.log("Reserve", et10.zones!![i++].value)
+    this.log("Reserve", et10.zones!![i++].value)
+    this.log("Reserve", et10.zones!![i++].value)
+    const iban2 = this.log("IbanCompteFinancierBPartie1_2_3et4", et10.zones!![i++].value)
+
+    this.log("Reserve", et10.zones!![i++].value)
+    this.log("Reserve", et10.zones!![i++].value)
+    this.log("Reserve", et10.zones!![i++].value)
+    this.log("Reserve", et10.zones!![i++].value)
+    this.log("Reserve", et10.zones!![i++].value)
+    this.log("Reserve", et10.zones!![i++].value)
+    this.log("Reserve", et10.zones!![i++].value)
+    this.log("Reserve", et10.zones!![i++].value)
+    const recordControlNumber = this.log(
+      "Chiffres de controle de l'enregistrement",
+      et10.zones!![i++].value
+    )
 
     if (i !== et10.zones!!.length) {
       throw new Error(`You didn\'t parse every zones of the ET${etNumber}`)
@@ -608,108 +518,67 @@ export abstract class EfactMessageReader {
       )
     }
     i++
-    this.log("NumeroDordreDeLenregistrement", et20.zones!![i].value)
+    this.log("NumeroDordreDeLenregistrement", et20.zones!![i++].value)
+    this.log("AutorisationTiersPayant", et20.zones!![i++].value)
+    this.log("HeureDadmission", et20.zones!![i++].value)
+    this.log("DateDadmission", et20.zones!![i++].value)
+    this.log("DateDeSortiePartie1", et20.zones!![i++].value)
+    this.log("DateDeSortiePartie2", et20.zones!![i++].value)
+    this.log("NumeroMutualiteDaffiliation", et20.zones!![i++].value)
+    this.log("IdentificationBeneficiairePartie1et2", et20.zones!![i++].value)
+    this.log("SexeBeneficiaire", et20.zones!![i++].value)
+    this.log("TypeFacture", et20.zones!![i++].value)
+    this.log("TypeDeFacturation", et20.zones!![i++].value)
+    this.log("Reserve", et20.zones!![i++].value)
+    this.log("Service721Bis", et20.zones!![i++].value)
+    this.log("NumeroDeLetablissementQuiFacture", et20.zones!![i++].value)
+    this.log("EtablissementDeSejour", et20.zones!![i++].value)
+    this.log("CodeLeveeDelaiDePrescription", et20.zones!![i++].value)
+    this.log("CausesDuTraitement", et20.zones!![i++].value)
+    this.log("NumeroMutualiteDeDestination", et20.zones!![i++].value)
+    this.log("NumeroDadmission", et20.zones!![i++].value)
+    this.log("DateAccordTraitementPartie1et2", et20.zones!![i++].value)
+    this.log("HeureDeSortie", et20.zones!![i++].value)
+    this.log("Reserve", et20.zones!![i++].value)
+    this.log("NumeroDeLaFactureIndividuellePartie1et2", et20.zones!![i++].value)
+    this.log("ApplicationFranchiseSociale", et20.zones!![i++].value)
+    const ct1ct2 = this.log("Ct1Ct2", et20.zones!![i++].value)
+
+    const reference = this.log("ReferenceDeLetablissement", et20.zones!![i++].value)
+
+    this.log("NumeroDeFacturePrecedentePartie1_2et3", et20.zones!![i++].value)
+    const recipientIdentifierFlag = this.log(
+      "FlagIdentificationDuBeneficiaire",
+      et20.zones!![i++].value
+    )
+
+    this.log("Reserve", et20.zones!![i++].value)
+    this.log("NumeroEnvoiPrecedentPartie1_2et3", et20.zones!![i++].value)
+    this.log("NumeroMutualiteFacturationPrecedente", et20.zones!![i++].value)
+    this.log("Reserve", et20.zones!![i++].value)
+    const previousInvoicingYearMonth = this.log(
+      "AnneeEtMoisDeFacturationPrecedente",
+      et20.zones!![i++].value
+    )
+
     i++
-    this.log("AutorisationTiersPayant", et20.zones!![i].value)
+    this.log("DonneesDeReferenceReseauOuCarteSisPartie1_2_3_4et5", et20.zones!![i++].value)
+    this.log("Reserve", et20.zones!![i++].value)
+    this.log("Date de facturation", et20.zones!![i++].value)
+    this.log("Reserve", et20.zones!![i++].value)
     i++
-    this.log("HeureDadmission", et20.zones!![i].value)
-    i++
-    this.log("DateDadmission", et20.zones!![i].value)
-    i++
-    this.log("DateDeSortiePartie1", et20.zones!![i].value)
-    i++
-    this.log("DateDeSortiePartie2", et20.zones!![i].value)
-    i++
-    this.log("NumeroMutualiteDaffiliation", et20.zones!![i].value)
-    i++
-    this.log("IdentificationBeneficiairePartie1et2", et20.zones!![i].value)
-    i++
-    this.log("SexeBeneficiaire", et20.zones!![i].value)
-    i++
-    this.log("TypeFacture", et20.zones!![i].value)
-    i++
-    this.log("TypeDeFacturation", et20.zones!![i].value)
-    i++
-    this.log("Reserve", et20.zones!![i].value)
-    i++
-    this.log("Service721Bis", et20.zones!![i].value)
-    i++
-    this.log("NumeroDeLetablissementQuiFacture", et20.zones!![i].value)
-    i++
-    this.log("EtablissementDeSejour", et20.zones!![i].value)
-    i++
-    this.log("CodeLeveeDelaiDePrescription", et20.zones!![i].value)
-    i++
-    this.log("CausesDuTraitement", et20.zones!![i].value)
-    i++
-    this.log("NumeroMutualiteDeDestination", et20.zones!![i].value)
-    i++
-    this.log("NumeroDadmission", et20.zones!![i].value)
-    i++
-    this.log("DateAccordTraitementPartie1et2", et20.zones!![i].value)
-    i++
-    this.log("HeureDeSortie", et20.zones!![i].value)
-    i++
-    this.log("Reserve", et20.zones!![i].value)
-    i++
-    this.log("NumeroDeLaFactureIndividuellePartie1et2", et20.zones!![i].value)
-    i++
-    this.log("ApplicationFranchiseSociale", et20.zones!![i].value)
-    i++
-    this.log("Ct1Ct2", et20.zones!![i].value)
-    const ct1ct2 = et20.zones!![i].value
-    i++
-    this.log("ReferenceDeLetablissement", et20.zones!![i].value)
-    const reference = et20.zones!![i].value
-    i++
-    this.log("NumeroDeFacturePrecedentePartie1_2et3", et20.zones!![i].value)
-    i++
-    this.log("FlagIdentificationDuBeneficiaire", et20.zones!![i].value)
-    const recipientIdentifierFlag = et20.zones!![i].value
-    i++
-    this.log("Reserve", et20.zones!![i].value)
-    i++
-    this.log("NumeroEnvoiPrecedentPartie1_2et3", et20.zones!![i].value)
-    i++
-    this.log("NumeroMutualiteFacturationPrecedente", et20.zones!![i].value)
-    i++
-    this.log("Reserve", et20.zones!![i].value)
-    i++
-    this.log("AnneeEtMoisDeFacturationPrecedente", et20.zones!![i].value)
-    const previousInvoicingYearMonth = et20.zones!![i].value
-    i++
-    i++
-    this.log("DonneesDeReferenceReseauOuCarteSisPartie1_2_3_4et5", et20.zones!![i].value)
-    i++
-    this.log("Reserve", et20.zones!![i].value)
-    i++
-    this.log("Date de facturation", et20.zones!![i].value)
-    i++
-    this.log("Reserve", et20.zones!![i].value)
-    i++
-    i++
-    this.log("ReferenceMutualiteNumeroCompteFinancierBPartie1_2et3", et20.zones!![i].value)
-    i++
-    this.log("Reserve", et20.zones!![i].value)
-    i++
-    this.log("DateDebutAssurabilite", et20.zones!![i].value)
-    const insurabilityStartDate = et20.zones!![i].value
-    i++
-    this.log("DateFinAssurabilite", et20.zones!![i].value)
-    const insurabilityEndDate = et20.zones!![i].value
-    i++
-    this.log("DateCommunicationInformation", et20.zones!![i].value)
-    i++
-    this.log("MafAnneeEnCours", et20.zones!![i].value)
-    i++
-    this.log("MafAnneeEnCours2", et20.zones!![i].value)
-    i++
-    this.log("Reserve", et20.zones!![i].value)
-    i++
-    this.log("Reserve", et20.zones!![i].value)
-    i++
-    this.log("Chiffres de controle de l'enregistrement", et20.zones!![i].value)
-    i++
+    this.log("ReferenceMutualiteNumeroCompteFinancierBPartie1_2et3", et20.zones!![i++].value)
+    this.log("Reserve", et20.zones!![i++].value)
+    const insurabilityStartDate = this.log("DateDebutAssurabilite", et20.zones!![i++].value)
+
+    const insurabilityEndDate = this.log("DateFinAssurabilite", et20.zones!![i++].value)
+
+    this.log("DateCommunicationInformation", et20.zones!![i++].value)
+    this.log("MafAnneeEnCours", et20.zones!![i++].value)
+    this.log("MafAnneeEnCours2", et20.zones!![i++].value)
+    this.log("Reserve", et20.zones!![i++].value)
+    this.log("Reserve", et20.zones!![i++].value)
+    this.log("Chiffres de controle de l'enregistrement", et20.zones!![i++].value)
     if (i !== et20.zones!!.length) {
       throw new Error(`You didn\'t parse every zones of the ET${etNumber}`)
     }
@@ -734,112 +603,66 @@ export abstract class EfactMessageReader {
       )
     }
     i++
-    this.log("NumeroDordreDeLenregistrement", et50.zones!![i].value)
-    const recordOrderNumber = et50.zones!![i].value
-    i++
-    this.log("NormePrestationPourcentage", et50.zones!![i].value)
-    i++
-    this.log("CodeNomenclatureOuPseudoCodeNomenclature", et50.zones!![i].value)
-    i++
-    this.log("DatePremierePrestationEffectuee", et50.zones!![i].value)
-    i++
-    this.log("DateDernierePrestationEffectueePartie1et2", et50.zones!![i].value)
-    i++
-    this.log("NumeroMutualiteDaffiliation", et50.zones!![i].value)
-    i++
-    this.log("IdentificationBeneficiairePartie1et2", et50.zones!![i].value)
-    i++
-    this.log("SexeBeneficiaire", et50.zones!![i].value)
-    const sex = et50.zones!![i].value
-    i++
-    this.log("Accouchement", et50.zones!![i].value)
-    i++
-    this.log("ReferenceNumeroDeCompteFinancier", et50.zones!![i].value)
-    i++
-    this.log("NuitWeekEndJourFerie", et50.zones!![i].value)
-    i++
-    this.log("CodeService", et50.zones!![i].value)
-    i++
-    this.log("LieuDePrestation", et50.zones!![i].value)
-    i++
-    this.log("IdentificationDuDispensateur", et50.zones!![i].value)
-    i++
-    this.log("NormeDispensateur", et50.zones!![i].value)
-    i++
-    this.log("PrestationRelativePartie1et2", et50.zones!![i].value)
-    i++
-    this.log("SigneMontantInterventionDeLassurance", et50.zones!![i].value)
-    i++
-    this.log("DatePrescriptionPartie1et2", et50.zones!![i].value)
-    i++
-    this.log("SigneNombreDunites", et50.zones!![i].value)
-    const units = et50.zones!![i].value
-    i++
-    this.log("NombreDeCoupes", et50.zones!![i].value)
-    i++
-    this.log("IdentificationPrescripteurPartie1et2", et50.zones!![i].value)
-    const prescriberNihii = et50.zones!![i].value
-    i++
-    this.log("NormePrescripteur", et50.zones!![i].value)
-    i++
-    this.log("Z27SigneInterventionPersonnellePatient", et50.zones!![i].value)
-    i++
-    this.log("ReferenceDeLetablissement", et50.zones!![i].value)
-    const itemReference = et50.zones!![i].value
-    i++
-    this.log("DentTraitee", et50.zones!![i].value)
-    const tooth = et50.zones!![i].value
-    i++
-    this.log("SigneMontantSupplementPartie1et2", et50.zones!![i].value)
-    i++
-    this.log("ExceptionTiersPayant", et50.zones!![i].value)
-    const thirdPartyException = et50.zones!![i].value
-    i++
-    this.log("CodeFacturationInterventionPersonnelleOuSupplement", et50.zones!![i].value)
-    i++
-    this.log("MembreTraite", et50.zones!![i].value)
-    const treatedMember = et50.zones!![i].value
-    i++
-    this.log("PrestataireConventionne", et50.zones!![i].value)
-    i++
-    this.log("HeureDePrestationPartie1et2", et50.zones!![i].value)
-    i++
-    this.log("IdentificationAdministrateurDuSang", et50.zones!![i].value)
-    i++
-    this.log("NumeroDeLattestationDadministrationPartie1et2", et50.zones!![i].value)
-    i++
-    this.log("NumeroBonDeDelivranceOuSacPartie1et2", et50.zones!![i].value)
-    i++
-    this.log("CodeImplantPartie1", et50.zones!![i].value)
-    i++
-    this.log("LibelleDuProduitPartie1et2", et50.zones!![i].value)
-    i++
-    this.log("NormePlafond", et50.zones!![i].value)
-    i++
-    this.log("DateAccordPrestation", et50.zones!![i].value)
-    i++
-    this.log("Transplantation", et50.zones!![i].value)
-    i++
-    this.log("identification de l'aide soignant", et50.zones!![i].value)
-    i++
-    this.log("Reserve", et50.zones!![i].value)
-    i++
-    this.log("SiteHospitalier", et50.zones!![i].value)
-    i++
-    this.log("IdentificationAssociationBassinDeSoins", et50.zones!![i].value)
-    i++
-    this.log("numero de course (partie 1 et 2)", et50.zones!![i].value)
-    i++
-    this.log("Reserve", et50.zones!![i].value)
-    i++
-    this.log("CodeNotificationImplantPartie1et2", et50.zones!![i].value)
-    i++
-    this.log("code d'enregistrement Qermid (partie 1, 2 et 3)", et50.zones!![i].value)
-    i++
-    this.log("Reserve", et50.zones!![i].value)
-    i++
-    this.log("Chiffres de controle de l'enregistrement", et50.zones!![i].value)
-    i++
+    const recordOrderNumber = this.log("NumeroDordreDeLenregistrement", et50.zones!![i++].value)
+
+    this.log("NormePrestationPourcentage", et50.zones!![i++].value)
+    this.log("CodeNomenclatureOuPseudoCodeNomenclature", et50.zones!![i++].value)
+    this.log("DatePremierePrestationEffectuee", et50.zones!![i++].value)
+    this.log("DateDernierePrestationEffectueePartie1et2", et50.zones!![i++].value)
+    this.log("NumeroMutualiteDaffiliation", et50.zones!![i++].value)
+    this.log("IdentificationBeneficiairePartie1et2", et50.zones!![i++].value)
+    const sex = this.log("SexeBeneficiaire", et50.zones!![i++].value)
+
+    this.log("Accouchement", et50.zones!![i++].value)
+    this.log("ReferenceNumeroDeCompteFinancier", et50.zones!![i++].value)
+    this.log("NuitWeekEndJourFerie", et50.zones!![i++].value)
+    this.log("CodeService", et50.zones!![i++].value)
+    this.log("LieuDePrestation", et50.zones!![i++].value)
+    this.log("IdentificationDuDispensateur", et50.zones!![i++].value)
+    this.log("NormeDispensateur", et50.zones!![i++].value)
+    this.log("PrestationRelativePartie1et2", et50.zones!![i++].value)
+    const montantInterventionAssurance = this.log("SigneMontantInterventionDeLassurance", et50.zones!![i++].value)
+    this.log("DatePrescriptionPartie1et2", et50.zones!![i++].value)
+    const units = this.log("SigneNombreDunites", et50.zones!![i++].value)
+
+    this.log("NombreDeCoupes", et50.zones!![i++].value)
+    const prescriberNihii = this.log(
+      "IdentificationPrescripteurPartie1et2",
+      et50.zones!![i++].value
+    )
+
+    this.log("NormePrescripteur", et50.zones!![i++].value)
+    this.log("Z27SigneInterventionPersonnellePatient", et50.zones!![i++].value)
+    const itemReference = this.log("ReferenceDeLetablissement", et50.zones!![i++].value)
+
+    const tooth = this.log("DentTraitee", et50.zones!![i++].value)
+
+    this.log("SigneMontantSupplementPartie1et2", et50.zones!![i++].value)
+    const thirdPartyException = this.log("ExceptionTiersPayant", et50.zones!![i++].value)
+
+    this.log("CodeFacturationInterventionPersonnelleOuSupplement", et50.zones!![i++].value)
+    const treatedMember = this.log("MembreTraite", et50.zones!![i++].value)
+
+    this.log("PrestataireConventionne", et50.zones!![i++].value)
+    this.log("HeureDePrestationPartie1et2", et50.zones!![i++].value)
+    this.log("IdentificationAdministrateurDuSang", et50.zones!![i++].value)
+    this.log("NumeroDeLattestationDadministrationPartie1et2", et50.zones!![i++].value)
+    this.log("NumeroBonDeDelivranceOuSacPartie1et2", et50.zones!![i++].value)
+    this.log("CodeImplantPartie1", et50.zones!![i++].value)
+    this.log("LibelleDuProduitPartie1et2", et50.zones!![i++].value)
+    this.log("NormePlafond", et50.zones!![i++].value)
+    this.log("DateAccordPrestation", et50.zones!![i++].value)
+    this.log("Transplantation", et50.zones!![i++].value)
+    this.log("identification de l'aide soignant", et50.zones!![i++].value)
+    this.log("Reserve", et50.zones!![i++].value)
+    this.log("SiteHospitalier", et50.zones!![i++].value)
+    this.log("IdentificationAssociationBassinDeSoins", et50.zones!![i++].value)
+    this.log("numero de course (partie 1 et 2)", et50.zones!![i++].value)
+    this.log("Reserve", et50.zones!![i++].value)
+    this.log("CodeNotificationImplantPartie1et2", et50.zones!![i++].value)
+    this.log("code d'enregistrement Qermid (partie 1, 2 et 3)", et50.zones!![i++].value)
+    this.log("Reserve", et50.zones!![i++].value)
+    this.log("Chiffres de controle de l'enregistrement", et50.zones!![i++].value)
     if (i !== et50.zones!!.length) {
       throw new Error(`You didn\'t parse every zones of the ET${etNumber}`)
     }
@@ -848,6 +671,7 @@ export abstract class EfactMessageReader {
       errorDetail: et50.errorDetail,
       recordOrderNumber,
       sex,
+      montantInterventionAssurance,
       units,
       prescriberNihii,
       itemReference,
@@ -867,134 +691,96 @@ export abstract class EfactMessageReader {
       )
     }
     i++
-    this.log("numero d'ordre de l'enregistrement", et51.zones!![i].value)
-    const recordOrderNumber = et51.zones!![i].value
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("code nomenclature ou pseudo-code nomenclature", et51.zones!![i].value)
-    const prestationCode = et51.zones!![i].value
-    i++
-    this.log("date prestation", et51.zones!![i].value)
-    const prestationDate = et51.zones!![i].value
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("identification beneficiaire", et51.zones!![i].value)
-    const recipientIdentifier = et51.zones!![i].value
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("identification du dispensateur", et51.zones!![i].value)
-    const careProviderIdentifier = et51.zones!![i].value
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("signe + montant intervention de l'assurance", et51.zones!![i].value)
-    const reimbursementAmount = et51.zones!![i].value
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("ct1 + ct2", et51.zones!![i].value)
-    const ct1ct2 = et51.zones!![i].value
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("42,43a,43b,44,donnees de reference reseau", et51.zones!![i].value)
-    const networkReferenceData = et51.zones!![i].value
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("date communication information", et51.zones!![i].value)
-    const infoCommunicationDate = et51.zones!![i].value
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("reserve", et51.zones!![i].value)
-    i++
-    this.log("Chiffres de controle de l'enregistrement", et51.zones!![i].value)
-    const recordControlNumber = et51.zones!![i].value
-    i++
+    const recordOrderNumber = this.log(
+      "numero d'ordre de l'enregistrement",
+      et51.zones!![i++].value
+    )
+
+    this.log("reserve", et51.zones!![i++].value)
+    const prestationCode = this.log(
+      "code nomenclature ou pseudo-code nomenclature",
+      et51.zones!![i++].value
+    )
+
+    const prestationDate = this.log("date prestation", et51.zones!![i++].value)
+
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    const recipientIdentifier = this.log("identification beneficiaire", et51.zones!![i++].value)
+
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    const careProviderIdentifier = this.log(
+      "identification du dispensateur",
+      et51.zones!![i++].value
+    )
+
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    const reimbursementAmount = this.log(
+      "signe + montant intervention de l'assurance",
+      et51.zones!![i++].value
+    )
+
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    const ct1ct2 = this.log("ct1 + ct2", et51.zones!![i++].value)
+
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    const networkReferenceData = this.log(
+      "42,43a,43b,44,donnees de reference reseau",
+      et51.zones!![i++].value
+    )
+
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    const infoCommunicationDate = this.log(
+      "date communication information",
+      et51.zones!![i++].value
+    )
+
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    this.log("reserve", et51.zones!![i++].value)
+    const recordControlNumber = this.log(
+      "Chiffres de controle de l'enregistrement",
+      et51.zones!![i++].value
+    )
+
     if (i !== et51.zones!!.length) {
       throw new Error(`You didn\'t parse every zones of the ET${etNumber}`)
     }
@@ -1021,50 +807,50 @@ export abstract class EfactMessageReader {
         `Trying to parse an ET${etNumber} that is not an ET${etNumber} --- ${JSON.stringify(et52)}`
       )
     }
-    this.log("Enregistrement de type 52", et52.zones!![i].value)
-    i++
-    this.log("Numero d'ordre de l'enregistrement", et52.zones!![i].value)
-    const recordOrderNumber = et52.zones!![i].value
-    i++
-    this.log("reserve", et52.zones!![i].value)
-    i++
-    this.log("Code nomenclature", et52.zones!![i].value)
-    const nomenCode = et52.zones!![i].value
-    i++
-    this.log("Date de prestation", et52.zones!![i].value)
-    const prestationDate = et52.zones!![i].value
-    i++
-    this.log("Date de lecture document identite electronique (1 et 2)", et52.zones!![i].value)
-    const eidDate = et52.zones!![i].value
-    i++
-    this.log("reserve", et52.zones!![i].value)
-    i++
+    this.log("Enregistrement de type 52", et52.zones!![i++].value)
+    const recordOrderNumber = this.log(
+      "Numero d'ordre de l'enregistrement",
+      et52.zones!![i++].value
+    )
+
+    this.log("reserve", et52.zones!![i++].value)
+    const nomenCode = this.log("Code nomenclature", et52.zones!![i++].value)
+
+    const prestationDate = this.log("Date de prestation", et52.zones!![i++].value)
+
+    const eidDate = this.log(
+      "Date de lecture document identite electronique (1 et 2)",
+      et52.zones!![i++].value
+    )
+
+    this.log("reserve", et52.zones!![i++].value)
     this.log(
       "Numero NISS du patient sauf en cas de convention internationale ou nouveaux-nes (1 et 2)",
       et52.zones!![i].value
     )
     const patientINSS = et52.zones!![i].value
     i++
-    this.log("reserve", et52.zones!![i].value)
-    i++
-    this.log("Type de support document identite electronique", et52.zones!![i].value)
-    const eidSupportType = et52.zones!![i].value
-    i++
-    this.log("Type de lecture document identite electronique", et52.zones!![i].value)
-    const eidReadingType = et52.zones!![i].value
-    i++
-    this.log("Heure de lecture document identite electronique (1 et 2)", et52.zones!![i].value)
-    const eidReadingHour = et52.zones!![i].value
-    i++
-    this.log("reserve", et52.zones!![i].value)
-    i++
-    this.log("Numero INAMI", et52.zones!![i].value)
-    const nihii = et52.zones!![i].value
-    i++
-    this.log("reserve", et52.zones!![i].value)
-    i++
-    this.log("Chiffres de controle de l'enregistrement", et52.zones!![i].value)
-    i++
+    this.log("reserve", et52.zones!![i++].value)
+    const eidSupportType = this.log(
+      "Type de support document identite electronique",
+      et52.zones!![i++].value
+    )
+
+    const eidReadingType = this.log(
+      "Type de lecture document identite electronique",
+      et52.zones!![i++].value
+    )
+
+    const eidReadingHour = this.log(
+      "Heure de lecture document identite electronique (1 et 2)",
+      et52.zones!![i++].value
+    )
+
+    this.log("reserve", et52.zones!![i++].value)
+    const nihii = this.log("Numero INAMI", et52.zones!![i++].value)
+
+    this.log("reserve", et52.zones!![i++].value)
+    this.log("Chiffres de controle de l'enregistrement", et52.zones!![i++].value)
     if (i !== et52.zones!!.length) {
       throw new Error(`You didn\'t parse every zones of the ET${etNumber}`)
     }
@@ -1092,123 +878,68 @@ export abstract class EfactMessageReader {
       )
     }
     i++
-    this.log("NumeroDordreDeLenregistrement", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("HeureDadmission", et80.zones!![i].value)
-    i++
-    this.log("DateDadmission", et80.zones!![i].value)
-    i++
-    this.log("DateDeSortiePartie1et2", et80.zones!![i].value)
-    i++
-    this.log("NumeroMutualiteDaffiliation", et80.zones!![i].value)
-    i++
-    this.log("IdentificationBeneficiairePartie1", et80.zones!![i].value)
-    const recipientIdentifier = et80.zones!![i].value
-    i++
-    this.log("SexeBeneficiaire", et80.zones!![i].value)
-    i++
-    this.log("TypeFacture", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Service721Bis", et80.zones!![i].value)
-    i++
-    this.log("NumeroDeLetablissementQuiFacture", et80.zones!![i].value)
-    i++
-    this.log("SigneMontantDeCompteFinancierB", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("CausesDuTraitement", et80.zones!![i].value)
-    i++
-    this.log("NumeroMutualiteDeDestination", et80.zones!![i].value)
-    i++
-    this.log("SigneMontantDeCompteFinancierA", et80.zones!![i].value)
-    i++
-    this.log("DateDeLaFacturePartie1et2", et80.zones!![i].value)
-    i++
-    this.log("HeureDeSortie", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("NumeroDeLaFactureIndividuellePartie1et2", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("SigneInterventionPersonnellePatient", et80.zones!![i].value)
-    i++
-    this.log("ReferenceDeLetablissement", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Z27SigneMontantSupplementPartie1et2", et80.zones!![i].value)
-    i++
-    this.log("FlagIdentificationDuBeneficiaire", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("SigneAcompteNumeroCompteFinancierA", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("Reserve", et80.zones!![i].value)
-    i++
-    this.log("chiffres de controle de la facture", et80.zones!![i].value)
-    i++
-    this.log("Chiffres de controle de l'enregistrement", et80.zones!![i].value)
-    i++
+    this.log("NumeroDordreDeLenregistrement", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("HeureDadmission", et80.zones!![i++].value)
+    this.log("DateDadmission", et80.zones!![i++].value)
+    this.log("DateDeSortiePartie1et2", et80.zones!![i++].value)
+    this.log("NumeroMutualiteDaffiliation", et80.zones!![i++].value)
+    const recipientIdentifier = this.log(
+      "IdentificationBeneficiairePartie1",
+      et80.zones!![i++].value
+    )
+
+    this.log("SexeBeneficiaire", et80.zones!![i++].value)
+    this.log("TypeFacture", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Service721Bis", et80.zones!![i++].value)
+    this.log("NumeroDeLetablissementQuiFacture", et80.zones!![i++].value)
+    this.log("SigneMontantDeCompteFinancierB", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("CausesDuTraitement", et80.zones!![i++].value)
+    this.log("NumeroMutualiteDeDestination", et80.zones!![i++].value)
+    this.log("SigneMontantDeCompteFinancierA", et80.zones!![i++].value)
+    this.log("DateDeLaFacturePartie1et2", et80.zones!![i++].value)
+    this.log("HeureDeSortie", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("NumeroDeLaFactureIndividuellePartie1et2", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("SigneInterventionPersonnellePatient", et80.zones!![i++].value)
+    this.log("ReferenceDeLetablissement", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Z27SigneMontantSupplementPartie1et2", et80.zones!![i++].value)
+    this.log("FlagIdentificationDuBeneficiaire", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("SigneAcompteNumeroCompteFinancierA", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("Reserve", et80.zones!![i++].value)
+    this.log("chiffres de controle de la facture", et80.zones!![i++].value)
+    this.log("Chiffres de controle de l'enregistrement", et80.zones!![i++].value)
     if (i !== et80.zones!!.length) {
       throw new Error(`You didn\'t parse every zones of the ET${etNumber}`)
     }
@@ -1226,124 +957,84 @@ export abstract class EfactMessageReader {
         `Trying to parse an ET${etNumber} that is not an ET${etNumber} --- ${JSON.stringify(et90)}`
       )
     }
-    this.log("EnregistrementDeType90", et90.zones!![i].value)
-    i++
-    this.log("NumeroDordreDeLenregistrement", et90.zones!![i].value)
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("NumeroCompteFinancierAPartie1et2", et90.zones!![i].value)
-    const financialAccountNumber1 = et90.zones!![i].value
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("NumeroDenvoi", et90.zones!![i].value)
-    const sendingNumber = et90.zones!![i].value
-    i++
-    this.log("NumeroCompteFinancierB", et90.zones!![i].value)
-    const financialAccountNumber2 = et90.zones!![i].value
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("NumeroTiersPayant", et90.zones!![i].value)
-    const thirdPartyNumber = et90.zones!![i].value
-    i++
-    this.log("SigneMontantTotalNumeroCompteFinancierB", et90.zones!![i].value)
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("SigneMontantTotalNumeroCompteFinancierA", et90.zones!![i].value)
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("AnneeDeFacturation", et90.zones!![i].value)
-    const invoicingYear = et90.zones!![i].value
-    i++
-    this.log("MoisDeFacturation", et90.zones!![i].value)
-    const invoicingMonth = et90.zones!![i].value
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("BCE", et90.zones!![i].value)
-    const cbe = et90.zones!![i].value
-    i++
-    this.log("ReferenceDeLetablissement", et90.zones!![i].value)
-    const invoiceReference = et90.zones!![i].value
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("BicCompteFinancierAPartie1_2_3et4", et90.zones!![i].value)
-    const bic1 = et90.zones!![i].value
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("IbanCompteFinancierAPartie1_2_3_4_5et6", et90.zones!![i].value)
-    const iban1 = et90.zones!![i].value
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("BicCompteFinancierB", et90.zones!![i].value)
-    const bic2 = et90.zones!![i].value
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("IbanCompteFinancierBPartie1_2_3et4", et90.zones!![i].value)
-    const iban2 = et90.zones!![i].value
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("Reserve", et90.zones!![i].value)
-    i++
-    this.log("chiffres de controle de la facture", et90.zones!![i].value)
-    const invoiceControlNumber = et90.zones!![i].value
-    i++
-    this.log("Chiffres de controle de l'enregistrement", et90.zones!![i].value)
-    const recordControlNumber = et90.zones!![i].value
-    i++
+    this.log("EnregistrementDeType90", et90.zones!![i++].value)
+    this.log("NumeroDordreDeLenregistrement", et90.zones!![i++].value)
+    this.log("Reserve", et90.zones!![i++].value)
+    this.log("Reserve", et90.zones!![i++].value)
+    const financialAccountNumber1 = this.log(
+      "NumeroCompteFinancierAPartie1et2",
+      et90.zones!![i++].value
+    )
+
+    this.log("Reserve", et90.zones!![i++].value)
+    const sendingNumber = this.log("NumeroDenvoi", et90.zones!![i++].value)
+
+    const financialAccountNumber2 = this.log("NumeroCompteFinancierB", et90.zones!![i++].value)
+
+    this.log("Reserve", et90.zones!![i++].value)
+    this.log("Reserve", et90.zones!![i++].value)
+    this.log("Reserve", et90.zones!![i++].value)
+    this.log("Reserve", et90.zones!![i++].value)
+    this.log("Reserve", et90.zones!![i++].value)
+    this.log("Reserve", et90.zones!![i++].value)
+    const thirdPartyNumber = this.log("NumeroTiersPayant", et90.zones!![i++].value)
+
+    this.log("SigneMontantTotalNumeroCompteFinancierB", et90.zones!![i++].value)
+    this.log("Reserve", et90.zones!![i++].value)
+    this.log("Reserve", et90.zones!![i++].value)
+    this.log("Reserve", et90.zones!![i++].value)
+    const signeAndTotalAmountCptA = this.log(
+      "SigneMontantTotalNumeroCompteFinancierA",
+      et90.zones!![i++].value
+    )
+    this.log("Reserve", et90.zones!![i++].value)
+    this.log("Reserve", et90.zones!![i++].value)
+    const invoicingYear = this.log("AnneeDeFacturation", et90.zones!![i++].value)
+
+    const invoicingMonth = this.log("MoisDeFacturation", et90.zones!![i++].value)
+
+    this.log("Reserve", et90.zones!![i++].value)
+    this.log("Reserve", et90.zones!![i++].value)
+    this.log("Reserve", et90.zones!![i++].value)
+    const cbe = this.log("BCE", et90.zones!![i++].value)
+
+    const invoiceReference = this.log("ReferenceDeLetablissement", et90.zones!![i++].value)
+
+    this.log("Reserve", et90.zones!![i++].value)
+    this.log("Reserve", et90.zones!![i++].value)
+    const bic1 = this.log("BicCompteFinancierAPartie1_2_3et4", et90.zones!![i++].value)
+
+    this.log("Reserve", et90.zones!![i++].value)
+    const iban1 = this.log("IbanCompteFinancierAPartie1_2_3_4_5et6", et90.zones!![i++].value)
+
+    this.log("Reserve", et90.zones!![i++].value)
+    const bic2 = this.log("BicCompteFinancierB", et90.zones!![i++].value)
+
+    this.log("Reserve", et90.zones!![i++].value)
+    this.log("Reserve", et90.zones!![i++].value)
+    this.log("Reserve", et90.zones!![i++].value)
+    this.log("Reserve", et90.zones!![i++].value)
+    this.log("Reserve", et90.zones!![i++].value)
+    this.log("Reserve", et90.zones!![i++].value)
+    const iban2 = this.log("IbanCompteFinancierBPartie1_2_3et4", et90.zones!![i++].value)
+
+    this.log("Reserve", et90.zones!![i++].value)
+    this.log("Reserve", et90.zones!![i++].value)
+    this.log("Reserve", et90.zones!![i++].value)
+    this.log("Reserve", et90.zones!![i++].value)
+    this.log("Reserve", et90.zones!![i++].value)
+    this.log("Reserve", et90.zones!![i++].value)
+    this.log("Reserve", et90.zones!![i++].value)
+    const invoiceControlNumber = this.log(
+      "chiffres de controle de la facture",
+      et90.zones!![i++].value
+    )
+
+    const recordControlNumber = this.log(
+      "Chiffres de controle de l'enregistrement",
+      et90.zones!![i++].value
+    )
+
     if (i !== et90.zones!!.length) {
       throw new Error(`You didn\'t parse every zones of the ET${etNumber}`)
     }
@@ -1354,6 +1045,7 @@ export abstract class EfactMessageReader {
       sendingNumber,
       financialAccountNumber2,
       thirdPartyNumber,
+      signeAndTotalAmountCptA,
       invoicingYear,
       invoicingMonth,
       invoiceReference,
@@ -1375,102 +1067,75 @@ export abstract class EfactMessageReader {
         `Trying to parse an ET${etNumber} that is not an ET${etNumber} --- ${JSON.stringify(et91)}`
       )
     }
-    this.log("Type", et91.zones!![i].value)
-    i++
-    this.log("Code erreur", et91.zones!![i].value)
-    i++
-    this.log("Lien T10 N mutualit", et91.zones!![i].value)
-    i++
-    this.log("Code erreur", et91.zones!![i].value)
-    i++
-    this.log("n facture recapitulative", et91.zones!![i].value)
-    i++
-    this.log("Code erreur", et91.zones!![i].value)
-    i++
-    this.log("Signe montant demand compte A", et91.zones!![i].value)
-    i++
-    this.log("Montant demand compte A", et91.zones!![i].value)
-    const askedAmountForAccount1 = et91.zones!![i].value
-    i++
-    this.log("Code erreur", et91.zones!![i].value)
-    i++
-    this.log("Signe montant demand compte B", et91.zones!![i].value)
-    i++
-    this.log("Montant demand compte B", et91.zones!![i].value)
-    const askedAmountForAccount2 = et91.zones!![i].value
-    i++
-    this.log("Code erreur", et91.zones!![i].value)
-    i++
-    this.log("Signe Montant demand A + B", et91.zones!![i].value)
-    i++
-    this.log("Montant demand compte A + B = lien Cpt A", et91.zones!![i].value)
-    const totalAskedAmount = et91.zones!![i].value
-    i++
-    this.log("Code erreur", et91.zones!![i].value)
-    i++
-    this.log("Nombre d'enregistrement", et91.zones!![i].value)
-    const numberOfRecordBundle = et91.zones!![i].value
-    i++
-    this.log("Code erreur", et91.zones!![i].value)
-    i++
-    this.log("Lien T80 Z98 N contrle par mutuelle", et91.zones!![i].value)
-    i++
-    this.log("Code erreur", et91.zones!![i].value)
-    i++
-    this.log("Signe montant accepté compte A", et91.zones!![i].value)
-    i++
-    this.log("montant accepté compte A", et91.zones!![i].value)
-    const acceptedAmountAccount1 = et91.zones!![i].value
-    i++
-    this.log("Code erreur", et91.zones!![i].value)
-    i++
-    this.log("Signe montant refusé compte A", et91.zones!![i].value)
-    i++
-    this.log("montant refusé compte A", et91.zones!![i].value)
-    const rejectedAmountAccount1 = et91.zones!![i].value
-    i++
-    this.log("Code erreur", et91.zones!![i].value)
-    i++
-    this.log("Signe montant accepté compte B", et91.zones!![i].value)
-    i++
-    this.log("Montant accepté compte B", et91.zones!![i].value)
-    const acceptedAmountAccount2 = et91.zones!![i].value
-    i++
-    this.log("Code erreur", et91.zones!![i].value)
-    i++
-    this.log("Signe montant refusé compte B", et91.zones!![i].value)
-    i++
-    this.log("Montant refusé compte B", et91.zones!![i].value)
-    const rejectedAmountAccount2 = et91.zones!![i].value
-    i++
-    this.log("Code erreur", et91.zones!![i].value)
-    i++
-    this.log("Signe total montants acceptés compte A + compte B", et91.zones!![i].value)
-    i++
-    this.log("Total montants acceptés compte A+compte B", et91.zones!![i].value)
-    const totalAcceptedAmount = et91.zones!![i].value
-    i++
-    this.log("Code erreur", et91.zones!![i].value)
-    i++
-    this.log("Signe total montants refusés compte A + compte B", et91.zones!![i].value)
-    i++
-    this.log("Total montants refusés compte A+compteB", et91.zones!![i].value)
-    const totalRejectedAmount = et91.zones!![i].value
-    i++
-    this.log("Code erreur", et91.zones!![i].value)
-    i++
-    this.log("Référence paiement compte A OA ou mutualité", et91.zones!![i].value)
-    const paymentReferenceAccount1 = et91.zones!![i].value
-    i++
-    this.log("Code erreur", et91.zones!![i].value)
-    i++
-    this.log("Référence paiement compte B OA ou mutualité", et91.zones!![i].value)
-    const paymentReferenceAccount2 = et91.zones!![i].value
-    i++
-    this.log("Code erreur", et91.zones!![i].value)
-    i++
-    this.log("Reserve", et91.zones!![i].value)
-    i++
+    this.log("Type", et91.zones!![i++].value)
+    this.log("Code erreur", et91.zones!![i++].value)
+    this.log("Lien T10 N mutualit", et91.zones!![i++].value)
+    this.log("Code erreur", et91.zones!![i++].value)
+    this.log("n facture recapitulative", et91.zones!![i++].value)
+    this.log("Code erreur", et91.zones!![i++].value)
+    this.log("Signe montant demand compte A", et91.zones!![i++].value)
+    const askedAmountForAccount1 = this.log("Montant demand compte A", et91.zones!![i++].value)
+
+    this.log("Code erreur", et91.zones!![i++].value)
+    this.log("Signe montant demand compte B", et91.zones!![i++].value)
+    const askedAmountForAccount2 = this.log("Montant demand compte B", et91.zones!![i++].value)
+
+    this.log("Code erreur", et91.zones!![i++].value)
+    this.log("Signe Montant demand A + B", et91.zones!![i++].value)
+    const totalAskedAmount = this.log(
+      "Montant demand compte A + B = lien Cpt A",
+      et91.zones!![i++].value
+    )
+
+    this.log("Code erreur", et91.zones!![i++].value)
+    const numberOfRecordBundle = this.log("Nombre d'enregistrement", et91.zones!![i++].value)
+
+    this.log("Code erreur", et91.zones!![i++].value)
+    this.log("Lien T80 Z98 N contrle par mutuelle", et91.zones!![i++].value)
+    this.log("Code erreur", et91.zones!![i++].value)
+    this.log("Signe montant accepté compte A", et91.zones!![i++].value)
+    const acceptedAmountAccount1 = this.log("montant accepté compte A", et91.zones!![i++].value)
+
+    this.log("Code erreur", et91.zones!![i++].value)
+    this.log("Signe montant refusé compte A", et91.zones!![i++].value)
+    const rejectedAmountAccount1 = this.log("montant refusé compte A", et91.zones!![i++].value)
+
+    this.log("Code erreur", et91.zones!![i++].value)
+    this.log("Signe montant accepté compte B", et91.zones!![i++].value)
+    const acceptedAmountAccount2 = this.log("Montant accepté compte B", et91.zones!![i++].value)
+
+    this.log("Code erreur", et91.zones!![i++].value)
+    this.log("Signe montant refusé compte B", et91.zones!![i++].value)
+    const rejectedAmountAccount2 = this.log("Montant refusé compte B", et91.zones!![i++].value)
+
+    this.log("Code erreur", et91.zones!![i++].value)
+    this.log("Signe total montants acceptés compte A + compte B", et91.zones!![i++].value)
+    const totalAcceptedAmount = this.log(
+      "Total montants acceptés compte A+compte B",
+      et91.zones!![i++].value
+    )
+
+    this.log("Code erreur", et91.zones!![i++].value)
+    this.log("Signe total montants refusés compte A + compte B", et91.zones!![i++].value)
+    const totalRejectedAmount = this.log(
+      "Total montants refusés compte A+compteB",
+      et91.zones!![i++].value
+    )
+
+    this.log("Code erreur", et91.zones!![i++].value)
+    const paymentReferenceAccount1 = this.log(
+      "Référence paiement compte A OA ou mutualité",
+      et91.zones!![i++].value
+    )
+
+    this.log("Code erreur", et91.zones!![i++].value)
+    const paymentReferenceAccount2 = this.log(
+      "Référence paiement compte B OA ou mutualité",
+      et91.zones!![i++].value
+    )
+
+    this.log("Code erreur", et91.zones!![i++].value)
+    this.log("Reserve", et91.zones!![i++].value)
     if (i !== et91.zones!!.length) {
       throw new Error(`You didn\'t parse every zones of the ET${etNumber}`)
     }
@@ -1498,92 +1163,63 @@ export abstract class EfactMessageReader {
         `Trying to parse an ET${etNumber} that is not an ET${etNumber} --- ${JSON.stringify(et92)}`
       )
     }
-    this.log("Type", et92.zones!![i].value)
-    i++
-    this.log("Code erreur", et92.zones!![i].value)
-    i++
-    this.log("Lien T10 N mutualit", et92.zones!![i].value)
-    i++
-    this.log("Code erreur", et92.zones!![i].value)
-    i++
-    this.log("n facture recapitulative", et92.zones!![i].value)
-    i++
-    this.log("Code erreur", et92.zones!![i].value)
-    i++
-    this.log("Signe montant demand compte A", et92.zones!![i].value)
-    i++
-    this.log("Montant demand compte A", et92.zones!![i].value)
-    const askedAmountAccount1 = et92.zones!![i].value
-    i++
-    this.log("Code erreur", et92.zones!![i].value)
-    i++
-    this.log("Signe montant demand compte B", et92.zones!![i].value)
-    i++
-    this.log("Montant demand compte B", et92.zones!![i].value)
-    const askedAmountAccount2 = et92.zones!![i].value
-    i++
-    this.log("Code erreur", et92.zones!![i].value)
-    i++
-    this.log("Signe Montant demand A + B", et92.zones!![i].value)
-    i++
-    this.log("Montant demand compte A + B = lien Cpt A", et92.zones!![i].value)
-    const totalAskedAmount = et92.zones!![i].value
-    i++
-    this.log("Code erreur", et92.zones!![i].value)
-    i++
-    this.log("Nombre d'enregistrement", et92.zones!![i].value)
-    const numberOfRecord = et92.zones!![i].value
-    i++
-    this.log("Code erreur", et92.zones!![i].value)
-    i++
-    this.log("Lien T80 Z98 N contrle par mutuelle", et92.zones!![i].value)
-    i++
-    this.log("Code erreur", et92.zones!![i].value)
-    i++
-    this.log("Signe montant accepté compte A", et92.zones!![i].value)
-    i++
-    this.log("montant accepté compte A", et92.zones!![i].value)
-    const acceptedAmountAccount1 = et92.zones!![i].value
-    i++
-    this.log("Code erreur", et92.zones!![i].value)
-    i++
-    this.log("Signe montant refusé compte A", et92.zones!![i].value)
-    i++
-    this.log("montant refusé compte A", et92.zones!![i].value)
-    const rejectedAmountAccount1 = et92.zones!![i].value
-    i++
-    this.log("Code erreur", et92.zones!![i].value)
-    i++
-    this.log("Signe montant accepté compte B", et92.zones!![i].value)
-    i++
-    this.log("Montant accepté compte B", et92.zones!![i].value)
-    const acceptedAmountAccount2 = et92.zones!![i].value
-    i++
-    this.log("Code erreur", et92.zones!![i].value)
-    i++
-    this.log("Signe montant refusé compte B", et92.zones!![i].value)
-    i++
-    this.log("Montant refusé compte B", et92.zones!![i].value)
-    const rejectedAmountAccount2 = et92.zones!![i].value
-    i++
-    this.log("Code erreur", et92.zones!![i].value)
-    i++
-    this.log("Signe total montants acceptés compte A + compte B", et92.zones!![i].value)
-    i++
-    this.log("Total montants acceptés compte A+compte B", et92.zones!![i].value)
-    const totalAcceptedAmount = et92.zones!![i].value
-    i++
-    this.log("Code erreur", et92.zones!![i].value)
-    i++
-    this.log("Signe total montants refusés compte A + compte B", et92.zones!![i].value)
-    i++
-    this.log("Total montants refusés compte A+compteB", et92.zones!![i].value)
-    const totalRejectedAmount = et92.zones!![i].value
-    i++
-    this.log("Code erreur", et92.zones!![i].value)
-    i++
-    this.log("Réserve", et92.zones!![i].value)
-    i++
+    this.log("Type", et92.zones!![i++].value)
+    this.log("Code erreur", et92.zones!![i++].value)
+    this.log("Lien T10 N mutualit", et92.zones!![i++].value)
+    this.log("Code erreur", et92.zones!![i++].value)
+    this.log("n facture recapitulative", et92.zones!![i++].value)
+    this.log("Code erreur", et92.zones!![i++].value)
+    this.log("Signe montant demand compte A", et92.zones!![i++].value)
+    const askedAmountAccount1 = this.log("Montant demand compte A", et92.zones!![i++].value)
+
+    this.log("Code erreur", et92.zones!![i++].value)
+    this.log("Signe montant demand compte B", et92.zones!![i++].value)
+    const askedAmountAccount2 = this.log("Montant demand compte B", et92.zones!![i++].value)
+
+    this.log("Code erreur", et92.zones!![i++].value)
+    this.log("Signe Montant demand A + B", et92.zones!![i++].value)
+    const totalAskedAmount = this.log(
+      "Montant demand compte A + B = lien Cpt A",
+      et92.zones!![i++].value
+    )
+
+    this.log("Code erreur", et92.zones!![i++].value)
+    const numberOfRecord = this.log("Nombre d'enregistrement", et92.zones!![i++].value)
+
+    this.log("Code erreur", et92.zones!![i++].value)
+    this.log("Lien T80 Z98 N contrle par mutuelle", et92.zones!![i++].value)
+    this.log("Code erreur", et92.zones!![i++].value)
+    this.log("Signe montant accepté compte A", et92.zones!![i++].value)
+    const acceptedAmountAccount1 = this.log("montant accepté compte A", et92.zones!![i++].value)
+
+    this.log("Code erreur", et92.zones!![i++].value)
+    this.log("Signe montant refusé compte A", et92.zones!![i++].value)
+    const rejectedAmountAccount1 = this.log("montant refusé compte A", et92.zones!![i++].value)
+
+    this.log("Code erreur", et92.zones!![i++].value)
+    this.log("Signe montant accepté compte B", et92.zones!![i++].value)
+    const acceptedAmountAccount2 = this.log("Montant accepté compte B", et92.zones!![i++].value)
+
+    this.log("Code erreur", et92.zones!![i++].value)
+    this.log("Signe montant refusé compte B", et92.zones!![i++].value)
+    const rejectedAmountAccount2 = this.log("Montant refusé compte B", et92.zones!![i++].value)
+
+    this.log("Code erreur", et92.zones!![i++].value)
+    this.log("Signe total montants acceptés compte A + compte B", et92.zones!![i++].value)
+    const totalAcceptedAmount = this.log(
+      "Total montants acceptés compte A+compte B",
+      et92.zones!![i++].value
+    )
+
+    this.log("Code erreur", et92.zones!![i++].value)
+    this.log("Signe total montants refusés compte A + compte B", et92.zones!![i++].value)
+    const totalRejectedAmount = this.log(
+      "Total montants refusés compte A+compteB",
+      et92.zones!![i++].value
+    )
+
+    this.log("Code erreur", et92.zones!![i++].value)
+    this.log("Réserve", et92.zones!![i++].value)
     if (i !== et92.zones!!.length) {
       throw new Error(`You didn\'t parse every zones of the ET${etNumber}`)
     }

@@ -237,7 +237,7 @@ export class iccMessageApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.MessageDto(it)))
       .catch(err => this.handleError(err))
   }
-  getChildrenOfList(body?: models.ListOfIdsDto): Promise<Array<models.MessageDto> | any> {
+  getChildrenOfList(body?: models.ListOfIdsDto): Promise<Array<Array<models.MessageDto>> | any> {
     let _body = null
     _body = body
 
@@ -246,8 +246,8 @@ export class iccMessageApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.MessageDto(it)))
+    return XHR.sendCommand("POST", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
       .catch(err => this.handleError(err))
   }
   getMessage(messageId: string): Promise<models.MessageDto | any> {

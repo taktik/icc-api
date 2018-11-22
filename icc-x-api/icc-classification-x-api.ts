@@ -19,8 +19,11 @@ export class IccClassificationXApi extends iccClassificationApi {
   findBy(hcpartyId: string, patient: models.PatientDto) {
     return this.crypto
       .extractDelegationsSFKs(patient, hcpartyId)
-      .then((secretForeignKeys: Array<string>) =>
-        this.findByHCPartyPatientSecretFKeys(hcpartyId, secretForeignKeys.join(","))
+      .then(secretForeignKeys =>
+        this.findByHCPartyPatientSecretFKeys(
+          secretForeignKeys.hcpartyId,
+          secretForeignKeys.extractedKeys.join(",")
+        )
       )
     /* TODO: Decrypt if needed. The code below is copied from the health elements for reference.
       .then((helements: Array<models.HealthElementDto>) => this.decrypt(hcpartyId, helements))

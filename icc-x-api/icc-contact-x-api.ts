@@ -61,7 +61,7 @@ export class IccContactXApi extends iccContactApi {
             contact,
             patient,
             user.healthcarePartyId!,
-            secretForeignKeys[0]
+            secretForeignKeys.extractedKeys[0]
           ),
           this.crypto.initEncryptionKeys(contact, user.healthcarePartyId!)
         ])
@@ -116,7 +116,7 @@ export class IccContactXApi extends iccContactApi {
         delegateId =>
           (promise = promise.then(contact =>
             this.crypto
-              .appendEncryptionKeys(contact, user.healthcarePartyId!, eks.secretId)
+              .appendEncryptionKeys(contact, user.healthcarePartyId!, delegateId, eks.secretId)
               .then(extraEks => {
                 return _.extend(contact, {
                   encryptionKeys: extraEks.encryptionKeys
@@ -147,12 +147,11 @@ export class IccContactXApi extends iccContactApi {
     return this.crypto
       .extractDelegationsSFKs(patient, hcpartyId)
       .then(secretForeignKeys =>
-        this.findByHCPartyPatientSecretFKeys(hcpartyId, secretForeignKeys.join(","))
+        this.findByHCPartyPatientSecretFKeys(
+          secretForeignKeys.hcpartyId,
+          secretForeignKeys.extractedKeys.join(",")
+        )
       )
-      .then(contacts => this.decrypt(hcpartyId, contacts))
-      .then(function(decryptedContacts) {
-        return decryptedContacts
-      })
   }
 
   filterBy(
@@ -161,37 +160,48 @@ export class IccContactXApi extends iccContactApi {
     limit?: number,
     body?: models.FilterChain
   ): Promise<models.ContactPaginatedList | any> {
-    throw "Cannot call a method that returns contacts without providing a user for decryption"
+    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
   }
 
   findByHCPartyFormId(
     hcPartyId?: string,
     formId?: string
   ): Promise<Array<models.ContactDto> | any> {
-    throw "Cannot call a method that returns contacts without providing a user for decryption"
+    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
   }
 
   findByHCPartyFormIds(
     hcPartyId?: string,
     body?: models.ListOfIdsDto
   ): Promise<Array<models.ContactDto> | any> {
-    throw "Cannot call a method that returns contacts without providing a user for decryption"
+    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
   }
 
   getContact(contactId: string): Promise<models.ContactDto | any> {
-    throw "Cannot call a method that returns contacts without providing a user for decryption"
+    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
   }
 
   getContacts(body?: models.ListOfIdsDto): Promise<Array<models.ContactDto> | any> {
-    throw "Cannot call a method that returns contacts without providing a user for decryption"
+    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
   }
 
   modifyContact(body?: ContactDto): Promise<ContactDto | any> {
-    throw "Cannot call a method that modify contacts without providing a user for decryption"
+    throw "Cannot call a method that modify contacts without providing a user for de/encryption"
   }
 
   createContact(body?: ContactDto): Promise<ContactDto | any> {
-    throw "Cannot call a method that modify contacts without providing a user for decryption"
+    throw "Cannot call a method that modify contacts without providing a user for de/encryption"
+  }
+
+  findByHCPartyPatientSecretFKeys(
+    hcPartyId: string,
+    secretFKeys?: string,
+    planOfActionIds?: string,
+    skipClosedContacts?: boolean
+  ): Promise<Array<models.ContactDto> | any> {
+    return super
+      .findByHCPartyPatientSecretFKeys(hcPartyId, secretFKeys, planOfActionIds, skipClosedContacts)
+      .then(contacts => this.decrypt(hcPartyId, contacts))
   }
 
   filterByWithUser(
@@ -203,7 +213,7 @@ export class IccContactXApi extends iccContactApi {
   ): Promise<models.ContactPaginatedList | any> {
     return super
       .filterBy(startKey, startDocumentId, limit, body)
-      .then(ctcs => this.encrypt(user, ctcs))
+      .then(ctcs => this.decrypt(user.healthcarePartyId!, ctcs))
   }
 
   findByHCPartyFormIdWithUser(
@@ -211,7 +221,9 @@ export class IccContactXApi extends iccContactApi {
     hcPartyId?: string,
     formId?: string
   ): Promise<Array<models.ContactDto> | any> {
-    return super.findByHCPartyFormId(hcPartyId, formId).then(ctcs => this.encrypt(user, ctcs))
+    return super
+      .findByHCPartyFormId(hcPartyId, formId)
+      .then(ctcs => this.decrypt(user.healthcarePartyId!, ctcs))
   }
 
   findByHCPartyFormIdsWithUser(
@@ -219,7 +231,9 @@ export class IccContactXApi extends iccContactApi {
     hcPartyId?: string,
     body?: models.ListOfIdsDto
   ): Promise<Array<models.ContactDto> | any> {
-    return super.findByHCPartyFormIds(hcPartyId, body).then(ctcs => this.encrypt(user, ctcs))
+    return super
+      .findByHCPartyFormIds(hcPartyId, body)
+      .then(ctcs => this.decrypt(user.healthcarePartyId!, ctcs))
   }
 
   getContactWithUser(user: models.UserDto, contactId: string): Promise<models.ContactDto | any> {
@@ -266,7 +280,7 @@ export class IccContactXApi extends iccContactApi {
       ctcs.map(
         ctc =>
           ctc.secretForeignKeys &&
-          ctc.secretForeignKeys.includes("2d3ab21f-3f2e-4db3-9535-4238c605dbf4")
+          ctc.secretForeignKeys.includes("2d3ab21f-3f2e-4db3-9535-4238c605dbf4") //Prevent encryption for test ctc
             ? ctc
             : (ctc.encryptionKeys && Object.keys(ctc.encryptionKeys).length
                 ? Promise.resolve(ctc)
