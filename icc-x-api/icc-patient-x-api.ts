@@ -678,6 +678,26 @@ export class IccPatientXApi extends iccPatientApi {
     })
   }
 
+
+  checkInami(inami : String): Boolean {
+    const num_inami = inami.replace(new RegExp("[^(0-9)]", "g"), '');
+
+    const checkDigit = num_inami.substr(6, 2);
+    const numSansCheck = num_inami.substr(0, 6);
+    let retour = false;
+
+    //modulo du niss
+    const modINAMI = parseInt(numSansCheck) % 97;
+
+    //obtention du num de check 97 - le resultat du mod
+    const checkDigit_2 = (97 - modINAMI);
+
+    if (parseInt(checkDigit) == checkDigit_2) {
+      retour = true;
+    }
+    return retour;
+  }
+
   isValidSsin(ssin: string) {
     ssin = ssin.replace(new RegExp("[^(0-9)]", "g"), "")
     let isValidNiss = false
