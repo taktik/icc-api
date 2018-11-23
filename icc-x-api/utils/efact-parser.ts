@@ -216,7 +216,7 @@ export interface File920999Data {
 export abstract class EfactMessageReader {
   message: EfactMessage
   abstract fileType: string
-  private log: Function = (x: any) => {
+  private log: Function = (m: string, x: any) => {
     return x
   }
 
@@ -621,7 +621,10 @@ export abstract class EfactMessageReader {
     this.log("IdentificationDuDispensateur", et50.zones!![i++].value)
     this.log("NormeDispensateur", et50.zones!![i++].value)
     this.log("PrestationRelativePartie1et2", et50.zones!![i++].value)
-    const montantInterventionAssurance = this.log("SigneMontantInterventionDeLassurance", et50.zones!![i++].value)
+    const montantInterventionAssurance = this.log(
+      "SigneMontantInterventionDeLassurance",
+      et50.zones!![i++].value
+    )
     this.log("DatePrescriptionPartie1et2", et50.zones!![i++].value)
     const units = this.log("SigneNombreDunites", et50.zones!![i++].value)
 

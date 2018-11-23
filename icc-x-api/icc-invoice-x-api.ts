@@ -30,6 +30,7 @@ export class IccInvoiceXApi extends iccInvoiceApi {
       _.extend(
         {
           id: this.crypto.randomUuid(),
+          groupId: this.crypto.randomUuid(),
           _type: "org.taktik.icure.entities.Invoice",
           created: new Date().getTime(),
           modified: new Date().getTime(),
@@ -147,7 +148,7 @@ export class IccInvoiceXApi extends iccInvoiceApi {
 
   getNextInvoiceReference(prefix: string, entityrefApi: iccEntityrefApi): Promise<number> {
     return entityrefApi.getLatest(prefix).then((entRef: models.EntityReference) => {
-      if (!entRef || !entRef.id!.startsWith(prefix)) return 1
+      if (!entRef || !entRef.id || !entRef.id!.startsWith(prefix)) return 1
       return Number(entRef.id!.split(":")[3]) + 1
     })
   }
