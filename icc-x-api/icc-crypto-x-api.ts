@@ -428,18 +428,16 @@ export class IccCryptoXApi {
     if (!document) {
       return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
     }
-    const dels = document.delegations
-    if (!dels || !dels[hcpartyId] || dels[hcpartyId].length <= 0) {
-      console.log(
+    return this.extractSfks(hcpartyId, document.id!, document.delegations!).then(sfks => {
+      if (!sfks.extractedKeys.length) {
         "There is no delegation for this healthcare party (" +
           hcpartyId +
           ") in document (" +
           document.id +
           ")"
-      )
-      return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
-    }
-    return this.extractSfks(hcpartyId, document.id!, dels)
+      }
+      return sfks
+    })
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -455,21 +453,19 @@ export class IccCryptoXApi {
       | null,
     hcpartyId: string
   ): Promise<{ extractedKeys: Array<string>; hcpartyId: string }> {
-    if (!document) {
+    if (!document || !document.cryptedForeignKeys) {
       return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
     }
-    const dels = document.cryptedForeignKeys
-    if (!dels || !dels[hcpartyId] || dels[hcpartyId].length <= 0) {
-      console.log(
+    return this.extractSfks(hcpartyId, document.id!, document.cryptedForeignKeys).then(sfks => {
+      if (!sfks.extractedKeys.length) {
         "There is no cryptedForeignKeys for this healthcare party (" +
           hcpartyId +
           ") in document (" +
           document.id +
           ")"
-      )
-      return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
-    }
-    return this.extractSfks(hcpartyId, document.id!, dels)
+      }
+      return sfks
+    })
   }
 
   extractEncryptionsSKs(
@@ -486,18 +482,16 @@ export class IccCryptoXApi {
     if (!document.encryptionKeys) {
       return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
     }
-    const eks = document.encryptionKeys
-    if (!eks || !eks[hcpartyId] || eks[hcpartyId].length <= 0) {
-      console.log(
+    return this.extractSfks(hcpartyId, document.id!, document.encryptionKeys).then(sfks => {
+      if (!sfks.extractedKeys.length) {
         "There is no encryption key for this healthcare party (" +
           hcpartyId +
           ") in document (" +
           document.id +
           ")"
-      )
-      return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
-    }
-    return this.extractSfks(hcpartyId, document.id!, eks)
+      }
+      return sfks
+    })
   }
 
   extractSfks(
