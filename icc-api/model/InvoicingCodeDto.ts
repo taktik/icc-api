@@ -84,6 +84,8 @@ export class InvoicingCodeDto {
 
   percentNorm?: number
 
+  derogationMaxNumber?: number
+
   prescriberNihii?: string
 
   relatedCode?: string
