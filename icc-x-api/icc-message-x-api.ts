@@ -856,6 +856,7 @@ export class IccMessageXApi extends iccMessageApi {
                             "invoicePeriod",
                             "careProviderType",
                             "thirdPartyPaymentJustification",
+                            "thirdPartyPaymentReason",
                             "creditNote",
                             "longDelayJustification",
                             //
