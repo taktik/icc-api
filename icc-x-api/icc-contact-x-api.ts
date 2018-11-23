@@ -838,11 +838,15 @@ export class IccContactXApi extends iccContactApi {
       betweendinnerandsleep: 213000,
       thehourofsleep: 220000,
       night: 230000,
-      betweenmeals: 10000,
-      aftermeal: 20000
+      beforemeals: -30000,
+      betweenmeals: -20000,
+      aftermeals: -10000
     }
 
     const myself = {
+      regimenScores: function() {
+        return regimenScores
+      },
       medicationNameToString: function(m: any): string {
         return m.compoundPrescription
           ? m.compoundPrescription
