@@ -504,11 +504,14 @@ export class IccMessageXApi extends iccMessageApi {
     const desc3 = (error.rejectionDescr3 && error.rejectionDescr3.trim()) || ""
 
     return code1 || code2 || code3 || desc1 || desc2 || desc3
-      ? _.compact([
+      ? _([
           code1 || desc1.length ? `${code1 || "XXXXXX"}: ${desc1 || " — "}` : null,
           code2 || desc2.length ? `${code2 || "XXXXXX"}: ${desc2 || " — "}` : null,
           code3 || desc3.length ? `${code3 || "XXXXXX"}: ${desc3 || " — "}` : null
-        ]).join("; ")
+        ])
+          .compact()
+          .uniq()
+          .join("; ")
       : undefined
   }
 
@@ -661,9 +664,9 @@ export class IccMessageXApi extends iccMessageApi {
         (["931000", "920999"].includes(messageType) ? 1 << 9 /*STATUS_RECEIVED*/ : 0)
 
       const batchErrors: ErrorDetail[] | undefined = _.compact([
-        _.get(parsedRecords, "records.zone200.errorDetail"),
-        _.get(parsedRecords, "records.zone300.errorDetail"),
-        _.get(parsedRecords, "records.et10.errorDetail")
+        _.get(parsedRecords, "zone200.errorDetail"),
+        _.get(parsedRecords, "zone300.errorDetail"),
+        _.get(parsedRecords, "et10.errorDetail")
       ])
 
       const invoicingErrors: StructError[] = parsedRecords.records
@@ -801,7 +804,7 @@ export class IccMessageXApi extends iccMessageApi {
                 _.each(iv.invoicingCodes, ic => {
                   // If the invoicing code is already treated, do not treat it
                   if (ic.canceled || ic.accepted) {
-                    //return
+                    return
                   }
 
                   // Error from the ET50/51/52 linked to the invoicingCode
@@ -914,6 +917,7 @@ export class IccMessageXApi extends iccMessageApi {
                 parentMessage.metas = _.assign(parentMessage.metas || {}, {
                   errors: _(batchErrors)
                     .map(this.extractErrorMessage)
+                    .uniq()
                     .compact()
                     .join("; ")
                 })
