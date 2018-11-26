@@ -871,6 +871,7 @@ export class IccMessageXApi extends iccMessageApi {
                           )
                         )
                         .then(niv => {
+                          iv.correctiveInvoiceId = niv.id
                           niv.invoicingCodes = (niv.invoicingCodes || []).concat(
                             _.assign({}, ic, {
                               id: this.crypto.randomUuid(),
