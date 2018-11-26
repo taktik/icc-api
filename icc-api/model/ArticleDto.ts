@@ -24,57 +24,41 @@
 
 import * as models from "./models"
 
-export class ParagraphAgreementDto {
+export class ArticleDto {
   constructor(json: JSON | any) {
-    Object.assign(this as ParagraphAgreementDto, json)
+    Object.assign(this as ArticleDto, json)
   }
-  timestamp?: number
+  id?: string
 
-  paragraph?: string
+  rev?: string
 
-  careProviderReference?: string
+  deletionDate?: number
 
-  decisionReference?: string
+  created?: number
 
-  start?: number
+  modified?: number
 
-  end?: number
+  endOfLife?: number
 
-  cancelationDate?: number
+  author?: string
 
-  quantityValue?: number
+  responsible?: string
 
-  quantityUnit?: string
+  codes?: Array<models.CodeDto>
 
-  ioRequestReference?: string
+  tags?: Array<models.CodeDto>
 
-  responseType?: string
+  secretForeignKeys?: Array<string>
 
-  refusalJustification?: { [key: string]: string }
+  cryptedForeignKeys?: { [key: string]: Array<models.DelegationDto> }
 
-  verses?: Array<number>
+  delegations?: { [key: string]: Array<models.DelegationDto> }
 
-  coverageType?: string
+  encryptionKeys?: { [key: string]: Array<models.DelegationDto> }
 
-  unitNumber?: number
+  name?: string
 
-  strength?: number
+  content?: Array<models.ContentDto>
 
-  strengthUnit?: string
-
-  restUnitNumber?: number
-
-  restStrength?: number
-
-  restStrengthUnit?: string
-
-  agreementAppendices?: Array<models.AgreementAppendixDto>
-
-  documentId?: string
-
-  inTreatment?: boolean
-
-  canceled?: boolean
-
-  accepted?: boolean
+  classification?: string
 }
