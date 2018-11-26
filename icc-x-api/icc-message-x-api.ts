@@ -687,26 +687,24 @@ export class IccMessageXApi extends iccMessageApi {
               }
 
               _.each(r.items, i => {
-                let ref = _.get(r, "et50.reference", refEt20) //fallback
+                let ref = i.et50 && i.et50.reference.trim() //fallback
                 if (i.et50 && i.et50.errorDetail) {
-                  ref = _.get(i, "et50.itemReference")
                   errors.push({
-                    itemId: ref && decodeBase36Uuid(ref.trim()),
+                    itemId: ref && decodeBase36Uuid(ref || refEt20),
                     error: i.et50.errorDetail,
                     record: "ET50"
                   })
                 }
                 if (i.et51 && i.et51.errorDetail) {
-                  ref = _.get(i, "et51.itemReference")
                   errors.push({
-                    itemId: ref && decodeBase36Uuid(ref.trim()),
+                    itemId: ref && decodeBase36Uuid(ref || refEt20),
                     error: i.et51.errorDetail,
                     record: "ET51"
                   })
                 }
                 if (i.et52 && i.et52.errorDetail) {
                   errors.push({
-                    itemId: ref && decodeBase36Uuid(ref.trim()),
+                    itemId: ref && decodeBase36Uuid(ref || refEt20),
                     error: i.et52.errorDetail,
                     record: "ET52"
                   })
