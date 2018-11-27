@@ -24,23 +24,41 @@
 
 import * as models from "./models"
 
-export class ImportResultDto {
+export class ArticleDto {
   constructor(json: JSON | any) {
-    Object.assign(this as ImportResultDto, json)
+    Object.assign(this as ArticleDto, json)
   }
-  patient?: models.PatientDto
+  id?: string
 
-  hes?: Array<models.HealthElementDto>
+  rev?: string
 
-  ctcs?: Array<models.ContactDto>
+  deletionDate?: number
 
-  warnings?: Array<string>
+  created?: number
 
-  errors?: Array<string>
+  modified?: number
 
-  forms?: Array<models.FormDto>
+  endOfLife?: number
 
-  hcps?: Array<models.HealthcarePartyDto>
+  author?: string
 
-  documents?: Array<models.DocumentDto>
+  responsible?: string
+
+  codes?: Array<models.CodeDto>
+
+  tags?: Array<models.CodeDto>
+
+  secretForeignKeys?: Array<string>
+
+  cryptedForeignKeys?: { [key: string]: Array<models.DelegationDto> }
+
+  delegations?: { [key: string]: Array<models.DelegationDto> }
+
+  encryptionKeys?: { [key: string]: Array<models.DelegationDto> }
+
+  name?: string
+
+  content?: Array<models.ContentDto>
+
+  classification?: string
 }

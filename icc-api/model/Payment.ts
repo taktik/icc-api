@@ -24,23 +24,25 @@
 
 import * as models from "./models"
 
-export class ImportResultDto {
+export class Payment {
   constructor(json: JSON | any) {
-    Object.assign(this as ImportResultDto, json)
+    Object.assign(this as Payment, json)
   }
-  patient?: models.PatientDto
+  paymentDate?: number
 
-  hes?: Array<models.HealthElementDto>
+  paymentType?: Payment.PaymentTypeEnum
 
-  ctcs?: Array<models.ContactDto>
-
-  warnings?: Array<string>
-
-  errors?: Array<string>
-
-  forms?: Array<models.FormDto>
-
-  hcps?: Array<models.HealthcarePartyDto>
-
-  documents?: Array<models.DocumentDto>
+  paid?: number
+}
+export namespace Payment {
+  export enum PaymentTypeEnum {
+    Cash = <any>"cash",
+    Wired = <any>"wired",
+    Insurance = <any>"insurance",
+    Creditcard = <any>"creditcard",
+    Debitcard = <any>"debitcard",
+    Paypal = <any>"paypal",
+    Bitcoin = <any>"bitcoin",
+    Other = <any>"other"
+  }
 }

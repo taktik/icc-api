@@ -62,8 +62,8 @@ export class iccBeresultimportApi {
     documentId: string,
     hcpId: string,
     language: string,
-    protocolIds: string,
-    formIds: string,
+    protocolIds?: string,
+    formIds?: string,
     planOfActionId?: string,
     body?: models.ContactDto
   ): Promise<models.ContactDto | any> {
@@ -72,14 +72,14 @@ export class iccBeresultimportApi {
 
     const _url =
       this.host +
-      "/be_result_import/import/{documentId}/{hcpId}/{language}/{protocolIds}/{formIds}"
+      "/be_result_import/import/{documentId}/{hcpId}/{language}"
         .replace("{documentId}", documentId + "")
         .replace("{hcpId}", hcpId + "")
-        .replace("{language}", language + "")
-        .replace("{protocolIds}", protocolIds + "")
-        .replace("{formIds}", formIds + "") +
+        .replace("{language}", language + "") +
       "?ts=" +
       new Date().getTime() +
+      (protocolIds ? "&protocolIds=" + protocolIds : "") +
+      (formIds ? "&formIds=" + formIds : "") +
       (planOfActionId ? "&planOfActionId=" + planOfActionId : "")
     let headers = this.headers
     headers = headers

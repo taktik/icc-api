@@ -84,6 +84,8 @@ export class InvoicingCodeDto {
 
   percentNorm?: number
 
+  derogationMaxNumber?: number
+
   prescriberNihii?: string
 
   relatedCode?: string
@@ -113,6 +115,8 @@ export class InvoicingCodeDto {
   locationNihii?: string
 
   locationCdHcParty?: string
+
+  prescriptionDate?: number
 
   status?: number
 }

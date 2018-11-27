@@ -25,7 +25,7 @@
 import { XHR } from "./XHR"
 import * as models from "../model/models"
 
-export class iccClassificationApi {
+export class iccArticleApi {
   host: string
   headers: Array<XHR.Header>
   constructor(host: string, headers: any) {
@@ -42,25 +42,25 @@ export class iccClassificationApi {
     else throw Error("api-error" + e.status)
   }
 
-  createClassification(body?: models.ClassificationDto): Promise<models.ClassificationDto | any> {
+  createArticle(body?: models.ArticleDto): Promise<models.ArticleDto | any> {
     let _body = null
     _body = body
 
-    const _url = this.host + "/classification" + "?ts=" + new Date().getTime()
+    const _url = this.host + "/article" + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => new models.ClassificationDto(doc.body as JSON))
+      .then(doc => new models.ArticleDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  deleteClassifications(classificationIds: string): Promise<Array<string> | any> {
+  deleteArticle(articleIds: string): Promise<any | Boolean> {
     let _body = null
 
     const _url =
       this.host +
-      "/classification/{classificationIds}".replace("{classificationIds}", classificationIds + "") +
+      "/article/{articleIds}".replace("{articleIds}", articleIds + "") +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -68,36 +68,15 @@ export class iccClassificationApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("DELETE", _url, headers, _body)
-      .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
+      .then(doc => true)
       .catch(err => this.handleError(err))
   }
-  findByHCPartyPatientSecretFKeys(
-    hcPartyId?: string,
-    secretFKeys?: string
-  ): Promise<Array<models.ClassificationDto> | any> {
+  getArticle(articleId: string): Promise<models.ArticleDto | any> {
     let _body = null
 
     const _url =
       this.host +
-      "/classification/byHcPartySecretForeignKeys" +
-      "?ts=" +
-      new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
-      (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.ClassificationDto(it)))
-      .catch(err => this.handleError(err))
-  }
-  getClassification(classificationId: string): Promise<models.ClassificationDto | any> {
-    let _body = null
-
-    const _url =
-      this.host +
-      "/classification/{classificationId}".replace("{classificationId}", classificationId + "") +
+      "/article/{articleId}".replace("{articleId}", articleId + "") +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -105,59 +84,32 @@ export class iccClassificationApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => new models.ClassificationDto(doc.body as JSON))
+      .then(doc => new models.ArticleDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  getClassificationByHcPartyId(ids: string): Promise<Array<models.ClassificationDto> | any> {
+  getArticles(): Promise<Array<models.ArticleDto> | any> {
     let _body = null
 
-    const _url =
-      this.host +
-      "/classification/byIds/{ids}".replace("{ids}", ids + "") +
-      "?ts=" +
-      new Date().getTime()
+    const _url = this.host + "/article" + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.ClassificationDto(it)))
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.ArticleDto(it)))
       .catch(err => this.handleError(err))
   }
-  modifyClassification(body?: models.ClassificationDto): Promise<models.ClassificationDto | any> {
+  modifyArticle(body?: models.ArticleDto): Promise<models.ArticleDto | any> {
     let _body = null
     _body = body
 
-    const _url = this.host + "/classification" + "?ts=" + new Date().getTime()
+    const _url = this.host + "/article" + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body)
-      .then(doc => new models.ClassificationDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
-  }
-  newDelegations(
-    classificationId: string,
-    body?: Array<models.DelegationDto>
-  ): Promise<models.ClassificationDto | any> {
-    let _body = null
-    _body = body
-
-    const _url =
-      this.host +
-      "/classification/{classificationId}/delegate".replace(
-        "{classificationId}",
-        classificationId + ""
-      ) +
-      "?ts=" +
-      new Date().getTime()
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => new models.ClassificationDto(doc.body as JSON))
+      .then(doc => new models.ArticleDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 }
