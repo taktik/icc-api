@@ -64,6 +64,10 @@ export class InvoiceDto {
 
   paid?: number
 
+  paymentType?: InvoiceDto.PaymentTypeEnum
+
+  payments?: Array<models.Payment>
+
   invoicingCodes?: Array<models.InvoicingCodeDto>
 
   invoiceType?: string
@@ -108,6 +112,8 @@ export class InvoiceDto {
 
   internshipCdHcParty?: string
 
+  internshipCbe?: string
+
   supervisorNihii?: string
 
   supervisorSsin?: string
@@ -117,6 +123,8 @@ export class InvoiceDto {
   supervisorFirstName?: string
 
   supervisorCdHcParty?: string
+
+  supervisorCbe?: string
 
   longDelayJustification?: number
 
@@ -132,9 +140,18 @@ export class InvoiceDto {
 
   encounterLocationNorm?: number
 
-  prescriptionDate?: number
-
   receipts?: { [key: string]: string }
 
   encryptedSelf?: string
+}
+export namespace InvoiceDto {
+  export enum PaymentTypeEnum {
+    Wired = <any>"wired",
+    Cash = <any>"cash",
+    Insurance = <any>"insurance",
+    Creditcard = <any>"creditcard",
+    Debitcard = <any>"debitcard",
+    Paypal = <any>"paypal",
+    Bitcoin = <any>"bitcoin"
+  }
 }

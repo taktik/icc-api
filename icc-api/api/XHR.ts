@@ -48,7 +48,7 @@ export namespace XHR {
       Object.assign(
         {
           method: method,
-          credentials: "same-origin",
+          credentials: "include",
           headers:
             (headers &&
               headers

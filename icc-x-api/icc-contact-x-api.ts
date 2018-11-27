@@ -154,44 +154,44 @@ export class IccContactXApi extends iccContactApi {
       )
   }
 
-  filterBy(
-    startKey?: string,
-    startDocumentId?: string,
-    limit?: number,
-    body?: models.FilterChain
-  ): Promise<models.ContactPaginatedList | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
-  }
+  // filterBy(
+  //   startKey?: string,
+  //   startDocumentId?: string,
+  //   limit?: number,
+  //   body?: models.FilterChain
+  // ): Promise<models.ContactPaginatedList | any> {
+  //   throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+  // }
 
-  findByHCPartyFormId(
-    hcPartyId?: string,
-    formId?: string
-  ): Promise<Array<models.ContactDto> | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
-  }
+  // findByHCPartyFormId(
+  //   hcPartyId?: string,
+  //   formId?: string
+  // ): Promise<Array<models.ContactDto> | any> {
+  //   throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+  // }
 
-  findByHCPartyFormIds(
-    hcPartyId?: string,
-    body?: models.ListOfIdsDto
-  ): Promise<Array<models.ContactDto> | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
-  }
+  // findByHCPartyFormIds(
+  //   hcPartyId?: string,
+  //   body?: models.ListOfIdsDto
+  // ): Promise<Array<models.ContactDto> | any> {
+  //   throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+  // }
 
-  getContact(contactId: string): Promise<models.ContactDto | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
-  }
+  // getContact(contactId: string): Promise<models.ContactDto | any> {
+  //   throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+  // }
 
-  getContacts(body?: models.ListOfIdsDto): Promise<Array<models.ContactDto> | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
-  }
+  // getContacts(body?: models.ListOfIdsDto): Promise<Array<models.ContactDto> | any> {
+  //   throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+  // }
 
-  modifyContact(body?: ContactDto): Promise<ContactDto | any> {
-    throw "Cannot call a method that modify contacts without providing a user for de/encryption"
-  }
+  // modifyContact(body?: ContactDto): Promise<ContactDto | any> {
+  //   throw "Cannot call a method that modify contacts without providing a user for de/encryption"
+  // }
 
-  createContact(body?: ContactDto): Promise<ContactDto | any> {
-    throw "Cannot call a method that modify contacts without providing a user for de/encryption"
-  }
+  // createContact(body?: ContactDto): Promise<ContactDto | any> {
+  //   throw "Cannot call a method that modify contacts without providing a user for de/encryption"
+  // }
 
   findByHCPartyPatientSecretFKeys(
     hcPartyId: string,

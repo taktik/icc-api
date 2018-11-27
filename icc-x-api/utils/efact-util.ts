@@ -172,6 +172,7 @@ function toInvoiceItem(
   invoiceItem.sideCode = getSideCode(invoicingCode.side || 0)
   invoiceItem.timeOfDay = getTimeOfDay(invoicingCode.timeOfDay || 0)
   invoiceItem.units = invoicingCode.units || 1
+  invoiceItem.derogationMaxNumber = getDerogationMaxNumber(invoicingCode.derogationMaxNumber || 0)
 
   return invoiceItem
 }
@@ -212,6 +213,30 @@ function getPrescriberNorm(code: number) {
           : code === 9
             ? InvoiceItem.PrescriberNormEnum.ManyPrescribers
             : InvoiceItem.PrescriberNormEnum.None
+}
+
+export function getDerogationMaxNumber(code: number): InvoiceItem.DerogationMaxNumberEnum {
+  return code === 0
+    ? InvoiceItem.DerogationMaxNumberEnum.Other
+    : code === 1
+      ? InvoiceItem.DerogationMaxNumberEnum.DerogationMaxNumber
+      : code === 2
+        ? InvoiceItem.DerogationMaxNumberEnum.OtherPrescription
+        : code === 3
+          ? InvoiceItem.DerogationMaxNumberEnum.SecondPrestationOfDay
+          : InvoiceItem.DerogationMaxNumberEnum.ThirdAndNextPrestationOfDay
+}
+
+export function toDerogationMaxNumber(derogation: InvoiceItem.DerogationMaxNumberEnum): number {
+  return derogation === InvoiceItem.DerogationMaxNumberEnum.Other
+    ? 0
+    : derogation === InvoiceItem.DerogationMaxNumberEnum.DerogationMaxNumber
+      ? 1
+      : derogation === InvoiceItem.DerogationMaxNumberEnum.OtherPrescription
+        ? 2
+        : derogation === InvoiceItem.DerogationMaxNumberEnum.SecondPrestationOfDay
+          ? 3
+          : 4
 }
 
 export function uuidBase36(uuid: string): string {
