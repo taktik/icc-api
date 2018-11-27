@@ -804,7 +804,7 @@ export class IccMessageXApi extends iccMessageApi {
                 _.each(iv.invoicingCodes, ic => {
                   // If the invoicing code is already treated, do not treat it
                   if (ic.canceled || ic.accepted) {
-                    return
+                    //return
                   }
 
                   // Error from the ET50/51/52 linked to the invoicingCode
@@ -860,7 +860,6 @@ export class IccMessageXApi extends iccMessageApi {
                               "modified",
                               "sentDate",
                               "printedDate",
-                              "invoiceDate",
                               "secretForeignKeys",
                               "cryptedForeignKeys",
                               "delegations",
@@ -873,13 +872,15 @@ export class IccMessageXApi extends iccMessageApi {
                           )
                         )
                         .then(niv => {
+                          iv.correctiveInvoiceId = niv.id
                           niv.invoicingCodes = (niv.invoicingCodes || []).concat(
                             _.assign({}, ic, {
                               id: this.crypto.randomUuid(),
                               accepted: false,
                               canceled: false,
                               pending: true,
-                              resent: true
+                              resent: true,
+                              archived: false
                             })
                           )
                           return niv
@@ -920,6 +921,7 @@ export class IccMessageXApi extends iccMessageApi {
                     .map(this.extractErrorMessage)
                     .uniq()
                     .compact()
+                    .value()
                     .join("; ")
                 })
               }
@@ -930,6 +932,7 @@ export class IccMessageXApi extends iccMessageApi {
                   paymentReferenceAccount1: _(et91s)
                     .map(et91 => et91.paymentReferenceAccount1)
                     .uniq()
+                    .value()
                     .join(", ")
                 })
               }
