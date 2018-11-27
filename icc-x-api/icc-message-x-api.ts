@@ -873,6 +873,7 @@ export class IccMessageXApi extends iccMessageApi {
                           )
                         )
                         .then(niv => {
+                          niv.invoiceDate = niv.invoiceDate || new Date().getTime()
                           niv.invoicingCodes = (niv.invoicingCodes || []).concat(
                             _.assign({}, ic, {
                               id: this.crypto.randomUuid(),
