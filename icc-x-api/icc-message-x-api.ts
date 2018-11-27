@@ -592,7 +592,7 @@ export class IccMessageXApi extends iccMessageApi {
         )
         .then(rcpt =>
           this.receiptXApi.setAttachment(rcpt.id, "tack", undefined, <any>(
-            utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(efactMessage.tack)))
+            utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(efactMessage)))
           ))
         )
         .then(() => {
