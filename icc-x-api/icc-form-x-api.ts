@@ -70,11 +70,11 @@ export class IccFormXApi extends iccFormApi {
           : []
         ).forEach(
           delegateId =>
-            (promise = promise.then(contact =>
+            (promise = promise.then(form =>
               this.crypto
                 .addDelegationsAndEncryptionKeys(
                   patient,
-                  contact,
+                  form,
                   user.healthcarePartyId!,
                   delegateId,
                   dels.secretId,
@@ -82,7 +82,7 @@ export class IccFormXApi extends iccFormApi {
                 )
                 .catch(e => {
                   console.log(e)
-                  return contact
+                  return form
                 })
             ))
         )

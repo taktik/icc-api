@@ -122,6 +122,10 @@ export class IccContactXApi extends iccContactApi {
                   encryptionKeys: extraEks.encryptionKeys
                 })
               })
+              .catch(e => {
+                console.log(e.message)
+                return contact
+              })
           ))
       )
       return promise

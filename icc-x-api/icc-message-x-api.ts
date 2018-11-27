@@ -504,11 +504,14 @@ export class IccMessageXApi extends iccMessageApi {
     const desc3 = (error.rejectionDescr3 && error.rejectionDescr3.trim()) || ""
 
     return code1 || code2 || code3 || desc1 || desc2 || desc3
-      ? _.compact([
+      ? _([
           code1 || desc1.length ? `${code1 || "XXXXXX"}: ${desc1 || " — "}` : null,
           code2 || desc2.length ? `${code2 || "XXXXXX"}: ${desc2 || " — "}` : null,
           code3 || desc3.length ? `${code3 || "XXXXXX"}: ${desc3 || " — "}` : null
-        ]).join("; ")
+        ])
+          .compact()
+          .uniq()
+          .join("; ")
       : undefined
   }
 
@@ -661,25 +664,25 @@ export class IccMessageXApi extends iccMessageApi {
         (["931000", "920999"].includes(messageType) ? 1 << 9 /*STATUS_RECEIVED*/ : 0)
 
       const batchErrors: ErrorDetail[] | undefined = _.compact([
-        _.get(parsedRecords, "records.zone200.errorDetail"),
-        _.get(parsedRecords, "records.zone300.errorDetail"),
-        _.get(parsedRecords, "records.et10.errorDetail")
+        _.get(parsedRecords, "zone200.errorDetail"),
+        _.get(parsedRecords, "zone300.errorDetail"),
+        _.get(parsedRecords, "et10.errorDetail")
       ])
 
       const invoicingErrors: StructError[] = parsedRecords.records
         ? _.compact(
             _.flatMap(parsedRecords.records as ET20_80Data[], r => {
               const errors: StructError[] = []
-              let ref = r.et20 && r.et20.reference.trim()
+              let refEt20 = r.et20 && r.et20.reference.trim()
               if (r.et20 && r.et20.errorDetail) {
                 errors.push({
-                  itemId: decodeBase36Uuid(ref),
+                  itemId: decodeBase36Uuid(refEt20),
                   error: r.et20.errorDetail,
                   record: "ET20"
                 })
                 if (r.et80 && r.et80.errorDetail) {
                   errors.push({
-                    itemId: decodeBase36Uuid(ref),
+                    itemId: decodeBase36Uuid(refEt20),
                     error: r.et80.errorDetail,
                     record: "ET80"
                   })
@@ -687,26 +690,24 @@ export class IccMessageXApi extends iccMessageApi {
               }
 
               _.each(r.items, i => {
-                let ref = _.get(r, "et20.reference") //fallback
+                let ref = (i.et50 && i.et50.itemReference.trim()) || refEt20 //fallback
                 if (i.et50 && i.et50.errorDetail) {
-                  ref = _.get(i, "et50.itemReference")
                   errors.push({
-                    itemId: ref && decodeBase36Uuid(ref.trim()),
+                    itemId: ref && decodeBase36Uuid(ref),
                     error: i.et50.errorDetail,
                     record: "ET50"
                   })
                 }
                 if (i.et51 && i.et51.errorDetail) {
-                  ref = _.get(i, "et51.itemReference")
                   errors.push({
-                    itemId: ref && decodeBase36Uuid(ref.trim()),
+                    itemId: ref && decodeBase36Uuid(ref),
                     error: i.et51.errorDetail,
                     record: "ET51"
                   })
                 }
                 if (i.et52 && i.et52.errorDetail) {
                   errors.push({
-                    itemId: ref && decodeBase36Uuid(ref.trim()),
+                    itemId: ref && decodeBase36Uuid(ref),
                     error: i.et52.errorDetail,
                     record: "ET52"
                   })
@@ -803,7 +804,7 @@ export class IccMessageXApi extends iccMessageApi {
                 _.each(iv.invoicingCodes, ic => {
                   // If the invoicing code is already treated, do not treat it
                   if (ic.canceled || ic.accepted) {
-                    //return
+                    return
                   }
 
                   // Error from the ET50/51/52 linked to the invoicingCode
@@ -859,6 +860,7 @@ export class IccMessageXApi extends iccMessageApi {
                               "modified",
                               "sentDate",
                               "printedDate",
+                              "invoiceDate",
                               "secretForeignKeys",
                               "cryptedForeignKeys",
                               "delegations",
@@ -917,6 +919,7 @@ export class IccMessageXApi extends iccMessageApi {
                 parentMessage.metas = _.assign(parentMessage.metas || {}, {
                   errors: _(batchErrors)
                     .map(this.extractErrorMessage)
+                    .uniq()
                     .compact()
                     .join("; ")
                 })
@@ -1017,7 +1020,7 @@ export class IccMessageXApi extends iccMessageApi {
                       invoiceIds: invoices.map(i => i.invoiceDto.id),
                       // tslint:disable-next-line:no-bitwise
                       status: 1 << 6, // STATUS_EFACT
-                      externalRef: "" + batch.uniqueSendNumber,
+                      externalRef: _.padStart("" + batch.uniqueSendNumber, 3, "0"),
                       transportGuid: "EFACT:BATCH:" + batch.numericalRef,
                       sent: timeEncode(new Date()),
                       fromHealthcarePartyId: hcp.id,

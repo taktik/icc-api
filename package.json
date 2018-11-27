@@ -1,12 +1,12 @@
 {
   "name": "icc-api",
-  "version": "1.0.79",
+  "version": "1.0.80",
   "description": "Typescript version of iCure standalone API client",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "dependencies": {
     "base64-js": "^1.3.0",
-    "fhc-api": "^1.0.32",
+    "fhc-api": "antoinepairet/fhc-api#b49656e6c45ece96bd0e006ec64f1d5bf0768da2",
     "libphonenumber-js": "^1.5.1",
     "lodash": "^4.17.10",
     "moment": "^2.22.1",
@@ -14,9 +14,9 @@
     "uuid-encoder": "^1.1.0"
   },
   "devDependencies": {
-    "@types/moment": "^2.13.0",
     "@types/base64-js": "^1.2.5",
     "@types/lodash": "^4.14.116",
+    "@types/moment": "^2.13.0",
     "@types/text-encoding": "0.0.34",
     "husky": "^0.14.3",
     "prettier": "^1.13.5",

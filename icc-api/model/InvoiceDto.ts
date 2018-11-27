@@ -144,6 +144,8 @@ export class InvoiceDto {
 
   receipts?: { [key: string]: string }
 
+  idDocument?: models.IdentityDocumentReader
+
   encryptedSelf?: string
 }
 export namespace InvoiceDto {
