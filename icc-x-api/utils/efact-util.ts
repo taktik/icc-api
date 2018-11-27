@@ -128,6 +128,7 @@ function toInvoice(
   })
   invoice.patient = toPatient(patientDto)
   invoice.ignorePrescriptionDate = !!invoiceDto.longDelayJustification
+  invoice.creditNote = invoiceDto.creditNote
 
   // TODO : fix me later
   invoice.reason = Invoice.ReasonEnum.Other
