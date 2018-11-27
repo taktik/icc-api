@@ -215,7 +215,7 @@ function getPrescriberNorm(code: number) {
             : InvoiceItem.PrescriberNormEnum.None
 }
 
-function getDerogationMaxNumber(code: number): InvoiceItem.DerogationMaxNumberEnum {
+export function getDerogationMaxNumber(code: number): InvoiceItem.DerogationMaxNumberEnum {
   return code === 0
     ? InvoiceItem.DerogationMaxNumberEnum.Other
     : code === 1
