@@ -215,7 +215,7 @@ function getPrescriberNorm(code: number) {
             : InvoiceItem.PrescriberNormEnum.None
 }
 
-function getDerogationMaxNumber(code: number) {
+function getDerogationMaxNumber(code: number): InvoiceItem.DerogationMaxNumberEnum {
   return code === 0
     ? InvoiceItem.DerogationMaxNumberEnum.Other
     : code === 1
@@ -225,6 +225,18 @@ function getDerogationMaxNumber(code: number) {
         : code === 3
           ? InvoiceItem.DerogationMaxNumberEnum.SecondPrestationOfDay
           : InvoiceItem.DerogationMaxNumberEnum.ThirdAndNextPrestationOfDay
+}
+
+export function toDerogationMaxNumber(derogation: InvoiceItem.DerogationMaxNumberEnum): number {
+  return derogation === InvoiceItem.DerogationMaxNumberEnum.Other
+    ? 0
+    : derogation === InvoiceItem.DerogationMaxNumberEnum.DerogationMaxNumber
+      ? 1
+      : derogation === InvoiceItem.DerogationMaxNumberEnum.OtherPrescription
+        ? 2
+        : derogation === InvoiceItem.DerogationMaxNumberEnum.SecondPrestationOfDay
+          ? 3
+          : 4
 }
 
 export function uuidBase36(uuid: string): string {
