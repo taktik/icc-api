@@ -860,6 +860,7 @@ export class IccMessageXApi extends iccMessageApi {
                               "modified",
                               "sentDate",
                               "printedDate",
+                              "invoiceDate",
                               "secretForeignKeys",
                               "cryptedForeignKeys",
                               "delegations",
@@ -1018,7 +1019,7 @@ export class IccMessageXApi extends iccMessageApi {
                       invoiceIds: invoices.map(i => i.invoiceDto.id),
                       // tslint:disable-next-line:no-bitwise
                       status: 1 << 6, // STATUS_EFACT
-                      externalRef: "" + batch.uniqueSendNumber,
+                      externalRef: _.padStart("" + batch.uniqueSendNumber, 3, "0"),
                       transportGuid: "EFACT:BATCH:" + batch.numericalRef,
                       sent: timeEncode(new Date()),
                       fromHealthcarePartyId: hcp.id,
