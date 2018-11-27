@@ -221,6 +221,35 @@ export class iccMessageApi {
       .then(doc => new models.MessagePaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+  findMessagesByTransportGuidSentDate(
+    transportGuid?: string,
+    from?: number,
+    to?: number,
+    startKey?: string,
+    startDocumentId?: string,
+    limit?: number
+  ): Promise<models.MessagePaginatedList | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/message/byTransportGuidSentDate" +
+      "?ts=" +
+      new Date().getTime() +
+      (transportGuid ? "&transportGuid=" + transportGuid : "") +
+      (from ? "&from=" + from : "") +
+      (to ? "&to=" + to : "") +
+      (startKey ? "&startKey=" + startKey : "") +
+      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
+      (limit ? "&limit=" + limit : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => new models.MessagePaginatedList(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
   getChildren(messageId: string): Promise<Array<models.MessageDto> | any> {
     let _body = null
 
