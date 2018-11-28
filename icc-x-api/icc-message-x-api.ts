@@ -873,6 +873,8 @@ export class IccMessageXApi extends iccMessageApi {
                           )
                         )
                         .then(niv => {
+                          iv.correctiveInvoiceId = niv.id
+                          niv.correctedInvoiceId = iv.id
                           niv.invoiceDate = niv.invoiceDate || new Date().getTime()
                           niv.invoicingCodes = (niv.invoicingCodes || []).concat(
                             _.assign({}, ic, {
@@ -880,7 +882,8 @@ export class IccMessageXApi extends iccMessageApi {
                               accepted: false,
                               canceled: false,
                               pending: true,
-                              resent: true
+                              resent: true,
+                              archive: false
                             })
                           )
                           return niv
@@ -921,6 +924,7 @@ export class IccMessageXApi extends iccMessageApi {
                     .map(this.extractErrorMessage)
                     .uniq()
                     .compact()
+                    .value()
                     .join("; ")
                 })
               }
@@ -931,6 +935,7 @@ export class IccMessageXApi extends iccMessageApi {
                   paymentReferenceAccount1: _(et91s)
                     .map(et91 => et91.paymentReferenceAccount1)
                     .uniq()
+                    .value()
                     .join(", ")
                 })
               }

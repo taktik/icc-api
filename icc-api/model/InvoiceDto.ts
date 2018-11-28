@@ -143,6 +143,10 @@ export class InvoiceDto {
   receipts?: { [key: string]: string }
 
   encryptedSelf?: string
+
+  correctedInvoiceId?: string
+
+  correctiveInvoiceId?: string
 }
 export namespace InvoiceDto {
   export enum PaymentTypeEnum {
