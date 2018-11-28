@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "dependencies": {
     "base64-js": "^1.3.0",
-    "fhc-api": "antoinepairet/fhc-api#b49656e6c45ece96bd0e006ec64f1d5bf0768da2",
+    "fhc-api": "1.0.33",
     "libphonenumber-js": "^1.5.1",
     "lodash": "^4.17.10",
     "moment": "^2.22.1",

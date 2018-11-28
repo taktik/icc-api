@@ -559,7 +559,7 @@ export class IccMessageXApi extends iccMessageApi {
       .pop()
     if (!refStr) {
       return Promise.reject(
-        new Error(`Cannot find onput reference from tack: ${_.get(efactMessage, "tack.appliesTo")}`)
+        new Error(`Cannot find input reference from tack: ${_.get(efactMessage, "tack.appliesTo")}`)
       )
     }
     const ref = Number(refStr!!) % 10000000000
@@ -873,6 +873,7 @@ export class IccMessageXApi extends iccMessageApi {
                         )
                         .then(niv => {
                           iv.correctiveInvoiceId = niv.id
+
                           niv.invoicingCodes = (niv.invoicingCodes || []).concat(
                             _.assign({}, ic, {
                               id: this.crypto.randomUuid(),
