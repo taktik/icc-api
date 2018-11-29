@@ -78,6 +78,10 @@ export class InvoiceDto {
 
   groupId?: string
 
+  correctiveInvoiceId?: string
+
+  correctedInvoiceId?: string
+
   recipientType?: string
 
   recipientId?: string
@@ -143,10 +147,6 @@ export class InvoiceDto {
   receipts?: { [key: string]: string }
 
   encryptedSelf?: string
-
-  correctedInvoiceId?: string
-
-  correctiveInvoiceId?: string
 }
 export namespace InvoiceDto {
   export enum PaymentTypeEnum {

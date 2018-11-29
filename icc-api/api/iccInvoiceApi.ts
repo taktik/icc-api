@@ -203,6 +203,24 @@ export class iccInvoiceApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.InvoiceDto(it)))
       .catch(err => this.handleError(err))
   }
+  getTarificationsCodesOccurences(
+    minOccurences: number
+  ): Promise<Array<models.LabelledOccurenceDto> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/invoice/codes/{minOccurences}".replace("{minOccurences}", minOccurences + "") +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.LabelledOccurenceDto(it)))
+      .catch(err => this.handleError(err))
+  }
   listAllHcpsByStatus(
     status: string,
     from?: number,
