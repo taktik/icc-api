@@ -860,7 +860,6 @@ export class IccMessageXApi extends iccMessageApi {
                               "modified",
                               "sentDate",
                               "printedDate",
-                              "invoiceDate",
                               "secretForeignKeys",
                               "cryptedForeignKeys",
                               "delegations",
@@ -875,7 +874,6 @@ export class IccMessageXApi extends iccMessageApi {
                         .then(niv => {
                           iv.correctiveInvoiceId = niv.id
                           niv.correctedInvoiceId = iv.id
-                          niv.invoiceDate = niv.invoiceDate || new Date().getTime()
                           niv.invoicingCodes = (niv.invoicingCodes || []).concat(
                             _.assign({}, ic, {
                               id: this.crypto.randomUuid(),
