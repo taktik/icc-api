@@ -994,7 +994,9 @@ export class IccMessageXApi extends iccMessageApi {
             fullBase36,
             er && er.id ? Number(er.id.substr(prefix.length)) % 1000 : 0,
             smallBase36,
-            this.insuranceApi
+            this.insuranceApi,
+            this.invoiceXApi,
+            this
           )
         )
         .then(batch =>
