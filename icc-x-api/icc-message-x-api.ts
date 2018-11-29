@@ -881,7 +881,7 @@ export class IccMessageXApi extends iccMessageApi {
                               canceled: false,
                               pending: true,
                               resent: true,
-                              archive: false
+                              archived: false
                             })
                           )
                           return niv
