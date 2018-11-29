@@ -144,9 +144,12 @@ export class InvoiceDto {
 
   encryptedSelf?: string
 
-  correctedInvoiceId?: string
-
   correctiveInvoiceId?: string
+
+  correctedInvoiceId?: string
+  correctedInvoiceSendNumber?: string
+  correctedInvoiceReference?: string
+  correctedInvoiceInsuranceCode?: string
 }
 export namespace InvoiceDto {
   export enum PaymentTypeEnum {
