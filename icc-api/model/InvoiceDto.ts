@@ -78,6 +78,10 @@ export class InvoiceDto {
 
   groupId?: string
 
+  correctiveInvoiceId?: string
+
+  correctedInvoiceId?: string
+
   recipientType?: string
 
   recipientId?: string
@@ -130,6 +134,8 @@ export class InvoiceDto {
 
   creditNote?: boolean
 
+  creditNoteRelatedInvoiceId?: string
+
   careProviderType?: string
 
   error?: string
@@ -139,8 +145,6 @@ export class InvoiceDto {
   encounterLocationNihii?: string
 
   encounterLocationNorm?: number
-
-  correctiveInvoiceId?: string
 
   receipts?: { [key: string]: string }
 
