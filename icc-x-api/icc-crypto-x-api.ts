@@ -422,6 +422,7 @@ export class IccCryptoXApi {
       | models.InvoiceDto
       | models.HealthElementDto
       | models.ReceiptDto
+      | models.ClassificationDto
       | null,
     hcpartyId: string
   ): Promise<{ extractedKeys: Array<string>; hcpartyId: string }> {
@@ -446,6 +447,7 @@ export class IccCryptoXApi {
       | models.InvoiceDto
       | models.HealthElementDto
       | models.ReceiptDto
+      | models.ClassificationDto
       | null,
     hcpartyId: string
   ): Promise<{ extractedKeys: Array<string>; hcpartyId: string }> {
@@ -468,7 +470,8 @@ export class IccCryptoXApi {
       | models.DocumentDto
       | models.InvoiceDto
       | models.ReceiptDto
-      | models.HealthElementDto,
+      | models.HealthElementDto
+      | models.ClassificationDto,
     hcpartyId: string
   ): Promise<{ extractedKeys: Array<string>; hcpartyId: string }> {
     if (!document.encryptionKeys) {
