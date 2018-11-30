@@ -230,12 +230,6 @@ function toInvoice(
   invoice.ignorePrescriptionDate = !!invoiceDto.longDelayJustification
   invoice.creditNote = invoiceDto.creditNote
 
-  if (relatedInvoiceInfo) {
-    invoice.relatedBatchSendNumber = Number(relatedInvoiceInfo.sendNumber)
-    invoice.relatedInvoiceNumber = Number(relatedInvoiceInfo.invoiceReference)
-    invoice.relatedInvoiceIoCode = relatedInvoiceInfo.insuranceCode
-  }
-
   // TODO : fix me later
   invoice.reason = Invoice.ReasonEnum.Other
   invoice.creditNote = invoiceDto.creditNote
