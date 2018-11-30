@@ -134,6 +134,8 @@ export class InvoiceDto {
 
   creditNote?: boolean
 
+  creditNoteRelatedInvoiceId?: string
+
   careProviderType?: string
 
   error?: string

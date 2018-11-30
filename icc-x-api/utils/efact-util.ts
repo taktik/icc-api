@@ -4,8 +4,11 @@ import {
   InvoiceDto,
   InvoicingCodeDto,
   ListOfIdsDto,
-  PatientDto
+  PatientDto,
+  MessageDto
 } from "../../icc-api/model/models"
+import { IccInvoiceXApi, IccMessageXApi } from "../../icc-x-api"
+import { iccInsuranceApi } from "../../icc-api/api/iccInsuranceApi"
 
 import { InvoicesBatch, InvoiceItem, Invoice, EIDItem } from "fhc-api/dist/model/models"
 import { dateEncode, toMoment } from "./formatting-util"
@@ -13,13 +16,19 @@ import { toPatient } from "./fhc-patient-util"
 import { toInvoiceSender } from "./fhc-invoice-sender-util"
 import { isPatientHospitalized, getInsurability } from "./insurability-util"
 import * as _ from "lodash"
-import { iccInsuranceApi } from "../../icc-api/api/iccInsuranceApi"
 import { UuidEncoder } from "./uuid-encoder"
 import moment from "moment"
 
+export interface RelatedInvoiceInfo {
+  invoiceId: string
+  invoiceReference?: string
+  sendNumber?: string
+  insuranceCode?: string
+}
+
 export interface InvoiceWithPatient {
-  invoiceDto: InvoiceDto
   patientDto: PatientDto
+  invoiceDto: InvoiceDto
   aggregatedInvoice?: InvoiceDto
 }
 
@@ -32,7 +41,7 @@ export function getFederaton(
   return insuranceApi
     .getInsurances(
       new ListOfIdsDto({
-        ids: _.compact(invoices.map(iwp => getInsurability(iwp.patientDto).insuranceId))
+        ids: _.compact(invoices.map(iwp => iwp.invoiceDto.recipientId))
       })
     )
     .then((insurances: Array<InsuranceDto>) => {
@@ -51,19 +60,91 @@ export function getFederaton(
     })
 }
 
+export function getRelatedInvoicesInfo(
+  invoicesWithPatient: InvoiceWithPatient[],
+  insuranceApi: iccInsuranceApi,
+  invoiceXApi: IccInvoiceXApi,
+  messageXApi: IccMessageXApi
+) {
+  // Return the id of the related parentInvoice
+  const getRelatedInvoiceId = (iv: InvoiceDto) =>
+    (iv.creditNote && iv.creditNoteRelatedInvoiceId) || iv.correctedInvoiceId
+
+  return Promise.resolve(invoicesWithPatient).then(invoicesWithPatient => {
+    const invoices = _(invoicesWithPatient)
+      .map(iwp => iwp.invoiceDto)
+      .filter(piv => !!getRelatedInvoiceId(piv))
+      .value()
+
+    if (invoices.length === 0) {
+      return Promise.resolve([])
+    }
+
+    const relatedInvoiceIds = new ListOfIdsDto({
+      ids: invoices.map(iv => getRelatedInvoiceId(iv))
+    })
+
+    return Promise.all([
+      messageXApi.listMessagesByInvoiceIds(relatedInvoiceIds),
+      invoiceXApi.getInvoices(relatedInvoiceIds)
+    ]).then(result => {
+      const messages: MessageDto[] = result[0]
+      const relatedInvoices: InvoiceDto[] = result[1]
+      const insuranceIds = _(relatedInvoices)
+        .map(civ => civ.recipientId)
+        .uniq()
+        .value()
+
+      return insuranceApi
+        .getInsurances(new ListOfIdsDto({ ids: insuranceIds }))
+        .then((insurances: InsuranceDto[]) => {
+          const relatedInvoicesInfo: RelatedInvoiceInfo[] = []
+
+          _.forEach(invoices, invoice => {
+            const relatedInvoice = _.find(
+              relatedInvoices,
+              riv => !!(riv.id === getRelatedInvoiceId(invoice))
+            )
+            const message = _.find(
+              messages,
+              m => !!(relatedInvoice && m.invoiceIds!!.indexOf(relatedInvoice.id!!) > -1)
+            )
+            const insurance = _.find(
+              insurances,
+              ins => !!(relatedInvoice && ins.id === relatedInvoice.recipientId)
+            )
+
+            if (!relatedInvoice || !message || !insurance) return
+
+            relatedInvoicesInfo.push({
+              invoiceId: invoice.id!!,
+              insuranceCode: insurance.code,
+              invoiceReference: relatedInvoice.invoiceReference,
+              sendNumber: message.externalRef
+            })
+          })
+
+          return relatedInvoicesInfo
+        })
+    })
+  })
+}
+
 // Here we trust the invoices argument for grouping validity (month, year and patient)
 export function toInvoiceBatch(
-  invoices: Array<InvoiceWithPatient>,
+  invoicesWithPatient: Array<InvoiceWithPatient>,
   hcp: HealthcarePartyDto,
   batchRef: string,
   batchNumber: number,
   fileRef: string,
-  insuranceApi: iccInsuranceApi
+  insuranceApi: iccInsuranceApi,
+  invoiceXApi: IccInvoiceXApi,
+  messageXApi: IccMessageXApi
 ): Promise<InvoicesBatch> {
   return insuranceApi
     .getInsurances(
       new ListOfIdsDto({
-        ids: _.compact(invoices.map(iwp => getInsurability(iwp.patientDto).insuranceId))
+        ids: _.compact(invoicesWithPatient.map(iwp => iwp.invoiceDto.recipientId))
       })
     )
     .then((insurances: Array<InsuranceDto>) => {
@@ -78,33 +159,51 @@ export function toInvoiceBatch(
             throw "The provided invoices are not addressed to insurances belonging to the same federation"
           }
 
-          const invoicesBatch = new InvoicesBatch({})
+          return getRelatedInvoicesInfo(
+            invoicesWithPatient,
+            insuranceApi,
+            invoiceXApi,
+            messageXApi
+          ).then((relatedInvoicesInfo: RelatedInvoiceInfo[]) => {
+            const invoicesBatch = new InvoicesBatch({})
 
-          invoicesBatch.batchRef = batchRef
-          invoicesBatch.fileRef = fileRef
-          invoicesBatch.invoices = _.map(invoices, (invWithPat: InvoiceWithPatient) => {
-            const invoice = invWithPat.aggregatedInvoice
-              ? invWithPat.aggregatedInvoice
-              : invWithPat.invoiceDto
+            invoicesBatch.batchRef = batchRef
+            invoicesBatch.fileRef = fileRef
+            invoicesBatch.invoices = _.map(
+              invoicesWithPatient,
+              (invWithPat: InvoiceWithPatient) => {
+                const invoice = invWithPat.aggregatedInvoice || invWithPat.invoiceDto
+                const relatedInvoiceInfo = _.find(
+                  relatedInvoicesInfo,
+                  rivi => rivi.invoiceId === invoice.id
+                )
+                const insurance = insurances.find(ins => ins.id === invoice.recipientId)
+                if (!insurance) {
+                  throw "Insurance is invalid for patient " + invWithPat.patientDto.id
+                }
 
-            const ins = insurances.find(
-              i => i.id === getInsurability(invWithPat.patientDto).insuranceId
+                return toInvoice(
+                  hcp.nihii!!,
+                  invoice,
+                  invWithPat.patientDto,
+                  insurance,
+                  relatedInvoiceInfo
+                )
+              }
             )
-            if (!ins) {
-              throw "Insurance is invalid for patient " + invWithPat.patientDto.id
-            }
-            return toInvoice(hcp.nihii!!, invoice, invWithPat.patientDto, ins)
-          })
-          invoicesBatch.invoicingMonth =
-            toMoment(invoices[0].invoiceDto.invoiceDate!!)!!.month() + 1
-          invoicesBatch.invoicingYear = toMoment(invoices[0].invoiceDto.invoiceDate!!)!!.year()
-          invoicesBatch.ioFederationCode = fedCodes[0]
-          invoicesBatch.numericalRef =
-            moment().get("year") * 1000000 + Number(fedCodes[0]) * 1000 + batchNumber
-          invoicesBatch.sender = toInvoiceSender(hcp)
-          invoicesBatch.uniqueSendNumber = batchNumber
+            invoicesBatch.invoicingMonth =
+              toMoment(invoicesWithPatient[0].invoiceDto.invoiceDate!!)!!.month() + 1
+            invoicesBatch.invoicingYear = toMoment(
+              invoicesWithPatient[0].invoiceDto.invoiceDate!!
+            )!!.year()
+            invoicesBatch.ioFederationCode = fedCodes[0]
+            invoicesBatch.numericalRef =
+              moment().get("year") * 1000000 + Number(fedCodes[0]) * 1000 + batchNumber
+            invoicesBatch.sender = toInvoiceSender(hcp)
+            invoicesBatch.uniqueSendNumber = batchNumber
 
-          return invoicesBatch
+            return invoicesBatch
+          })
         })
     })
 }
@@ -113,7 +212,8 @@ function toInvoice(
   nihiiHealthcareProvider: string,
   invoiceDto: InvoiceDto,
   patientDto: PatientDto,
-  insurance: InsuranceDto
+  insurance: InsuranceDto,
+  relatedInvoiceInfo: RelatedInvoiceInfo | undefined
 ): Invoice {
   const invoice = new Invoice({})
 
@@ -129,6 +229,12 @@ function toInvoice(
   invoice.patient = toPatient(patientDto)
   invoice.ignorePrescriptionDate = !!invoiceDto.longDelayJustification
   invoice.creditNote = invoiceDto.creditNote
+
+  if (relatedInvoiceInfo) {
+    invoice.relatedBatchSendNumber = Number(relatedInvoiceInfo.sendNumber)
+    invoice.relatedInvoiceNumber = Number(relatedInvoiceInfo.invoiceReference)
+    invoice.relatedInvoiceIoCode = relatedInvoiceInfo.insuranceCode
+  }
 
   // TODO : fix me later
   invoice.reason = Invoice.ReasonEnum.Other
