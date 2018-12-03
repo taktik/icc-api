@@ -24,23 +24,19 @@
 
 import * as models from "./models"
 
-export class ImportResultDto {
+export class IdentityDocumentReader {
   constructor(json: JSON | any) {
-    Object.assign(this as ImportResultDto, json)
+    Object.assign(this as IdentityDocumentReader, json)
   }
-  patient?: models.PatientDto
+  justificatifDocumentNumber?: string
 
-  hes?: Array<models.HealthElementDto>
+  timeReadingEIdDocument?: number
 
-  ctcs?: Array<models.ContactDto>
+  geteIdDocumentSupportType?: number
 
-  warnings?: Array<string>
+  reasonManualEncoding?: number
 
-  errors?: Array<string>
+  reasonUsingVignette?: number
 
-  forms?: Array<models.FormDto>
-
-  hcps?: Array<models.HealthcarePartyDto>
-
-  documents?: Array<models.DocumentDto>
+  supportSerialNumber?: string
 }
