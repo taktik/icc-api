@@ -180,11 +180,16 @@ export class IccInvoiceXApi extends iccInvoiceApi {
    * After these painful steps, you have the invoices of the patient.
    *
    * @param hcpartyId
-   * @param patient (Promise)
+   * @param patient
+   * @param doNotExtractFromParent if true, don't try to decrypt with the parent HCP
    */
-  findBy(hcpartyId: string, patient: models.PatientDto): Promise<Array<models.InvoiceDto>> {
+  findBy(
+    hcpartyId: string,
+    patient: models.PatientDto,
+    doNotExtractFromParent?: boolean
+  ): Promise<Array<models.InvoiceDto>> {
     return this.crypto
-      .extractDelegationsSFKs(patient, hcpartyId)
+      .extractDelegationsSFKs(patient, hcpartyId, doNotExtractFromParent)
       .then(secretForeignKeys =>
         this.findByHCPartyPatientSecretFKeys(
           secretForeignKeys.hcpartyId,
