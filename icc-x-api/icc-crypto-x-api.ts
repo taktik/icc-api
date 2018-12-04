@@ -424,7 +424,8 @@ export class IccCryptoXApi {
       | models.ReceiptDto
       | models.ClassificationDto
       | null,
-    hcpartyId: string
+    hcpartyId: string,
+    doNotExtractFromParent?: boolean
   ): Promise<{ extractedKeys: Array<string>; hcpartyId: string }> {
     if (!document) {
       return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
@@ -434,7 +435,7 @@ export class IccCryptoXApi {
       console.log(`There is no delegation in document (${document.id})`)
       return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
     }
-    return this.extractSfks(hcpartyId, document.id!, dels)
+    return this.extractSfks(hcpartyId, document.id!, dels, doNotExtractFromParent)
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -488,7 +489,8 @@ export class IccCryptoXApi {
   extractSfks(
     hcpartyId: string,
     objectId: string,
-    delegations: { [key: string]: Array<models.DelegationDto> }
+    delegations: { [key: string]: Array<models.DelegationDto> },
+    doNotExtractFromParent?: boolean
   ): Promise<{ extractedKeys: Array<string>; hcpartyId: string }> {
     return this.getHealthcareParty(hcpartyId).then(hcp =>
       this.decryptAndImportAesHcPartyKeysInDelegations(hcpartyId, delegations, false)
@@ -499,7 +501,7 @@ export class IccCryptoXApi {
         })
         .then(
           extractedKeys =>
-            hcp.parentId
+            hcp.parentId && !doNotExtractFromParent
               ? this.extractSfks(hcp.parentId, objectId, delegations).then(parentResponse =>
                   _.assign(parentResponse, {
                     extractedKeys: parentResponse.extractedKeys.concat(extractedKeys)
