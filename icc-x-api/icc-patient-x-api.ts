@@ -90,7 +90,7 @@ export class IccPatientXApi extends iccPatientApi {
       })
   }
 
-  createPatient(body?: models.PatientDto): Promise<models.PatientDto | any> {
+  createPatient(body?: models.PatientDto): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
     )
@@ -116,7 +116,7 @@ export class IccPatientXApi extends iccPatientApi {
     sort?: string,
     desc?: boolean,
     body?: models.FilterChain
-  ): Promise<models.PatientPaginatedList | any> {
+  ): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
     )
@@ -144,7 +144,7 @@ export class IccPatientXApi extends iccPatientApi {
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<models.PatientPaginatedList | any> {
+  ): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
     )
@@ -164,7 +164,7 @@ export class IccPatientXApi extends iccPatientApi {
       .then(pl => this.decrypt(user, pl.rows).then(dr => Object.assign(pl, { rows: dr })))
   }
 
-  findByAccessLogUserAfterDate_1(externalId: string): Promise<models.PatientDto | any> {
+  findByAccessLogUserAfterDate_1(externalId: string): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
     )
@@ -184,7 +184,7 @@ export class IccPatientXApi extends iccPatientApi {
     startDocumentId?: string,
     limit?: number,
     sortDirection?: string
-  ): Promise<models.PatientPaginatedList | any> {
+  ): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
     )
@@ -211,11 +211,7 @@ export class IccPatientXApi extends iccPatientApi {
       .then(pl => this.decrypt(user, pl.rows).then(dr => Object.assign(pl, { rows: dr })))
   }
 
-  fuzzySearch(
-    firstName?: string,
-    lastName?: string,
-    dateOfBirth?: number
-  ): Promise<Array<models.PatientDto> | any> {
+  fuzzySearch(firstName?: string, lastName?: string, dateOfBirth?: number): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
     )
@@ -232,7 +228,7 @@ export class IccPatientXApi extends iccPatientApi {
       .then(pats => this.decrypt(user, pats))
   }
 
-  getPatient(patientId: string): Promise<models.PatientDto | any> {
+  getPatient(patientId: string): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
     )
@@ -245,7 +241,7 @@ export class IccPatientXApi extends iccPatientApi {
       .then(pats => pats[0])
   }
 
-  getPatients(body?: models.ListOfIdsDto): Promise<Array<models.PatientDto> | any> {
+  getPatients(body?: models.ListOfIdsDto): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
     )
@@ -264,7 +260,7 @@ export class IccPatientXApi extends iccPatientApi {
     desc?: boolean,
     startDocumentId?: string,
     limit?: number
-  ): Promise<models.PatientPaginatedList | any> {
+  ): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
     )
@@ -283,10 +279,7 @@ export class IccPatientXApi extends iccPatientApi {
       .then(pl => this.decrypt(user, pl.rows).then(dr => Object.assign(pl, { rows: dr })))
   }
 
-  listDeletedPatients_2(
-    firstName?: string,
-    lastName?: string
-  ): Promise<Array<models.PatientPaginatedList> | any> {
+  listDeletedPatients_2(firstName?: string, lastName?: string): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
     )
@@ -302,7 +295,7 @@ export class IccPatientXApi extends iccPatientApi {
       .then(pl => this.decrypt(user, pl.rows).then(dr => Object.assign(pl, { rows: dr })))
   }
 
-  listOfMergesAfter(date: number): Promise<Array<models.PatientDto> | any> {
+  listOfMergesAfter(date: number): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
     )
@@ -320,7 +313,7 @@ export class IccPatientXApi extends iccPatientApi {
     startKey?: number,
     startDocumentId?: string,
     limit?: number
-  ): Promise<models.PatientPaginatedList | any> {
+  ): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
     )
@@ -345,7 +338,7 @@ export class IccPatientXApi extends iccPatientApi {
     startDocumentId?: string,
     limit?: number,
     sortDirection?: string
-  ): Promise<models.PatientPaginatedList | any> {
+  ): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
     )
@@ -372,7 +365,7 @@ export class IccPatientXApi extends iccPatientApi {
     startDocumentId?: string,
     limit?: number,
     sortDirection?: string
-  ): Promise<models.PatientPaginatedList | any> {
+  ): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
     )
@@ -399,7 +392,7 @@ export class IccPatientXApi extends iccPatientApi {
     startDocumentId?: string,
     limit?: number,
     sortDirection?: string
-  ): Promise<models.PatientPaginatedList | any> {
+  ): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
     )
@@ -419,7 +412,7 @@ export class IccPatientXApi extends iccPatientApi {
       .then(pl => this.decrypt(user, pl.rows).then(dr => Object.assign(pl, { rows: dr })))
   }
 
-  mergeInto(toId: string, fromIds: string): Promise<models.PatientDto | any> {
+  mergeInto(toId: string, fromIds: string): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
     )
@@ -436,7 +429,7 @@ export class IccPatientXApi extends iccPatientApi {
       .then(pats => pats[0])
   }
 
-  modifyPatient(body?: models.PatientDto): Promise<models.PatientDto | any> {
+  modifyPatient(body?: models.PatientDto): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
     )
@@ -459,7 +452,7 @@ export class IccPatientXApi extends iccPatientApi {
     referralId: string,
     start?: number,
     end?: number
-  ): Promise<models.PatientDto | any> {
+  ): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
     )
