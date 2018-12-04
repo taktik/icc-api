@@ -91,7 +91,9 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   createPatient(body?: models.PatientDto): Promise<models.PatientDto | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+    throw new Error(
+      "Cannot call a method that returns contacts without providing a user for de/encryption"
+    )
   }
 
   createPatientWithUser(
@@ -115,7 +117,9 @@ export class IccPatientXApi extends iccPatientApi {
     desc?: boolean,
     body?: models.FilterChain
   ): Promise<models.PatientPaginatedList | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+    throw new Error(
+      "Cannot call a method that returns contacts without providing a user for de/encryption"
+    )
   }
 
   filterByWithUser(
@@ -141,7 +145,9 @@ export class IccPatientXApi extends iccPatientApi {
     startDocumentId?: string,
     limit?: number
   ): Promise<models.PatientPaginatedList | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+    throw new Error(
+      "Cannot call a method that returns contacts without providing a user for de/encryption"
+    )
   }
 
   findByAccessLogUserAfterDateWithUser(
@@ -159,7 +165,9 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   findByAccessLogUserAfterDate_1(externalId: string): Promise<models.PatientDto | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+    throw new Error(
+      "Cannot call a method that returns contacts without providing a user for de/encryption"
+    )
   }
 
   findByAccessLogUserAfterDate_1WithUser(
@@ -177,7 +185,9 @@ export class IccPatientXApi extends iccPatientApi {
     limit?: number,
     sortDirection?: string
   ): Promise<models.PatientPaginatedList | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+    throw new Error(
+      "Cannot call a method that returns contacts without providing a user for de/encryption"
+    )
   }
 
   findByNameBirthSsinAutoWithUser(
@@ -206,7 +216,9 @@ export class IccPatientXApi extends iccPatientApi {
     lastName?: string,
     dateOfBirth?: number
   ): Promise<Array<models.PatientDto> | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+    throw new Error(
+      "Cannot call a method that returns contacts without providing a user for de/encryption"
+    )
   }
 
   fuzzySearchWithUser(
@@ -221,7 +233,9 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   getPatient(patientId: string): Promise<models.PatientDto | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+    throw new Error(
+      "Cannot call a method that returns contacts without providing a user for de/encryption"
+    )
   }
 
   getPatientWithUser(user: models.UserDto, patientId: string): Promise<models.PatientDto | any> {
@@ -232,7 +246,9 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   getPatients(body?: models.ListOfIdsDto): Promise<Array<models.PatientDto> | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+    throw new Error(
+      "Cannot call a method that returns contacts without providing a user for de/encryption"
+    )
   }
 
   getPatientsWithUser(
@@ -249,7 +265,9 @@ export class IccPatientXApi extends iccPatientApi {
     startDocumentId?: string,
     limit?: number
   ): Promise<models.PatientPaginatedList | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+    throw new Error(
+      "Cannot call a method that returns contacts without providing a user for de/encryption"
+    )
   }
 
   listDeletedPatientsWithUser(
@@ -269,7 +287,9 @@ export class IccPatientXApi extends iccPatientApi {
     firstName?: string,
     lastName?: string
   ): Promise<Array<models.PatientPaginatedList> | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+    throw new Error(
+      "Cannot call a method that returns contacts without providing a user for de/encryption"
+    )
   }
 
   listDeletedPatients_2WithUser(
@@ -283,7 +303,9 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   listOfMergesAfter(date: number): Promise<Array<models.PatientDto> | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+    throw new Error(
+      "Cannot call a method that returns contacts without providing a user for de/encryption"
+    )
   }
 
   listOfMergesAfterWithUser(
@@ -299,7 +321,9 @@ export class IccPatientXApi extends iccPatientApi {
     startDocumentId?: string,
     limit?: number
   ): Promise<models.PatientPaginatedList | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+    throw new Error(
+      "Cannot call a method that returns contacts without providing a user for de/encryption"
+    )
   }
 
   listOfPatientsModifiedAfterWithUser(
@@ -322,7 +346,9 @@ export class IccPatientXApi extends iccPatientApi {
     limit?: number,
     sortDirection?: string
   ): Promise<models.PatientPaginatedList | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+    throw new Error(
+      "Cannot call a method that returns contacts without providing a user for de/encryption"
+    )
   }
 
   listPatientsWithUser(
@@ -347,7 +373,9 @@ export class IccPatientXApi extends iccPatientApi {
     limit?: number,
     sortDirection?: string
   ): Promise<models.PatientPaginatedList | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+    throw new Error(
+      "Cannot call a method that returns contacts without providing a user for de/encryption"
+    )
   }
 
   listPatientsByHcPartyWithUser(
@@ -372,7 +400,9 @@ export class IccPatientXApi extends iccPatientApi {
     limit?: number,
     sortDirection?: string
   ): Promise<models.PatientPaginatedList | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+    throw new Error(
+      "Cannot call a method that returns contacts without providing a user for de/encryption"
+    )
   }
 
   listPatientsOfHcPartyWithUser(
@@ -390,7 +420,9 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   mergeInto(toId: string, fromIds: string): Promise<models.PatientDto | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+    throw new Error(
+      "Cannot call a method that returns contacts without providing a user for de/encryption"
+    )
   }
 
   mergeIntoWithUser(
@@ -405,7 +437,9 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   modifyPatient(body?: models.PatientDto): Promise<models.PatientDto | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+    throw new Error(
+      "Cannot call a method that returns contacts without providing a user for de/encryption"
+    )
   }
 
   modifyPatientWithUser(
@@ -426,7 +460,9 @@ export class IccPatientXApi extends iccPatientApi {
     start?: number,
     end?: number
   ): Promise<models.PatientDto | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+    throw new Error(
+      "Cannot call a method that returns contacts without providing a user for de/encryption"
+    )
   }
 
   modifyPatientReferralWithUser(
