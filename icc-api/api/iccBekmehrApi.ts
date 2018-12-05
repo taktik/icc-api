@@ -196,6 +196,32 @@ export class iccBekmehrApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.ImportResultDto(it)))
       .catch(err => this.handleError(err))
   }
+  importSumehr(
+    documentId: string,
+    documentKey?: string,
+    patientId?: string,
+    language?: string,
+    body?: any
+  ): Promise<Array<models.ImportResultDto> | any> {
+    let _body = null
+    _body = body
+
+    const _url =
+      this.host +
+      "/be_kmehr/sumehr/{documentId}/import".replace("{documentId}", documentId + "") +
+      "?ts=" +
+      new Date().getTime() +
+      (documentKey ? "&documentKey=" + documentKey : "") +
+      (patientId ? "&patientId=" + patientId : "") +
+      (language ? "&language=" + language : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.ImportResultDto(it)))
+      .catch(err => this.handleError(err))
+  }
   isSumehrValid(
     patientId: string,
     hcPartyId?: string,

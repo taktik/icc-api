@@ -4,9 +4,8 @@ import { IccCryptoXApi } from "./icc-crypto-x-api"
 import * as models from "../icc-api/model/models"
 
 import * as _ from "lodash"
+import moment from "moment"
 import { XHR } from "../icc-api/api/XHR"
-import { utils } from "./crypto/utils"
-import { AES } from "./crypto/AES"
 
 export class IccClassificationXApi extends iccClassificationApi {
   crypto: IccCryptoXApi
@@ -14,6 +13,84 @@ export class IccClassificationXApi extends iccClassificationApi {
   constructor(host: string, headers: Array<XHR.Header>, crypto: IccCryptoXApi) {
     super(host, headers)
     this.crypto = crypto
+  }
+
+  newInstance(
+    user: models.UserDto,
+    patient: models.PatientDto,
+    c: any
+  ): Promise<models.ClassificationDto> {
+    const classification = _.assign(
+      {
+        id: this.crypto.randomUuid(),
+        _type: "org.taktik.icure.entities.Classification",
+        created: new Date().getTime(),
+        modified: new Date().getTime(),
+        responsible: user.healthcarePartyId,
+        author: user.id,
+        codes: [],
+        tags: [],
+        healthElementId: this.crypto.randomUuid(),
+        openingDate: parseInt(moment().format("YYYYMMDDHHmmss"))
+      },
+      c || {}
+    )
+
+    return this.initDelegationsAndEncryptionKeys(user, patient, classification)
+  }
+
+  initDelegationsAndEncryptionKeys(
+    user: models.UserDto,
+    patient: models.PatientDto,
+    classification: models.ClassificationDto
+  ): Promise<models.ClassificationDto> {
+    return this.crypto
+      .extractDelegationsSFKs(patient, user.healthcarePartyId!)
+      .then(secretForeignKeys =>
+        this.crypto.initObjectDelegations(
+          classification,
+          patient,
+          user.healthcarePartyId!,
+          secretForeignKeys.extractedKeys[0]
+        )
+      )
+      .then(initData => {
+        _.extend(classification, {
+          delegations: initData.delegations,
+          cryptedForeignKeys: initData.cryptedForeignKeys,
+          secretForeignKeys: initData.secretForeignKeys
+        })
+
+        let promise = Promise.resolve(classification)
+        ;(user.autoDelegations
+          ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
+          : []
+        ).forEach(
+          delegateId =>
+            (promise = promise.then(classification =>
+              this.crypto
+                .appendObjectDelegations(
+                  classification,
+                  patient,
+                  user.healthcarePartyId!,
+                  delegateId,
+                  initData.secretId
+                )
+                .then(extraData =>
+                  _.extend(classification, {
+                    delegations: extraData.delegations,
+                    cryptedForeignKeys: extraData.cryptedForeignKeys
+                  })
+                )
+                .catch(e => {
+                  console.log(e)
+                  return classification
+                })
+            ))
+        )
+
+        return promise
+      })
   }
 
   findBy(hcpartyId: string, patient: models.PatientDto) {
@@ -25,89 +102,5 @@ export class IccClassificationXApi extends iccClassificationApi {
           secretForeignKeys.extractedKeys.join(",")
         )
       )
-    /* TODO: Decrypt if needed. The code below is copied from the health elements for reference.
-      .then((helements: Array<models.HealthElementDto>) => this.decrypt(hcpartyId, helements))
-      .then((decryptedHelements: Array<models.HealthElementDto>) => {
-        const byIds: { [key: string]: models.HealthElementDto } = {}
-
-        if (keepObsoleteVersions) {
-          return decryptedHelements
-        } else {
-          decryptedHelements.forEach(he => {
-            if (he.healthElementId) {
-              const phe = byIds[he.healthElementId]
-              if (!phe || !phe.modified || (he.modified && phe.modified < he.modified)) {
-                byIds[he.healthElementId] = he
-              }
-            }
-          })
-          return _.values(byIds).filter((s: any) => !s.endOfLife)
-        }
-      })
-      */
   }
-
-  /** TODO: Implement decryption (if needed). The code below is copied from the health elements for reference.
-  decrypt(
-    hcpartyId: string,
-    hes: Array<models.HealthElementDto>
-  ): Promise<Array<models.HealthElementDto>> {
-    return Promise.all(
-      hes.map(he =>
-        this.crypto
-          .decryptAndImportAesHcPartyKeysInDelegations(hcpartyId, he.delegations!)
-          .then(
-            (
-              decryptedAndImportedAesHcPartyKeys: Array<{
-                delegatorId: string
-                key: CryptoKey
-              }>
-            ) => {
-              var collatedAesKeys: { [key: string]: CryptoKey } = {}
-              decryptedAndImportedAesHcPartyKeys.forEach(
-                k => (collatedAesKeys[k.delegatorId] = k.key)
-              )
-              return this.crypto
-                .decryptDelegationsSFKs(he.delegations![hcpartyId], collatedAesKeys, he.id!)
-                .then((sfks: Array<string>) => {
-                  if (!sfks || !sfks.length) {
-                    console.log("Cannot decrypt helement", he.id)
-                    return Promise.resolve(he)
-                  }
-                  if (he.encryptedSelf) {
-                    return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(
-                      key =>
-                        new Promise((resolve: (value: any) => any) =>
-                          AES.decrypt(key, utils.text2ua(atob(he.encryptedSelf!))).then(
-                            dec => {
-                              let jsonContent
-                              try {
-                                jsonContent = dec && utils.ua2utf8(dec)
-                                jsonContent && _.assign(he, JSON.parse(jsonContent))
-                              } catch (e) {
-                                console.log(
-                                  "Cannot parse he",
-                                  he.id,
-                                  jsonContent || "<- Invalid encoding"
-                                )
-                              }
-                              resolve(he)
-                            },
-                            () => {
-                              console.log("Cannot decrypt contact", he.id)
-                              resolve(he)
-                            }
-                          )
-                        )
-                    )
-                  } else {
-                    return Promise.resolve(he)
-                  }
-                })
-            }
-          )
-      )
-    )
-  }
-  */
 }

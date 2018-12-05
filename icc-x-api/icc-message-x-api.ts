@@ -592,7 +592,7 @@ export class IccMessageXApi extends iccMessageApi {
         )
         .then(rcpt =>
           this.receiptXApi.setAttachment(rcpt.id, "tack", undefined, <any>(
-            utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(efactMessage.tack)))
+            utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(efactMessage)))
           ))
         )
         .then(() => {
@@ -873,7 +873,7 @@ export class IccMessageXApi extends iccMessageApi {
                         )
                         .then(niv => {
                           iv.correctiveInvoiceId = niv.id
-
+                          niv.correctedInvoiceId = iv.id
                           niv.invoicingCodes = (niv.invoicingCodes || []).concat(
                             _.assign({}, ic, {
                               id: this.crypto.randomUuid(),
@@ -994,7 +994,9 @@ export class IccMessageXApi extends iccMessageApi {
             fullBase36,
             er && er.id ? Number(er.id.substr(prefix.length)) % 1000 : 0,
             smallBase36,
-            this.insuranceApi
+            this.insuranceApi,
+            this.invoiceXApi,
+            this
           )
         )
         .then(batch =>
