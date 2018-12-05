@@ -76,6 +76,27 @@ export class iccClassificationTemplateApi {
       .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
       .catch(err => this.handleError(err))
   }
+  findByHCPartyPatientSecretFKeys(
+    hcPartyId?: string,
+    secretFKeys?: string
+  ): Promise<Array<models.ClassificationDto> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/classificationTemplate/byHcPartySecretForeignKeys" +
+      "?ts=" +
+      new Date().getTime() +
+      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
+      (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.ClassificationDto(it)))
+      .catch(err => this.handleError(err))
+  }
   getClassificationTemplate(
     classificationTemplateId: string
   ): Promise<models.ClassificationTemplateDto | any> {
@@ -95,6 +116,24 @@ export class iccClassificationTemplateApi {
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.ClassificationTemplateDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+  getClassificationTemplateByIds(
+    ids: string
+  ): Promise<Array<models.ClassificationTemplateDto> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/classificationTemplate/byIds/{ids}".replace("{ids}", ids + "") +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.ClassificationTemplateDto(it)))
       .catch(err => this.handleError(err))
   }
   modifyClassificationTemplate(

@@ -54,5 +54,9 @@ export class MedicationDto {
 
   regimen?: Array<models.RegimenItemDto>
 
+  posology?: string
+
   options?: { [key: string]: models.ContentDto }
+
+  agreements?: { [key: string]: models.ParagraphAgreementDto }
 }

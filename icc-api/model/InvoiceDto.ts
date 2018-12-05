@@ -64,6 +64,10 @@ export class InvoiceDto {
 
   paid?: number
 
+  paymentType?: InvoiceDto.PaymentTypeEnum
+
+  payments?: Array<models.Payment>
+
   invoicingCodes?: Array<models.InvoicingCodeDto>
 
   invoiceType?: string
@@ -74,6 +78,10 @@ export class InvoiceDto {
 
   groupId?: string
 
+  correctiveInvoiceId?: string
+
+  correctedInvoiceId?: string
+
   recipientType?: string
 
   recipientId?: string
@@ -81,6 +89,10 @@ export class InvoiceDto {
   invoiceReference?: string
 
   thirdPartyReference?: string
+
+  thirdPartyPaymentJustification?: string
+
+  thirdPartyPaymentReason?: string
 
   gnotionNihii?: string
 
@@ -104,15 +116,50 @@ export class InvoiceDto {
 
   internshipCdHcParty?: string
 
+  internshipCbe?: string
+
+  supervisorNihii?: string
+
+  supervisorSsin?: string
+
+  supervisorLastName?: string
+
+  supervisorFirstName?: string
+
+  supervisorCdHcParty?: string
+
+  supervisorCbe?: string
+
   longDelayJustification?: number
 
   creditNote?: boolean
+
+  creditNoteRelatedInvoiceId?: string
 
   careProviderType?: string
 
   error?: string
 
+  encounterLocationName?: string
+
+  encounterLocationNihii?: string
+
+  encounterLocationNorm?: number
+
   receipts?: { [key: string]: string }
 
+  idDocument?: models.IdentityDocumentReader
+
   encryptedSelf?: string
+}
+export namespace InvoiceDto {
+  export enum PaymentTypeEnum {
+    Wired = <any>"wired",
+    Cash = <any>"cash",
+    Insurance = <any>"insurance",
+    Creditcard = <any>"creditcard",
+    Debitcard = <any>"debitcard",
+    Paypal = <any>"paypal",
+    Bitcoin = <any>"bitcoin"
+  }
 }

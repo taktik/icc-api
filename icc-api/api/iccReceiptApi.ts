@@ -71,7 +71,11 @@ export class iccReceiptApi {
       .then(doc => new models.ReceiptDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  getAttachment(receiptId: string, attachmentId: string, enckeys?: string): Promise<any | Boolean> {
+  getAttachment(
+    receiptId: string,
+    attachmentId: string,
+    enckeys?: string
+  ): Promise<ArrayBuffer | any> {
     let _body = null
 
     const _url =
@@ -87,7 +91,7 @@ export class iccReceiptApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => (doc.contentType.startsWith("application/octet-stream") ? doc.body : true))
+      .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }
   getReceipt(receiptId: string): Promise<models.ReceiptDto | any> {
@@ -132,12 +136,11 @@ export class iccReceiptApi {
       .then(doc => new models.ReceiptDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-
   setAttachment(
     receiptId: string,
     blobType: string,
     enckeys?: string,
-    body?: ArrayBuffer
+    body?: Array<string>
   ): Promise<models.ReceiptDto | any> {
     let _body = null
     _body = body

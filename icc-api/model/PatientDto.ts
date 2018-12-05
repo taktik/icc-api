@@ -68,6 +68,8 @@ export class PatientDto {
 
   active?: boolean
 
+  deactivationReason?: PatientDto.DeactivationReasonEnum
+
   chronicalDisease?: string
 
   ssin?: string
@@ -97,6 +99,8 @@ export class PatientDto {
   profession?: string
 
   note?: string
+
+  administrativeNote?: string
 
   warning?: string
 
@@ -129,4 +133,15 @@ export class PatientDto {
   patientProfessions?: Array<models.CodeDto>
 
   encryptedSelf?: string
+}
+export namespace PatientDto {
+  export enum DeactivationReasonEnum {
+    Deceased = <any>"deceased",
+    Moved = <any>"moved",
+    OtherDoctor = <any>"other_doctor",
+    Retired = <any>"retired",
+    NoContact = <any>"no_contact",
+    Unknown = <any>"unknown",
+    None = <any>"none"
+  }
 }

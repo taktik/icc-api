@@ -92,5 +92,9 @@ export class MessageDto {
 
   senderReferences?: { [key: string]: string }
 
+  unassignedResults?: Array<string>
+
+  assignedResults?: { [key: string]: string }
+
   encryptedSelf?: string
 }

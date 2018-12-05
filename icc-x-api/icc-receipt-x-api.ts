@@ -1,7 +1,7 @@
 import { iccReceiptApi } from "../icc-api/iccApi"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 import { utils } from "./crypto/utils"
-
+import moment from "moment"
 import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
 import { XHR } from "../icc-api/api/XHR"
@@ -67,14 +67,19 @@ export class IccReceiptXApi extends iccReceiptApi {
       ).forEach(
         delegateId =>
           (promise = promise.then(receipt =>
-            this.crypto.addDelegationsAndEncryptionKeys(
-              null,
-              receipt,
-              user.healthcarePartyId!,
-              delegateId,
-              dels.secretId,
-              eks.secretId
-            )
+            this.crypto
+              .addDelegationsAndEncryptionKeys(
+                null,
+                receipt,
+                user.healthcarePartyId!,
+                delegateId,
+                dels.secretId,
+                eks.secretId
+              )
+              .catch(e => {
+                console.log(e)
+                return receipt
+              })
           ))
       )
       return promise
@@ -95,7 +100,7 @@ export class IccReceiptXApi extends iccReceiptApi {
         delegateId =>
           (promise = promise.then(receipt =>
             this.crypto
-              .appendEncryptionKeys(receipt, user.healthcarePartyId!, eks.secretId)
+              .appendEncryptionKeys(receipt, user.healthcarePartyId!, delegateId, eks.secretId)
               .then(extraEks => {
                 return _.extend(receipt, {
                   encryptionKeys: extraEks.encryptionKeys
@@ -116,7 +121,7 @@ export class IccReceiptXApi extends iccReceiptApi {
   ) {
     return this.newInstance(user, { documentId: docId, references: refs })
       .then(rcpt => this.createReceipt(rcpt))
-      .then(rcpt => this.setAttachment(rcpt.id, blobType, undefined, blob))
+      .then(rcpt => this.setAttachment(rcpt.id, blobType, undefined, <any>blob))
   }
 
   logSCReceipt(
@@ -131,31 +136,33 @@ export class IccReceiptXApi extends iccReceiptApi {
       | InsurabilityInfoDto,
     user: models.UserDto,
     docId: string,
+    cat: string,
+    subcat: string,
     refs: Array<string> = []
   ) {
     return this.newInstance(user, {
+      category: cat,
+      subCategory: subcat,
       documentId: docId,
       references: refs.concat(
         object.commonOutput
           ? _.compact([
               object.commonOutput.inputReference &&
-                `mycarenet:efact:inputReference:${object.commonOutput.inputReference}`,
+                `mycarenet:${cat}:inputReference:${object.commonOutput.inputReference}`,
               object.commonOutput.inputReference &&
-                `mycarenet:efact:outputReference:${object.commonOutput.outputReference}`,
+                `mycarenet:${cat}:outputReference:${object.commonOutput.outputReference}`,
               object.commonOutput.inputReference &&
-                `mycarenet:efact:nipReference:${object.commonOutput.nipReference}`
+                `mycarenet:${cat}:nipReference:${object.commonOutput.nipReference}`
             ])
-          : []
+          : [],
+        ["date:" + moment().format("YYYYMMDDHHmmss")]
       )
     })
       .then(rcpt => this.createReceipt(rcpt))
       .then(rcpt =>
-        this.setAttachment(
-          rcpt.id,
-          "soapConversation",
-          undefined,
+        this.setAttachment(rcpt.id, "soapConversation", undefined, <any>(
           utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(object.mycarenetConversation)))
-        )
+        ))
       )
   }
 }

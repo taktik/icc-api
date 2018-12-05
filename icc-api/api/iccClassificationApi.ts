@@ -108,6 +108,22 @@ export class iccClassificationApi {
       .then(doc => new models.ClassificationDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+  getClassificationByHcPartyId(ids: string): Promise<Array<models.ClassificationDto> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/classification/byIds/{ids}".replace("{ids}", ids + "") +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.ClassificationDto(it)))
+      .catch(err => this.handleError(err))
+  }
   modifyClassification(body?: models.ClassificationDto): Promise<models.ClassificationDto | any> {
     let _body = null
     _body = body
