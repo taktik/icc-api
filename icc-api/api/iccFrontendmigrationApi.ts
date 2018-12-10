@@ -42,7 +42,7 @@ export class iccFrontendmigrationApi {
     else throw Error("api-error" + e.status)
   }
 
-  createInsurance(body?: models.FrontEndMigrationDto): Promise<models.AccessLogDto | any> {
+  createFrontEndMigration(body?: models.FrontEndMigrationDto): Promise<models.AccessLogDto | any> {
     let _body = null
     _body = body
 
@@ -55,7 +55,7 @@ export class iccFrontendmigrationApi {
       .then(doc => new models.AccessLogDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  deleteInsurance(frontEndMigrationId: string): Promise<any | Boolean> {
+  deleteFrontEndMigration(frontEndMigrationId: string): Promise<any | Boolean> {
     let _body = null
 
     const _url =
@@ -93,7 +93,9 @@ export class iccFrontendmigrationApi {
       .then(doc => new models.FrontEndMigrationDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  listInsurancesByCode(frontEndMigrationName: string): Promise<models.FrontEndMigrationDto | any> {
+  getFrontEndMigrationByName(
+    frontEndMigrationName: string
+  ): Promise<Array<models.FrontEndMigrationDto> | any> {
     let _body = null
 
     const _url =
@@ -109,7 +111,19 @@ export class iccFrontendmigrationApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => new models.FrontEndMigrationDto(doc.body as JSON))
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.FrontEndMigrationDto(it)))
+      .catch(err => this.handleError(err))
+  }
+  getFrontEndMigrations(): Promise<Array<models.FrontEndMigrationDto> | any> {
+    let _body = null
+
+    const _url = this.host + "/frontendmigration" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.FrontEndMigrationDto(it)))
       .catch(err => this.handleError(err))
   }
   modifyFrontEndMigration(
