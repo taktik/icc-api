@@ -42,7 +42,9 @@ export class iccFrontendmigrationApi {
     else throw Error("api-error" + e.status)
   }
 
-  createFrontEndMigration(body?: models.FrontEndMigrationDto): Promise<models.AccessLogDto | any> {
+  createFrontEndMigration(
+    body?: models.FrontEndMigrationDto
+  ): Promise<models.FrontEndMigrationDto | any> {
     let _body = null
     _body = body
 
@@ -52,7 +54,7 @@ export class iccFrontendmigrationApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => new models.AccessLogDto(doc.body as JSON))
+      .then(doc => new models.FrontEndMigrationDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
   deleteFrontEndMigration(frontEndMigrationId: string): Promise<any | Boolean> {

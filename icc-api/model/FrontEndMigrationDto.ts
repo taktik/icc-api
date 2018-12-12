@@ -39,6 +39,10 @@ export class FrontEndMigrationDto {
   status?: FrontEndMigrationDto.StatusEnum
 
   logs?: string
+
+  startKey?: string
+
+  startKeyDocId?: string
 }
 export namespace FrontEndMigrationDto {
   export enum StatusEnum {
