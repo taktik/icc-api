@@ -117,9 +117,9 @@ export class IccCryptoXApi {
   ): Promise<Array<{ delegatorId: string; key: CryptoKey }>> {
     return (
       this.hcPartyKeysRequestsCache[delegateHcPartyId] ||
-      (this.hcPartyKeysRequestsCache[
+      (this.hcPartyKeysRequestsCache[delegateHcPartyId] = this.getHcPartyKeysForDelegate(
         delegateHcPartyId
-      ] = this.hcpartyBaseApi.getHcPartyKeysForDelegate(delegateHcPartyId))
+      ))
     ).then((healthcarePartyKeys: { [key: string]: string }) => {
       // For each delegatorId, obtain the AES keys
       return Promise.all(
@@ -141,14 +141,12 @@ export class IccCryptoXApi {
         delegatorIds[delegation.owner!] = true
       })
     } else if (fallbackOnParent) {
-      return this.hcpartyBaseApi
-        .getHealthcareParty(healthcarePartyId)
-        .then(
-          hcp =>
-            hcp.parentId
-              ? this.decryptAndImportAesHcPartyKeysInDelegations(hcp.parentId, delegations)
-              : Promise.resolve([])
-        )
+      return this.getHealthcareParty(healthcarePartyId).then(
+        hcp =>
+          hcp.parentId
+            ? this.decryptAndImportAesHcPartyKeysInDelegations(hcp.parentId, delegations)
+            : Promise.resolve([])
+      )
     }
 
     return this.decryptAndImportAesHcPartyKeysForDelegators(
@@ -169,9 +167,8 @@ export class IccCryptoXApi {
     secretId: string
   }> {
     const secretId = this.randomUuid()
-    return this.hcpartyBaseApi
-      .getHealthcareParty(ownerId)
-      .then(owner => owner.hcPartyKeys[ownerId][0])
+    return this.getHealthcareParty(ownerId)
+      .then(owner => owner.hcPartyKeys![ownerId][0])
       .then(encryptedHcPartyKey =>
         this.decryptHcPartyKey(ownerId, ownerId, encryptedHcPartyKey, true)
       )
@@ -238,15 +235,14 @@ export class IccCryptoXApi {
         secretId: null
       })
     }
-    return this.hcpartyBaseApi
-      .getHealthcareParty(ownerId)
+    return this.getHealthcareParty(ownerId)
       .then(owner => {
-        if (!owner.hcPartyKeys[delegateId]) {
+        if (!owner.hcPartyKeys![delegateId]) {
           return this.generateKeyForDelegate(ownerId, delegateId).then(
             owner => owner.hcPartyKeys[delegateId][0]
           )
         }
-        return Promise.resolve(owner.hcPartyKeys[delegateId][0])
+        return Promise.resolve(owner.hcPartyKeys![delegateId][0])
       })
       .then(encryptedHcPartyKey =>
         this.decryptHcPartyKey(ownerId, delegateId, encryptedHcPartyKey, true)
