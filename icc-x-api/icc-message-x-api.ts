@@ -93,7 +93,11 @@ export class IccMessageXApi extends iccMessageApi {
   }
 
   // noinspection JSUnusedGlobalSymbols
-  newInstance(user: models.UserDto, p: any) {
+  newInstance(user: models.UserDto, m: any) {
+    return this.newInstanceWithPatient(user, null, m)
+  }
+
+  newInstanceWithPatient(user: models.UserDto, patient: models.PatientDto | null, m: any) {
     const message = _.extend(
       {
         id: this.crypto.randomUuid(),
@@ -105,9 +109,55 @@ export class IccMessageXApi extends iccMessageApi {
         codes: [],
         tags: []
       },
-      p || {}
+      m || {}
     )
-    return this.initDelegations(message, null, user)
+
+    return this.crypto
+      .extractDelegationsSFKs(patient, user.healthcarePartyId!)
+      .then(secretForeignKeys =>
+        this.crypto.initObjectDelegations(
+          message,
+          patient,
+          user.healthcarePartyId!,
+          secretForeignKeys.extractedKeys[0]
+        )
+      )
+      .then(initData => {
+        _.extend(message, {
+          delegations: initData.delegations,
+          cryptedForeignKeys: initData.cryptedForeignKeys,
+          secretForeignKeys: initData.secretForeignKeys
+        })
+
+        let promise = Promise.resolve(message)
+        ;(user.autoDelegations
+          ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
+          : []
+        ).forEach(
+          delegateId =>
+            (promise = promise.then(helement =>
+              this.crypto
+                .appendObjectDelegations(
+                  helement,
+                  patient,
+                  user.healthcarePartyId!,
+                  delegateId,
+                  initData.secretId
+                )
+                .then(extraData =>
+                  _.extend(helement, {
+                    delegations: extraData.delegations,
+                    cryptedForeignKeys: extraData.cryptedForeignKeys
+                  })
+                )
+                .catch(e => {
+                  console.log(e)
+                  return helement
+                })
+            ))
+        )
+        return promise
+      })
   }
 
   saveDmgsListRequest(
@@ -559,7 +609,7 @@ export class IccMessageXApi extends iccMessageApi {
       .pop()
     if (!refStr) {
       return Promise.reject(
-        new Error(`Cannot find onput reference from tack: ${_.get(efactMessage, "tack.appliesTo")}`)
+        new Error(`Cannot find input reference from tack: ${_.get(efactMessage, "tack.appliesTo")}`)
       )
     }
     const ref = Number(refStr!!) % 10000000000
@@ -804,7 +854,7 @@ export class IccMessageXApi extends iccMessageApi {
                 _.each(iv.invoicingCodes, ic => {
                   // If the invoicing code is already treated, do not treat it
                   if (ic.canceled || ic.accepted) {
-                    return
+                    //return
                   }
 
                   // Error from the ET50/51/52 linked to the invoicingCode
@@ -1108,47 +1158,5 @@ export class IccMessageXApi extends iccMessageApi {
           throw new Error(errors.join(","))
         })
     })
-  }
-
-  initDelegations(
-    message: models.MessageDto,
-    parentObject: any,
-    user: models.UserDto,
-    secretForeignKey?: string
-  ): Promise<models.MessageDto> {
-    return this.crypto
-      .initObjectDelegations(
-        message,
-        parentObject,
-        user.healthcarePartyId!,
-        secretForeignKey || null
-      )
-      .then(initData => {
-        _.extend(message, { delegations: initData.delegations })
-
-        let promise = Promise.resolve(message)
-        ;(user.autoDelegations
-          ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
-          : []
-        ).forEach(
-          delegateId =>
-            (promise = promise.then(message =>
-              this.crypto
-                .appendObjectDelegations(
-                  message,
-                  parentObject,
-                  user.healthcarePartyId!,
-                  delegateId,
-                  initData.secretId
-                )
-                .then(extraData => _.extend(message, { delegations: extraData.delegations || {} }))
-                .catch(e => {
-                  console.log(e)
-                  return message
-                })
-            ))
-        )
-        return promise
-      })
   }
 }

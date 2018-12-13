@@ -28,6 +28,12 @@ export class MedicalHouseContractDto {
   constructor(json: JSON | any) {
     Object.assign(this as MedicalHouseContractDto, json)
   }
+  validFrom?: number
+
+  validTo?: number
+
+  changedBy?: string
+
   mmNihii?: string
 
   startOfContract?: number
@@ -43,4 +49,40 @@ export class MedicalHouseContractDto {
   gp?: boolean
 
   nurse?: boolean
+
+  hcpId?: string
+
+  unsubscriptionReasonId?: number
+
+  noKine?: boolean
+
+  noGp?: boolean
+
+  noNurse?: boolean
+
+  startOfSuspension?: number
+
+  endOfSuspension?: number
+
+  suspensionReason?: MedicalHouseContractDto.SuspensionReasonEnum
+
+  suspensionSource?: string
+
+  forcedSuspension?: boolean
+
+  changeType?: MedicalHouseContractDto.ChangeTypeEnum
+}
+export namespace MedicalHouseContractDto {
+  export enum SuspensionReasonEnum {
+    Mutation = <any>"mutation",
+    NotInsured = <any>"notInsured",
+    ForcedByUser = <any>"forcedByUser",
+    ChangeMedicalHouse = <any>"changeMedicalHouse"
+  }
+  export enum ChangeTypeEnum {
+    InscriptionStart = <any>"inscriptionStart",
+    InscriptionEnd = <any>"inscriptionEnd",
+    Suspension = <any>"suspension",
+    CoverageChange = <any>"coverageChange"
+  }
 }

@@ -241,7 +241,7 @@ function toInvoice(
 
   // TODO : fix me later
   invoice.reason = Invoice.ReasonEnum.Other
-
+  invoice.creditNote = invoiceDto.creditNote
   return invoice
 }
 
