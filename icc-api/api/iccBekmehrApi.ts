@@ -42,6 +42,30 @@ export class iccBekmehrApi {
     else throw Error("api-error" + e.status)
   }
 
+  generateMedicationSchemeExport(
+    patientId: string,
+    language?: string,
+    version?: number,
+    body?: models.MedicationSchemeExportInfoDto
+  ): Promise<ArrayBuffer | any> {
+    let _body = null
+    _body = body
+
+    const _url =
+      this.host +
+      "/be_kmehr/medicationscheme/{patientId}/export".replace("{patientId}", patientId + "") +
+      "?ts=" +
+      new Date().getTime() +
+      (language ? "&language=" + language : "") +
+      (version ? "&version=" + version : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
+      .then(doc => doc.body)
+      .catch(err => this.handleError(err))
+  }
   generateSmfExport(
     patientId: string,
     language?: string,
@@ -168,6 +192,32 @@ export class iccBekmehrApi {
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.ContentDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+  importMedicationScheme(
+    documentId: string,
+    documentKey?: string,
+    patientId?: string,
+    language?: string,
+    body?: any
+  ): Promise<Array<models.ImportResultDto> | any> {
+    let _body = null
+    _body = body
+
+    const _url =
+      this.host +
+      "/be_kmehr/medicationscheme/{documentId}/import".replace("{documentId}", documentId + "") +
+      "?ts=" +
+      new Date().getTime() +
+      (documentKey ? "&documentKey=" + documentKey : "") +
+      (patientId ? "&patientId=" + patientId : "") +
+      (language ? "&language=" + language : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.ImportResultDto(it)))
       .catch(err => this.handleError(err))
   }
   importSmf(

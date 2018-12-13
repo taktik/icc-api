@@ -122,6 +122,10 @@ export class IccContactXApi extends iccContactApi {
                   encryptionKeys: extraEks.encryptionKeys
                 })
               })
+              .catch(e => {
+                console.log(e.message)
+                return contact
+              })
           ))
       )
       return promise
@@ -856,11 +860,11 @@ export class IccContactXApi extends iccContactApi {
         return regimenScores
       },
       medicationNameToString: function(m: any): string {
-        return m.compoundPrescription
+        return m && m.compoundPrescription
           ? m.compoundPrescription
-          : m.substanceProduct
-            ? myself.productToString(m.substanceProduct)
-            : myself.productToString(m.medicinalProduct)
+          : m && m.substanceProduct
+            ? myself.productToString(m && m.substanceProduct)
+            : myself.productToString(m && m.medicinalProduct)
       },
       medicationToString: (m: any, lang: string) => {
         let res = `${myself.medicationNameToString(m)}, ${myself.posologyToString(m, lang)}`
@@ -881,6 +885,68 @@ export class IccContactXApi extends iccContactApi {
         return m.intendedname
       },
       posologyToString: (m: any, lang: string) => {
+        if (m) {
+          if (m.instructionForPatient && m.instructionForPatient.length) {
+            return m.instructionForPatient
+          }
+          if (!m.regimen || !m.regimen.length) {
+            return ""
+          }
+
+          let unit =
+            m.regimen[0].administratedQuantity &&
+            m.regimen[0].administratedQuantity.administrationUnit
+              ? m.regimen[0].administratedQuantity.administrationUnit.code
+              : m.regimen[0].administratedQuantity && m.regimen[0].administratedQuantity.unit
+          let quantity =
+            m.regimen[0].administratedQuantity && m.regimen[0].administratedQuantity.quantity
+
+          m.regimen.slice(1).find((ri: any) => {
+            let oUnit =
+              ri.administratedQuantity && ri.administratedQuantity.administrationUnit
+                ? ri.administratedQuantity.administrationUnit.code
+                : ri.administratedQuantity && ri.administratedQuantity.unit
+            let oQuantity = ri.administratedQuantity && ri.administratedQuantity.quantity
+
+            if (oQuantity !== quantity) {
+              quantity = -1
+            }
+            return oUnit !== unit && oQuantity !== quantity
+          })
+
+          const cplxRegimen = !unit || quantity < 0
+          const quantityUnit = cplxRegimen
+            ? `1 ${this.i18n[lang].take_s_}`
+            : `${quantity} ${unit || this.i18n[lang].take_s_}`
+
+          const dayPeriod = m.regimen.find(
+            (r: any) => r.weekday !== null && r.weekday !== undefined
+          )
+            ? this.i18n[lang].weekly
+            : m.regimen.find((r: any) => r.date)
+              ? this.i18n[lang].monthly
+              : this.i18n[lang].daily
+
+          return `${quantityUnit}, ${m.regimen.length} x ${dayPeriod}, ${_.sortBy(
+            m.regimen,
+            r =>
+              (r.date ? r.date * 1000000 : 29990000000000) +
+              (r.dayNumber || 0) * 1000000 +
+              ((r.weekday && r.weekday.weekNumber) || 0) * 7 * 1000000 +
+              (r.timeOfDay
+                ? r.timeOfDay
+                : r.dayPeriod && r.dayPeriod.code
+                  ? (regimenScores[r.dayPeriod.code] as number)
+                  : 0)
+          )
+            .map(
+              r =>
+                cplxRegimen ? myself.regimenToExtString(r, lang) : myself.regimenToString(r, lang)
+            )
+            .join(", ")}`
+        }
+      },
+      frequencyToString: (m: any, lang: string) => {
         if (m.instructionForPatient && m.instructionForPatient.length) {
           return m.instructionForPatient
         }
@@ -888,55 +954,13 @@ export class IccContactXApi extends iccContactApi {
           return ""
         }
 
-        let unit =
-          m.regimen[0].administratedQuantity &&
-          m.regimen[0].administratedQuantity.administrationUnit
-            ? m.regimen[0].administratedQuantity.administrationUnit.code
-            : m.regimen[0].administratedQuantity && m.regimen[0].administratedQuantity.unit
-        let quantity =
-          m.regimen[0].administratedQuantity && m.regimen[0].administratedQuantity.quantity
-
-        m.regimen.slice(1).find((ri: any) => {
-          let oUnit =
-            ri.administratedQuantity && ri.administratedQuantity.administrationUnit
-              ? ri.administratedQuantity.administrationUnit.code
-              : ri.administratedQuantity && ri.administratedQuantity.unit
-          let oQuantity = ri.administratedQuantity && ri.administratedQuantity.quantity
-
-          if (oQuantity !== quantity) {
-            quantity = -1
-          }
-          return oUnit !== unit && oQuantity !== quantity
-        })
-
-        const cplxRegimen = !unit || quantity < 0
-        const quantityUnit = cplxRegimen
-          ? `1 ${this.i18n[lang].take_s_}`
-          : `${quantity} ${unit || this.i18n[lang].take_s_}`
-
         const dayPeriod = m.regimen.find((r: any) => r.weekday !== null && r.weekday !== undefined)
           ? this.i18n[lang].weekly
           : m.regimen.find((r: any) => r.date)
             ? this.i18n[lang].monthly
             : this.i18n[lang].daily
 
-        return `${quantityUnit}, ${m.regimen.length} x ${dayPeriod}, ${_.sortBy(
-          m.regimen,
-          r =>
-            (r.date ? r.date * 1000000 : 29990000000000) +
-            (r.dayNumber || 0) * 1000000 +
-            ((r.weekday && r.weekday.weekNumber) || 0) * 7 * 1000000 +
-            (r.timeOfDay
-              ? r.timeOfDay
-              : r.dayPeriod && r.dayPeriod.code
-                ? (regimenScores[r.dayPeriod.code] as number)
-                : 0)
-        )
-          .map(
-            r =>
-              cplxRegimen ? myself.regimenToExtString(r, lang) : myself.regimenToString(r, lang)
-          )
-          .join(", ")}`
+        return `${m.regimen.length} x ${dayPeriod}`
       },
       durationToString: (d: models.DurationDto, lang: string) => {
         return d.value ? `${d.value} ${this.localize(d.unit!.label, lang)}` : ""
