@@ -93,6 +93,12 @@ export class HealthcarePartyDto {
   financialInstitutionInformation?: Array<models.FinancialInstitutionInformationDto>
 
   options?: { [key: string]: string }
+
+  billingType?: string
+
+  type?: string
+
+  contactPerson?: string
 }
 export namespace HealthcarePartyDto {
   export enum GenderEnum {

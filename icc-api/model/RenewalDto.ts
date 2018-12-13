@@ -24,45 +24,11 @@
 
 import * as models from "./models"
 
-export class MedicationDto {
+export class RenewalDto {
   constructor(json: JSON | any) {
-    Object.assign(this as MedicationDto, json)
+    Object.assign(this as RenewalDto, json)
   }
-  compoundPrescription?: string
-
-  substanceProduct?: models.SubstanceproductDto
-
-  medicinalProduct?: models.MedicinalproductDto
-
-  numberOfPackages?: number
-
-  batch?: string
-
-  instructionForPatient?: string
-
-  commentForDelivery?: string
+  decimal?: number
 
   duration?: models.DurationDto
-
-  renewal?: models.RenewalDto
-
-  beginMoment?: number
-
-  endMoment?: number
-
-  knownUsage?: boolean
-
-  frequency?: models.CodeDto
-
-  reimbursementReason?: models.CodeDto
-
-  substitutionAllowed?: boolean
-
-  regimen?: Array<models.RegimenItemDto>
-
-  posology?: string
-
-  options?: { [key: string]: models.ContentDto }
-
-  agreements?: { [key: string]: models.ParagraphAgreementDto }
 }
