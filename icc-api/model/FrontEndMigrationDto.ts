@@ -24,41 +24,30 @@
 
 import * as models from "./models"
 
-export class ClassificationDto {
+export class FrontEndMigrationDto {
   constructor(json: JSON | any) {
-    Object.assign(this as ClassificationDto, json)
+    Object.assign(this as FrontEndMigrationDto, json)
   }
-  id?: string
+  name?: string
 
-  rev?: string
+  userId?: string
 
-  deletionDate?: number
+  startDate?: number
 
-  created?: number
+  endDate?: number
 
-  modified?: number
+  status?: FrontEndMigrationDto.StatusEnum
 
-  endOfLife?: number
+  logs?: string
 
-  author?: string
+  startKey?: string
 
-  responsible?: string
-
-  codes?: Array<models.CodeDto>
-
-  tags?: Array<models.CodeDto>
-
-  secretForeignKeys?: Array<string>
-
-  cryptedForeignKeys?: { [key: string]: Array<models.DelegationDto> }
-
-  delegations?: { [key: string]: Array<models.DelegationDto> }
-
-  encryptionKeys?: { [key: string]: Array<models.DelegationDto> }
-
-  parentId?: string
-
-  label?: string
-
-  templateId?: string
+  startKeyDocId?: string
+}
+export namespace FrontEndMigrationDto {
+  export enum StatusEnum {
+    STARTED = <any>"STARTED",
+    ERROR = <any>"ERROR",
+    SUCCESS = <any>"SUCCESS"
+  }
 }
