@@ -1,5 +1,5 @@
 {
-  "name": "icc-api",
+  "name": "@antoinepairet/icc-api",
   "version": "1.0.87",
   "description": "Typescript version of iCure standalone API client",
   "main": "dist/index.js",
