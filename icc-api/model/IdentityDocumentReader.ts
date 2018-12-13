@@ -24,57 +24,19 @@
 
 import * as models from "./models"
 
-export class TarificationDto {
+export class IdentityDocumentReader {
   constructor(json: JSON | any) {
-    Object.assign(this as TarificationDto, json)
+    Object.assign(this as IdentityDocumentReader, json)
   }
-  id?: string
+  justificatifDocumentNumber?: string
 
-  rev?: string
+  timeReadingEIdDocument?: number
 
-  deletionDate?: number
+  geteIdDocumentSupportType?: number
 
-  regions?: Array<string>
+  reasonManualEncoding?: number
 
-  type?: string
+  reasonUsingVignette?: number
 
-  version?: string
-
-  code?: string
-
-  level?: number
-
-  label?: { [key: string]: string }
-
-  searchTerms?: { [key: string]: Array<string> }
-
-  links?: Array<string>
-
-  qualifiedLinks?: { [key: string]: Array<string> }
-
-  flags?: Array<TarificationDto.FlagsEnum>
-
-  data?: string
-
-  valorisations?: Array<models.ValorisationDto>
-
-  category?: { [key: string]: string }
-
-  consultationCode?: boolean
-
-  hasRelatedCode?: boolean
-
-  needsPrescriber?: boolean
-
-  relatedCodes?: Array<string>
-
-  getnGroup?: string
-
-  letterValues?: Array<models.LetterValue>
-}
-export namespace TarificationDto {
-  export enum FlagsEnum {
-    MaleOnly = <any>"male_only",
-    FemaleOnly = <any>"female_only"
-  }
+  supportSerialNumber?: string
 }
