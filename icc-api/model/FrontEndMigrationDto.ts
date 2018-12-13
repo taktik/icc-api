@@ -28,6 +28,12 @@ export class FrontEndMigrationDto {
   constructor(json: JSON | any) {
     Object.assign(this as FrontEndMigrationDto, json)
   }
+  id?: string
+
+  rev?: string
+
+  deletionDate?: number
+
   name?: string
 
   userId?: string
