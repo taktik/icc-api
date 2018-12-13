@@ -841,7 +841,7 @@ export class IccMessageXApi extends iccMessageApi {
                     ic.error = codeError
                     ic.paid = zone114amount ? Number((zone114amount / 100).toFixed(2)) : 0
 
-                    newInvoicePromise =
+                    newInvoicePromise = (
                       newInvoicePromise ||
                       this.crypto
                         .extractCryptedFKs(iv, user.healthcarePartyId!)
@@ -874,18 +874,21 @@ export class IccMessageXApi extends iccMessageApi {
                         .then(niv => {
                           iv.correctiveInvoiceId = niv.id
                           niv.correctedInvoiceId = iv.id
-                          niv.invoicingCodes = (niv.invoicingCodes || []).concat(
-                            _.assign({}, ic, {
-                              id: this.crypto.randomUuid(),
-                              accepted: false,
-                              canceled: false,
-                              pending: true,
-                              resent: true,
-                              archived: false
-                            })
-                          )
                           return niv
                         })
+                    ).then(niv => {
+                      niv.invoicingCodes = (niv.invoicingCodes || []).concat(
+                        _.assign({}, ic, {
+                          id: this.crypto.randomUuid(),
+                          accepted: false,
+                          canceled: false,
+                          pending: true,
+                          resent: true,
+                          archived: false
+                        })
+                      )
+                      return niv
+                    })
                   } else {
                     ic.accepted = true
                     ic.canceled = false
