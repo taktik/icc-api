@@ -602,6 +602,10 @@ export class IccCryptoXApi {
     )
   }
 
+  getKeychainInBrowserLocalStorageAsBase64(id: string){
+    return localStorage.getItem(this.keychainLocalStoreIdPrefix + id);
+  }
+
   // noinspection JSUnusedGlobalSymbols
   loadKeychainFromBrowserLocalStorage(id: String) {
     const lsItem = localStorage.getItem("org.taktik.icure.ehealth.keychain." + id)
