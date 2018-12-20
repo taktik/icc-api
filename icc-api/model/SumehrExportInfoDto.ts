@@ -33,4 +33,6 @@ export class SumehrExportInfoDto {
   recipient?: models.HealthcarePartyDto
 
   comment?: string
+
+  jsonFormat?: boolean
 }
