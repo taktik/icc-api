@@ -651,7 +651,7 @@ export class IccCryptoXApi {
           .then(() => true)
           .catch(() => false)
       } else {
-        return this.saveKeyChainInHCPFromLocalStorage(hcp)
+        return this.saveKeyChainInHCPFromLocalStorage(hcp.id!!)
           .then(() => true)
           .catch(() => false)
       }
