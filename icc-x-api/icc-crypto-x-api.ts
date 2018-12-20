@@ -602,6 +602,10 @@ export class IccCryptoXApi {
     )
   }
 
+  saveKeychainInBrowserLocalStorageAsBase64(id: string, keyChainB64: string){
+    localStorage.setItem(this.keychainLocalStoreIdPrefix + id, keyChainB64);
+  }
+
   getKeychainInBrowserLocalStorageAsBase64(id: string){
     return localStorage.getItem(this.keychainLocalStoreIdPrefix + id);
   }
