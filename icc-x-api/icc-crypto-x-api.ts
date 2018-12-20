@@ -6,7 +6,7 @@ import { utils, UtilsClass } from "./crypto/utils"
 import * as _ from "lodash"
 import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
-import { HealthcarePartyDto } from "../icc-api/model/models";
+import { HealthcarePartyDto } from "../icc-api/model/models"
 
 export class IccCryptoXApi {
   hcPartyKeysCache: {
@@ -37,7 +37,7 @@ export class IccCryptoXApi {
   }
 
   keychainLocalStoreIdPrefix: String = "org.taktik.icure.ehealth.keychain."
-  hcpPreferenceKeyEhealthCert: String =  "eHealthCRT"
+  hcpPreferenceKeyEhealthCert: string = "eHealthCRT"
 
   hcpartyBaseApi: iccHcpartyApi
   AES: AESUtils = AES
@@ -604,30 +604,32 @@ export class IccCryptoXApi {
     )
   }
 
-  saveKeychainInBrowserLocalStorageAsBase64(id: string, keyChainB64: string){
-    localStorage.setItem(this.keychainLocalStoreIdPrefix + id, keyChainB64);
+  saveKeychainInBrowserLocalStorageAsBase64(id: string, keyChainB64: string) {
+    localStorage.setItem(this.keychainLocalStoreIdPrefix + id, keyChainB64)
   }
 
   saveKeyChainInHCPFromLocalStorage(hcpId: string): Promise<HealthcarePartyDto> {
-
-    return this.hcpartyBaseApi.getHealthcareParty(hcpId).then(hcp => {
-      const crt = this.getKeychainInBrowserLocalStorageAsBase64(hcp.id!!);
-      const opts = hcp.options || {};
-    _.set(opts, this.hcpPreferenceKeyEhealthCert, crt);
-      hcp.options = opts;
-      return hcp;
-    }).then(hcp => {
-      return this.hcpartyBaseApi.modifyHealthcareParty(hcp);
-    })
+    return this.hcpartyBaseApi
+      .getHealthcareParty(hcpId)
+      .then(hcp => {
+        const crt = this.getKeychainInBrowserLocalStorageAsBase64(hcp.id!!)
+        const opts = hcp.options || {}
+        _.set(opts, this.hcpPreferenceKeyEhealthCert, crt)
+        hcp.options = opts
+        return hcp
+      })
+      .then(hcp => {
+        return this.hcpartyBaseApi.modifyHealthcareParty(hcp)
+      })
   }
 
   importKeychainInBrowserFromHCP(hcpId: string): Promise<void> {
     return this.hcpartyBaseApi.getHealthcareParty(hcpId).then(hcp => {
-      const crt = _.get(hcp.options, this.hcpPreferenceKeyEhealthCert);
-      if(crt){
-        this.saveKeychainInBrowserLocalStorageAsBase64(hcp.id!!, crt);
+      const crt = _.get(hcp.options, this.hcpPreferenceKeyEhealthCert)
+      if (crt) {
+        this.saveKeychainInBrowserLocalStorageAsBase64(hcp.id!!, crt)
       }
-    });
+    })
   }
 
   /**
@@ -636,23 +638,28 @@ export class IccCryptoXApi {
    */
   syncEhealthCertificate(hcpId: string): Promise<boolean> {
     return this.hcpartyBaseApi.getHealthcareParty(hcpId).then(hcp => {
-      const crtHCP = _.get(hcp.options, this.hcpPreferenceKeyEhealthCert);
-      const crtLC = this.getKeychainInBrowserLocalStorageAsBase64(hcp.id!!);
-      const xor_hcp_localstorage = !(crtHCP && crtLC) && (crtHCP || crtLC);
+      const crtHCP = _.get(hcp.options, this.hcpPreferenceKeyEhealthCert)
+      const crtLC = this.getKeychainInBrowserLocalStorageAsBase64(hcp.id!!)
+      const xor_hcp_localstorage = !(crtHCP && crtLC) && (crtHCP || crtLC)
 
-      if(!xor_hcp_localstorage) { // The key is either present in the 2 sources or absent from the 2 sources
-        return !!crtLC;
+      if (!xor_hcp_localstorage) {
+        // The key is either present in the 2 sources or absent from the 2 sources
+        return !!crtLC
       }
-      if(crtHCP){
-        return this.importKeychainInBrowserFromHCP(hcp.id!!).then(() => true).catch(() => false);
+      if (crtHCP) {
+        return this.importKeychainInBrowserFromHCP(hcp.id!!)
+          .then(() => true)
+          .catch(() => false)
       } else {
-        return this.saveKeyChainInHCPFromLocalStorage(hcp).then(() => true).catch(() => false);
+        return this.saveKeyChainInHCPFromLocalStorage(hcp)
+          .then(() => true)
+          .catch(() => false)
       }
-    });
+    })
   }
 
-  getKeychainInBrowserLocalStorageAsBase64(id: string){
-    return localStorage.getItem(this.keychainLocalStoreIdPrefix + id);
+  getKeychainInBrowserLocalStorageAsBase64(id: string) {
+    return localStorage.getItem(this.keychainLocalStoreIdPrefix + id)
   }
 
   // noinspection JSUnusedGlobalSymbols
