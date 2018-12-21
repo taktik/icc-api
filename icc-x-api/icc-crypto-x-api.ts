@@ -383,6 +383,36 @@ export class IccCryptoXApi {
       }))
   }
 
+  extractAndAddDelsEncryptionKeys(
+    parent: models.PatientDto | models.MessageDto | null,
+    child:
+      | models.PatientDto
+      | models.ContactDto
+      | models.InvoiceDto
+      | models.DocumentDto
+      | models.HealthElementDto
+      | models.ReceiptDto,
+    ownerId: string,
+    delegateId: string
+  ) {
+    return Promise.all([
+      this.extractDelegationsSFKs(child, ownerId),
+      this.extractEncryptionsSKs(child, ownerId)
+    ]).then(([sfks, eks]) => {
+      return this.addDelegationsAndEncryptionKeys(
+        parent,
+        child,
+        ownerId,
+        delegateId,
+        sfks.extractedKeys[0],
+        eks.extractedKeys[0]
+      ).catch(e => {
+        console.log(e)
+        return child
+      })
+    })
+  }
+
   addDelegationsAndEncryptionKeys(
     parent: models.PatientDto | models.MessageDto | null,
     child:
