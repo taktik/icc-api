@@ -56,5 +56,9 @@ export class ClassificationDto {
 
   encryptionKeys?: { [key: string]: Array<models.DelegationDto> }
 
+  parentId?: string
+
+  label?: string
+
   templateId?: string
 }

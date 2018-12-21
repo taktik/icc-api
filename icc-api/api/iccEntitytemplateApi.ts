@@ -55,6 +55,28 @@ export class iccEntitytemplateApi {
       .then(doc => new models.EntityTemplateDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+  findAllEntityTemplates(
+    type: string,
+    searchString?: string,
+    includeEntities?: boolean
+  ): Promise<Array<models.EntityTemplateDto> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/entitytemplate/findAll/{type}".replace("{type}", type + "") +
+      "?ts=" +
+      new Date().getTime() +
+      (searchString ? "&searchString=" + searchString : "") +
+      (includeEntities ? "&includeEntities=" + includeEntities : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.EntityTemplateDto(it)))
+      .catch(err => this.handleError(err))
+  }
   findEntityTemplates(
     userId: string,
     type: string,
