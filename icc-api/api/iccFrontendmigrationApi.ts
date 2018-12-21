@@ -25,7 +25,7 @@
 import { XHR } from "./XHR"
 import * as models from "../model/models"
 
-export class iccEntitytemplateApi {
+export class iccFrontendmigrationApi {
   host: string
   headers: Array<XHR.Header>
   constructor(host: string, headers: any) {
@@ -42,90 +42,48 @@ export class iccEntitytemplateApi {
     else throw Error("api-error" + e.status)
   }
 
-  createEntityTemplate(body?: models.EntityTemplateDto): Promise<models.EntityTemplateDto | any> {
+  createFrontEndMigration(
+    body?: models.FrontEndMigrationDto
+  ): Promise<models.FrontEndMigrationDto | any> {
     let _body = null
     _body = body
 
-    const _url = this.host + "/entitytemplate" + "?ts=" + new Date().getTime()
+    const _url = this.host + "/frontendmigration" + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => new models.EntityTemplateDto(doc.body as JSON))
+      .then(doc => new models.FrontEndMigrationDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  findAllEntityTemplates(
-    type: string,
-    searchString?: string,
-    includeEntities?: boolean
-  ): Promise<Array<models.EntityTemplateDto> | any> {
+  deleteFrontEndMigration(frontEndMigrationId: string): Promise<any | Boolean> {
     let _body = null
 
     const _url =
       this.host +
-      "/entitytemplate/findAll/{type}".replace("{type}", type + "") +
-      "?ts=" +
-      new Date().getTime() +
-      (searchString ? "&searchString=" + searchString : "") +
-      (includeEntities ? "&includeEntities=" + includeEntities : "")
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.EntityTemplateDto(it)))
-      .catch(err => this.handleError(err))
-  }
-  findEntityTemplates(
-    userId: string,
-    type: string,
-    searchString?: string,
-    includeEntities?: boolean
-  ): Promise<Array<models.EntityTemplateDto> | any> {
-    let _body = null
-
-    const _url =
-      this.host +
-      "/entitytemplate/find/{userId}/{type}"
-        .replace("{userId}", userId + "")
-        .replace("{type}", type + "") +
-      "?ts=" +
-      new Date().getTime() +
-      (searchString ? "&searchString=" + searchString : "") +
-      (includeEntities ? "&includeEntities=" + includeEntities : "")
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.EntityTemplateDto(it)))
-      .catch(err => this.handleError(err))
-  }
-  getEntityTemplate(entityTemplateId: string): Promise<models.EntityTemplateDto | any> {
-    let _body = null
-
-    const _url =
-      this.host +
-      "/entitytemplate/{entityTemplateId}".replace("{entityTemplateId}", entityTemplateId + "") +
+      "/frontendmigration/{frontEndMigrationId}".replace(
+        "{frontEndMigrationId}",
+        frontEndMigrationId + ""
+      ) +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => new models.EntityTemplateDto(doc.body as JSON))
+    return XHR.sendCommand("DELETE", _url, headers, _body)
+      .then(doc => true)
       .catch(err => this.handleError(err))
   }
-  getEntityTemplates(entityTemplateIds: string): Promise<Array<models.EntityTemplateDto> | any> {
+  getFrontEndMigration(frontEndMigrationId: string): Promise<models.FrontEndMigrationDto | any> {
     let _body = null
 
     const _url =
       this.host +
-      "/entitytemplate/byIds/{entityTemplateIds}".replace(
-        "{entityTemplateIds}",
-        entityTemplateIds + ""
+      "/frontendmigration/{frontEndMigrationId}".replace(
+        "{frontEndMigrationId}",
+        frontEndMigrationId + ""
       ) +
       "?ts=" +
       new Date().getTime()
@@ -134,20 +92,55 @@ export class iccEntitytemplateApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.EntityTemplateDto(it)))
+      .then(doc => new models.FrontEndMigrationDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  modifyEntityTemplate(body?: models.EntityTemplateDto): Promise<models.EntityTemplateDto | any> {
+  getFrontEndMigrationByName(
+    frontEndMigrationName: string
+  ): Promise<Array<models.FrontEndMigrationDto> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/frontendmigration/byName/{frontEndMigrationName}".replace(
+        "{frontEndMigrationName}",
+        frontEndMigrationName + ""
+      ) +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.FrontEndMigrationDto(it)))
+      .catch(err => this.handleError(err))
+  }
+  getFrontEndMigrations(): Promise<Array<models.FrontEndMigrationDto> | any> {
+    let _body = null
+
+    const _url = this.host + "/frontendmigration" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.FrontEndMigrationDto(it)))
+      .catch(err => this.handleError(err))
+  }
+  modifyFrontEndMigration(
+    body?: models.FrontEndMigrationDto
+  ): Promise<models.FrontEndMigrationDto | any> {
     let _body = null
     _body = body
 
-    const _url = this.host + "/entitytemplate" + "?ts=" + new Date().getTime()
+    const _url = this.host + "/frontendmigration" + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body)
-      .then(doc => new models.EntityTemplateDto(doc.body as JSON))
+      .then(doc => new models.FrontEndMigrationDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 }

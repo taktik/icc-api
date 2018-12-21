@@ -24,9 +24,9 @@
 
 import * as models from "./models"
 
-export class TarificationDto {
+export class FrontEndMigrationDto {
   constructor(json: JSON | any) {
-    Object.assign(this as TarificationDto, json)
+    Object.assign(this as FrontEndMigrationDto, json)
   }
   id?: string
 
@@ -34,47 +34,26 @@ export class TarificationDto {
 
   deletionDate?: number
 
-  regions?: Array<string>
+  name?: string
 
-  type?: string
+  userId?: string
 
-  version?: string
+  startDate?: number
 
-  code?: string
+  endDate?: number
 
-  level?: number
+  status?: FrontEndMigrationDto.StatusEnum
 
-  label?: { [key: string]: string }
+  logs?: string
 
-  searchTerms?: { [key: string]: Array<string> }
+  startKey?: string
 
-  links?: Array<string>
-
-  qualifiedLinks?: { [key: string]: Array<string> }
-
-  flags?: Array<TarificationDto.FlagsEnum>
-
-  data?: string
-
-  valorisations?: Array<models.ValorisationDto>
-
-  category?: { [key: string]: string }
-
-  consultationCode?: boolean
-
-  hasRelatedCode?: boolean
-
-  needsPrescriber?: boolean
-
-  relatedCodes?: Array<string>
-
-  getnGroup?: string
-
-  letterValues?: Array<models.LetterValue>
+  startKeyDocId?: string
 }
-export namespace TarificationDto {
-  export enum FlagsEnum {
-    MaleOnly = <any>"male_only",
-    FemaleOnly = <any>"female_only"
+export namespace FrontEndMigrationDto {
+  export enum StatusEnum {
+    STARTED = <any>"STARTED",
+    ERROR = <any>"ERROR",
+    SUCCESS = <any>"SUCCESS"
   }
 }
