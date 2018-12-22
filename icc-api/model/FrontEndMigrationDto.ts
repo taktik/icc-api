@@ -28,6 +28,12 @@ export class FrontEndMigrationDto {
   constructor(json: JSON | any) {
     Object.assign(this as FrontEndMigrationDto, json)
   }
+  id?: string
+
+  rev?: string
+
+  deletionDate?: number
+
   name?: string
 
   userId?: string
@@ -43,6 +49,8 @@ export class FrontEndMigrationDto {
   startKey?: string
 
   startKeyDocId?: string
+
+  processCount?: number
 }
 export namespace FrontEndMigrationDto {
   export enum StatusEnum {

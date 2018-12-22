@@ -561,6 +561,7 @@ export class IccMessageXApi extends iccMessageApi {
         ])
           .compact()
           .uniq()
+          .filter(err => err.indexOf("510119") < 0)
           .join("; ")
       : undefined
   }
@@ -714,9 +715,8 @@ export class IccMessageXApi extends iccMessageApi {
         (["931000", "920999"].includes(messageType) ? 1 << 9 /*STATUS_RECEIVED*/ : 0)
 
       const batchErrors: ErrorDetail[] | undefined = _.compact([
-        _.get(parsedRecords, "zone200.errorDetail"),
-        _.get(parsedRecords, "zone300.errorDetail"),
-        _.get(parsedRecords, "et10.errorDetail")
+        _.get(parsedRecords, "et10.errorDetail"),
+        _.get(parsedRecords, "et90.errorDetail")
       ])
 
       const invoicingErrors: StructError[] = parsedRecords.records
@@ -854,7 +854,7 @@ export class IccMessageXApi extends iccMessageApi {
                 _.each(iv.invoicingCodes, ic => {
                   // If the invoicing code is already treated, do not treat it
                   if (ic.canceled || ic.accepted) {
-                    //return
+                    return
                   }
 
                   // Error from the ET50/51/52 linked to the invoicingCode

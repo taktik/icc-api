@@ -6,6 +6,7 @@ import { utils, UtilsClass } from "./crypto/utils"
 import * as _ from "lodash"
 import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
+import { HealthcarePartyDto } from "../icc-api/model/models"
 
 export class IccCryptoXApi {
   hcPartyKeysCache: {
@@ -36,6 +37,7 @@ export class IccCryptoXApi {
   }
 
   keychainLocalStoreIdPrefix: String = "org.taktik.icure.ehealth.keychain."
+  hcpPreferenceKeyEhealthCert: string = "eHealthCRT"
 
   hcpartyBaseApi: iccHcpartyApi
   AES: AESUtils = AES
@@ -381,6 +383,36 @@ export class IccCryptoXApi {
       }))
   }
 
+  extractAndAddDelsEncryptionKeys(
+    parent: models.PatientDto | models.MessageDto | null,
+    child:
+      | models.PatientDto
+      | models.ContactDto
+      | models.InvoiceDto
+      | models.DocumentDto
+      | models.HealthElementDto
+      | models.ReceiptDto,
+    ownerId: string,
+    delegateId: string
+  ) {
+    return Promise.all([
+      this.extractDelegationsSFKs(child, ownerId),
+      this.extractEncryptionsSKs(child, ownerId)
+    ]).then(([sfks, eks]) => {
+      return this.addDelegationsAndEncryptionKeys(
+        parent,
+        child,
+        ownerId,
+        delegateId,
+        sfks.extractedKeys[0],
+        eks.extractedKeys[0]
+      ).catch(e => {
+        console.log(e)
+        return child
+      })
+    })
+  }
+
   addDelegationsAndEncryptionKeys(
     parent: models.PatientDto | models.MessageDto | null,
     child:
@@ -600,6 +632,64 @@ export class IccCryptoXApi {
       this.keychainLocalStoreIdPrefix + id,
       btoa(new Uint8Array(keychain).reduce((data, byte) => data + String.fromCharCode(byte), ""))
     )
+  }
+
+  saveKeychainInBrowserLocalStorageAsBase64(id: string, keyChainB64: string) {
+    localStorage.setItem(this.keychainLocalStoreIdPrefix + id, keyChainB64)
+  }
+
+  saveKeyChainInHCPFromLocalStorage(hcpId: string): Promise<HealthcarePartyDto> {
+    return this.hcpartyBaseApi
+      .getHealthcareParty(hcpId)
+      .then(hcp => {
+        const crt = this.getKeychainInBrowserLocalStorageAsBase64(hcp.id!!)
+        const opts = hcp.options || {}
+        _.set(opts, this.hcpPreferenceKeyEhealthCert, crt)
+        hcp.options = opts
+        return hcp
+      })
+      .then(hcp => {
+        return this.hcpartyBaseApi.modifyHealthcareParty(hcp)
+      })
+  }
+
+  importKeychainInBrowserFromHCP(hcpId: string): Promise<void> {
+    return this.hcpartyBaseApi.getHealthcareParty(hcpId).then(hcp => {
+      const crt = _.get(hcp.options, this.hcpPreferenceKeyEhealthCert)
+      if (crt) {
+        this.saveKeychainInBrowserLocalStorageAsBase64(hcp.id!!, crt)
+      }
+    })
+  }
+
+  /**
+   * Returns true if a key has been set in the localstorage
+   * @param hcp The healthcare party
+   */
+  syncEhealthCertificate(hcpId: string): Promise<boolean> {
+    return this.hcpartyBaseApi.getHealthcareParty(hcpId).then(hcp => {
+      const crtHCP = _.get(hcp.options, this.hcpPreferenceKeyEhealthCert)
+      const crtLC = this.getKeychainInBrowserLocalStorageAsBase64(hcp.id!!)
+      const xor_hcp_localstorage = !(crtHCP && crtLC) && (crtHCP || crtLC)
+
+      if (!xor_hcp_localstorage) {
+        // The key is either present in the 2 sources or absent from the 2 sources
+        return !!crtLC
+      }
+      if (crtHCP) {
+        return this.importKeychainInBrowserFromHCP(hcp.id!!)
+          .then(() => true)
+          .catch(() => false)
+      } else {
+        return this.saveKeyChainInHCPFromLocalStorage(hcp.id!!)
+          .then(() => true)
+          .catch(() => false)
+      }
+    })
+  }
+
+  getKeychainInBrowserLocalStorageAsBase64(id: string) {
+    return localStorage.getItem(this.keychainLocalStoreIdPrefix + id)
   }
 
   // noinspection JSUnusedGlobalSymbols
