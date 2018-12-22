@@ -62,7 +62,7 @@ export class iccDoctemplateApi {
 
     const _url =
       this.host +
-      "/doctemplate/{documentTemplateId}".replace(
+      "/doctemplate/{documentTemplateIds}".replace(
         "{documentTemplateIds}",
         documentTemplateIds + ""
       ) +
