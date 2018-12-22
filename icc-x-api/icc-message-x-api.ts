@@ -854,7 +854,7 @@ export class IccMessageXApi extends iccMessageApi {
                 _.each(iv.invoicingCodes, ic => {
                   // If the invoicing code is already treated, do not treat it
                   if (ic.canceled || ic.accepted) {
-                    //return
+                    return
                   }
 
                   // Error from the ET50/51/52 linked to the invoicingCode
