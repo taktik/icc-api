@@ -130,7 +130,7 @@ export class IccPatientXApi extends iccPatientApi {
   ): Promise<models.PatientPaginatedList | any> {
     return super
       .filterBy(startKey, startDocumentId, limit, skip, sort, desc, body)
-      .then(pl => this.decrypt(user, pl.rows).then(dr => Object.assign(pl, { rows: dr })))
+      .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
   }
 
   findByAccessLogUserAfterDate(
@@ -155,7 +155,7 @@ export class IccPatientXApi extends iccPatientApi {
   ): Promise<models.PatientPaginatedList | any> {
     return super
       .findByAccessLogUserAfterDate(userId, accessType, startDate, startKey, startDocumentId, limit)
-      .then(pl => this.decrypt(user, pl.rows).then(dr => Object.assign(pl, { rows: dr })))
+      .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
   }
 
   findByAccessLogUserAfterDate_1(externalId: string): Promise<models.PatientDto | any> {
@@ -198,7 +198,7 @@ export class IccPatientXApi extends iccPatientApi {
         limit,
         sortDirection
       )
-      .then(pl => this.decrypt(user, pl.rows).then(dr => Object.assign(pl, { rows: dr })))
+      .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
   }
 
   fuzzySearch(
@@ -262,7 +262,7 @@ export class IccPatientXApi extends iccPatientApi {
   ): Promise<models.PatientPaginatedList | any> {
     return super
       .listDeletedPatients(startDate, endDate, desc, startDocumentId, limit)
-      .then(pl => this.decrypt(user, pl.rows).then(dr => Object.assign(pl, { rows: dr })))
+      .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
   }
 
   listDeletedPatients_2(
@@ -279,7 +279,7 @@ export class IccPatientXApi extends iccPatientApi {
   ): Promise<Array<models.PatientPaginatedList> | any> {
     return super
       .listDeletedPatients_2(firstName, lastName)
-      .then(pl => this.decrypt(user, pl.rows).then(dr => Object.assign(pl, { rows: dr })))
+      .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
   }
 
   listOfMergesAfter(date: number): Promise<Array<models.PatientDto> | any> {
@@ -290,7 +290,7 @@ export class IccPatientXApi extends iccPatientApi {
     user: models.UserDto,
     date: number
   ): Promise<Array<models.PatientDto> | any> {
-    return super.listOfMergesAfter(date).then(pats => this.decrypt(user, pats))
+    return super.listOfMergesAfter(date).then(pats => this.decrypt(user, pats, false))
   }
 
   listOfPatientsModifiedAfter(
@@ -311,7 +311,7 @@ export class IccPatientXApi extends iccPatientApi {
   ): Promise<models.PatientPaginatedList | any> {
     return super
       .listOfPatientsModifiedAfter(date, startKey, startDocumentId, limit)
-      .then(pl => this.decrypt(user, pl.rows).then(dr => Object.assign(pl, { rows: dr })))
+      .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
   }
 
   listPatients(
@@ -336,7 +336,7 @@ export class IccPatientXApi extends iccPatientApi {
   ): Promise<models.PatientPaginatedList | any> {
     return super
       .listPatients(hcPartyId, sortField, startKey, startDocumentId, limit, sortDirection)
-      .then(pl => this.decrypt(user, pl.rows).then(dr => Object.assign(pl, { rows: dr })))
+      .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
   }
 
   listPatientsByHcParty(
@@ -361,7 +361,7 @@ export class IccPatientXApi extends iccPatientApi {
   ): Promise<models.PatientPaginatedList | any> {
     return super
       .listPatientsByHcParty(hcPartyId, sortField, startKey, startDocumentId, limit, sortDirection)
-      .then(pl => this.decrypt(user, pl.rows).then(dr => Object.assign(pl, { rows: dr })))
+      .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
   }
 
   listPatientsOfHcParty(
@@ -386,7 +386,7 @@ export class IccPatientXApi extends iccPatientApi {
   ): Promise<models.PatientPaginatedList | any> {
     return super
       .listPatientsOfHcParty(hcPartyId, sortField, startKey, startDocumentId, limit, sortDirection)
-      .then(pl => this.decrypt(user, pl.rows).then(dr => Object.assign(pl, { rows: dr })))
+      .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
   }
 
   mergeInto(toId: string, fromIds: string): Promise<models.PatientDto | any> {
@@ -446,7 +446,7 @@ export class IccPatientXApi extends iccPatientApi {
     return Promise.resolve(pats)
   }
 
-  decrypt(user: models.UserDto, pats: Array<models.PatientDto>) {
+  decrypt(user: models.UserDto, pats: Array<models.PatientDto>, fillDelegations: boolean = true) {
     //First check that we have no dangling delegation
     const patsWithMissingDelegations = pats.filter(
       p =>
@@ -456,21 +456,22 @@ export class IccPatientXApi extends iccPatientApi {
     )
 
     let prom: Promise<{ [key: string]: models.PatientDto }> = Promise.resolve({})
-    patsWithMissingDelegations.forEach(p => {
-      prom = prom.then(acc =>
-        this.initDelegations(p, user).then(p =>
-          this.modifyPatientWithUser(user, p).then(mp => {
-            acc[p.id!] = mp || p
-            return acc
-          })
+    fillDelegations &&
+      patsWithMissingDelegations.forEach(p => {
+        prom = prom.then(acc =>
+          this.initDelegations(p, user).then(p =>
+            this.modifyPatientWithUser(user, p).then(mp => {
+              acc[p.id!] = mp || p
+              return acc
+            })
+          )
         )
-      )
-    })
+      })
 
     return prom.then((acc: { [key: string]: models.PatientDto }) =>
       pats.map(p => {
-        const fixed = acc[p.id!]
-        return fixed || p
+        const fixedPatient = acc[p.id!]
+        return fixedPatient || p
       })
     )
   }

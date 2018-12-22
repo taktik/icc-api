@@ -204,18 +204,6 @@ export class iccPatientApi {
       .then(doc => new models.PatientPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  forceLog(): Promise<any | Boolean> {
-    let _body = null
-
-    const _url = this.host + "/patient/forceLog" + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => true)
-      .catch(err => this.handleError(err))
-  }
   fuzzySearch(
     firstName?: string,
     lastName?: string,
@@ -405,6 +393,31 @@ export class iccPatientApi {
       (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
       (limit ? "&limit=" + limit : "") +
       (sortDirection ? "&sortDirection=" + sortDirection : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => new models.PatientPaginatedList(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+  listPatientsIds(
+    hcPartyId?: string,
+    startKey?: string,
+    startDocumentId?: string,
+    limit?: number
+  ): Promise<models.PatientPaginatedList | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/patient/idsPages" +
+      "?ts=" +
+      new Date().getTime() +
+      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
+      (startKey ? "&startKey=" + startKey : "") +
+      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
+      (limit ? "&limit=" + limit : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
