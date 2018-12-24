@@ -275,7 +275,7 @@ export class IccCryptoXApi {
           cryptedDelegation,
           cryptedForeignKey
         ]) => {
-          //try to limit the exttent of the modifications to the delegations by preserving the redundant delegation already present
+          //try to limit the exttent of the modifications to the delegations by preserving the redundant delegation already present and removing duplicates
           const delegationCryptedDecrypted = _.merge(
             (modifiedObject.delegations[delegateId] || [])
               .concat([
@@ -392,29 +392,46 @@ export class IccCryptoXApi {
         this.decryptHcPartyKey(ownerId, delegateId, encryptedHcPartyKey, true)
       )
       .then(importedAESHcPartyKey =>
-        this.AES.encrypt(
-          importedAESHcPartyKey.key,
-          utils.text2ua(modifiedObject.id + ":" + secretIdOfModifiedObject)
-        )
+        Promise.all([
+          Promise.all(modifiedObject.encryptionKeys[delegateId].map(
+            (eck: DelegationDto) =>
+              eck.key && this.AES.decrypt(importedAESHcPartyKey.key, this.utils.hex2ua(eck.key))
+          ) as Array<Promise<ArrayBuffer>>),
+          this.AES.encrypt(
+            importedAESHcPartyKey.key,
+            utils.text2ua(modifiedObject.id + ":" + secretIdOfModifiedObject)
+          )
+        ])
       )
-      .then(encryptedEncryptionKeys => ({
-        encryptionKeys: _.extend(
-          _.cloneDeep(modifiedObject.encryptionKeys),
-          _.fromPairs([
-            [
-              delegateId,
-              [
-                {
-                  owner: ownerId,
-                  delegatedTo: delegateId,
-                  key: this.utils.ua2hex(encryptedEncryptionKeys)
-                }
-              ]
-            ]
-          ])
-        ),
-        secretId: secretIdOfModifiedObject
-      }))
+      .then(([previousDecryptedEncryptionKeys, encryptedEncryptionKey]) => {
+        //try to limit the extent of the modifications to the delegations by preserving the redundant encryption keys already present and removing duplicates
+        const encryptionKeysCryptedDecrypted = _.merge(
+          (modifiedObject.encryptionKeys[delegateId] || [])
+            .concat([
+              {
+                owner: ownerId,
+                delegatedTo: delegateId,
+                key: this.utils.ua2hex(encryptedEncryptionKey)
+              }
+            ])
+            .map((d: DelegationDto) => ({ d })),
+          (previousDecryptedEncryptionKeys || [])
+            .map(d => this.utils.ua2text(d))
+            .concat([`${modifiedObject.id}:${secretIdOfModifiedObject}`])
+            .map(k => ({ k }))
+        )
+
+        const allEncryptionKeys = _.cloneDeep(modifiedObject.encryptionKeys)
+        allEncryptionKeys[delegateId] = _.uniqBy(
+          encryptionKeysCryptedDecrypted,
+          (x: any) => x.k
+        ).map((x: any) => x.d)
+
+        return {
+          encryptionKeys: allEncryptionKeys,
+          secretId: secretIdOfModifiedObject
+        }
+      })
   }
 
   addDelegationsAndEncryptionKeys(
