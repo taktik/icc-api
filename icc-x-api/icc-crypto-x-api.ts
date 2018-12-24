@@ -6,6 +6,7 @@ import { utils, UtilsClass } from "./crypto/utils"
 import * as _ from "lodash"
 import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
+import { DelegationDto } from "../icc-api/model/models"
 
 export class IccCryptoXApi {
   hcPartyKeysCache: {
@@ -249,6 +250,14 @@ export class IccCryptoXApi {
       )
       .then(importedAESHcPartyKey =>
         Promise.all([
+          Promise.all(modifiedObject.delegations[delegateId].map(
+            (d: DelegationDto) =>
+              d.key && this.AES.decrypt(importedAESHcPartyKey.key, this.utils.hex2ua(d.key))
+          ) as Array<Promise<ArrayBuffer>>),
+          Promise.all(modifiedObject.cryptedForeignKeys[delegateId].map(
+            (d: DelegationDto) =>
+              d.key && this.AES.decrypt(importedAESHcPartyKey.key, this.utils.hex2ua(d.key))
+          ) as Array<Promise<ArrayBuffer>>),
           this.AES.encrypt(importedAESHcPartyKey.key, utils.text2ua(
             modifiedObject.id + ":" + secretIdOfModifiedObject
           ).buffer as ArrayBuffer),
@@ -259,41 +268,68 @@ export class IccCryptoXApi {
             : Promise.resolve(null)
         ])
       )
-      .then(encryptedDelegationAndSecretForeignKey => ({
-        delegations: _.extend(
-          _.cloneDeep(modifiedObject.delegations),
-          _.fromPairs([
-            [
-              delegateId,
-              (modifiedObject.delegations[delegateId] || []).concat([
+      .then(
+        ([
+          previousDecryptedDelegations,
+          previousDecryptedCryptedForeignKeys,
+          cryptedDelegation,
+          cryptedForeignKey
+        ]) => {
+          //try to limit the exttent of the modifications to the delegations by preserving the redundant delegation already present
+          const delegationCryptedDecrypted = _.merge(
+            (modifiedObject.delegations[delegateId] || [])
+              .concat([
                 {
                   owner: ownerId,
                   delegatedTo: delegateId,
-                  key: this.utils.ua2hex(encryptedDelegationAndSecretForeignKey[0]!)
+                  key: this.utils.ua2hex(cryptedDelegation)
                 }
               ])
-            ]
-          ])
-        ),
-        cryptedForeignKeys: encryptedDelegationAndSecretForeignKey[1]
-          ? _.extend(
-              _.cloneDeep(modifiedObject.cryptedForeignKeys),
-              _.fromPairs([
-                [
-                  delegateId,
-                  (modifiedObject.cryptedForeignKeys[delegateId] || []).concat([
-                    {
-                      owner: ownerId,
-                      delegatedTo: delegateId,
-                      key: this.utils.ua2hex(encryptedDelegationAndSecretForeignKey[1]!)
-                    }
-                  ])
-                ]
-              ])
-            )
-          : _.cloneDeep(modifiedObject.cryptedForeignKeys),
-        secretId: secretIdOfModifiedObject
-      }))
+              .map((d: DelegationDto) => ({ d })),
+            (previousDecryptedDelegations || [])
+              .map(d => this.utils.ua2text(d))
+              .concat([`${modifiedObject.id}:${secretIdOfModifiedObject}`])
+              .map(k => ({ k }))
+          )
+
+          const allDelegations = _.cloneDeep(modifiedObject.delegations)
+          allDelegations[delegateId] = _.uniqBy(delegationCryptedDecrypted, (x: any) => x.k).map(
+            (x: any) => x.d
+          )
+
+          const cryptedForeignKeysCryptedDecrypted = _.merge(
+            (modifiedObject.cryptedForeignKeys[delegateId] || [])
+              .concat(
+                cryptedForeignKey
+                  ? [
+                      {
+                        owner: ownerId,
+                        delegatedTo: delegateId,
+                        key: this.utils.ua2hex(cryptedForeignKey)
+                      }
+                    ]
+                  : []
+              )
+              .map((d: DelegationDto) => ({ d })),
+            (previousDecryptedCryptedForeignKeys || [])
+              .map(d => this.utils.ua2text(d))
+              .concat(cryptedForeignKey ? [`${modifiedObject.id}:${parentObject.id}`] : [])
+              .map(k => ({ k }))
+          )
+
+          const allCryptedForeignKeys = _.cloneDeep(modifiedObject.cryptedForeignKeys)
+          allCryptedForeignKeys[delegateId] = _.uniqBy(
+            cryptedForeignKeysCryptedDecrypted,
+            (x: any) => x.k
+          ).map((x: any) => x.d)
+
+          return {
+            delegations: allDelegations,
+            cryptedForeignKeys: allCryptedForeignKeys,
+            secretId: secretIdOfModifiedObject
+          }
+        }
+      )
   }
 
   initEncryptionKeys(
@@ -401,7 +437,7 @@ export class IccCryptoXApi {
     ]).then(extraData => {
       const extraDels = extraData[0]
       const extraEks = extraData[1]
-      return _.extend(child, {
+      return _.assign(child, {
         delegations: extraDels.delegations,
         cryptedForeignKeys: extraDels.cryptedForeignKeys,
         encryptionKeys: extraEks.encryptionKeys
