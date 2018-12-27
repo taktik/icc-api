@@ -103,7 +103,7 @@ export class iccUserApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.LabelledOccurenceDto(it)))
       .catch(err => this.handleError(err))
   }
-  getCurrentSession(): Promise<models.UserDto | any> {
+  getCurrentSession(): Promise<string | any> {
     let _body = null
 
     const _url = this.host + "/user/session" + "?ts=" + new Date().getTime()
@@ -112,7 +112,7 @@ export class iccUserApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => new models.UserDto(doc.body as JSON))
+      .then(doc => JSON.parse(JSON.stringify(doc.body)))
       .catch(err => this.handleError(err))
   }
   getCurrentUser(): Promise<models.UserDto | any> {
