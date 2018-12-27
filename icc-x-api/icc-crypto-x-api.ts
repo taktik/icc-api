@@ -250,11 +250,11 @@ export class IccCryptoXApi {
       )
       .then(importedAESHcPartyKey =>
         Promise.all([
-          Promise.all(modifiedObject.delegations[delegateId].map(
+          Promise.all((modifiedObject.delegations[delegateId] || []).map(
             (d: DelegationDto) =>
               d.key && this.AES.decrypt(importedAESHcPartyKey.key, this.utils.hex2ua(d.key))
           ) as Array<Promise<ArrayBuffer>>),
-          Promise.all(modifiedObject.cryptedForeignKeys[delegateId].map(
+          Promise.all((modifiedObject.cryptedForeignKeys[delegateId] || []).map(
             (d: DelegationDto) =>
               d.key && this.AES.decrypt(importedAESHcPartyKey.key, this.utils.hex2ua(d.key))
           ) as Array<Promise<ArrayBuffer>>),
@@ -393,7 +393,7 @@ export class IccCryptoXApi {
       )
       .then(importedAESHcPartyKey =>
         Promise.all([
-          Promise.all(modifiedObject.encryptionKeys[delegateId].map(
+          Promise.all((modifiedObject.encryptionKeys[delegateId] || []).map(
             (eck: DelegationDto) =>
               eck.key && this.AES.decrypt(importedAESHcPartyKey.key, this.utils.hex2ua(eck.key))
           ) as Array<Promise<ArrayBuffer>>),
