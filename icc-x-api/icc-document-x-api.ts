@@ -646,13 +646,14 @@ export class IccDocumentXApi extends iccDocumentApi {
   getAttachmentUrl(
     documentId: string,
     attachmentId: string,
-    sfks: Array<{ delegatorId: string; key: CryptoKey }>
+    sfks: Array<{ delegatorId: string; key: CryptoKey }>,
+    sessionId?: string
   ) {
     return (
       this.host +
-      "/document/{documentId}/attachment/{attachmentId}"
-        .replace("{documentId}", documentId)
-        .replace("{attachmentId}", attachmentId) +
+      `/document/${documentId}/attachment/${attachmentId}${
+        sessionId ? `;jsessionid=${sessionId}` : ""
+      }` +
       (sfks && sfks.length ? "?enckeys=" + sfks.join(",") : "")
     )
   }
