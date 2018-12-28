@@ -193,6 +193,10 @@ export class IccContactXApi extends iccContactApi {
     throw "Cannot call a method that modify contacts without providing a user for de/encryption"
   }
 
+  modifyContacts(body?: Array<ContactDto>): Promise<Array<ContactDto> | any> {
+    throw "Cannot call a method that modify contacts without providing a user for de/encryption"
+  }
+
   createContact(body?: ContactDto): Promise<ContactDto | any> {
     throw "Cannot call a method that modify contacts without providing a user for de/encryption"
   }
@@ -263,6 +267,17 @@ export class IccContactXApi extends iccContactApi {
           .then(ctcs => super.modifyContact(ctcs[0]))
           .then(ctc => this.decrypt(user.healthcarePartyId!, [ctc]))
           .then(ctcs => ctcs[0])
+      : Promise.resolve(null)
+  }
+
+  modifyContactsWithUser(
+    user: models.UserDto,
+    bodies?: Array<models.ContactDto>
+  ): Promise<models.ContactDto | any> {
+    return bodies
+      ? this.encrypt(user, bodies.map(c => _.cloneDeep(c)))
+          .then(ctcs => super.modifyContacts(ctcs))
+          .then(ctcs => this.decrypt(user.healthcarePartyId!, ctcs))
       : Promise.resolve(null)
   }
 
