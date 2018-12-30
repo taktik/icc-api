@@ -106,7 +106,7 @@ export class iccUserApi {
   getCurrentSession(): Promise<string | any> {
     let _body = null
 
-    const _url = this.host + "/user/session?ts=" + new Date().getTime()
+    const _url = this.host + "/user/session" + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -118,7 +118,7 @@ export class iccUserApi {
   getCurrentUser(): Promise<models.UserDto | any> {
     let _body = null
 
-    const _url = this.host + "/user/current?ts=" + new Date().getTime()
+    const _url = this.host + "/user/current" + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
