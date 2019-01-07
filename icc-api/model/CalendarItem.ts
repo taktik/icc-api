@@ -50,6 +50,8 @@ export class CalendarItem {
 
   encryptionKeys?: { [key: string]: Array<models.Delegation> }
 
+  medicalLocationId?: string
+
   encryptedSelf?: string
 
   title?: string

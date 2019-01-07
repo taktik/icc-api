@@ -24,9 +24,9 @@
 
 import * as models from "./models"
 
-export class ReceiptDto {
+export class MedicalLocationDto {
   constructor(json: JSON | any) {
-    Object.assign(this as ReceiptDto, json)
+    Object.assign(this as MedicalLocationDto, json)
   }
   id?: string
 
@@ -58,15 +58,9 @@ export class ReceiptDto {
 
   encryptionKeys?: { [key: string]: Array<models.DelegationDto> }
 
-  attachmentIds?: { [key: string]: string }
+  name?: string
 
-  references?: Array<string>
+  description?: string
 
-  documentId?: string
-
-  category?: string
-
-  subCategory?: string
-
-  encryptedSelf?: string
+  address?: models.AddressDto
 }
