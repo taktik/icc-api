@@ -450,6 +450,32 @@ export class iccInvoiceApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.InvoiceDto(it)))
       .catch(err => this.handleError(err))
   }
+  listByHcpartySendingModeStatusDate(
+    hcPartyId: string,
+    sendingMode?: string,
+    status?: string,
+    from?: number,
+    to?: number
+  ): Promise<Array<models.InvoiceDto> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/invoice/byHcpartySendingModeStatusDate/{hcPartyId}".replace("{hcPartyId}", hcPartyId + "") +
+      "?ts=" +
+      new Date().getTime() +
+      (sendingMode ? "&sendingMode=" + sendingMode : "") +
+      (status ? "&status=" + status : "") +
+      (from ? "&from=" + from : "") +
+      (to ? "&to=" + to : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.InvoiceDto(it)))
+      .catch(err => this.handleError(err))
+  }
   listByIds(invoiceIds: string): Promise<Array<models.InvoiceDto> | any> {
     let _body = null
 
