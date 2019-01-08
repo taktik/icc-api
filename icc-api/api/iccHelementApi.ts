@@ -142,6 +142,21 @@ export class iccHelementApi {
       .then(doc => new models.HealthElementDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+  modifyHealthElements(
+    body?: Array<models.HealthElementDto>
+  ): Promise<Array<models.HealthElementDto> | any> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + "/helement/batch" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.HealthElementDto(it)))
+      .catch(err => this.handleError(err))
+  }
   newDelegations(
     healthElementId: string,
     body?: Array<models.DelegationDto>

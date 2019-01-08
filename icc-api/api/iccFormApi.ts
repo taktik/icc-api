@@ -253,6 +253,19 @@ export class iccFormApi {
       .then(doc => new models.FormDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+  modifyForms(body?: Array<models.FormDto>): Promise<Array<models.FormDto> | any> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + "/form/batch" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.FormDto(it)))
+      .catch(err => this.handleError(err))
+  }
   newDelegations(
     formId: string,
     body?: Array<models.DelegationDto>

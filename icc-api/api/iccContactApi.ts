@@ -292,24 +292,6 @@ export class iccContactApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.LabelledOccurenceDto(it)))
       .catch(err => this.handleError(err))
   }
-  getServiceLabelsOccurences(
-    minOccurences: number
-  ): Promise<Array<models.LabelledOccurenceDto> | any> {
-    let _body = null
-
-    const _url =
-      this.host +
-      "/contact/service/labels/{minOccurences}".replace("{minOccurences}", minOccurences + "") +
-      "?ts=" +
-      new Date().getTime()
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.LabelledOccurenceDto(it)))
-      .catch(err => this.handleError(err))
-  }
   matchBy(body?: models.Filter): Promise<Array<string> | any> {
     let _body = null
     _body = body
@@ -334,6 +316,19 @@ export class iccContactApi {
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body)
       .then(doc => new models.ContactDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+  modifyContacts(body?: Array<models.ContactDto>): Promise<Array<models.ContactDto> | any> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + "/contact/batch" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.ContactDto(it)))
       .catch(err => this.handleError(err))
   }
   newDelegations(contactId: string, body?: models.DelegationDto): Promise<models.ContactDto | any> {

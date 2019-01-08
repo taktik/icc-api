@@ -28,13 +28,19 @@ export class MedicalHouseContractDto {
   constructor(json: JSON | any) {
     Object.assign(this as MedicalHouseContractDto, json)
   }
+  contractId?: string
+
   validFrom?: number
 
   validTo?: number
 
-  changedBy?: string
-
   mmNihii?: string
+
+  hcpId?: string
+
+  parentContractId?: string
+
+  changedBy?: string
 
   startOfContract?: number
 
@@ -49,8 +55,6 @@ export class MedicalHouseContractDto {
   gp?: boolean
 
   nurse?: boolean
-
-  hcpId?: string
 
   unsubscriptionReasonId?: number
 
