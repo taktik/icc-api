@@ -44,8 +44,6 @@ export class ClassificationTemplateDto {
 
   responsible?: string
 
-  medicalLocationId?: string
-
   codes?: Array<models.CodeDto>
 
   tags?: Array<models.CodeDto>
