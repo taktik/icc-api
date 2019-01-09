@@ -42,6 +42,10 @@ export class MedicationDto {
 
   commentForDelivery?: string
 
+  drugRoute?: string
+
+  temporality?: string
+
   duration?: models.DurationDto
 
   renewal?: models.RenewalDto
@@ -65,4 +69,36 @@ export class MedicationDto {
   options?: { [key: string]: models.ContentDto }
 
   agreements?: { [key: string]: models.ParagraphAgreementDto }
+
+  medicationSchemeIdOnSafe?: string
+
+  medicationSchemeSafeVersion?: number
+
+  medicationSchemeTimeStampOnSafe?: number
+
+  medicationSchemeDocumentId?: string
+
+  safeIdName?: string
+
+  idOnSafes?: string
+
+  timestampOnSafe?: number
+
+  changeValidated?: boolean
+
+  newSafeMedication?: boolean
+
+  medicationUse?: string
+
+  beginCondition?: string
+
+  endCondition?: string
+
+  origin?: string
+
+  medicationChanged?: boolean
+
+  posologyChanged?: boolean
+
+  prescriptionRID?: string
 }
