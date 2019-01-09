@@ -615,16 +615,18 @@ export class IccContactXApi extends iccContactApi {
 
   shortServiceDescription(svc: models.ServiceDto, lng: string) {
     const c = this.preferredContent(svc, lng)
-    return !c
-      ? ""
-      : c.stringValue ||
-          ((c.numberValue || c.numberValue === 0) && c.numberValue) ||
-          (c.measureValue &&
-            "" +
-              (c.measureValue.value || c.measureValue.value === 0 ? c.measureValue.value : "-") +
-              (c.measureValue.unit ? " " + c.measureValue.unit : "")) ||
-          (c.booleanValue && svc.label) ||
-          (c.medicationValue ? this.medication().medicationToString(c.medicationValue, lng) : null)
+    return !c ? "" : this.shortContentDescription(c, lng, svc.label)
+  }
+
+  shortContentDescription(c: models.ContentDto, lng: string, label?: string) {
+    c.stringValue ||
+      ((c.numberValue || c.numberValue === 0) && c.numberValue) ||
+      (c.measureValue &&
+        "" +
+          (c.measureValue.value || c.measureValue.value === 0 ? c.measureValue.value : "-") +
+          (c.measureValue.unit ? " " + c.measureValue.unit : "")) ||
+      ((c.booleanValue && label) || "OK") ||
+      (c.medicationValue ? this.medication().medicationToString(c.medicationValue, lng) : null)
   }
 
   medicationValue(svc: models.ServiceDto, lng: string) {
