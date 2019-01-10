@@ -183,7 +183,7 @@ export class IccHelementXApi extends iccHelementApi {
                               resolve(he)
                             },
                             () => {
-                              console.log("Cannot decrypt contact", he.id)
+                              console.log("Cannot decrypt helement", he.id)
                               resolve(he)
                             }
                           )
