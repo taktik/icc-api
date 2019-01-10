@@ -543,13 +543,13 @@ export class IccCryptoXApi {
     aesKeys: any,
     masterId: string
   ): Promise<Array<string>> {
-    const decryptPromises: Array<Promise<string>> = []
+    const decryptPromises: Array<Promise<string | undefined>> = []
     for (var i = 0; i < (delegationsArray || []).length; i++) {
       var delegation = delegationsArray[i]
 
       decryptPromises.push(
-        this.AES.decrypt(aesKeys[delegation.owner!!], this.utils.hex2ua(delegation.key!!)).then(
-          (result: ArrayBuffer) => {
+        this.AES.decrypt(aesKeys[delegation.owner!!], this.utils.hex2ua(delegation.key!!))
+          .then((result: ArrayBuffer) => {
             var results = utils.ua2text(result).split(":")
             // results[0]: must be the ID of the object, for checksum
             // results[1]: secretForeignKey
@@ -560,12 +560,19 @@ export class IccCryptoXApi {
             }
 
             return results[1]
-          }
-        )
+          })
+          .catch(err => {
+            console.log(
+              `Could not decrypt delegation in ${masterId} from ${delegation.owner} to ${
+                delegation.delegatedTo
+              }: ${err}`
+            )
+            return undefined
+          })
       )
     }
 
-    return Promise.all(decryptPromises)
+    return Promise.all(decryptPromises).then(sfks => sfks.filter(sfk => !!sfk) as string[])
   }
 
   loadKeyPairsAsTextInBrowserLocalStorage(healthcarePartyId: string, privateKey: Uint8Array) {
