@@ -213,6 +213,19 @@ export class iccDocumentApi {
       .then(doc => new models.DocumentDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+  modifyDocuments(body?: Array<models.DocumentDto>): Promise<Array<models.DocumentDto> | any> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + "/document/batch" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.DocumentDto(it)))
+      .catch(err => this.handleError(err))
+  }
   setAttachment(
     documentId: string,
     enckeys?: string,
