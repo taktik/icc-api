@@ -24,32 +24,15 @@
 
 import * as models from "./models"
 
-export class UserStubDto {
+export class ClassificationTemplatePaginatedList {
   constructor(json: JSON | any) {
-    Object.assign(this as UserStubDto, json)
+    Object.assign(this as ClassificationTemplatePaginatedList, json)
   }
-  id?: string
+  totalSize?: number
 
-  rev?: string
+  pageSize?: number
 
-  deletionDate?: number
+  nextKeyPair?: models.PaginatedDocumentKeyIdPair
 
-  name?: string
-
-  healthcarePartyId?: string
-
-  email?: string
-
-  autoDelegations?: { [key: string]: Array<string> }
-
-  virtualHosts?: Array<string>
-
-  virtualHostDependency?: UserStubDto.VirtualHostDependencyEnum
-}
-export namespace UserStubDto {
-  export enum VirtualHostDependencyEnum {
-    NONE = <any>"NONE",
-    DIRECT = <any>"DIRECT",
-    FULL = <any>"FULL"
-  }
+  rows?: Array<models.ClassificationTemplateDto>
 }

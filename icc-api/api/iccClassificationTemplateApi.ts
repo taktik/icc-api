@@ -136,6 +136,29 @@ export class iccClassificationTemplateApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.ClassificationTemplateDto(it)))
       .catch(err => this.handleError(err))
   }
+  listClassificationTemplates(
+    startKey?: string,
+    startDocumentId?: string,
+    limit?: string
+  ): Promise<models.ClassificationTemplatePaginatedList | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/classificationTemplate" +
+      "?ts=" +
+      new Date().getTime() +
+      (startKey ? "&startKey=" + startKey : "") +
+      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
+      (limit ? "&limit=" + limit : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => new models.ClassificationTemplatePaginatedList(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
   modifyClassificationTemplate(
     body?: models.ClassificationTemplateDto
   ): Promise<models.ClassificationTemplateDto | any> {

@@ -28,8 +28,6 @@ export class CalendarItem {
   constructor(json: JSON | any) {
     Object.assign(this as CalendarItem, json)
   }
-  placeId?: string
-
   created?: number
 
   modified?: number
@@ -67,6 +65,8 @@ export class CalendarItem {
   homeVisit?: boolean
 
   phoneNumber?: string
+
+  placeId?: string
 
   address?: models.Address
 
