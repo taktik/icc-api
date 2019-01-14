@@ -613,32 +613,35 @@ export class IccCryptoXApi {
     delegations: { [key: string]: Array<models.DelegationDto> }
   ): Promise<{ extractedKeys: Array<string>; hcpartyId: string }> {
     return this.getHealthcareParty(hcpartyId).then(hcp =>
-      this.decryptAndImportAesHcPartyKeysInDelegations(hcpartyId, delegations, false)
-        .then(decryptedAndImportedAesHcPartyKeys => {
-          const collatedAesKeysFromDelegatorToHcpartyId: { [key: string]: CryptoKey } = {}
-          decryptedAndImportedAesHcPartyKeys.forEach(
-            k => (collatedAesKeysFromDelegatorToHcpartyId[k.delegatorId] = k.key)
+      (delegations[hcpartyId] && delegations[hcpartyId].length
+        ? this.decryptAndImportAesHcPartyKeysInDelegations(hcpartyId, delegations, false).then(
+            decryptedAndImportedAesHcPartyKeys => {
+              const collatedAesKeysFromDelegatorToHcpartyId: { [key: string]: CryptoKey } = {}
+              decryptedAndImportedAesHcPartyKeys.forEach(
+                k => (collatedAesKeysFromDelegatorToHcpartyId[k.delegatorId] = k.key)
+              )
+              return this.decryptKeyInDelegationLikes(
+                delegations[hcpartyId],
+                collatedAesKeysFromDelegatorToHcpartyId,
+                objectId!
+              )
+            }
           )
-          return this.decryptKeyInDelegationLikes(
-            delegations[hcpartyId],
-            collatedAesKeysFromDelegatorToHcpartyId,
-            objectId!
-          )
-        })
-        .then(
-          extractedKeys =>
-            hcp.parentId
-              ? this.extractKeysFromDelegationsForHcpHierarchy(
-                  hcp.parentId,
-                  objectId,
-                  delegations
-                ).then(parentResponse =>
-                  _.assign(parentResponse, {
-                    extractedKeys: parentResponse.extractedKeys.concat(extractedKeys)
-                  })
-                )
-              : { extractedKeys: extractedKeys, hcpartyId: hcpartyId }
-        )
+        : Promise.resolve([])
+      ).then(
+        extractedKeys =>
+          hcp.parentId
+            ? this.extractKeysFromDelegationsForHcpHierarchy(
+                hcp.parentId,
+                objectId,
+                delegations
+              ).then(parentResponse =>
+                _.assign(parentResponse, {
+                  extractedKeys: parentResponse.extractedKeys.concat(extractedKeys)
+                })
+              )
+            : { extractedKeys: extractedKeys, hcpartyId: hcpartyId }
+      )
     )
   }
 

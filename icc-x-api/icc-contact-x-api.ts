@@ -306,29 +306,14 @@ export class IccContactXApi extends iccContactApi {
                 : this.initEncryptionKeys(user, ctc)
               )
                 .then(ctc =>
-                  this.crypto.decryptAndImportAesHcPartyKeysInDelegations(
+                  this.crypto.extractKeysFromDelegationsForHcpHierarchy(
                     hcpartyId,
+                    ctc.id!,
                     ctc.encryptionKeys!
                   )
                 )
-                .then(decryptedAndImportedAesHcPartyKeys => {
-                  var collatedAesKeys: { [key: string]: CryptoKey } = {}
-                  decryptedAndImportedAesHcPartyKeys.forEach(
-                    k => (collatedAesKeys[k.delegatorId] = k.key)
-                  )
-
-                  const ekDelegateId = Object.keys(ctc.encryptionKeys!).find(
-                    x => !!collatedAesKeys[x]
-                  )
-
-                  return this.crypto.decryptKeyInDelegationLikes(
-                    ctc.encryptionKeys![ekDelegateId || hcpartyId],
-                    collatedAesKeys,
-                    ctc.id!
-                  )
-                })
-                .then((sfks: Array<string>) =>
-                  AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
+                .then((sfks: { extractedKeys: Array<string>; hcpartyId: string }) =>
+                  AES.importKey("raw", utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
                 )
                 .then((key: CryptoKey) =>
                   Promise.all(
