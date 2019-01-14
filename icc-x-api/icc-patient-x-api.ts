@@ -76,7 +76,7 @@ export class IccPatientXApi extends iccPatientApi {
           delegateId =>
             (promise = promise
               .then(patient =>
-                this.crypto.appendObjectDelegationsAndCryptedForeignKeys(
+                this.crypto.extendedDelegationsAndCryptedForeignKeys(
                   patient,
                   null,
                   user.healthcarePartyId!,
@@ -456,7 +456,8 @@ export class IccPatientXApi extends iccPatientApi {
       p =>
         p.delegations &&
         p.delegations[user.healthcarePartyId!] &&
-        !p.delegations[user.healthcarePartyId!].length
+        !p.delegations[user.healthcarePartyId!].length &&
+        !Object.values(p.delegations).some(d => d.length > 0)
     )
 
     let prom: Promise<{ [key: string]: models.PatientDto }> = Promise.resolve({})

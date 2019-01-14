@@ -218,7 +218,7 @@ export class IccCryptoXApi {
       }))
   }
 
-  appendObjectDelegationsAndCryptedForeignKeys(
+  extendedDelegationsAndCryptedForeignKeys(
     modifiedObject: any | null,
     parentObject: any | null,
     ownerId: string,
@@ -463,7 +463,7 @@ export class IccCryptoXApi {
     secretEncryptionKey: string
   ) {
     return Promise.all([
-      this.appendObjectDelegationsAndCryptedForeignKeys(
+      this.extendedDelegationsAndCryptedForeignKeys(
         child,
         parent,
         ownerId,

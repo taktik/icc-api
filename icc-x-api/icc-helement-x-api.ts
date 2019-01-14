@@ -59,7 +59,7 @@ export class IccHelementXApi extends iccHelementApi {
           delegateId =>
             (promise = promise.then(helement =>
               this.crypto
-                .appendObjectDelegationsAndCryptedForeignKeys(
+                .extendedDelegationsAndCryptedForeignKeys(
                   helement,
                   patient,
                   user.healthcarePartyId!,

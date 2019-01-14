@@ -47,7 +47,7 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
           delegateId =>
             (promise = promise
               .then(cal =>
-                this.crypto.appendObjectDelegationsAndCryptedForeignKeys(
+                this.crypto.extendedDelegationsAndCryptedForeignKeys(
                   cal,
                   null,
                   user.healthcarePartyId!,
