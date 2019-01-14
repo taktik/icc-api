@@ -805,13 +805,16 @@ export class IccPatientXApi extends iccPatientApi {
                   })
                 : this.modifyPatientWithUser(
                     user,
-                    Object.assign(patient, {
-                      delegations: delegateIds
-                        .filter(id => !patient.delegations || !patient.delegations[id])
-                        .reduce(
-                          (acc, del: String) => Object.assign(acc, _.fromPairs([[del, []]])),
-                          patient.delegations || {}
-                        )
+                    _.assign(patient, {
+                      delegations: _.assign(
+                        patient.delegations,
+                        delegateIds
+                          .filter(id => !patient.delegations || !patient.delegations[id]) //If there are delegations do not modify
+                          .reduce(
+                            (acc, del: String) => Object.assign(acc, _.fromPairs([[del, []]])),
+                            patient.delegations || {}
+                          )
+                      )
                     })
                   )
                     .then(p => {
