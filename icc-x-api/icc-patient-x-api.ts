@@ -76,7 +76,7 @@ export class IccPatientXApi extends iccPatientApi {
           delegateId =>
             (promise = promise
               .then(patient =>
-                this.crypto.appendObjectDelegations(
+                this.crypto.appendObjectDelegationsAndCryptedForeignKeys(
                   patient,
                   null,
                   user.healthcarePartyId!,
@@ -484,6 +484,7 @@ export class IccPatientXApi extends iccPatientApi {
     user: models.UserDto,
     patId: string,
     ownerId: string,
+    parentId: string,
     delegateIds: Array<string>,
     delegationTags: { [key: string]: Array<string> }
   ): Promise<{
@@ -511,45 +512,60 @@ export class IccPatientXApi extends iccPatientApi {
       patient: { success: false, error: null }
     }
     return retry(() => this.getPatientWithUser(user, patId)).then((patient: models.PatientDto) => {
-      const psfksPromise =
-        patient.delegations && patient.delegations[ownerId] && patient.delegations[ownerId].length
-          ? this.crypto.extractDelegationsSFKs(patient, ownerId).then(xks => xks.extractedKeys)
-          : Promise.resolve([])
-      const peksPromise =
-        patient.encryptionKeys &&
-        patient.encryptionKeys[ownerId] &&
-        patient.encryptionKeys[ownerId].length
-          ? this.crypto.extractEncryptionsSKs(patient, ownerId).then(xks => xks.extractedKeys)
-          : Promise.resolve([])
-
-      return Promise.all([psfksPromise, peksPromise]).then(
-        ([psfks, peks]) =>
-          psfks.length
+      return this.extractDelegationsSFKsAndEncryptionSKs(patient, ownerId).then(
+        ([delSfks, ecKeys]) => {
+          return delSfks.length
             ? Promise.all([
                 retry(() =>
-                  this.helementApi.findDelegationsStubsByHCPartyPatientSecretFKeys(
-                    ownerId,
-                    psfks.join(",")
-                  )
+                  this.helementApi
+                    .findDelegationsStubsByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
+                    .then(
+                      hes =>
+                        parentId
+                          ? this.helementApi
+                              .findDelegationsStubsByHCPartyPatientSecretFKeys(
+                                parentId,
+                                delSfks.join(",")
+                              )
+                              .then(moreHes => _.uniqBy(hes.concat(moreHes), "id"))
+                          : hes
+                    )
                 ) as Promise<Array<models.IcureStubDto>>,
-                retry(() => this.contactApi.findBy(ownerId, patient)) as Promise<
-                  Array<models.ContactDto>
-                >,
                 retry(() =>
-                  this.invoiceApi.findDelegationsStubsByHCPartyPatientSecretFKeys(
-                    ownerId,
-                    psfks.join(",")
-                  )
+                  this.contactApi
+                    .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
+                    .then(
+                      ctcs =>
+                        parentId
+                          ? this.contactApi
+                              .findByHCPartyPatientSecretFKeys(parentId, delSfks.join(","))
+                              .then(moreCtcs => _.uniqBy(ctcs.concat(moreCtcs), "id"))
+                          : ctcs
+                    )
+                ) as Promise<Array<models.ContactDto>>,
+                retry(() =>
+                  this.invoiceApi
+                    .findDelegationsStubsByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
+                    .then(
+                      ivs =>
+                        parentId
+                          ? this.invoiceApi
+                              .findDelegationsStubsByHCPartyPatientSecretFKeys(
+                                parentId,
+                                delSfks.join(",")
+                              )
+                              .then(moreIvs => _.uniqBy(ivs.concat(moreIvs), "id"))
+                          : ivs
+                    )
                 ) as Promise<Array<models.IcureStubDto>>
               ]).then(([hes, ctcs, ivs]) => {
                 const ctcsStubs = ctcs.map(c => ({
                   id: c.id,
                   rev: c.rev,
-                  delegations: c.delegations,
-                  cryptedForeignKeys: c.cryptedForeignKeys,
-                  encryptionKeys: c.encryptionKeys
+                  delegations: _.clone(c.delegations),
+                  cryptedForeignKeys: _.clone(c.cryptedForeignKeys),
+                  encryptionKeys: _.clone(c.encryptionKeys)
                 }))
-
                 const oHes = hes.map(x =>
                   _.assign({}, x, {
                     delegations: _.clone(x.delegations),
@@ -600,6 +616,7 @@ export class IccPatientXApi extends iccPatientApi {
                   delegateIds.forEach(delegateId => {
                     const tags = delegationTags[delegateId]
                     markerPromise = markerPromise.then(() => {
+                      //Share patient
                       console.log(`share ${patient.id} to ${delegateId}`)
                       return this.crypto
                         .addDelegationsAndEncryptionKeys(
@@ -607,8 +624,8 @@ export class IccPatientXApi extends iccPatientApi {
                           patient,
                           ownerId,
                           delegateId,
-                          psfks[0],
-                          peks[0]
+                          delSfks[0],
+                          ecKeys[0]
                         )
                         .catch(e => {
                           console.log(e)
@@ -799,8 +816,28 @@ export class IccPatientXApi extends iccPatientApi {
                   status.patient.error = e
                   return { patient: patient, statuses: status }
                 })
+        }
       )
     })
+  }
+
+  private extractDelegationsSFKsAndEncryptionSKs(
+    ety:
+      | models.PatientDto
+      | models.ContactDto
+      | models.InvoiceDto
+      | models.DocumentDto
+      | models.HealthElementDto,
+    ownerId: string
+  ) {
+    const delegationsSfksOwnerPromise = this.crypto
+      .extractDelegationsSFKs(ety, ownerId)
+      .then(xks => xks.extractedKeys) //Will climb up hierarchy
+    const encryptionKeysOwnerPromise = this.crypto
+      .extractEncryptionsSKs(ety, ownerId)
+      .then(xks => xks.extractedKeys) //Will climb up hierarchy
+
+    return Promise.all([delegationsSfksOwnerPromise, encryptionKeysOwnerPromise])
   }
 
   checkInami(inami: String): Boolean {

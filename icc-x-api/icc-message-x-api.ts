@@ -137,7 +137,7 @@ export class IccMessageXApi extends iccMessageApi {
           delegateId =>
             (promise = promise.then(helement =>
               this.crypto
-                .appendObjectDelegations(
+                .appendObjectDelegationsAndCryptedForeignKeys(
                   helement,
                   patient,
                   user.healthcarePartyId!,

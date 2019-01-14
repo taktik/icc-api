@@ -218,7 +218,7 @@ export class IccCryptoXApi {
       }))
   }
 
-  appendObjectDelegations(
+  appendObjectDelegationsAndCryptedForeignKeys(
     modifiedObject: any | null,
     parentObject: any | null,
     ownerId: string,
@@ -254,13 +254,16 @@ export class IccCryptoXApi {
             (d: DelegationDto) =>
               d.key && this.AES.decrypt(importedAESHcPartyKey.key, this.utils.hex2ua(d.key))
           ) as Array<Promise<ArrayBuffer>>),
+
           Promise.all((modifiedObject.cryptedForeignKeys[delegateId] || []).map(
             (d: DelegationDto) =>
               d.key && this.AES.decrypt(importedAESHcPartyKey.key, this.utils.hex2ua(d.key))
           ) as Array<Promise<ArrayBuffer>>),
+
           this.AES.encrypt(importedAESHcPartyKey.key, utils.text2ua(
             modifiedObject.id + ":" + secretIdOfModifiedObject
           ).buffer as ArrayBuffer),
+
           parentObject
             ? this.AES.encrypt(importedAESHcPartyKey.key, utils.text2ua(
                 modifiedObject.id + ":" + parentObject.id
@@ -275,7 +278,11 @@ export class IccCryptoXApi {
           cryptedDelegation,
           cryptedForeignKey
         ]) => {
-          //try to limit the exttent of the modifications to the delegations by preserving the redundant delegation already present and removing duplicates
+          //try to limit the extent of the modifications to the delegations by preserving the redundant delegation already present and removing duplicates
+          //For delegate delegateId, we create:
+          // 1. an array of objects { d : {owner,delegatedTo,encrypted(key)}} with one object for the existing delegations and the new key concatenated
+          // 2. an array of objects { k : decrypted(key)} with one object for the existing delegations and the new key concatenated
+          // We merge them to get one array of objects: { d: {owner,delegatedTo,encrypted(key)}, k: decrypted(key)}
           const delegationCryptedDecrypted = _.merge(
             (modifiedObject.delegations[delegateId] || [])
               .concat([
@@ -293,6 +300,8 @@ export class IccCryptoXApi {
           )
 
           const allDelegations = _.cloneDeep(modifiedObject.delegations)
+
+          //Only keep one version of the decrypted key
           allDelegations[delegateId] = _.uniqBy(delegationCryptedDecrypted, (x: any) => x.k).map(
             (x: any) => x.d
           )
@@ -405,6 +414,10 @@ export class IccCryptoXApi {
       )
       .then(([previousDecryptedEncryptionKeys, encryptedEncryptionKey]) => {
         //try to limit the extent of the modifications to the delegations by preserving the redundant encryption keys already present and removing duplicates
+        //For delegate delegateId, we create:
+        // 1. an array of objects { d : {owner,delegatedTo,encrypted(key)}} with one object for the existing encryption keys and the new key concatenated
+        // 2. an array of objects { k : decrypted(key)} with one object for the existing delegations and the new key concatenated
+        // We merge them to get one array of objects: { d: {owner,delegatedTo,encrypted(key)}, k: decrypted(key)}
         const encryptionKeysCryptedDecrypted = _.merge(
           (modifiedObject.encryptionKeys[delegateId] || [])
             .concat([
@@ -434,6 +447,7 @@ export class IccCryptoXApi {
       })
   }
 
+  //This method is safe. It check if the
   addDelegationsAndEncryptionKeys(
     parent: models.PatientDto | models.MessageDto | null,
     child:
@@ -449,19 +463,64 @@ export class IccCryptoXApi {
     secretEncryptionKey: string
   ) {
     return Promise.all([
-      this.appendObjectDelegations(child, parent, ownerId, delegateId, secretDelegationKey),
+      this.appendObjectDelegationsAndCryptedForeignKeys(
+        child,
+        parent,
+        ownerId,
+        delegateId,
+        secretDelegationKey
+      ),
       this.appendEncryptionKeys(child, ownerId, delegateId, secretEncryptionKey)
     ]).then(extraData => {
       const extraDels = extraData[0]
       const extraEks = extraData[1]
       return _.assign(child, {
-        delegations: extraDels.delegations,
-        cryptedForeignKeys: extraDels.cryptedForeignKeys,
-        encryptionKeys: extraEks.encryptionKeys
+        //Conservative version ... We might want to be more aggressive with the deduplication of keys
+        delegations: _.assignWith(child.delegations, extraDels.delegations, (dest, src) =>
+          (src || []).concat(
+            _.filter(
+              dest,
+              (d: DelegationDto) =>
+                !src.some(
+                  (s: DelegationDto) => s.owner === d.owner && s.delegatedTo === d.delegatedTo
+                )
+            )
+          )
+        ),
+        cryptedForeignKeys: _.assignWith(
+          child.cryptedForeignKeys,
+          extraDels.cryptedForeignKeys,
+          (dest, src) =>
+            (src || []).concat(
+              _.filter(
+                dest,
+                (d: DelegationDto) =>
+                  !src.some(
+                    (s: DelegationDto) => s.owner === d.owner && s.delegatedTo === d.delegatedTo
+                  )
+              )
+            )
+        ),
+        encryptionKeys: _.assignWith(child.encryptionKeys, extraEks.encryptionKeys, (dest, src) =>
+          (src || []).concat(
+            _.filter(
+              dest,
+              (d: DelegationDto) =>
+                !src.some(
+                  (s: DelegationDto) => s.owner === d.owner && s.delegatedTo === d.delegatedTo
+                )
+            )
+          )
+        )
       })
     })
   }
 
+  /**
+   * Walk up the hierarchy of hcps and extract matching delegations
+   * @param document
+   * @param hcpartyId
+   */
   extractDelegationsSFKs(
     document:
       | models.PatientDto
@@ -480,12 +539,29 @@ export class IccCryptoXApi {
     }
     const dels = document.delegations
     if (!dels || !Object.keys(dels).length) {
-      console.log(`There is no delegation in document (${document.id})`)
-      return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
+      return this.getHealthcareParty(hcpartyId).then(hcp => {
+        if (hcp.parentId) {
+          console.log(
+            `No delegation in document (${document.id}) for ${hcpartyId}, trying parent ${
+              hcp.parentId
+            }`
+          )
+          return this.extractDelegationsSFKs(document, hcp.parentId)
+        } else {
+          console.log(`There is no delegation in document (${document.id})`)
+          return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
+        }
+      })
+    } else {
+      return this.extractSfks(hcpartyId, document.id!, dels)
     }
-    return this.extractSfks(hcpartyId, document.id!, dels)
   }
 
+  /**
+   * Walk up the hierarchy of hcps and extract matching cryptedFKs
+   * @param document
+   * @param hcpartyId
+   */
   // noinspection JSUnusedGlobalSymbols
   extractCryptedFKs(
     document:
@@ -505,12 +581,29 @@ export class IccCryptoXApi {
     }
     const cfks = document.cryptedForeignKeys
     if (!cfks || !Object.keys(cfks).length) {
-      console.log(`There is no cryptedForeignKeys in document (${document.id})`)
-      return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
+      return this.getHealthcareParty(hcpartyId).then(hcp => {
+        if (hcp.parentId) {
+          console.log(
+            `No cryptedForeignKeys in document (${document.id}) for ${hcpartyId}, trying parent ${
+              hcp.parentId
+            }`
+          )
+          return this.extractCryptedFKs(document, hcp.parentId)
+        } else {
+          console.log(`There is no cryptedForeignKeys in document (${document.id})`)
+          return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
+        }
+      })
+    } else {
+      return this.extractSfks(hcpartyId, document.id!, cfks)
     }
-    return this.extractSfks(hcpartyId, document.id!, cfks)
   }
 
+  /**
+   * Walk up the hierarchy of hcps and extract matching encryption keys
+   * @param document
+   * @param hcpartyId
+   */
   extractEncryptionsSKs(
     document:
       | models.PatientDto
@@ -528,10 +621,22 @@ export class IccCryptoXApi {
     }
     const eks = document.encryptionKeys
     if (!eks || !Object.keys(eks).length) {
-      console.log(`There is no encryption key in document (${document.id})`)
-      return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
+      return this.getHealthcareParty(hcpartyId).then(hcp => {
+        if (hcp.parentId) {
+          console.log(
+            `No encryption key in document (${document.id}) for ${hcpartyId}, trying parent ${
+              hcp.parentId
+            }`
+          )
+          return this.extractEncryptionsSKs(document, hcp.parentId)
+        } else {
+          console.log(`There is no encryption key in document (${document.id})`)
+          return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
+        }
+      })
+    } else {
+      return this.extractSfks(hcpartyId, document.id!, eks)
     }
-    return this.extractSfks(hcpartyId, document.id!, eks)
   }
 
   extractSfks(

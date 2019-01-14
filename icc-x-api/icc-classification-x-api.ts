@@ -69,7 +69,7 @@ export class IccClassificationXApi extends iccClassificationApi {
           delegateId =>
             (promise = promise.then(classification =>
               this.crypto
-                .appendObjectDelegations(
+                .appendObjectDelegationsAndCryptedForeignKeys(
                   classification,
                   patient,
                   user.healthcarePartyId!,
