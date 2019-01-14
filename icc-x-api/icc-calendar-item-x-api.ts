@@ -181,23 +181,14 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
           : this.initEncryptionKeys(user, item)
         )
           .then(ci =>
-            this.crypto.decryptAndImportAesHcPartyKeysInDelegations(hcpartyId, ci.encryptionKeys!)
+            this.crypto.extractKeysFromDelegationsForHcpHierarchy(
+              hcpartyId,
+              ci.id!,
+              ci.encryptionKeys!
+            )
           )
-          .then(decryptedAndImportedAesHcPartyKeys => {
-            let collatedAesKeys: { [key: string]: CryptoKey } = {}
-            decryptedAndImportedAesHcPartyKeys.forEach(
-              k => (collatedAesKeys[k.delegatorId] = k.key)
-            )
-            const ekDelegateId = Object.keys(item.encryptionKeys!).find(x => !!collatedAesKeys[x])
-
-            return this.crypto.decryptKeyInDelegationLikes(
-              item.encryptionKeys![ekDelegateId || hcpartyId],
-              collatedAesKeys,
-              item.id!
-            )
-          })
-          .then((sfks: Array<string>) =>
-            AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
+          .then((sfks: { extractedKeys: Array<string>; hcpartyId: string }) =>
+            AES.importKey("raw", utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
           )
           .then((key: CryptoKey) => {
             AES.encrypt(key, utils.utf82ua(JSON.stringify({ details: item.details })))
