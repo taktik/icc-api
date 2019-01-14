@@ -188,8 +188,10 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
             decryptedAndImportedAesHcPartyKeys.forEach(
               k => (collatedAesKeys[k.delegatorId] = k.key)
             )
-            return this.crypto.decryptDelegationsSFKs(
-              item.encryptionKeys![hcpartyId],
+            const ekDelegateId = Object.keys(item.encryptionKeys!).find(x => !!collatedAesKeys[x])
+
+            return this.crypto.decryptKeyInDelegationLikes(
+              item.encryptionKeys![ekDelegateId || hcpartyId],
               collatedAesKeys,
               item.id!
             )

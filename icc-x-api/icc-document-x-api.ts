@@ -599,7 +599,7 @@ export class IccDocumentXApi extends iccDocumentApi {
                 k => (collatedAesKeys[k.delegatorId] = k.key)
               )
               return this.crypto
-                .decryptDelegationsSFKs(
+                .decryptKeyInDelegationLikes(
                   document.delegations![hcpartyId],
                   collatedAesKeys,
                   document.id!

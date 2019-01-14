@@ -619,7 +619,7 @@ export class IccCryptoXApi {
           decryptedAndImportedAesHcPartyKeys.forEach(
             k => (collatedAesKeysFromDelegatorToHcpartyId[k.delegatorId] = k.key)
           )
-          return this.decryptDelegationsSFKs(
+          return this.decryptKeyInDelegationLikes(
             delegations[hcpartyId],
             collatedAesKeysFromDelegatorToHcpartyId,
             objectId!
@@ -642,7 +642,7 @@ export class IccCryptoXApi {
     )
   }
 
-  decryptDelegationsSFKs(
+  decryptKeyInDelegationLikes(
     delegationsArray: Array<models.DelegationDto>,
     aesKeys: { [key: string]: CryptoKey },
     masterId: string

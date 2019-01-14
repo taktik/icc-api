@@ -316,8 +316,13 @@ export class IccContactXApi extends iccContactApi {
                   decryptedAndImportedAesHcPartyKeys.forEach(
                     k => (collatedAesKeys[k.delegatorId] = k.key)
                   )
-                  return this.crypto.decryptDelegationsSFKs(
-                    ctc.encryptionKeys![hcpartyId],
+
+                  const ekDelegateId = Object.keys(ctc.encryptionKeys!).find(
+                    x => !!collatedAesKeys[x]
+                  )
+
+                  return this.crypto.decryptKeyInDelegationLikes(
+                    ctc.encryptionKeys![ekDelegateId || hcpartyId],
                     collatedAesKeys,
                     ctc.id!
                   )
@@ -367,7 +372,7 @@ export class IccContactXApi extends iccContactApi {
               k => (collatedAesKeys[k.delegatorId] = k.key)
             )
             return this.crypto
-              .decryptDelegationsSFKs(
+              .decryptKeyInDelegationLikes(
                 (ctc.encryptionKeys && Object.keys(ctc.encryptionKeys).length
                   ? ctc.encryptionKeys
                   : ctc.delegations)![hcpartyId],
@@ -497,7 +502,7 @@ export class IccContactXApi extends iccContactApi {
               k => (collatedAesKeys[k.delegatorId] = k.key)
             )
             return this.crypto
-              .decryptDelegationsSFKs(
+              .decryptKeyInDelegationLikes(
                 (svc.encryptionKeys && Object.keys(svc.encryptionKeys).length
                   ? svc.encryptionKeys
                   : svc.delegations)![hcpartyId],

@@ -157,7 +157,7 @@ export class IccHelementXApi extends iccHelementApi {
                 k => (collatedAesKeys[k.delegatorId] = k.key)
               )
               return this.crypto
-                .decryptDelegationsSFKs(he.delegations![hcpartyId], collatedAesKeys, he.id!)
+                .decryptKeyInDelegationLikes(he.delegations![hcpartyId], collatedAesKeys, he.id!)
                 .then((sfks: Array<string>) => {
                   if (!sfks || !sfks.length) {
                     console.log("Cannot decrypt helement", he.id)
