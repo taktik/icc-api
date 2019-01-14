@@ -619,7 +619,8 @@ export class IccContactXApi extends iccContactApi {
   }
 
   shortContentDescription(c: models.ContentDto, lng: string, label?: string) {
-    c.stringValue ||
+    return (
+      c.stringValue ||
       ((c.numberValue || c.numberValue === 0) && c.numberValue) ||
       (c.measureValue &&
         "" +
@@ -627,6 +628,7 @@ export class IccContactXApi extends iccContactApi {
           (c.measureValue.unit ? " " + c.measureValue.unit : "")) ||
       ((c.booleanValue && label) || "OK") ||
       (c.medicationValue ? this.medication().medicationToString(c.medicationValue, lng) : null)
+    )
   }
 
   medicationValue(svc: models.ServiceDto, lng: string) {
