@@ -307,7 +307,7 @@ export class IccCryptoXApi {
           )
 
           const cryptedForeignKeysCryptedDecrypted = _.merge(
-            (modifiedObject.cryptedForeignKeys[delegateId] || [])
+            ((modifiedObject.cryptedForeignKeys || {})[delegateId] || [])
               .concat(
                 cryptedForeignKey
                   ? [
@@ -326,7 +326,7 @@ export class IccCryptoXApi {
               .map(k => ({ k }))
           )
 
-          const allCryptedForeignKeys = _.cloneDeep(modifiedObject.cryptedForeignKeys)
+          const allCryptedForeignKeys = _.cloneDeep(modifiedObject.cryptedForeignKeys || {})
           allCryptedForeignKeys[delegateId] = _.uniqBy(
             cryptedForeignKeysCryptedDecrypted,
             (x: any) => x.k
