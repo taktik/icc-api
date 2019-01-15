@@ -74,11 +74,7 @@ export class MedicalHouseContractDto {
 
   forcedSuspension?: boolean
 
-  contractId?: string
-
   changeType?: MedicalHouseContractDto.ChangeTypeEnum
-
-  parentContractId?: string
 }
 export namespace MedicalHouseContractDto {
   export enum SuspensionReasonEnum {
