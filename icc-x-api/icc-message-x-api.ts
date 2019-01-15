@@ -1021,9 +1021,10 @@ export class IccMessageXApi extends iccMessageApi {
     const fullBase36 = uuidBase36(uuid)
     const sentDate = +new Date()
     const errors: Array<string> = []
+    const year = moment().year()
 
     return getFederaton(invoices, this.insuranceApi).then(fed => {
-      const prefix = `efact:${hcp.id}:${fed.code}:`
+      const prefix = `efact:${hcp.id}:${year}:${fed.code}:`
       return this.entityReferenceApi
         .getLatest(prefix)
         .then(er =>
