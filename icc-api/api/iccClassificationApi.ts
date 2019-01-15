@@ -160,17 +160,4 @@ export class iccClassificationApi {
       .then(doc => new models.ClassificationDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  setClassificationsDelegations(body?: Array<models.IcureStubDto>): Promise<any | Boolean> {
-    let _body = null
-    _body = body
-
-    const _url = this.host + "/classification/delegations" + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => true)
-      .catch(err => this.handleError(err))
-  }
 }

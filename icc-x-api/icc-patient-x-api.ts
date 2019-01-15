@@ -7,7 +7,6 @@ import * as _ from "lodash"
 import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
 import { DocumentDto, ListOfIdsDto } from "../icc-api/model/models"
-import { IccClassificationXApi } from "./icc-classification-x-api"
 
 // noinspection JSUnusedGlobalSymbols
 export class IccPatientXApi extends iccPatientApi {
@@ -17,7 +16,6 @@ export class IccPatientXApi extends iccPatientApi {
   invoiceApi: iccInvoiceApi
   hcpartyApi: IccHcpartyXApi
   documentApi: iccDocumentApi
-  classificationApi: IccClassificationXApi
 
   constructor(
     host: string,
@@ -27,8 +25,7 @@ export class IccPatientXApi extends iccPatientApi {
     helementApi: iccHelementApi,
     invoiceApi: iccInvoiceApi,
     documentApi: iccDocumentApi,
-    hcpartyApi: IccHcpartyXApi,
-    classificationApi: IccClassificationXApi
+    hcpartyApi: IccHcpartyXApi
   ) {
     super(host, headers)
     this.crypto = crypto
@@ -37,7 +34,6 @@ export class IccPatientXApi extends iccPatientApi {
     this.invoiceApi = invoiceApi
     this.hcpartyApi = hcpartyApi
     this.documentApi = documentApi
-    this.classificationApi = classificationApi
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -536,10 +532,6 @@ export class IccPatientXApi extends iccPatientApi {
         success: allTags.includes("medicalInformation") || allTags.includes("all") ? false : null,
         error: null
       },
-      classifications: {
-        success: allTags.includes("medicalInformation") || allTags.includes("all") ? false : null,
-        error: null
-      },
       patient: { success: false, error: null }
     }
     return this.getPatientWithUser(user, patId).then((patient: models.PatientDto) => {
@@ -600,15 +592,8 @@ export class IccPatientXApi extends iccPatientApi {
                   status.invoices.success = false
                   status.invoices.error = new Error("Cannot fetch invoices : " + e.message) as any
                   return []
-                }) as Promise<Array<models.IcureStubDto>>,
-              this.classificationApi
-                .findByHCPartyPatientSecretFKeys(ownerId, patientSecretForeignKeys.join(","))
-                .catch(e => {
-                  status.invoices.success = false
-                  status.invoices.error = new Error("Cannot fetch invoices : " + e.message) as any
-                  return []
                 }) as Promise<Array<models.IcureStubDto>>
-            ]).then(([healthElements, contacts, invoices, classifications]) => {
+            ]).then(([healthElements, contacts, invoices]) => {
               const contactStubs = contacts.map(contact => ({
                 id: contact.id,
                 rev: contact.rev,
@@ -713,19 +698,6 @@ export class IccPatientXApi extends iccPatientApi {
                               )
                             ))
                         ))
-                    tags.includes("medicalInformation") ||
-                      (tags.includes("all") &&
-                        classifications.forEach(
-                          x =>
-                            (markerPromise = markerPromise.then(() =>
-                              this.crypto.extractAndAddDelsEncryptionKeys(
-                                patient,
-                                x,
-                                ownerId,
-                                delegateId
-                              )
-                            ))
-                        ))
                   })
                   return markerPromise
                     .then(() => {
@@ -766,16 +738,6 @@ export class IccPatientXApi extends iccPatientApi {
                           .setDocumentsDelegations(docs)
                           .then(() => (status.documents.success = true))
                           .catch(e => (status.documents.error = e))
-                      )
-                    })
-                    .then(() => {
-                      console.log("scd")
-                      return (
-                        (allTags.includes("medicalInformation") || allTags.includes("all")) &&
-                        this.classificationApi
-                          .setClassificationsDelegations(classifications)
-                          .then(() => (status.classifications.success = true))
-                          .catch(e => (status.classifications.error = e))
                       )
                     })
                     .then(() => this.modifyPatientWithUser(user, patient))
