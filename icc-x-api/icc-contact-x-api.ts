@@ -199,6 +199,12 @@ export class IccContactXApi extends iccContactApi {
     )
   }
 
+  modifyContacts(body?: Array<ContactDto>): never {
+    throw new Error(
+      "Cannot call a method that modify contacts without providing a user for de/encryption"
+    )
+  }
+
   createContact(body?: ContactDto): never {
     throw new Error(
       "Cannot call a method that modify contacts without providing a user for de/encryption"
@@ -274,6 +280,17 @@ export class IccContactXApi extends iccContactApi {
       : Promise.resolve(null)
   }
 
+  modifyContactsWithUser(
+    user: models.UserDto,
+    bodies?: Array<models.ContactDto>
+  ): Promise<models.ContactDto | any> {
+    return bodies
+      ? this.encrypt(user, bodies.map(c => _.cloneDeep(c)))
+          .then(ctcs => super.modifyContacts(ctcs))
+          .then(ctcs => this.decrypt(user.healthcarePartyId!, ctcs))
+      : Promise.resolve(null)
+  }
+
   createContactWithUser(
     user: models.UserDto,
     body?: models.ContactDto
@@ -299,24 +316,14 @@ export class IccContactXApi extends iccContactApi {
                 : this.initEncryptionKeys(user, ctc)
               )
                 .then(ctc =>
-                  this.crypto.decryptAndImportAesHcPartyKeysInDelegations(
+                  this.crypto.extractKeysFromDelegationsForHcpHierarchy(
                     hcpartyId,
+                    ctc.id!,
                     ctc.encryptionKeys!
                   )
                 )
-                .then(decryptedAndImportedAesHcPartyKeys => {
-                  var collatedAesKeys: { [key: string]: CryptoKey } = {}
-                  decryptedAndImportedAesHcPartyKeys.forEach(
-                    k => (collatedAesKeys[k.delegatorId] = k.key)
-                  )
-                  return this.crypto.decryptDelegationsSFKs(
-                    ctc.encryptionKeys![hcpartyId],
-                    collatedAesKeys,
-                    ctc.id!
-                  )
-                })
-                .then((sfks: Array<string>) =>
-                  AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
+                .then((sfks: { extractedKeys: Array<string>; hcpartyId: string }) =>
+                  AES.importKey("raw", utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
                 )
                 .then((key: CryptoKey) =>
                   Promise.all(
@@ -360,7 +367,7 @@ export class IccContactXApi extends iccContactApi {
               k => (collatedAesKeys[k.delegatorId] = k.key)
             )
             return this.crypto
-              .decryptDelegationsSFKs(
+              .decryptKeyInDelegationLikes(
                 (ctc.encryptionKeys && Object.keys(ctc.encryptionKeys).length
                   ? ctc.encryptionKeys
                   : ctc.delegations)![hcpartyId],
@@ -490,7 +497,7 @@ export class IccContactXApi extends iccContactApi {
               k => (collatedAesKeys[k.delegatorId] = k.key)
             )
             return this.crypto
-              .decryptDelegationsSFKs(
+              .decryptKeyInDelegationLikes(
                 (svc.encryptionKeys && Object.keys(svc.encryptionKeys).length
                   ? svc.encryptionKeys
                   : svc.delegations)![hcpartyId],
@@ -608,16 +615,20 @@ export class IccContactXApi extends iccContactApi {
 
   shortServiceDescription(svc: models.ServiceDto, lng: string) {
     const c = this.preferredContent(svc, lng)
-    return !c
-      ? ""
-      : c.stringValue ||
-          ((c.numberValue || c.numberValue === 0) && c.numberValue) ||
-          (c.measureValue &&
-            "" +
-              (c.measureValue.value || c.measureValue.value === 0 ? c.measureValue.value : "-") +
-              (c.measureValue.unit ? " " + c.measureValue.unit : "")) ||
-          (c.booleanValue && svc.label) ||
-          (c.medicationValue ? this.medication().medicationToString(c.medicationValue, lng) : null)
+    return !c ? "" : this.shortContentDescription(c, lng, svc.label)
+  }
+
+  shortContentDescription(c: models.ContentDto, lng: string, label?: string) {
+    return (
+      c.stringValue ||
+      ((c.numberValue || c.numberValue === 0) && c.numberValue) ||
+      (c.measureValue &&
+        "" +
+          (c.measureValue.value || c.measureValue.value === 0 ? c.measureValue.value : "-") +
+          (c.measureValue.unit ? " " + c.measureValue.unit : "")) ||
+      ((c.booleanValue && label) || "OK") ||
+      (c.medicationValue ? this.medication().medicationToString(c.medicationValue, lng) : null)
+    )
   }
 
   medicationValue(svc: models.ServiceDto, lng: string) {

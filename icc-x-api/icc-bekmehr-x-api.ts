@@ -126,4 +126,26 @@ export class IccBekmehrXApi extends iccBekmehrApi {
       )
     })
   }
+
+  generateMedicationSchemeWithEncryptionSupport(
+    patientId: string,
+    healthcarePartyId: string,
+    language: string,
+    version: number,
+    body: models.MedicationSchemeExportInfoDto
+  ): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+      const socket = new WebSocket(this.wssHost + "/be_kmehr/generateMedicationScheme")
+      socket.addEventListener("open", function() {
+        socket.send(
+          JSON.stringify({ parameters: { patientId: patientId, language: language, version: version, info: body } })
+        )
+      })
+      // Listen for messages
+      socket.addEventListener(
+        "message",
+        this.socketEventListener(socket, healthcarePartyId, resolve, reject)
+      )
+    })
+  }
 }
