@@ -589,53 +589,41 @@ export class IccDocumentXApi extends iccDocumentApi {
     return Promise.all(
       documents.map(document =>
         this.crypto
-          .decryptAndImportAesHcPartyKeysInDelegations(hcpartyId, document.delegations!)
-          .then(
-            (
-              decryptedAndImportedAesHcPartyKeys: Array<{ delegatorId: string; key: CryptoKey }>
-            ) => {
-              var collatedAesKeys: { [key: string]: CryptoKey } = {}
-              decryptedAndImportedAesHcPartyKeys.forEach(
-                k => (collatedAesKeys[k.delegatorId] = k.key)
-              )
-              return this.crypto
-                .decryptKeyInDelegationLikes(
-                  document.delegations![hcpartyId],
-                  collatedAesKeys,
-                  document.id!
-                )
-                .then((sfks: Array<string>) => {
-                  if (!sfks || !sfks.length) {
-                    console.log("Cannot decrypt document", document.id)
-                    return Promise.resolve(document)
-                  }
-
-                  if (sfks.length && document.encryptedSelf) {
-                    return this.crypto.AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
-                      .then(
-                        (key: CryptoKey) =>
-                          new Promise((resolve: (value: ArrayBuffer | null) => any) => {
-                            AES.decrypt(key, utils.text2ua(atob(document.encryptedSelf!))).then(
-                              resolve,
-                              () => {
-                                console.log("Cannot decrypt document", document.id)
-                                resolve(null)
-                              }
-                            )
-                          })
-                      )
-                      .then((decrypted: ArrayBuffer | null) => {
-                        if (decrypted) {
-                          document = _.extend(document, JSON.parse(utils.ua2text(decrypted)))
-                        }
-                        return document
-                      })
-                  } else {
-                    return Promise.resolve(document)
-                  }
-                })
-            }
+          .extractKeysFromDelegationsForHcpHierarchy(
+            hcpartyId,
+            document.id!,
+            _.size(document.encryptionKeys) ? document.encryptionKeys! : document.delegations!
           )
+          .then(({ extractedKeys: sfks }) => {
+            if (!sfks || !sfks.length) {
+              console.log("Cannot decrypt document", document.id)
+              return Promise.resolve(document)
+            }
+
+            if (sfks.length && document.encryptedSelf) {
+              return this.crypto.AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
+                .then(
+                  (key: CryptoKey) =>
+                    new Promise((resolve: (value: ArrayBuffer | null) => any) => {
+                      AES.decrypt(key, utils.text2ua(atob(document.encryptedSelf!))).then(
+                        resolve,
+                        () => {
+                          console.log("Cannot decrypt document", document.id)
+                          resolve(null)
+                        }
+                      )
+                    })
+                )
+                .then((decrypted: ArrayBuffer | null) => {
+                  if (decrypted) {
+                    document = _.extend(document, JSON.parse(utils.ua2text(decrypted)))
+                  }
+                  return document
+                })
+            } else {
+              return Promise.resolve(document)
+            }
+          })
       )
     ).catch(function(e: Error) {
       console.log(e)

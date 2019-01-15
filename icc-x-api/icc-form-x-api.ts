@@ -151,54 +151,39 @@ export class IccFormXApi extends iccFormApi {
     return Promise.all(
       forms.map(form =>
         this.crypto
-          .decryptAndImportAesHcPartyKeysInDelegations(hcpartyId, form.delegations!)
-          .then(
-            (
-              decryptedAndImportedAesHcPartyKeys: Array<{
-                delegatorId: string
-                key: CryptoKey
-              }>
-            ) => {
-              var collatedAesKeys: { [key: string]: CryptoKey } = {}
-              decryptedAndImportedAesHcPartyKeys.forEach(
-                k => (collatedAesKeys[k.delegatorId] = k.key)
-              )
-              return this.crypto
-                .decryptKeyInDelegationLikes(
-                  form.delegations![hcpartyId],
-                  collatedAesKeys,
-                  form.id!
-                )
-                .then((sfks: Array<string>) => {
-                  if (form.encryptedSelf) {
-                    return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
-                      .then(
-                        key =>
-                          new Promise((resolve: (value: any) => any) => {
-                            AES.decrypt(key, utils.text2ua(atob(form.encryptedSelf!))).then(
-                              resolve,
-                              () => {
-                                console.log("Cannot decrypt form", form.id)
-                                resolve(null)
-                              }
-                            )
-                          })
-                      )
-                      .then((decrypted: ArrayBuffer) => {
-                        if (decrypted) {
-                          form = _.extend(form, JSON.parse(utils.ua2text(decrypted)))
-                        }
-                        return form
-                      })
-                  } else {
-                    return Promise.resolve(form)
-                  }
-                })
-                .catch(function(e) {
-                  console.log(e)
-                })
-            }
+          .extractKeysFromDelegationsForHcpHierarchy(
+            hcpartyId,
+            form.id!,
+            _.size(form.encryptionKeys) ? form.encryptionKeys! : form.delegations!
           )
+          .then(({ extractedKeys: sfks }) => {
+            if (form.encryptedSelf) {
+              return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
+                .then(
+                  key =>
+                    new Promise((resolve: (value: any) => any) => {
+                      AES.decrypt(key, utils.text2ua(atob(form.encryptedSelf!))).then(
+                        resolve,
+                        () => {
+                          console.log("Cannot decrypt form", form.id)
+                          resolve(null)
+                        }
+                      )
+                    })
+                )
+                .then((decrypted: ArrayBuffer) => {
+                  if (decrypted) {
+                    form = _.extend(form, JSON.parse(utils.ua2text(decrypted)))
+                  }
+                  return form
+                })
+            } else {
+              return Promise.resolve(form)
+            }
+          })
+          .catch(function(e) {
+            console.log(e)
+          })
       )
     ).catch(function(e) {
       console.log(e)
