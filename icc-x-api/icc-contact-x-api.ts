@@ -348,7 +348,7 @@ export class IccContactXApi extends iccContactApi {
           .extractKeysFromDelegationsForHcpHierarchy(
             hcpartyId,
             ctc.id!,
-            _.size(ctc.encryptionKeys) ? ctc.encryptionKeys! : ctc.delegations!!
+            _.size(ctc.encryptionKeys) ? ctc.encryptionKeys! : ctc.delegations!
           )
           .then(({ extractedKeys: sfks }) => {
             if (!sfks || !sfks.length) {
