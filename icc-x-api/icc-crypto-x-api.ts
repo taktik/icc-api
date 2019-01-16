@@ -6,7 +6,7 @@ import { utils, UtilsClass } from "./crypto/utils"
 import * as _ from "lodash"
 import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
-import { HealthcarePartyDto } from "../icc-api/model/models"
+import { HealthcarePartyDto, DelegationDto } from "../icc-api/model/models"
 
 export class IccCryptoXApi {
   hcPartyKeysCache: {
@@ -219,7 +219,7 @@ export class IccCryptoXApi {
       }))
   }
 
-  appendObjectDelegations(
+  extendedDelegationsAndCryptedForeignKeys(
     modifiedObject: any | null,
     parentObject: any | null,
     ownerId: string,
@@ -251,9 +251,20 @@ export class IccCryptoXApi {
       )
       .then(importedAESHcPartyKey =>
         Promise.all([
+          Promise.all(((modifiedObject.delegations || {})[delegateId] || []).map(
+            (d: DelegationDto) =>
+              d.key && this.AES.decrypt(importedAESHcPartyKey.key, this.utils.hex2ua(d.key))
+          ) as Array<Promise<ArrayBuffer>>),
+
+          Promise.all(((modifiedObject.cryptedForeignKeys || {})[delegateId] || []).map(
+            (d: DelegationDto) =>
+              d.key && this.AES.decrypt(importedAESHcPartyKey.key, this.utils.hex2ua(d.key))
+          ) as Array<Promise<ArrayBuffer>>),
+
           this.AES.encrypt(importedAESHcPartyKey.key, utils.text2ua(
             modifiedObject.id + ":" + secretIdOfModifiedObject
           ).buffer as ArrayBuffer),
+
           parentObject
             ? this.AES.encrypt(importedAESHcPartyKey.key, utils.text2ua(
                 modifiedObject.id + ":" + parentObject.id
@@ -261,41 +272,74 @@ export class IccCryptoXApi {
             : Promise.resolve(null)
         ])
       )
-      .then(encryptedDelegationAndSecretForeignKey => ({
-        delegations: _.extend(
-          _.cloneDeep(modifiedObject.delegations),
-          _.fromPairs([
-            [
-              delegateId,
-              (modifiedObject.delegations[delegateId] || []).concat([
+      .then(
+        ([
+          previousDecryptedDelegations,
+          previousDecryptedCryptedForeignKeys,
+          cryptedDelegation,
+          cryptedForeignKey
+        ]) => {
+          //try to limit the extent of the modifications to the delegations by preserving the redundant delegation already present and removing duplicates
+          //For delegate delegateId, we create:
+          // 1. an array of objects { d : {owner,delegatedTo,encrypted(key)}} with one object for the existing delegations and the new key concatenated
+          // 2. an array of objects { k : decrypted(key)} with one object for the existing delegations and the new key concatenated
+          // We merge them to get one array of objects: { d: {owner,delegatedTo,encrypted(key)}, k: decrypted(key)}
+          const delegationCryptedDecrypted = _.merge(
+            (modifiedObject.delegations[delegateId] || [])
+              .concat([
                 {
                   owner: ownerId,
                   delegatedTo: delegateId,
-                  key: this.utils.ua2hex(encryptedDelegationAndSecretForeignKey[0]!)
+                  key: this.utils.ua2hex(cryptedDelegation)
                 }
               ])
-            ]
-          ])
-        ),
-        cryptedForeignKeys: encryptedDelegationAndSecretForeignKey[1]
-          ? _.extend(
-              _.cloneDeep(modifiedObject.cryptedForeignKeys),
-              _.fromPairs([
-                [
-                  delegateId,
-                  (modifiedObject.cryptedForeignKeys[delegateId] || []).concat([
-                    {
-                      owner: ownerId,
-                      delegatedTo: delegateId,
-                      key: this.utils.ua2hex(encryptedDelegationAndSecretForeignKey[1]!)
-                    }
-                  ])
-                ]
-              ])
-            )
-          : _.cloneDeep(modifiedObject.cryptedForeignKeys),
-        secretId: secretIdOfModifiedObject
-      }))
+              .map((d: DelegationDto) => ({ d })),
+            (previousDecryptedDelegations || [])
+              .map(d => this.utils.ua2text(d))
+              .concat([`${modifiedObject.id}:${secretIdOfModifiedObject}`])
+              .map(k => ({ k }))
+          )
+
+          const allDelegations = _.cloneDeep(modifiedObject.delegations)
+
+          //Only keep one version of the decrypted key
+          allDelegations[delegateId] = _.uniqBy(delegationCryptedDecrypted, (x: any) => x.k).map(
+            (x: any) => x.d
+          )
+
+          const cryptedForeignKeysCryptedDecrypted = _.merge(
+            ((modifiedObject.cryptedForeignKeys || {})[delegateId] || [])
+              .concat(
+                cryptedForeignKey
+                  ? [
+                      {
+                        owner: ownerId,
+                        delegatedTo: delegateId,
+                        key: this.utils.ua2hex(cryptedForeignKey)
+                      }
+                    ]
+                  : []
+              )
+              .map((d: DelegationDto) => ({ d })),
+            (previousDecryptedCryptedForeignKeys || [])
+              .map(d => this.utils.ua2text(d))
+              .concat(cryptedForeignKey ? [`${modifiedObject.id}:${parentObject.id}`] : [])
+              .map(k => ({ k }))
+          )
+
+          const allCryptedForeignKeys = _.cloneDeep(modifiedObject.cryptedForeignKeys || {})
+          allCryptedForeignKeys[delegateId] = _.uniqBy(
+            cryptedForeignKeysCryptedDecrypted,
+            (x: any) => x.k
+          ).map((x: any) => x.d)
+
+          return {
+            delegations: allDelegations,
+            cryptedForeignKeys: allCryptedForeignKeys,
+            secretId: secretIdOfModifiedObject
+          }
+        }
+      )
   }
 
   initEncryptionKeys(
@@ -358,61 +402,53 @@ export class IccCryptoXApi {
         this.decryptHcPartyKey(ownerId, delegateId, encryptedHcPartyKey, true)
       )
       .then(importedAESHcPartyKey =>
-        this.AES.encrypt(
-          importedAESHcPartyKey.key,
-          utils.text2ua(modifiedObject.id + ":" + secretIdOfModifiedObject)
-        )
+        Promise.all([
+          Promise.all((modifiedObject.encryptionKeys[delegateId] || []).map(
+            (eck: DelegationDto) =>
+              eck.key && this.AES.decrypt(importedAESHcPartyKey.key, this.utils.hex2ua(eck.key))
+          ) as Array<Promise<ArrayBuffer>>),
+          this.AES.encrypt(
+            importedAESHcPartyKey.key,
+            utils.text2ua(modifiedObject.id + ":" + secretIdOfModifiedObject)
+          )
+        ])
       )
-      .then(encryptedEncryptionKeys => ({
-        encryptionKeys: _.extend(
-          _.cloneDeep(modifiedObject.encryptionKeys),
-          _.fromPairs([
-            [
-              delegateId,
-              [
-                {
-                  owner: ownerId,
-                  delegatedTo: delegateId,
-                  key: this.utils.ua2hex(encryptedEncryptionKeys)
-                }
-              ]
-            ]
-          ])
-        ),
-        secretId: secretIdOfModifiedObject
-      }))
-  }
+      .then(([previousDecryptedEncryptionKeys, encryptedEncryptionKey]) => {
+        //try to limit the extent of the modifications to the delegations by preserving the redundant encryption keys already present and removing duplicates
+        //For delegate delegateId, we create:
+        // 1. an array of objects { d : {owner,delegatedTo,encrypted(key)}} with one object for the existing encryption keys and the new key concatenated
+        // 2. an array of objects { k : decrypted(key)} with one object for the existing delegations and the new key concatenated
+        // We merge them to get one array of objects: { d: {owner,delegatedTo,encrypted(key)}, k: decrypted(key)}
+        const encryptionKeysCryptedDecrypted = _.merge(
+          (modifiedObject.encryptionKeys[delegateId] || [])
+            .concat([
+              {
+                owner: ownerId,
+                delegatedTo: delegateId,
+                key: this.utils.ua2hex(encryptedEncryptionKey)
+              }
+            ])
+            .map((d: DelegationDto) => ({ d })),
+          (previousDecryptedEncryptionKeys || [])
+            .map(d => this.utils.ua2text(d))
+            .concat([`${modifiedObject.id}:${secretIdOfModifiedObject}`])
+            .map(k => ({ k }))
+        )
 
-  extractAndAddDelsEncryptionKeys(
-    parent: models.PatientDto | models.MessageDto | null,
-    child:
-      | models.PatientDto
-      | models.ContactDto
-      | models.InvoiceDto
-      | models.DocumentDto
-      | models.HealthElementDto
-      | models.ReceiptDto,
-    ownerId: string,
-    delegateId: string
-  ) {
-    return Promise.all([
-      this.extractDelegationsSFKs(child, ownerId),
-      this.extractEncryptionsSKs(child, ownerId)
-    ]).then(([sfks, eks]) => {
-      return this.addDelegationsAndEncryptionKeys(
-        parent,
-        child,
-        ownerId,
-        delegateId,
-        sfks.extractedKeys[0],
-        eks.extractedKeys[0]
-      ).catch(e => {
-        console.log(e)
-        return child
+        const allEncryptionKeys = _.cloneDeep(modifiedObject.encryptionKeys)
+        allEncryptionKeys[delegateId] = _.uniqBy(
+          encryptionKeysCryptedDecrypted,
+          (x: any) => x.k
+        ).map((x: any) => x.d)
+
+        return {
+          encryptionKeys: allEncryptionKeys,
+          secretId: secretIdOfModifiedObject
+        }
       })
-    })
   }
 
+  //This method is safe. It check if the
   addDelegationsAndEncryptionKeys(
     parent: models.PatientDto | models.MessageDto | null,
     child:
@@ -428,19 +464,66 @@ export class IccCryptoXApi {
     secretEncryptionKey: string
   ) {
     return Promise.all([
-      this.appendObjectDelegations(child, parent, ownerId, delegateId, secretDelegationKey),
+      this.extendedDelegationsAndCryptedForeignKeys(
+        child,
+        parent,
+        ownerId,
+        delegateId,
+        secretDelegationKey
+      ),
       this.appendEncryptionKeys(child, ownerId, delegateId, secretEncryptionKey)
     ]).then(extraData => {
       const extraDels = extraData[0]
       const extraEks = extraData[1]
-      return _.extend(child, {
-        delegations: extraDels.delegations,
-        cryptedForeignKeys: extraDels.cryptedForeignKeys,
-        encryptionKeys: extraEks.encryptionKeys
+      return _.assign(child, {
+        // Conservative version ... We might want to be more aggressive with the deduplication of keys
+        // For each delegate, we are going to concatenate to the src (the new delegations), the object in dest (the current delegations)
+        // for which we do not find an equivalent delegation (same delegator, same delegate)
+        delegations: _.assignWith(child.delegations, extraDels.delegations, (dest, src) =>
+          (src || []).concat(
+            _.filter(
+              dest,
+              (d: DelegationDto) =>
+                !src.some(
+                  (s: DelegationDto) => s.owner === d.owner && s.delegatedTo === d.delegatedTo
+                )
+            )
+          )
+        ),
+        cryptedForeignKeys: _.assignWith(
+          child.cryptedForeignKeys,
+          extraDels.cryptedForeignKeys,
+          (dest, src) =>
+            (src || []).concat(
+              _.filter(
+                dest,
+                (d: DelegationDto) =>
+                  !src.some(
+                    (s: DelegationDto) => s.owner === d.owner && s.delegatedTo === d.delegatedTo
+                  )
+              )
+            )
+        ),
+        encryptionKeys: _.assignWith(child.encryptionKeys, extraEks.encryptionKeys, (dest, src) =>
+          (src || []).concat(
+            _.filter(
+              dest,
+              (d: DelegationDto) =>
+                !src.some(
+                  (s: DelegationDto) => s.owner === d.owner && s.delegatedTo === d.delegatedTo
+                )
+            )
+          )
+        )
       })
     })
   }
 
+  /**
+   * Walk up the hierarchy of hcps and extract matching delegations
+   * @param document
+   * @param hcpartyId
+   */
   extractDelegationsSFKs(
     document:
       | models.PatientDto
@@ -457,12 +540,16 @@ export class IccCryptoXApi {
     if (!document) {
       return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
     }
-    const dels = document.delegations
-    if (!dels || !Object.keys(dels).length) {
+    const delegationsForAllDelegates = document.delegations
+    if (!delegationsForAllDelegates || !Object.keys(delegationsForAllDelegates).length) {
       console.log(`There is no delegation in document (${document.id})`)
       return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
     }
-    return this.extractSfks(hcpartyId, document.id!, dels)
+    return this.extractKeysFromDelegationsForHcpHierarchy(
+      hcpartyId,
+      document.id!,
+      delegationsForAllDelegates
+    )
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -482,12 +569,16 @@ export class IccCryptoXApi {
     if (!document || !document.cryptedForeignKeys) {
       return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
     }
-    const cfks = document.cryptedForeignKeys
-    if (!cfks || !Object.keys(cfks).length) {
+    const cfksForAllDelegates = document.cryptedForeignKeys
+    if (!cfksForAllDelegates || !Object.keys(cfksForAllDelegates).length) {
       console.log(`There is no cryptedForeignKeys in document (${document.id})`)
       return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
     }
-    return this.extractSfks(hcpartyId, document.id!, cfks)
+    return this.extractKeysFromDelegationsForHcpHierarchy(
+      hcpartyId,
+      document.id!,
+      cfksForAllDelegates
+    )
   }
 
   extractEncryptionsSKs(
@@ -505,42 +596,59 @@ export class IccCryptoXApi {
     if (!document.encryptionKeys) {
       return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
     }
-    const eks = document.encryptionKeys
-    if (!eks || !Object.keys(eks).length) {
+    const eckeysForAllDelegates = document.encryptionKeys
+    if (!eckeysForAllDelegates || !Object.keys(eckeysForAllDelegates).length) {
       console.log(`There is no encryption key in document (${document.id})`)
       return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
     }
-    return this.extractSfks(hcpartyId, document.id!, eks)
+    return this.extractKeysFromDelegationsForHcpHierarchy(
+      hcpartyId,
+      document.id!,
+      eckeysForAllDelegates
+    )
   }
 
-  extractSfks(
+  extractKeysFromDelegationsForHcpHierarchy(
     hcpartyId: string,
     objectId: string,
     delegations: { [key: string]: Array<models.DelegationDto> }
   ): Promise<{ extractedKeys: Array<string>; hcpartyId: string }> {
     return this.getHealthcareParty(hcpartyId).then(hcp =>
-      this.decryptAndImportAesHcPartyKeysInDelegations(hcpartyId, delegations, false)
-        .then(decryptedAndImportedAesHcPartyKeys => {
-          var collatedAesKeys: { [key: string]: CryptoKey } = {}
-          decryptedAndImportedAesHcPartyKeys.forEach(k => (collatedAesKeys[k.delegatorId] = k.key))
-          return this.decryptDelegationsSFKs(delegations[hcpartyId], collatedAesKeys, objectId!)
-        })
-        .then(
-          extractedKeys =>
-            hcp.parentId
-              ? this.extractSfks(hcp.parentId, objectId, delegations).then(parentResponse =>
-                  _.assign(parentResponse, {
-                    extractedKeys: parentResponse.extractedKeys.concat(extractedKeys)
-                  })
-                )
-              : { extractedKeys: extractedKeys, hcpartyId: hcpartyId }
-        )
+      (delegations[hcpartyId] && delegations[hcpartyId].length
+        ? this.decryptAndImportAesHcPartyKeysInDelegations(hcpartyId, delegations, false).then(
+            decryptedAndImportedAesHcPartyKeys => {
+              const collatedAesKeysFromDelegatorToHcpartyId: { [key: string]: CryptoKey } = {}
+              decryptedAndImportedAesHcPartyKeys.forEach(
+                k => (collatedAesKeysFromDelegatorToHcpartyId[k.delegatorId] = k.key)
+              )
+              return this.decryptKeyInDelegationLikes(
+                delegations[hcpartyId],
+                collatedAesKeysFromDelegatorToHcpartyId,
+                objectId!
+              )
+            }
+          )
+        : Promise.resolve([])
+      ).then(
+        extractedKeys =>
+          hcp.parentId
+            ? this.extractKeysFromDelegationsForHcpHierarchy(
+                hcp.parentId,
+                objectId,
+                delegations
+              ).then(parentResponse =>
+                _.assign(parentResponse, {
+                  extractedKeys: parentResponse.extractedKeys.concat(extractedKeys)
+                })
+              )
+            : { extractedKeys: extractedKeys, hcpartyId: hcpartyId }
+      )
     )
   }
 
-  decryptDelegationsSFKs(
+  decryptKeyInDelegationLikes(
     delegationsArray: Array<models.DelegationDto>,
-    aesKeys: any,
+    aesKeys: { [key: string]: CryptoKey },
     masterId: string
   ): Promise<Array<string>> {
     const decryptPromises: Array<Promise<string | undefined>> = []

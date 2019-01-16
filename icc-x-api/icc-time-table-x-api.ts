@@ -45,7 +45,7 @@ export class IccTimeTableXApi extends iccTimeTableApi {
           delegateId =>
             (promise = promise
               .then(patient =>
-                this.crypto.appendObjectDelegations(
+                this.crypto.extendedDelegationsAndCryptedForeignKeys(
                   patient,
                   null,
                   user.healthcarePartyId!,

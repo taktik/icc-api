@@ -164,7 +164,11 @@ export class IccFormXApi extends iccFormApi {
                 k => (collatedAesKeys[k.delegatorId] = k.key)
               )
               return this.crypto
-                .decryptDelegationsSFKs(form.delegations![hcpartyId], collatedAesKeys, form.id!)
+                .decryptKeyInDelegationLikes(
+                  form.delegations![hcpartyId],
+                  collatedAesKeys,
+                  form.id!
+                )
                 .then((sfks: Array<string>) => {
                   if (form.encryptedSelf) {
                     return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))

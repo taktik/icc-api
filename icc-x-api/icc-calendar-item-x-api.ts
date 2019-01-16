@@ -47,7 +47,7 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
           delegateId =>
             (promise = promise
               .then(cal =>
-                this.crypto.appendObjectDelegations(
+                this.crypto.extendedDelegationsAndCryptedForeignKeys(
                   cal,
                   null,
                   user.healthcarePartyId!,
@@ -181,21 +181,14 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
           : this.initEncryptionKeys(user, item)
         )
           .then(ci =>
-            this.crypto.decryptAndImportAesHcPartyKeysInDelegations(hcpartyId, ci.encryptionKeys!)
+            this.crypto.extractKeysFromDelegationsForHcpHierarchy(
+              hcpartyId,
+              ci.id!,
+              ci.encryptionKeys!
+            )
           )
-          .then(decryptedAndImportedAesHcPartyKeys => {
-            let collatedAesKeys: { [key: string]: CryptoKey } = {}
-            decryptedAndImportedAesHcPartyKeys.forEach(
-              k => (collatedAesKeys[k.delegatorId] = k.key)
-            )
-            return this.crypto.decryptDelegationsSFKs(
-              item.encryptionKeys![hcpartyId],
-              collatedAesKeys,
-              item.id!
-            )
-          })
-          .then((sfks: Array<string>) =>
-            AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
+          .then((sfks: { extractedKeys: Array<string>; hcpartyId: string }) =>
+            AES.importKey("raw", utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
           )
           .then((key: CryptoKey) => {
             AES.encrypt(key, utils.utf82ua(JSON.stringify({ details: item.details })))
