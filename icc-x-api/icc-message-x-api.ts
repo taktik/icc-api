@@ -1014,7 +1014,8 @@ export class IccMessageXApi extends iccMessageApi {
     xFHCKeystoreId: string,
     xFHCTokenId: string,
     xFHCPassPhrase: string,
-    efactApi: fhcEfactcontrollerApi
+    efactApi: fhcEfactcontrollerApi,
+    fhcServer: string | undefined = undefined
   ): Promise<models.MessageDto> {
     const uuid = this.crypto.randomUuid()
     const smallBase36 = uuidBase36Half(uuid)
@@ -1097,7 +1098,8 @@ export class IccMessageXApi extends iccMessageApi {
                           numericalRef: batch.numericalRef,
                           invoiceMonth: batch.invoicingMonth,
                           invoiceYear: batch.invoicingYear,
-                          totalAmount: totalAmount
+                          totalAmount: totalAmount,
+                          fhc_server: fhcServer
                         }
                       })
                     )
