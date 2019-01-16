@@ -193,6 +193,10 @@ export class IccContactXApi extends iccContactApi {
     throw "Cannot call a method that modify contacts without providing a user for de/encryption"
   }
 
+  modifyContacts(body?: Array<ContactDto>): Promise<Array<ContactDto> | any> {
+    throw "Cannot call a method that modify contacts without providing a user for de/encryption"
+  }
+
   createContact(body?: ContactDto): Promise<ContactDto | any> {
     throw "Cannot call a method that modify contacts without providing a user for de/encryption"
   }
@@ -266,6 +270,17 @@ export class IccContactXApi extends iccContactApi {
       : Promise.resolve(null)
   }
 
+  modifyContactsWithUser(
+    user: models.UserDto,
+    bodies?: Array<models.ContactDto>
+  ): Promise<models.ContactDto | any> {
+    return bodies
+      ? this.encrypt(user, bodies.map(c => _.cloneDeep(c)))
+          .then(ctcs => super.modifyContacts(ctcs))
+          .then(ctcs => this.decrypt(user.healthcarePartyId!, ctcs))
+      : Promise.resolve(null)
+  }
+
   createContactWithUser(
     user: models.UserDto,
     body?: models.ContactDto
@@ -291,24 +306,14 @@ export class IccContactXApi extends iccContactApi {
                 : this.initEncryptionKeys(user, ctc)
               )
                 .then(ctc =>
-                  this.crypto.decryptAndImportAesHcPartyKeysInDelegations(
+                  this.crypto.extractKeysFromDelegationsForHcpHierarchy(
                     hcpartyId,
+                    ctc.id!,
                     ctc.encryptionKeys!
                   )
                 )
-                .then(decryptedAndImportedAesHcPartyKeys => {
-                  var collatedAesKeys: { [key: string]: CryptoKey } = {}
-                  decryptedAndImportedAesHcPartyKeys.forEach(
-                    k => (collatedAesKeys[k.delegatorId] = k.key)
-                  )
-                  return this.crypto.decryptDelegationsSFKs(
-                    ctc.encryptionKeys![hcpartyId],
-                    collatedAesKeys,
-                    ctc.id!
-                  )
-                })
-                .then((sfks: Array<string>) =>
-                  AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
+                .then((sfks: { extractedKeys: Array<string>; hcpartyId: string }) =>
+                  AES.importKey("raw", utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
                 )
                 .then((key: CryptoKey) =>
                   Promise.all(
@@ -340,124 +345,109 @@ export class IccContactXApi extends iccContactApi {
     return Promise.all(
       ctcs.map(ctc =>
         this.crypto
-          .decryptAndImportAesHcPartyKeysInDelegations(
+          .extractKeysFromDelegationsForHcpHierarchy(
             hcpartyId,
-            ctc.encryptionKeys && Object.keys(ctc.encryptionKeys).length
-              ? ctc.encryptionKeys
-              : ctc.delegations!
+            ctc.id!,
+            _.size(ctc.encryptionKeys) ? ctc.encryptionKeys! : ctc.delegations!
           )
-          .then(decryptedAndImportedAesHcPartyKeys => {
-            var collatedAesKeys: { [key: string]: CryptoKey } = {}
-            decryptedAndImportedAesHcPartyKeys.forEach(
-              k => (collatedAesKeys[k.delegatorId] = k.key)
-            )
-            return this.crypto
-              .decryptDelegationsSFKs(
-                (ctc.encryptionKeys && Object.keys(ctc.encryptionKeys).length
-                  ? ctc.encryptionKeys
-                  : ctc.delegations)![hcpartyId],
-                collatedAesKeys,
-                ctc.id!
-              )
-              .then((sfks: Array<string>) => {
-                if (!sfks || !sfks.length) {
-                  //console.log("Cannot decrypt contact", ctc.id)
-                  return Promise.resolve(ctc)
-                }
-                return Promise.all(
-                  ctc.services!.map(svc => {
-                    if (svc.encryptedContent || svc.encryptedSelf) {
-                      return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
-                        .then(
-                          (key: CryptoKey) =>
-                            new Promise((resolve: (value: any) => any) => {
-                              svc.encryptedContent
-                                ? AES.decrypt(key, utils.text2ua(atob(svc.encryptedContent!))).then(
-                                    c => {
-                                      let jsonContent
-                                      try {
-                                        jsonContent = utils.ua2utf8(c!).replace(/\0+$/g, "")
-                                        resolve(c && { content: JSON.parse(jsonContent) })
-                                      } catch (e) {
-                                        console.log(
-                                          "Cannot parse service",
-                                          svc.id,
-                                          jsonContent || "<- Invalid encoding"
-                                        )
-                                        resolve(null)
-                                      }
-                                    },
-                                    () => {
-                                      console.log("Cannot decrypt service", svc.id)
-                                      resolve(null)
-                                    }
-                                  )
-                                : svc.encryptedSelf
-                                  ? AES.decrypt(key, utils.text2ua(atob(svc.encryptedSelf!))).then(
-                                      s => {
-                                        let jsonContent
-                                        try {
-                                          jsonContent = utils.ua2utf8(s!).replace(/\0+$/g, "")
-                                          resolve(s && JSON.parse(jsonContent))
-                                        } catch (e) {
-                                          console.log(
-                                            "Cannot parse service",
-                                            svc.id,
-                                            jsonContent || "<- Invalid encoding"
-                                          )
-                                          resolve(null)
-                                        }
-                                      },
-                                      () => {
-                                        console.log("Cannot decrypt service", svc.id)
-                                        resolve(null)
-                                      }
-                                    )
-                                  : resolve(null)
-                            })
-                        )
-                        .then(decrypted => {
-                          decrypted && _.assign(svc, decrypted)
-                          return svc
-                        })
-                    } else {
-                      return svc
-                    }
-                  })
-                ).then((svcs: Array<models.ServiceDto>) => {
-                  ctc.services = svcs
-                  //console.log('ES:'+ctc.encryptedSelf)
-                  return ctc.encryptedSelf
-                    ? AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(
-                        key =>
-                          new Promise<models.ContactDto>(
-                            (resolve: (value: models.ContactDto) => any) => {
-                              AES.decrypt(key, utils.text2ua(atob(ctc.encryptedSelf!))).then(
-                                dec => {
+          .then(({ extractedKeys: sfks }) => {
+            if (!sfks || !sfks.length) {
+              //console.log("Cannot decrypt contact", ctc.id)
+              return Promise.resolve(ctc)
+            }
+            return Promise.all(
+              ctc.services!.map(svc => {
+                if (svc.encryptedContent || svc.encryptedSelf) {
+                  return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
+                    .then(
+                      (key: CryptoKey) =>
+                        new Promise((resolve: (value: any) => any) => {
+                          svc.encryptedContent
+                            ? AES.decrypt(key, utils.text2ua(atob(svc.encryptedContent!))).then(
+                                c => {
                                   let jsonContent
                                   try {
-                                    jsonContent = dec && utils.ua2utf8(dec)
-                                    jsonContent && _.assign(ctc, JSON.parse(jsonContent))
+                                    jsonContent = utils.ua2utf8(c!).replace(/\0+$/g, "")
+                                    resolve(c && { content: JSON.parse(jsonContent) })
                                   } catch (e) {
                                     console.log(
-                                      "Cannot parse ctc",
-                                      ctc.id,
+                                      "Cannot parse service",
+                                      svc.id,
                                       jsonContent || "<- Invalid encoding"
                                     )
+                                    resolve(null)
                                   }
-                                  resolve(ctc)
                                 },
                                 () => {
-                                  console.log("Cannot decrypt contact", ctc.id)
-                                  resolve(ctc)
+                                  console.log("Cannot decrypt service", svc.id)
+                                  resolve(null)
                                 }
                               )
+                            : svc.encryptedSelf
+                              ? AES.decrypt(key, utils.text2ua(atob(svc.encryptedSelf!))).then(
+                                  s => {
+                                    let jsonContent
+                                    try {
+                                      jsonContent = utils.ua2utf8(s!).replace(/\0+$/g, "")
+                                      resolve(s && JSON.parse(jsonContent))
+                                    } catch (e) {
+                                      console.log(
+                                        "Cannot parse service",
+                                        svc.id,
+                                        jsonContent || "<- Invalid encoding"
+                                      )
+                                      resolve(null)
+                                    }
+                                  },
+                                  () => {
+                                    console.log("Cannot decrypt service", svc.id)
+                                    resolve(null)
+                                  }
+                                )
+                              : resolve(null)
+                        })
+                    )
+                    .then(decrypted => {
+                      decrypted && _.assign(svc, decrypted)
+                      return svc
+                    })
+                } else {
+                  return svc
+                }
+              })
+            ).then((svcs: Array<models.ServiceDto>) => {
+              ctc.services = svcs
+              //console.log('ES:'+ctc.encryptedSelf)
+              return ctc.encryptedSelf
+                ? AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(
+                    key =>
+                      new Promise<models.ContactDto>(
+                        (resolve: (value: models.ContactDto) => any) => {
+                          AES.decrypt(key, utils.text2ua(atob(ctc.encryptedSelf!))).then(
+                            dec => {
+                              let jsonContent
+                              try {
+                                jsonContent = dec && utils.ua2utf8(dec)
+                                jsonContent && _.assign(ctc, JSON.parse(jsonContent))
+                              } catch (e) {
+                                console.log(
+                                  "Cannot parse ctc",
+                                  ctc.id,
+                                  jsonContent || "<- Invalid encoding"
+                                )
+                              }
+                              resolve(ctc)
+                            },
+                            () => {
+                              console.log("Cannot decrypt contact", ctc.id)
+                              resolve(ctc)
                             }
                           )
+                        }
                       )
-                    : Promise.resolve(ctc)
-                })
-              })
+                  )
+                : Promise.resolve(ctc)
+            })
           })
       )
     )
@@ -470,84 +460,69 @@ export class IccContactXApi extends iccContactApi {
     return Promise.all(
       svcs.map(svc =>
         this.crypto
-          .decryptAndImportAesHcPartyKeysInDelegations(
+          .extractKeysFromDelegationsForHcpHierarchy(
             hcpartyId,
-            svc.encryptionKeys && Object.keys(svc.encryptionKeys).length
-              ? svc.encryptionKeys
-              : svc.delegations!
+            svc.id!,
+            _.size(svc.encryptionKeys) ? svc.encryptionKeys! : svc.delegations!
           )
-          .then(decryptedAndImportedAesHcPartyKeys => {
-            var collatedAesKeys: { [key: string]: CryptoKey } = {}
-            decryptedAndImportedAesHcPartyKeys.forEach(
-              k => (collatedAesKeys[k.delegatorId] = k.key)
-            )
-            return this.crypto
-              .decryptDelegationsSFKs(
-                (svc.encryptionKeys && Object.keys(svc.encryptionKeys).length
-                  ? svc.encryptionKeys
-                  : svc.delegations)![hcpartyId],
-                collatedAesKeys,
-                svc.id!
-              )
-              .then(
-                (sfks: Array<string>) =>
-                  svc.encryptedContent || svc.encryptedSelf
-                    ? AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
-                        .then(
-                          (key: CryptoKey) =>
-                            new Promise((resolve: (value: any) => any) => {
-                              svc.encryptedContent
-                                ? AES.decrypt(key, utils.text2ua(atob(svc.encryptedContent!))).then(
-                                    c => {
-                                      let jsonContent
-                                      try {
-                                        jsonContent = utils.ua2utf8(c!).replace(/\0+$/g, "")
-                                        resolve(c && { content: JSON.parse(jsonContent) })
-                                      } catch (e) {
-                                        console.log(
-                                          "Cannot parse service",
-                                          svc.id,
-                                          jsonContent || "<- Invalid encoding"
-                                        )
-                                        resolve(null)
-                                      }
-                                    },
-                                    () => {
-                                      console.log("Cannot decrypt service", svc.id)
+          .then(
+            ({ extractedKeys: sfks }) =>
+              svc.encryptedContent || svc.encryptedSelf
+                ? AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
+                    .then(
+                      (key: CryptoKey) =>
+                        new Promise((resolve: (value: any) => any) => {
+                          svc.encryptedContent
+                            ? AES.decrypt(key, utils.text2ua(atob(svc.encryptedContent!))).then(
+                                c => {
+                                  let jsonContent
+                                  try {
+                                    jsonContent = utils.ua2utf8(c!).replace(/\0+$/g, "")
+                                    resolve(c && { content: JSON.parse(jsonContent) })
+                                  } catch (e) {
+                                    console.log(
+                                      "Cannot parse service",
+                                      svc.id,
+                                      jsonContent || "<- Invalid encoding"
+                                    )
+                                    resolve(null)
+                                  }
+                                },
+                                () => {
+                                  console.log("Cannot decrypt service", svc.id)
+                                  resolve(null)
+                                }
+                              )
+                            : svc.encryptedSelf
+                              ? AES.decrypt(key, utils.text2ua(atob(svc.encryptedSelf!))).then(
+                                  s => {
+                                    let jsonContent
+                                    try {
+                                      jsonContent = utils.ua2utf8(s!).replace(/\0+$/g, "")
+                                      resolve(s && JSON.parse(jsonContent))
+                                    } catch (e) {
+                                      console.log(
+                                        "Cannot parse service",
+                                        svc.id,
+                                        jsonContent || "<- Invalid encoding"
+                                      )
                                       resolve(null)
                                     }
-                                  )
-                                : svc.encryptedSelf
-                                  ? AES.decrypt(key, utils.text2ua(atob(svc.encryptedSelf!))).then(
-                                      s => {
-                                        let jsonContent
-                                        try {
-                                          jsonContent = utils.ua2utf8(s!).replace(/\0+$/g, "")
-                                          resolve(s && JSON.parse(jsonContent))
-                                        } catch (e) {
-                                          console.log(
-                                            "Cannot parse service",
-                                            svc.id,
-                                            jsonContent || "<- Invalid encoding"
-                                          )
-                                          resolve(null)
-                                        }
-                                      },
-                                      () => {
-                                        console.log("Cannot decrypt service", svc.id)
-                                        resolve(null)
-                                      }
-                                    )
-                                  : resolve(null)
-                            })
-                        )
-                        .then(decrypted => {
-                          decrypted && _.assign(svc, decrypted)
-                          return svc
+                                  },
+                                  () => {
+                                    console.log("Cannot decrypt service", svc.id)
+                                    resolve(null)
+                                  }
+                                )
+                              : resolve(null)
                         })
-                    : svc
-              )
-          })
+                    )
+                    .then(decrypted => {
+                      decrypted && _.assign(svc, decrypted)
+                      return svc
+                    })
+                : svc
+          )
       )
     )
   }
@@ -600,16 +575,20 @@ export class IccContactXApi extends iccContactApi {
 
   shortServiceDescription(svc: models.ServiceDto, lng: string) {
     const c = this.preferredContent(svc, lng)
-    return !c
-      ? ""
-      : c.stringValue ||
-          ((c.numberValue || c.numberValue === 0) && c.numberValue) ||
-          (c.measureValue &&
-            "" +
-              (c.measureValue.value || c.measureValue.value === 0 ? c.measureValue.value : "-") +
-              (c.measureValue.unit ? " " + c.measureValue.unit : "")) ||
-          (c.booleanValue && svc.label) ||
-          (c.medicationValue ? this.medication().medicationToString(c.medicationValue, lng) : null)
+    return !c ? "" : this.shortContentDescription(c, lng, svc.label)
+  }
+
+  shortContentDescription(c: models.ContentDto, lng: string, label?: string) {
+    return (
+      c.stringValue ||
+      ((c.numberValue || c.numberValue === 0) && c.numberValue) ||
+      (c.measureValue &&
+        "" +
+          (c.measureValue.value || c.measureValue.value === 0 ? c.measureValue.value : "-") +
+          (c.measureValue.unit ? " " + c.measureValue.unit : "")) ||
+      ((c.booleanValue && label) || "OK") ||
+      (c.medicationValue ? this.medication().medicationToString(c.medicationValue, lng) : null)
+    )
   }
 
   medicationValue(svc: models.ServiceDto, lng: string) {
