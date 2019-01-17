@@ -1028,20 +1028,18 @@ export class IccMessageXApi extends iccMessageApi {
       const prefix = `efact:${hcp.id}:${year}:${fed.code}:`
       return this.entityReferenceApi
         .getLatest(prefix)
-        .then(er =>
-          this.entityReferenceApi.createEntityReference(
+        .then((er: EntityReference) => {
+          let nextSeqNumber =
+            er && er.id && er.id!.startsWith(prefix)
+              ? (Number(er.id!.split(":").pop()) || 0) + 1
+              : 1
+          return this.entityReferenceApi.createEntityReference(
             new EntityReference({
-              id:
-                prefix +
-                _.padStart(
-                  "" + (((er && er.id ? Number(er.id.substr(prefix.length)) : 0) + 1) % 1000000000),
-                  9, //1 billion invoices that are going to be mod 1000
-                  "0"
-                ),
+              id: prefix + _.padStart("" + (nextSeqNumber % 1000000000), 9, "0"),
               docId: uuid
             })
           )
-        )
+        })
         .then(er =>
           toInvoiceBatch(
             invoices,
