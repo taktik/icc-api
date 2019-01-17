@@ -126,8 +126,17 @@ export class IccCryptoXApi {
       // For each delegatorId, obtain the AES keys
       return Promise.all(
         delegatorsHcPartyIdsSet.map((delegatorId: string) =>
-          this.decryptHcPartyKey(delegatorId, delegateHcPartyId, healthcarePartyKeys[delegatorId])
+          this.decryptHcPartyKey(
+            delegatorId,
+            delegateHcPartyId,
+            healthcarePartyKeys[delegatorId]
+          ).catch(() => {
+            console.log(`failed to decrypt hcPartyKey from ${delegatorId} to ${delegateHcPartyId}`)
+            return undefined
+          })
         )
+      ).then(hcPartyKeys =>
+        hcPartyKeys.filter(<T>(hcPartyKey: T | undefined): hcPartyKey is T => !!hcPartyKey)
       )
     })
   }
