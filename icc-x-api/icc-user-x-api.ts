@@ -14,7 +14,7 @@ export class IccUserXApi extends iccUserApi {
 
     let _body = null
 
-    const _url = this.host + `/user/session;jsessionid=${sessionId}` + new Date().getTime()
+    const _url = `${this.host}/user/session;jsessionid=${sessionId}?ts=${new Date().getTime()}`
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -31,7 +31,7 @@ export class IccUserXApi extends iccUserApi {
 
     let _body = null
 
-    const _url = this.host + `/user/current;jsessionid=${sessionId}` + "?ts=" + new Date().getTime()
+    const _url = `${this.host}/user/current;jsessionid=${sessionId}?ts=${new Date().getTime()}`
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
