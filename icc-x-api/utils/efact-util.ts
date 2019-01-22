@@ -218,10 +218,13 @@ function toInvoice(
   relatedInvoiceInfo: RelatedInvoiceInfo | undefined
 ): Invoice {
   const invoice = new Invoice({})
+  const invoiceYear = moment(invoiceDto.created)
+    .year()
+    .toString()
 
   invoice.hospitalisedPatient = isPatientHospitalized(patientDto)
   // FIXME : coder l'invoice ref
-  invoice.invoiceNumber = Number(invoiceDto.invoiceReference) || 0
+  invoice.invoiceNumber = Number(invoiceYear + invoiceDto.invoiceReference) || 0
   // FIXME : coder l'invoice ref
   invoice.invoiceRef = uuidBase36(invoiceDto.id!!)
   invoice.ioCode = insurance.code!!.substr(0, 3)
