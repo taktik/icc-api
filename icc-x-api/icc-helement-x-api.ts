@@ -59,7 +59,7 @@ export class IccHelementXApi extends iccHelementApi {
           delegateId =>
             (promise = promise.then(helement =>
               this.crypto
-                .appendObjectDelegations(
+                .extendedDelegationsAndCryptedForeignKeys(
                   helement,
                   patient,
                   user.healthcarePartyId!,
@@ -157,7 +157,7 @@ export class IccHelementXApi extends iccHelementApi {
                 k => (collatedAesKeys[k.delegatorId] = k.key)
               )
               return this.crypto
-                .decryptDelegationsSFKs(he.delegations![hcpartyId], collatedAesKeys, he.id!)
+                .decryptKeyInDelegationLikes(he.delegations![hcpartyId], collatedAesKeys, he.id!)
                 .then((sfks: Array<string>) => {
                   if (!sfks || !sfks.length) {
                     console.log("Cannot decrypt helement", he.id)
@@ -183,7 +183,7 @@ export class IccHelementXApi extends iccHelementApi {
                               resolve(he)
                             },
                             () => {
-                              console.log("Cannot decrypt contact", he.id)
+                              console.log("Cannot decrypt helement", he.id)
                               resolve(he)
                             }
                           )

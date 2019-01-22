@@ -137,7 +137,7 @@ export class IccMessageXApi extends iccMessageApi {
           delegateId =>
             (promise = promise.then(helement =>
               this.crypto
-                .appendObjectDelegations(
+                .extendedDelegationsAndCryptedForeignKeys(
                   helement,
                   patient,
                   user.healthcarePartyId!,
@@ -1014,32 +1014,32 @@ export class IccMessageXApi extends iccMessageApi {
     xFHCKeystoreId: string,
     xFHCTokenId: string,
     xFHCPassPhrase: string,
-    efactApi: fhcEfactcontrollerApi
+    efactApi: fhcEfactcontrollerApi,
+    fhcServer: string | undefined = undefined
   ): Promise<models.MessageDto> {
     const uuid = this.crypto.randomUuid()
     const smallBase36 = uuidBase36Half(uuid)
     const fullBase36 = uuidBase36(uuid)
     const sentDate = +new Date()
     const errors: Array<string> = []
+    const year = moment().year()
 
     return getFederaton(invoices, this.insuranceApi).then(fed => {
-      const prefix = `efact:${hcp.id}:${fed.code}:`
+      const prefix = `efact:${hcp.id}:${year}:${fed.code}:`
       return this.entityReferenceApi
         .getLatest(prefix)
-        .then(er =>
-          this.entityReferenceApi.createEntityReference(
+        .then((er: EntityReference) => {
+          let nextSeqNumber =
+            er && er.id && er.id!.startsWith(prefix)
+              ? (Number(er.id!.split(":").pop()) || 0) + 1
+              : 1
+          return this.entityReferenceApi.createEntityReference(
             new EntityReference({
-              id:
-                prefix +
-                _.padStart(
-                  "" + (((er && er.id ? Number(er.id.substr(prefix.length)) : 0) + 1) % 1000000000),
-                  9, //1 billion invoices that are going to be mod 1000
-                  "0"
-                ),
+              id: prefix + _.padStart("" + (nextSeqNumber % 1000000000), 9, "0"),
               docId: uuid
             })
           )
-        )
+        })
         .then(er =>
           toInvoiceBatch(
             invoices,
@@ -1096,7 +1096,8 @@ export class IccMessageXApi extends iccMessageApi {
                           numericalRef: batch.numericalRef,
                           invoiceMonth: batch.invoicingMonth,
                           invoiceYear: batch.invoicingYear,
-                          totalAmount: totalAmount
+                          totalAmount: totalAmount,
+                          fhc_server: fhcServer
                         }
                       })
                     )
