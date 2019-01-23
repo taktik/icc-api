@@ -42,14 +42,10 @@ export class iccApplicationsettingsApi {
     else throw Error("api-error" + e.status)
   }
 
-  getMedicalLocation(locationId: string): Promise<models.ApplicationSettingsDto | any> {
+  getApplicationSettings(): Promise<models.ApplicationSettingsDto | any> {
     let _body = null
 
-    const _url =
-      this.host +
-      "/appsettings".replace("{locationId}", locationId + "") +
-      "?ts=" +
-      new Date().getTime()
+    const _url = this.host + "/appsettings" + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
