@@ -62,6 +62,14 @@ interface StructError {
   error: ErrorDetail
   record: string
 }
+
+class EfactSendResponseWithError extends EfactSendResponse {
+  public error: string | undefined
+  constructor(json: JSON) {
+    super(json)
+  }
+}
+
 export class IccMessageXApi extends iccMessageApi {
   private crypto: IccCryptoXApi
   private insuranceApi: iccInsuranceApi
@@ -1053,8 +1061,12 @@ export class IccMessageXApi extends iccMessageApi {
         .then(batch =>
           efactApi
             .sendBatchUsingPOST(xFHCKeystoreId, xFHCTokenId, xFHCPassPhrase, batch)
-            .then((res: EfactSendResponse) => {
-              if (res.success) {
+            .catch(err => {
+              // The FHC has crashed but the batch could be sent, so be careful !
+              return { error: err }
+            })
+            .then((res: EfactSendResponseWithError) => {
+              if (res.success || res.error) {
                 let promise = Promise.resolve(true)
                 let totalAmount = 0
                 _.forEach(invoices, iv => {
@@ -1088,7 +1100,7 @@ export class IccMessageXApi extends iccMessageApi {
                     this.createMessage(
                       Object.assign(message, {
                         sent: sentDate,
-                        status: (message.status || 0) | (1 << 7) /*STATUS_SENT*/,
+                        status: (message.status || 0) | (res.success ? 1 << 7 : 0) /*STATUS_SENT*/,
                         metas: {
                           ioFederationCode: batch.ioFederationCode,
                           numericalRef: batch.numericalRef,
@@ -1099,6 +1111,14 @@ export class IccMessageXApi extends iccMessageApi {
                         }
                       })
                     )
+                      .then(msg => {
+                        if (!res.success) {
+                          throw "Cannot send batch"
+                        } else if (res.error) {
+                          throw res.error
+                        }
+                        return msg
+                      })
                       .then(msg =>
                         Promise.all([
                           this.documentXApi.newInstance(user, msg, {
