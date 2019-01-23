@@ -214,4 +214,20 @@ export class iccIcureApi {
       .then(doc => true)
       .catch(err => this.handleError(err))
   }
+  updateDesignDoc(entityName: string): Promise<boolean | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/icure/dd/{entityName}".replace("{entityName}", entityName + "") +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
+      .then(doc => JSON.parse(JSON.stringify(doc.body)))
+      .catch(err => this.handleError(err))
+  }
 }
