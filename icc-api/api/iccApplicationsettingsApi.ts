@@ -42,7 +42,7 @@ export class iccApplicationsettingsApi {
     else throw Error("api-error" + e.status)
   }
 
-  getApplicationSettings(): Promise<models.ApplicationSettingsDto | any> {
+  getApplicationSettings(): Promise<Array<models.ApplicationSettingsDto> | any> {
     let _body = null
 
     const _url = this.host + "/appsettings" + "?ts=" + new Date().getTime()
@@ -51,7 +51,7 @@ export class iccApplicationsettingsApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => new models.ApplicationSettingsDto(doc.body as JSON))
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.ApplicationSettingsDto(it)))
       .catch(err => this.handleError(err))
   }
 }
