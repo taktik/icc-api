@@ -34,5 +34,5 @@ export class ApplicationSettingsDto {
 
   deletionDate?: number
 
-  options?: { [key: string]: string }
+  settings?: { [key: string]: string }
 }
