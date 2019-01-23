@@ -656,6 +656,12 @@ export class IccMessageXApi extends iccMessageApi {
         )
         .then(() => {
           parentMessage.status = parentMessage.status!! | (1 << 8) /*STATUS_SUBMITTED*/
+
+          // Reset error
+          if (parentMessage.metas && parentMessage.metas.errors) {
+            parentMessage.metas.sendingError = parentMessage.metas.errors
+            delete parentMessage.metas.errors
+          }
           return this.modifyMessage(parentMessage)
         })
     })
@@ -1061,9 +1067,15 @@ export class IccMessageXApi extends iccMessageApi {
         .then(batch =>
           efactApi
             .sendBatchUsingPOST(xFHCKeystoreId, xFHCTokenId, xFHCPassPhrase, batch)
+            //.then(() => { throw "ERREUR FORCEE" })
             .catch(err => {
               // The FHC has crashed but the batch could be sent, so be careful !
-              return { error: err }
+              const errorMessage = _.get(
+                err,
+                "message",
+                err.toString ? err.toString() : "Server error"
+              )
+              return { error: errorMessage }
             })
             .then((res: EfactSendResponseWithError) => {
               if (res.success || res.error) {
@@ -1107,65 +1119,19 @@ export class IccMessageXApi extends iccMessageApi {
                           invoiceMonth: batch.invoicingMonth,
                           invoiceYear: batch.invoicingYear,
                           totalAmount: totalAmount,
-                          fhc_server: fhcServer
+                          fhc_server: fhcServer,
+                          errors: res.error
                         }
                       })
                     )
-                      .then(msg => {
-                        if (!res.success) {
-                          throw "Cannot send batch"
-                        } else if (res.error) {
-                          throw res.error
-                        }
-                        return msg
-                      })
-                      .then(msg =>
-                        Promise.all([
-                          this.documentXApi.newInstance(user, msg, {
-                            mainUti: "public.json",
-                            name: "920000_records"
-                          }),
-                          this.documentXApi.newInstance(user, msg, {
-                            mainUti: "public.plain-text",
-                            name: "920000"
-                          })
-                        ])
-                      )
-                      .then(([jsonDoc, doc]) =>
-                        Promise.all([
-                          this.documentXApi.createDocument(jsonDoc),
-                          this.documentXApi.createDocument(doc)
-                        ])
-                      )
-                      .then(([jsonDoc, doc]) =>
-                        Promise.all([
-                          this.documentXApi.setAttachment(
-                            jsonDoc.id!!,
-                            undefined /*TODO provide keys for encryption*/,
-                            <any>utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.records!!)))
-                          ),
-                          this.documentXApi.setAttachment(
-                            doc.id!!,
-                            undefined /*TODO provide keys for encryption*/,
-                            <any>utils.ua2ArrayBuffer(utils.text2ua(res.detail!!))
-                          )
-                        ])
-                      )
-                      .then(() =>
-                        this.receiptXApi.logReceipt(
-                          user,
-                          message.id!!,
-                          [
-                            `mycarenet:efact:inputReference:${res.inputReference}`,
-                            res.tack!!.appliesTo!!,
-                            res.tack!!.reference!!
-                          ],
-                          "tack",
-                          utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.tack)))
-                        )
-                      )
-                      .then(() => message)
                   )
+                  .then((msg: MessageDto) => {
+                    if (res.success) {
+                      // Continue even if error ...
+                      this.saveMessageAttachment(user, msg, res)
+                    }
+                    return msg
+                  })
               } else {
                 throw "Cannot send batch"
               }
@@ -1177,5 +1143,51 @@ export class IccMessageXApi extends iccMessageApi {
           throw new Error(errors.join(","))
         })
     })
+  }
+
+  saveMessageAttachment(user: UserDto, msg: MessageDto, res: EfactSendResponseWithError) {
+    return Promise.all([
+      this.documentXApi.newInstance(user, msg, {
+        mainUti: "public.json",
+        name: "920000_records"
+      }),
+      this.documentXApi.newInstance(user, msg, {
+        mainUti: "public.plain-text",
+        name: "920000"
+      })
+    ])
+      .then(([jsonDoc, doc]) =>
+        Promise.all([
+          this.documentXApi.createDocument(jsonDoc),
+          this.documentXApi.createDocument(doc)
+        ])
+      )
+      .then(([jsonDoc, doc]) =>
+        Promise.all([
+          this.documentXApi.setAttachment(
+            jsonDoc.id!!,
+            undefined /*TODO provide keys for encryption*/,
+            <any>utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.records!!)))
+          ),
+          this.documentXApi.setAttachment(
+            doc.id!!,
+            undefined /*TODO provide keys for encryption*/,
+            <any>utils.ua2ArrayBuffer(utils.text2ua(res.detail!!))
+          )
+        ])
+      )
+      .then(() =>
+        this.receiptXApi.logReceipt(
+          user,
+          msg.id!!,
+          [
+            `mycarenet:efact:inputReference:${res.inputReference}`,
+            res.tack!!.appliesTo!!,
+            res.tack!!.reference!!
+          ],
+          "tack",
+          utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.tack)))
+        )
+      )
   }
 }
