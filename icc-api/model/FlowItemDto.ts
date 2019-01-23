@@ -32,6 +32,8 @@ export class FlowItemDto {
 
   title?: string
 
+  comment?: string
+
   receptionDate?: number
 
   processingDate?: number
@@ -56,11 +58,15 @@ export class FlowItemDto {
 
   zipCode?: string
 
+  street?: string
+
   building?: string
 
   buildingNumber?: string
 
   doorbellName?: string
+
+  floor?: string
 
   letterBox?: string
 
