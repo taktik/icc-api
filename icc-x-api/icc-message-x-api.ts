@@ -724,44 +724,42 @@ export class IccMessageXApi extends iccMessageApi {
             _.flatMap(parsedRecords.records as ET20_80Data[], r => {
               const errors: StructError[] = []
               let refEt20 = r.et20 && r.et20.reference.trim()
-              if (r.et20 && r.et20.errorDetail) {
+              if (r.et20 && r.et20.errorDetail)
                 errors.push({
                   itemId: decodeBase36Uuid(refEt20),
                   error: r.et20.errorDetail,
                   record: "ET20"
                 })
-                if (r.et80 && r.et80.errorDetail) {
-                  errors.push({
-                    itemId: decodeBase36Uuid(refEt20),
-                    error: r.et80.errorDetail,
-                    record: "ET80"
-                  })
-                }
-              }
+
+              if (r.et80 && r.et80.errorDetail)
+                errors.push({
+                  itemId: decodeBase36Uuid(refEt20),
+                  error: r.et80.errorDetail,
+                  record: "ET80"
+                })
 
               _.each(r.items, i => {
                 let ref = (i.et50 && i.et50.itemReference.trim()) || refEt20 //fallback
-                if (i.et50 && i.et50.errorDetail) {
+                if (i.et50 && i.et50.errorDetail)
                   errors.push({
                     itemId: ref && decodeBase36Uuid(ref),
                     error: i.et50.errorDetail,
                     record: "ET50"
                   })
-                }
-                if (i.et51 && i.et51.errorDetail) {
+
+                if (i.et51 && i.et51.errorDetail)
                   errors.push({
                     itemId: ref && decodeBase36Uuid(ref),
                     error: i.et51.errorDetail,
                     record: "ET51"
                   })
-                }
-                if (i.et52 && i.et52.errorDetail) {
+
+                if (i.et52 && i.et52.errorDetail)
                   errors.push({
                     itemId: ref && decodeBase36Uuid(ref),
                     error: i.et52.errorDetail,
                     record: "ET52"
                   })
-                }
               })
               return errors
             })
