@@ -1054,103 +1054,101 @@ export class IccMessageXApi extends iccMessageApi {
           efactApi
             .sendBatchUsingPOST(xFHCKeystoreId, xFHCTokenId, xFHCPassPhrase, batch)
             .then((res: EfactSendResponse) => {
-              let promise = Promise.resolve(true)
-              let totalAmount = 0
-              _.forEach(invoices, iv => {
-                promise = promise.then(() => {
-                  _.forEach(iv.invoiceDto.invoicingCodes, code => {
-                    code.pending = true // STATUS_PENDING
-                    totalAmount += code.reimbursement || 0
-                  })
-                  iv.invoiceDto.sentDate = sentDate
-                  return this.invoiceXApi.modifyInvoice(iv.invoiceDto).catch(() => {
-                    errors.push(`efac-management.CANNOT_UPDATE_INVOICE.${iv.invoiceDto.id}`)
+              if (res.success) {
+                let promise = Promise.resolve(true)
+                let totalAmount = 0
+                _.forEach(invoices, iv => {
+                  promise = promise.then(() => {
+                    _.forEach(iv.invoiceDto.invoicingCodes, code => {
+                      code.pending = true // STATUS_PENDING
+                      totalAmount += code.reimbursement || 0
+                    })
+                    iv.invoiceDto.sentDate = sentDate
+                    return this.invoiceXApi.modifyInvoice(iv.invoiceDto).catch(() => {
+                      errors.push(`efac-management.CANNOT_UPDATE_INVOICE.${iv.invoiceDto.id}`)
+                    })
                   })
                 })
-              })
-              return promise
-                .then(() =>
-                  this.newInstance(user, {
-                    id: uuid,
-                    invoiceIds: invoices.map(i => i.invoiceDto.id),
-                    // tslint:disable-next-line:no-bitwise
-                    status: 1 << 6, // STATUS_EFACT
-                    externalRef: _.padStart("" + batch.uniqueSendNumber, 3, "0"),
-                    transportGuid: "EFACT:BATCH:" + batch.numericalRef,
-                    sent: timeEncode(new Date()),
-                    fromHealthcarePartyId: hcp.id,
-                    recipients: [fed.id],
-                    recipientsType: "org.taktik.icure.entities.Insurance"
-                  })
-                )
-                .then(message =>
-                  this.createMessage(
-                    Object.assign(message, {
-                      sent: sentDate,
-                      status: message.status | (res.success ? 1 << 7 : 0) /*STATUS_SENT*/,
-                      metas: {
-                        ioFederationCode: batch.ioFederationCode,
-                        numericalRef: batch.numericalRef,
-                        invoiceMonth: batch.invoicingMonth,
-                        invoiceYear: batch.invoicingYear,
-                        totalAmount: totalAmount,
-                        fhc_server: fhcServer
-                      }
+                return promise
+                  .then(() =>
+                    this.newInstance(user, {
+                      id: uuid,
+                      invoiceIds: invoices.map(i => i.invoiceDto.id),
+                      // tslint:disable-next-line:no-bitwise
+                      status: 1 << 6, // STATUS_EFACT
+                      externalRef: _.padStart("" + batch.uniqueSendNumber, 3, "0"),
+                      transportGuid: "EFACT:BATCH:" + batch.numericalRef,
+                      sent: timeEncode(new Date()),
+                      fromHealthcarePartyId: hcp.id,
+                      recipients: [fed.id],
+                      recipientsType: "org.taktik.icure.entities.Insurance"
                     })
                   )
-                    .then(msg => {
-                      if (!res.success) {
-                        throw "Cannot send batch"
-                      }
-                      return msg
-                    })
-                    .then(msg =>
-                      Promise.all([
-                        this.documentXApi.newInstance(user, msg, {
-                          mainUti: "public.json",
-                          name: "920000_records"
-                        }),
-                        this.documentXApi.newInstance(user, msg, {
-                          mainUti: "public.plain-text",
-                          name: "920000"
-                        })
-                      ])
+                  .then(message =>
+                    this.createMessage(
+                      Object.assign(message, {
+                        sent: sentDate,
+                        status: (message.status || 0) | (1 << 7) /*STATUS_SENT*/,
+                        metas: {
+                          ioFederationCode: batch.ioFederationCode,
+                          numericalRef: batch.numericalRef,
+                          invoiceMonth: batch.invoicingMonth,
+                          invoiceYear: batch.invoicingYear,
+                          totalAmount: totalAmount,
+                          fhc_server: fhcServer
+                        }
+                      })
                     )
-                    .then(([jsonDoc, doc]) =>
-                      Promise.all([
-                        this.documentXApi.createDocument(jsonDoc),
-                        this.documentXApi.createDocument(doc)
-                      ])
-                    )
-                    .then(([jsonDoc, doc]) =>
-                      Promise.all([
-                        this.documentXApi.setAttachment(
-                          jsonDoc.id!!,
-                          undefined /*TODO provide keys for encryption*/,
-                          <any>utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.records!!)))
-                        ),
-                        this.documentXApi.setAttachment(
-                          doc.id!!,
-                          undefined /*TODO provide keys for encryption*/,
-                          <any>utils.ua2ArrayBuffer(utils.text2ua(res.detail!!))
-                        )
-                      ])
-                    )
-                    .then(() =>
-                      this.receiptXApi.logReceipt(
-                        user,
-                        message.id!!,
-                        [
-                          `mycarenet:efact:inputReference:${res.inputReference}`,
-                          res.tack!!.appliesTo!!,
-                          res.tack!!.reference!!
-                        ],
-                        "tack",
-                        utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.tack)))
+                      .then(msg =>
+                        Promise.all([
+                          this.documentXApi.newInstance(user, msg, {
+                            mainUti: "public.json",
+                            name: "920000_records"
+                          }),
+                          this.documentXApi.newInstance(user, msg, {
+                            mainUti: "public.plain-text",
+                            name: "920000"
+                          })
+                        ])
                       )
-                    )
-                    .then(() => message)
-                )
+                      .then(([jsonDoc, doc]) =>
+                        Promise.all([
+                          this.documentXApi.createDocument(jsonDoc),
+                          this.documentXApi.createDocument(doc)
+                        ])
+                      )
+                      .then(([jsonDoc, doc]) =>
+                        Promise.all([
+                          this.documentXApi.setAttachment(
+                            jsonDoc.id!!,
+                            undefined /*TODO provide keys for encryption*/,
+                            <any>utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.records!!)))
+                          ),
+                          this.documentXApi.setAttachment(
+                            doc.id!!,
+                            undefined /*TODO provide keys for encryption*/,
+                            <any>utils.ua2ArrayBuffer(utils.text2ua(res.detail!!))
+                          )
+                        ])
+                      )
+                      .then(() =>
+                        this.receiptXApi.logReceipt(
+                          user,
+                          message.id!!,
+                          [
+                            `mycarenet:efact:inputReference:${res.inputReference}`,
+                            res.tack!!.appliesTo!!,
+                            res.tack!!.reference!!
+                          ],
+                          "tack",
+                          utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.tack)))
+                        )
+                      )
+                      .then(() => message)
+                  )
+              } else {
+                throw "Cannot send batch"
+              }
             })
         )
         .catch(err => {
