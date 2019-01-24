@@ -62,6 +62,14 @@ interface StructError {
   error: ErrorDetail
   record: string
 }
+
+class EfactSendResponseWithError extends EfactSendResponse {
+  public error: string | undefined
+  constructor(json: JSON) {
+    super(json)
+  }
+}
+
 export class IccMessageXApi extends iccMessageApi {
   private crypto: IccCryptoXApi
   private insuranceApi: iccInsuranceApi
@@ -648,6 +656,12 @@ export class IccMessageXApi extends iccMessageApi {
         )
         .then(() => {
           parentMessage.status = parentMessage.status!! | (1 << 8) /*STATUS_SUBMITTED*/
+
+          // Reset error
+          if (parentMessage.metas && parentMessage.metas.errors) {
+            parentMessage.metas.sendingError = parentMessage.metas.errors
+            delete parentMessage.metas.errors
+          }
           return this.modifyMessage(parentMessage)
         })
     })
@@ -724,44 +738,42 @@ export class IccMessageXApi extends iccMessageApi {
             _.flatMap(parsedRecords.records as ET20_80Data[], r => {
               const errors: StructError[] = []
               let refEt20 = r.et20 && r.et20.reference.trim()
-              if (r.et20 && r.et20.errorDetail) {
+              if (r.et20 && r.et20.errorDetail)
                 errors.push({
                   itemId: decodeBase36Uuid(refEt20),
                   error: r.et20.errorDetail,
                   record: "ET20"
                 })
-                if (r.et80 && r.et80.errorDetail) {
-                  errors.push({
-                    itemId: decodeBase36Uuid(refEt20),
-                    error: r.et80.errorDetail,
-                    record: "ET80"
-                  })
-                }
-              }
+
+              if (r.et80 && r.et80.errorDetail)
+                errors.push({
+                  itemId: decodeBase36Uuid(refEt20),
+                  error: r.et80.errorDetail,
+                  record: "ET80"
+                })
 
               _.each(r.items, i => {
                 let ref = (i.et50 && i.et50.itemReference.trim()) || refEt20 //fallback
-                if (i.et50 && i.et50.errorDetail) {
+                if (i.et50 && i.et50.errorDetail)
                   errors.push({
                     itemId: ref && decodeBase36Uuid(ref),
                     error: i.et50.errorDetail,
                     record: "ET50"
                   })
-                }
-                if (i.et51 && i.et51.errorDetail) {
+
+                if (i.et51 && i.et51.errorDetail)
                   errors.push({
                     itemId: ref && decodeBase36Uuid(ref),
                     error: i.et51.errorDetail,
                     record: "ET51"
                   })
-                }
-                if (i.et52 && i.et52.errorDetail) {
+
+                if (i.et52 && i.et52.errorDetail)
                   errors.push({
                     itemId: ref && decodeBase36Uuid(ref),
                     error: i.et52.errorDetail,
                     record: "ET52"
                   })
-                }
               })
               return errors
             })
@@ -1055,8 +1067,18 @@ export class IccMessageXApi extends iccMessageApi {
         .then(batch =>
           efactApi
             .sendBatchUsingPOST(xFHCKeystoreId, xFHCTokenId, xFHCPassPhrase, batch)
-            .then((res: EfactSendResponse) => {
-              if (res.success) {
+            //.then(() => { throw "ERREUR FORCEE" })
+            .catch(err => {
+              // The FHC has crashed but the batch could be sent, so be careful !
+              const errorMessage = _.get(
+                err,
+                "message",
+                err.toString ? err.toString() : "Server error"
+              )
+              return { error: errorMessage }
+            })
+            .then((res: EfactSendResponseWithError) => {
+              if (res.success || res.error) {
                 let promise = Promise.resolve(true)
                 let totalAmount = 0
                 _.forEach(invoices, iv => {
@@ -1090,64 +1112,26 @@ export class IccMessageXApi extends iccMessageApi {
                     this.createMessage(
                       Object.assign(message, {
                         sent: sentDate,
-                        status: (message.status || 0) | (1 << 7) /*STATUS_SENT*/,
+                        status: (message.status || 0) | (res.success ? 1 << 7 : 0) /*STATUS_SENT*/,
                         metas: {
                           ioFederationCode: batch.ioFederationCode,
                           numericalRef: batch.numericalRef,
                           invoiceMonth: batch.invoicingMonth,
                           invoiceYear: batch.invoicingYear,
                           totalAmount: totalAmount,
-                          fhc_server: fhcServer
+                          fhc_server: fhcServer,
+                          errors: res.error
                         }
                       })
                     )
-                      .then(msg =>
-                        Promise.all([
-                          this.documentXApi.newInstance(user, msg, {
-                            mainUti: "public.json",
-                            name: "920000_records"
-                          }),
-                          this.documentXApi.newInstance(user, msg, {
-                            mainUti: "public.plain-text",
-                            name: "920000"
-                          })
-                        ])
-                      )
-                      .then(([jsonDoc, doc]) =>
-                        Promise.all([
-                          this.documentXApi.createDocument(jsonDoc),
-                          this.documentXApi.createDocument(doc)
-                        ])
-                      )
-                      .then(([jsonDoc, doc]) =>
-                        Promise.all([
-                          this.documentXApi.setAttachment(
-                            jsonDoc.id!!,
-                            undefined /*TODO provide keys for encryption*/,
-                            <any>utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.records!!)))
-                          ),
-                          this.documentXApi.setAttachment(
-                            doc.id!!,
-                            undefined /*TODO provide keys for encryption*/,
-                            <any>utils.ua2ArrayBuffer(utils.text2ua(res.detail!!))
-                          )
-                        ])
-                      )
-                      .then(() =>
-                        this.receiptXApi.logReceipt(
-                          user,
-                          message.id!!,
-                          [
-                            `mycarenet:efact:inputReference:${res.inputReference}`,
-                            res.tack!!.appliesTo!!,
-                            res.tack!!.reference!!
-                          ],
-                          "tack",
-                          utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.tack)))
-                        )
-                      )
-                      .then(() => message)
                   )
+                  .then((msg: MessageDto) => {
+                    if (res.success) {
+                      // Continue even if error ...
+                      this.saveMessageAttachment(user, msg, res)
+                    }
+                    return msg
+                  })
               } else {
                 throw "Cannot send batch"
               }
@@ -1159,5 +1143,51 @@ export class IccMessageXApi extends iccMessageApi {
           throw new Error(errors.join(","))
         })
     })
+  }
+
+  saveMessageAttachment(user: UserDto, msg: MessageDto, res: EfactSendResponseWithError) {
+    return Promise.all([
+      this.documentXApi.newInstance(user, msg, {
+        mainUti: "public.json",
+        name: "920000_records"
+      }),
+      this.documentXApi.newInstance(user, msg, {
+        mainUti: "public.plain-text",
+        name: "920000"
+      })
+    ])
+      .then(([jsonDoc, doc]) =>
+        Promise.all([
+          this.documentXApi.createDocument(jsonDoc),
+          this.documentXApi.createDocument(doc)
+        ])
+      )
+      .then(([jsonDoc, doc]) =>
+        Promise.all([
+          this.documentXApi.setAttachment(
+            jsonDoc.id!!,
+            undefined /*TODO provide keys for encryption*/,
+            <any>utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.records!!)))
+          ),
+          this.documentXApi.setAttachment(
+            doc.id!!,
+            undefined /*TODO provide keys for encryption*/,
+            <any>utils.ua2ArrayBuffer(utils.text2ua(res.detail!!))
+          )
+        ])
+      )
+      .then(() =>
+        this.receiptXApi.logReceipt(
+          user,
+          msg.id!!,
+          [
+            `mycarenet:efact:inputReference:${res.inputReference}`,
+            res.tack!!.appliesTo!!,
+            res.tack!!.reference!!
+          ],
+          "tack",
+          utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.tack)))
+        )
+      )
   }
 }
