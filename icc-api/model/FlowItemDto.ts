@@ -32,61 +32,31 @@ export class FlowItemDto {
 
   title?: string
 
-  comment?: string
-
   receptionDate?: number
-
-  processingDate?: number
-
-  processer?: string
 
   cancellationDate?: number
 
   canceller?: string
 
-  cancellationReason?: string
+  processingDate?: number
 
-  cancellationNote?: string
-
-  status?: string
-
-  homeVisit?: boolean
-
-  municipality?: string
-
-  town?: string
-
-  zipCode?: string
-
-  street?: string
-
-  building?: string
-
-  buildingNumber?: string
-
-  doorbellName?: string
-
-  floor?: string
-
-  letterBox?: string
-
-  notesOps?: string
-
-  notesContact?: string
-
-  latitude?: string
-
-  longitude?: string
-
-  type?: string
-
-  emergency?: boolean
+  processer?: string
 
   phoneNumber?: string
 
   patientId?: string
 
+  patientFirstName?: string
+
   patientLastName?: string
 
-  patientFirstName?: string
+  status?: string
+
+  type?: string
+
+  emergency?: boolean
+
+  cancellationReason?: string
+
+  cancellationNote?: string
 }
