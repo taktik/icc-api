@@ -24,21 +24,29 @@
 
 import * as models from "./models"
 
-export class AgendaDto {
+export class Telecom {
   constructor(json: JSON | any) {
-    Object.assign(this as AgendaDto, json)
+    Object.assign(this as Telecom, json)
   }
-  id?: string
+  telecomType?: Telecom.TelecomTypeEnum
 
-  rev?: string
+  telecomNumber?: string
 
-  deletionDate?: number
-
-  name?: string
-
-  userId?: string
-
-  events?: Array<models.CalendarItem>
-
-  rights?: Array<models.Right>
+  telecomDescription?: string
+}
+export namespace Telecom {
+  export enum TelecomTypeEnum {
+    Mobile = <any>"mobile",
+    Phone = <any>"phone",
+    Email = <any>"email",
+    Fax = <any>"fax",
+    Skype = <any>"skype",
+    Im = <any>"im",
+    Medibridge = <any>"medibridge",
+    Ehealthbox = <any>"ehealthbox",
+    Apicrypt = <any>"apicrypt",
+    Web = <any>"web",
+    Print = <any>"print",
+    Disk = <any>"disk"
+  }
 }

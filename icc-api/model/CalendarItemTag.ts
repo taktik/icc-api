@@ -24,21 +24,15 @@
 
 import * as models from "./models"
 
-export class AgendaDto {
+export class CalendarItemTag {
   constructor(json: JSON | any) {
-    Object.assign(this as AgendaDto, json)
+    Object.assign(this as CalendarItemTag, json)
   }
-  id?: string
+  code?: string
 
-  rev?: string
-
-  deletionDate?: number
-
-  name?: string
+  date?: number
 
   userId?: string
 
-  events?: Array<models.CalendarItem>
-
-  rights?: Array<models.Right>
+  userName?: string
 }

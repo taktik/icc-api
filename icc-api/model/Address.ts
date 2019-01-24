@@ -24,21 +24,36 @@
 
 import * as models from "./models"
 
-export class AgendaDto {
+export class Address {
   constructor(json: JSON | any) {
-    Object.assign(this as AgendaDto, json)
+    Object.assign(this as Address, json)
   }
-  id?: string
+  addressType?: Address.AddressTypeEnum
 
-  rev?: string
+  descr?: string
 
-  deletionDate?: number
+  street?: string
 
-  name?: string
+  houseNumber?: string
 
-  userId?: string
+  postboxNumber?: string
 
-  events?: Array<models.CalendarItem>
+  postalCode?: string
 
-  rights?: Array<models.Right>
+  city?: string
+
+  country?: string
+
+  telecoms?: Array<models.Telecom>
+}
+export namespace Address {
+  export enum AddressTypeEnum {
+    Home = <any>"home",
+    Work = <any>"work",
+    Vacation = <any>"vacation",
+    Hospital = <any>"hospital",
+    Clinic = <any>"clinic",
+    Hq = <any>"hq",
+    Other = <any>"other"
+  }
 }
