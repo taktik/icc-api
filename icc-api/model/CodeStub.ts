@@ -24,21 +24,15 @@
 
 import * as models from "./models"
 
-export class AgendaDto {
+export class CodeStub {
   constructor(json: JSON | any) {
-    Object.assign(this as AgendaDto, json)
+    Object.assign(this as CodeStub, json)
   }
+  code?: string
+
+  type?: string
+
+  version?: string
+
   id?: string
-
-  rev?: string
-
-  deletionDate?: number
-
-  name?: string
-
-  userId?: string
-
-  events?: Array<models.CalendarItem>
-
-  rights?: Array<models.Right>
 }
