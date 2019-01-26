@@ -573,6 +573,18 @@ export class IccContactXApi extends iccContactApi {
     )
   }
 
+  contentValue(c: models.ContentDto) {
+    return (
+      c.stringValue ||
+      ((c.numberValue || c.numberValue === 0) && c.numberValue) ||
+      (c.measureValue && (c.measureValue.value || c.measureValue.value === 0)
+        ? c.measureValue
+        : null) ||
+      c.medicationValue ||
+      c.booleanValue
+    )
+  }
+
   shortServiceDescription(svc: models.ServiceDto, lng: string) {
     const c = this.preferredContent(svc, lng)
     return !c ? "" : this.shortContentDescription(c, lng, svc.label)
