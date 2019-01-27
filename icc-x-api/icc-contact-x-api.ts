@@ -598,8 +598,8 @@ export class IccContactXApi extends iccContactApi {
         "" +
           (c.measureValue.value || c.measureValue.value === 0 ? c.measureValue.value : "-") +
           (c.measureValue.unit ? " " + c.measureValue.unit : "")) ||
-      ((c.booleanValue && label) || "OK") ||
-      (c.medicationValue ? this.medication().medicationToString(c.medicationValue, lng) : null)
+      (c.medicationValue ? this.medication().medicationToString(c.medicationValue, lng) : null) ||
+      ((c.booleanValue && label) || "OK")
     )
   }
 
