@@ -24,23 +24,15 @@
 
 import * as models from "./models"
 
-export class MeasureDto {
+export class ApplicationSettingsDto {
   constructor(json: JSON | any) {
-    Object.assign(this as MeasureDto, json)
+    Object.assign(this as ApplicationSettingsDto, json)
   }
-  value?: number
+  id?: string
 
-  min?: number
+  rev?: string
 
-  max?: number
+  deletionDate?: number
 
-  ref?: number
-
-  unit?: string
-
-  unitCodes?: Array<models.CodeDto>
-
-  comment?: string
-
-  severity?: number
+  settings?: { [key: string]: string }
 }
