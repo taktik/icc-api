@@ -89,14 +89,20 @@ export class iccBeresultimportApi {
       .then(doc => new models.ContactDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  getInfos(id: string): Promise<Array<models.ResultInfoDto> | any> {
+  getInfos(
+    id: string,
+    full?: boolean,
+    language?: string
+  ): Promise<Array<models.ResultInfoDto> | any> {
     let _body = null
 
     const _url =
       this.host +
       "/be_result_import/infos/{id}".replace("{id}", id + "") +
       "?ts=" +
-      new Date().getTime()
+      new Date().getTime() +
+      (full ? "&full=" + full : "") +
+      (language ? "&language=" + language : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
