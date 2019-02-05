@@ -24,29 +24,15 @@
 
 import * as models from "./models"
 
-export class Telecom {
+export class ApplicationSettingsDto {
   constructor(json: JSON | any) {
-    Object.assign(this as Telecom, json)
+    Object.assign(this as ApplicationSettingsDto, json)
   }
-  telecomType?: Telecom.TelecomTypeEnum
+  id?: string
 
-  telecomNumber?: string
+  rev?: string
 
-  telecomDescription?: string
-}
-export namespace Telecom {
-  export enum TelecomTypeEnum {
-    Mobile = <any>"mobile",
-    Phone = <any>"phone",
-    Email = <any>"email",
-    Fax = <any>"fax",
-    Skype = <any>"skype",
-    Im = <any>"im",
-    Medibridge = <any>"medibridge",
-    Ehealthbox = <any>"ehealthbox",
-    Apicrypt = <any>"apicrypt",
-    Web = <any>"web",
-    Print = <any>"print",
-    Disk = <any>"disk"
-  }
+  deletionDate?: number
+
+  settings?: { [key: string]: string }
 }
