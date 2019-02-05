@@ -778,7 +778,11 @@ export class IccCryptoXApi {
               )
               .then(() =>
                 this.hcpartyBaseApi.modifyHealthcareParty(owner).then(hcp => {
-                  this.emptyHcpCache(hcp.id)
+                  // invalidate the hcp cache for the modified hcp
+                  this.emptyHcpCache(ownerId)
+                  // invalidate the hcPartyKeys cache for the delegate hcp (who was not modified, but the view for its
+                  // id was updated)
+                  this.emptyHcpCache(delegateId)
                   return hcp
                 })
               )
