@@ -448,7 +448,7 @@ export class IccPatientXApi extends iccPatientApi {
       .then(pats => pats[0])
   }
 
-  encrypt(user: models.UserDto, pats: Array<models.PatientDto>) {
+  encrypt(user: models.UserDto, pats: Array<models.PatientDto>): Promise<Array<models.PatientDto>> {
     return Promise.all(
       pats.map(p =>
         (p.encryptionKeys && Object.keys(p.encryptionKeys).length
@@ -466,15 +466,9 @@ export class IccPatientXApi extends iccPatientApi {
             AES.importKey("raw", utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
           )
           .then((key: CryptoKey) =>
-            AES.encrypt(
-              key,
-              utils.utf82ua(
-                JSON.stringify({ note: p.note, administrativeNote: p.administrativeNote })
-              )
-            ).then(es => {
+            AES.encrypt(key, utils.utf82ua(JSON.stringify({ note: p.note }))).then(es => {
               p.encryptedSelf = btoa(utils.ua2text(es))
               delete p.note
-              delete p.administrativeNote
               return p
             })
           )
@@ -482,7 +476,11 @@ export class IccPatientXApi extends iccPatientApi {
     )
   }
 
-  decrypt(user: models.UserDto, pats: Array<models.PatientDto>, fillDelegations: boolean = true) {
+  decrypt(
+    user: models.UserDto,
+    pats: Array<models.PatientDto>,
+    fillDelegations: boolean = true
+  ): Promise<Array<models.PatientDto>> {
     //First check that we have no dangling delegation
     const patsWithMissingDelegations = pats.filter(
       p =>
