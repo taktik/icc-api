@@ -472,37 +472,24 @@ export class IccCryptoXApi {
     secretDelegationKey: string,
     secretEncryptionKey: string
   ) {
-    return Promise.all([
-      this.extendedDelegationsAndCryptedForeignKeys(
-        child,
-        parent,
-        ownerId,
-        delegateId,
-        secretDelegationKey
-      ),
-      this.appendEncryptionKeys(child, ownerId, delegateId, secretEncryptionKey)
-    ]).then(extraData => {
-      const extraDels = extraData[0]
-      const extraEks = extraData[1]
-      return _.assign(child, {
-        // Conservative version ... We might want to be more aggressive with the deduplication of keys
-        // For each delegate, we are going to concatenate to the src (the new delegations), the object in dest (the current delegations)
-        // for which we do not find an equivalent delegation (same delegator, same delegate)
-        delegations: _.assignWith(child.delegations, extraDels.delegations, (dest, src) =>
-          (src || []).concat(
-            _.filter(
-              dest,
-              (d: DelegationDto) =>
-                !src.some(
-                  (s: DelegationDto) => s.owner === d.owner && s.delegatedTo === d.delegatedTo
-                )
-            )
-          )
-        ),
-        cryptedForeignKeys: _.assignWith(
-          child.cryptedForeignKeys,
-          extraDels.cryptedForeignKeys,
-          (dest, src) =>
+    return this.extendedDelegationsAndCryptedForeignKeys(
+      child,
+      parent,
+      ownerId,
+      delegateId,
+      secretDelegationKey
+    )
+      .then(extraDels =>
+        this.appendEncryptionKeys(child, ownerId, delegateId, secretEncryptionKey).then(
+          extraEks => ({ extraDels, extraEks })
+        )
+      )
+      .then(({ extraDels, extraEks }) => {
+        return _.assign(child, {
+          // Conservative version ... We might want to be more aggressive with the deduplication of keys
+          // For each delegate, we are going to concatenate to the src (the new delegations), the object in dest (the current delegations)
+          // for which we do not find an equivalent delegation (same delegator, same delegate)
+          delegations: _.assignWith(child.delegations, extraDels.delegations, (dest, src) =>
             (src || []).concat(
               _.filter(
                 dest,
@@ -512,20 +499,34 @@ export class IccCryptoXApi {
                   )
               )
             )
-        ),
-        encryptionKeys: _.assignWith(child.encryptionKeys, extraEks.encryptionKeys, (dest, src) =>
-          (src || []).concat(
-            _.filter(
-              dest,
-              (d: DelegationDto) =>
-                !src.some(
-                  (s: DelegationDto) => s.owner === d.owner && s.delegatedTo === d.delegatedTo
+          ),
+          cryptedForeignKeys: _.assignWith(
+            child.cryptedForeignKeys,
+            extraDels.cryptedForeignKeys,
+            (dest, src) =>
+              (src || []).concat(
+                _.filter(
+                  dest,
+                  (d: DelegationDto) =>
+                    !src.some(
+                      (s: DelegationDto) => s.owner === d.owner && s.delegatedTo === d.delegatedTo
+                    )
                 )
+              )
+          ),
+          encryptionKeys: _.assignWith(child.encryptionKeys, extraEks.encryptionKeys, (dest, src) =>
+            (src || []).concat(
+              _.filter(
+                dest,
+                (d: DelegationDto) =>
+                  !src.some(
+                    (s: DelegationDto) => s.owner === d.owner && s.delegatedTo === d.delegatedTo
+                  )
+              )
             )
           )
-        )
+        })
       })
-    })
   }
 
   /**
@@ -853,7 +854,11 @@ export class IccCryptoXApi {
               )
               .then(() =>
                 this.hcpartyBaseApi.modifyHealthcareParty(owner).then(hcp => {
-                  this.emptyHcpCache(hcp.id)
+                  // invalidate the hcp cache for the modified hcp
+                  this.emptyHcpCache(ownerId)
+                  // invalidate the hcPartyKeys cache for the delegate hcp (who was not modified, but the view for its
+                  // id was updated)
+                  this.emptyHcpCache(delegateId)
                   return hcp
                 })
               )
