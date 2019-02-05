@@ -44,6 +44,8 @@ export class CalendarItemDto {
 
   responsible?: string
 
+  medicalLocationId?: string
+
   codes?: Array<models.CodeDto>
 
   tags?: Array<models.CodeDto>

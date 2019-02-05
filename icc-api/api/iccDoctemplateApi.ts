@@ -57,6 +57,25 @@ export class iccDoctemplateApi {
       .then(doc => new models.DocumentTemplateDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+  deleteDocumentTemplate(documentTemplateIds: string): Promise<models.DocumentDto | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/doctemplate/{documentTemplateIds}".replace(
+        "{documentTemplateIds}",
+        documentTemplateIds + ""
+      ) +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("DELETE", _url, headers, _body)
+      .then(doc => new models.DocumentDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
   findAllDocumentTemplates(): Promise<Array<models.DocumentTemplateDto> | any> {
     let _body = null
 

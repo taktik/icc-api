@@ -25,7 +25,7 @@
 import { XHR } from "./XHR"
 import * as models from "../model/models"
 
-export class iccBemikronoApi {
+export class iccMedicallocationApi {
   host: string
   headers: Array<XHR.Header>
   constructor(host: string, headers: any) {
@@ -42,67 +42,43 @@ export class iccBemikronoApi {
     else throw Error("api-error" + e.status)
   }
 
-  appointments(date: number): Promise<Array<models.AppointmentDto> | any> {
-    let _body = null
-
-    const _url =
-      this.host +
-      "/be_mikrono/appointments/byDate/{date}".replace("{date}", date + "") +
-      "?ts=" +
-      new Date().getTime()
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.AppointmentDto(it)))
-      .catch(err => this.handleError(err))
-  }
-  appointments_1(
-    patientId: string,
-    from?: number,
-    from2?: number
-  ): Promise<Array<models.AppointmentDto> | any> {
-    let _body = null
-
-    const _url =
-      this.host +
-      "/be_mikrono/appointments/byPatient/{patientId}".replace("{patientId}", patientId + "") +
-      "?ts=" +
-      new Date().getTime() +
-      (from ? "&from=" + from : "") +
-      (from2 ? "&from2=" + from2 : "")
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.AppointmentDto(it)))
-      .catch(err => this.handleError(err))
-  }
-  createAppointments(
-    body?: Array<models.AppointmentImportDto>
-  ): Promise<Array<models.AppointmentImportDto> | any> {
+  createMedicalLocation(
+    body?: models.MedicalLocationDto
+  ): Promise<models.MedicalLocationDto | any> {
     let _body = null
     _body = body
 
-    const _url = this.host + "/be_mikrono/appointments" + "?ts=" + new Date().getTime()
+    const _url = this.host + "/medicallocation" + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.AppointmentImportDto(it)))
+      .then(doc => new models.MedicalLocationDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  notify(appointmentId: string, action: string): Promise<any | Boolean> {
+  deleteMedicalLocation(locationIds: string): Promise<any | Boolean> {
     let _body = null
 
     const _url =
       this.host +
-      "/be_mikrono/notify/{appointmentId}/{action}"
-        .replace("{appointmentId}", appointmentId + "")
-        .replace("{action}", action + "") +
+      "/medicallocation/{placeIds}".replace("{locationIds}", locationIds + "") +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("DELETE", _url, headers, _body)
+      .then(doc => true)
+      .catch(err => this.handleError(err))
+  }
+  getMedicalLocation(locationId: string): Promise<models.MedicalLocationDto | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/medicallocation/{placeId}".replace("{locationId}", locationId + "") +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -110,54 +86,34 @@ export class iccBemikronoApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => true)
+      .then(doc => new models.MedicalLocationDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  register(userId: string, body?: models.MikronoCredentialsDto): Promise<any | Boolean> {
+  getMedicalLocations(): Promise<Array<models.MedicalLocationDto> | any> {
+    let _body = null
+
+    const _url = this.host + "/medicallocation" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.MedicalLocationDto(it)))
+      .catch(err => this.handleError(err))
+  }
+  modifyMedicalLocation(
+    body?: models.MedicalLocationDto
+  ): Promise<models.MedicalLocationDto | any> {
     let _body = null
     _body = body
 
-    const _url =
-      this.host +
-      "/be_mikrono/user/{userId}/register".replace("{userId}", userId + "") +
-      "?ts=" +
-      new Date().getTime()
+    const _url = this.host + "/medicallocation" + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body)
-      .then(doc => true)
-      .catch(err => this.handleError(err))
-  }
-  sendMessage(body?: models.EmailOrSmsMessageDto): Promise<any | Boolean> {
-    let _body = null
-    _body = body
-
-    const _url = this.host + "/be_mikrono/sendMessage" + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => true)
-      .catch(err => this.handleError(err))
-  }
-  setUserCredentials(userId: string, body?: models.MikronoCredentialsDto): Promise<any | Boolean> {
-    let _body = null
-    _body = body
-
-    const _url =
-      this.host +
-      "/be_mikrono/user/{userId}/credentials".replace("{userId}", userId + "") +
-      "?ts=" +
-      new Date().getTime()
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("PUT", _url, headers, _body)
-      .then(doc => true)
+      .then(doc => new models.MedicalLocationDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 }

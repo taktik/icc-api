@@ -24,49 +24,43 @@
 
 import * as models from "./models"
 
-export class ReceiptDto {
+export class AppointmentImportDto {
   constructor(json: JSON | any) {
-    Object.assign(this as ReceiptDto, json)
+    Object.assign(this as AppointmentImportDto, json)
   }
-  id?: string
+  comments?: string
 
-  rev?: string
+  externalCustomerId?: string
 
-  deletionDate?: number
+  customerId?: string
 
-  created?: number
+  customerComments?: string
 
-  modified?: number
+  title?: string
 
-  endOfLife?: number
+  endTime?: Date
 
-  author?: string
+  startTime?: Date
 
-  responsible?: string
+  type?: string
 
-  medicalLocationId?: string
+  customerName?: string
 
-  codes?: Array<models.CodeDto>
+  customerFirstname?: string
 
-  tags?: Array<models.CodeDto>
+  customerEmail?: string
 
-  secretForeignKeys?: Array<string>
+  city?: string
 
-  cryptedForeignKeys?: { [key: string]: Array<models.DelegationDto> }
+  postcode?: string
 
-  delegations?: { [key: string]: Array<models.DelegationDto> }
+  street?: string
 
-  encryptionKeys?: { [key: string]: Array<models.DelegationDto> }
+  sex?: string
 
-  attachmentIds?: { [key: string]: string }
+  customerBirthDate?: Date
 
-  references?: Array<string>
+  customerGsm?: string
 
-  documentId?: string
-
-  category?: string
-
-  subCategory?: string
-
-  encryptedSelf?: string
+  customerFixPhone?: string
 }
