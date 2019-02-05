@@ -19,15 +19,15 @@ export class IccHcpartyXApi extends iccHcpartyApi {
       .modifyHealthcareParty(body)
       .then(
         hcp =>
-          (this.cache[hcp.id] = [+Date() + this.CACHE_RETENTION_IN_MS, Promise.resolve(hcp)])[1]
+          (this.cache[hcp.id] = [Date.now() + this.CACHE_RETENTION_IN_MS, Promise.resolve(hcp)])[1]
       )
   }
 
   getHealthcareParty(healthcarePartyId: string): Promise<HealthcarePartyDto | any> {
     const fromCache = this.cache[healthcarePartyId]
-    return !fromCache || +Date() > fromCache[0]
+    return !fromCache || Date.now() > fromCache[0]
       ? (this.cache[healthcarePartyId] = [
-          +Date() + this.CACHE_RETENTION_IN_MS,
+          Date.now() + this.CACHE_RETENTION_IN_MS,
           super.getHealthcareParty(healthcarePartyId).catch(e => {
             delete this.cache[healthcarePartyId]
             throw e
@@ -40,7 +40,7 @@ export class IccHcpartyXApi extends iccHcpartyApi {
     const ids = healthcarePartyIds.split(",")
     const cached = ids.map(x => {
       const c = this.cache[x]
-      return c && c[0] > +Date() ? c : null
+      return c && c[0] > Date.now() ? c : null
     })
     const toFetch = ids.map((id, idx) => !cached[idx] && id)
 
@@ -54,7 +54,7 @@ export class IccHcpartyXApi extends iccHcpartyApi {
                   cached[idx]
                     ? cached[idx]![1]
                     : (this.cache[id] = [
-                        +Date() + this.CACHE_RETENTION_IN_MS,
+                        Date.now() + this.CACHE_RETENTION_IN_MS,
                         Promise.resolve(hcps.find(h => h.id === id)!)
                       ])[1]
               )
@@ -65,7 +65,7 @@ export class IccHcpartyXApi extends iccHcpartyApi {
 
   getCurrentHealthcareParty(): Promise<HealthcarePartyDto | any> {
     return super.getCurrentHealthcareParty().then(hcp => {
-      this.cache[hcp.id] = [+Date() + this.CACHE_RETENTION_IN_MS, Promise.resolve(hcp)]
+      this.cache[hcp.id] = [Date.now() + this.CACHE_RETENTION_IN_MS, Promise.resolve(hcp)]
       return hcp
     })
   }
