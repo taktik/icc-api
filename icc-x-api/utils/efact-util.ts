@@ -193,11 +193,23 @@ export function toInvoiceBatch(
                 )
               }
             )
-            invoicesBatch.invoicingMonth =
-              toMoment(invoicesWithPatient[0].invoiceDto.invoiceDate!!)!!.month() + 1
-            invoicesBatch.invoicingYear = toMoment(
-              invoicesWithPatient[0].invoiceDto.invoiceDate!!
-            )!!.year()
+
+            const now = new Date()
+            const invoiceDate = toMoment(invoicesWithPatient[0].invoiceDto.invoiceDate!!)
+            const invoicingMonth = invoiceDate!!.month() + 1
+            const invoicingYear = invoiceDate!!.year()
+
+            // The OA 500, matches the monthYear (zone 300) to check the batch sending number
+            // Use sending year to prevent duplicate sending number in case of invoices made
+            // on the previous year
+            if (now.getFullYear() === invoicingYear) {
+              invoicesBatch.invoicingMonth = invoicingMonth
+              invoicesBatch.invoicingYear = invoicingYear
+            } else {
+              invoicesBatch.invoicingMonth = now.getMonth() + 1
+              invoicesBatch.invoicingYear = now.getFullYear()
+            }
+
             invoicesBatch.ioFederationCode = fedCodes[0]
             invoicesBatch.numericalRef =
               moment().get("year") * 1000000 + Number(fedCodes[0]) * 1000 + batchNumber
