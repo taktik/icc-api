@@ -696,14 +696,14 @@ export class IccMessageXApi extends iccMessageApi {
         messageType === "920098"
           ? new EfactMessage920098Reader(efactMessage)
           : messageType === "920099"
-            ? new EfactMessage920099Reader(efactMessage)
-            : messageType === "920900"
-              ? new EfactMessage920900Reader(efactMessage)
-              : messageType === "920999"
-                ? new EfactMessage920999Reader(efactMessage)
-                : messageType === "931000"
-                  ? new EfactMessage931000Reader(efactMessage)
-                  : null
+          ? new EfactMessage920099Reader(efactMessage)
+          : messageType === "920900"
+          ? new EfactMessage920900Reader(efactMessage)
+          : messageType === "920999"
+          ? new EfactMessage920999Reader(efactMessage)
+          : messageType === "931000"
+          ? new EfactMessage931000Reader(efactMessage)
+          : null
 
       if (!parser) {
         throw Error(`Unsupported message type ${messageType}`)
@@ -840,13 +840,10 @@ export class IccMessageXApi extends iccMessageApi {
                 )
               ])
             )
-            .then(
-              () =>
-                ["920999", "920099", "920900"].includes(messageType)
-                  ? this.invoiceXApi.getInvoices(
-                      new ListOfIdsDto({ ids: parentMessage.invoiceIds })
-                    )
-                  : Promise.resolve([])
+            .then(() =>
+              ["920999", "920099", "920900"].includes(messageType)
+                ? this.invoiceXApi.getInvoices(new ListOfIdsDto({ ids: parentMessage.invoiceIds }))
+                : Promise.resolve([])
             )
             .then((invoices: Array<models.InvoiceDto>) => {
               // RejectAll if "920999", "920099"
@@ -1037,7 +1034,8 @@ export class IccMessageXApi extends iccMessageApi {
     const year = moment().year()
 
     return getFederaton(invoices, this.insuranceApi).then(fed => {
-      const prefix = `efact:${hcp.id}:${year}:${fed.code}:`
+      const fedCode = fed.code === "306" ? "300" : fed.code
+      const prefix = `efact:${hcp.id}:${year}:${fedCode}:`
       return this.entityReferenceApi
         .getLatest(prefix)
         .then((er: EntityReference) => {
