@@ -1075,6 +1075,14 @@ export class IccMessageXApi extends iccMessageApi {
                 "message",
                 err.toString ? err.toString() : "Server error"
               )
+              const blockingErrors = [
+                "Gateway Timeout", // based on the user feedback (including Frederic)
+                "Failed to fetch" // is due to internet connection lost (shutdown wifi just before sending batch)
+              ]
+
+              if (_.includes(blockingErrors, errorMessage.trim())) {
+                throw errorMessage
+              }
               return { error: errorMessage }
             })
             .then((res: EfactSendResponseWithError) => {
