@@ -195,9 +195,9 @@ export function toInvoiceBatch(
             )
 
             const now = new Date()
-            const invoicingMonth =
-              toMoment(invoicesWithPatient[0].invoiceDto.invoiceDate!!)!!.month() + 1
-            const invoicingYear = toMoment(invoicesWithPatient[0].invoiceDto.invoiceDate!!)!!.year()
+            const invoiceDate = toMoment(invoicesWithPatient[0].invoiceDto.invoiceDate!!)
+            const invoicingMonth = invoiceDate!!.month() + 1
+            const invoicingYear = invoiceDate!!.year()
 
             // The OA 500, matches the monthYear (zone 300) to check the batch sending number
             // Use sending year to prevent duplicate sending number in case of invoices made
