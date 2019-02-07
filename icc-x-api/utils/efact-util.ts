@@ -49,14 +49,17 @@ export function getFederaton(
       return insuranceApi
         .getInsurances(new ListOfIdsDto({ ids: _.uniq(_.compact(insurances.map(i => i.parent))) }))
         .then((parents: Array<InsuranceDto>) => {
-          const fedCodes = _.compact(parents.map(i => i.code && i.code.substr(0, 3)))
-          if (!fedCodes.length) {
+          const parentsWithFedCode = parents.filter(i => i.code)
+
+          if (!parentsWithFedCode.length) {
             throw "The federation is missing from the recipients of the invoices"
           }
-          if (fedCodes.length > 1) {
+
+          if (parentsWithFedCode.length > 1) {
             throw "The provided invoices are not addressed to insurances belonging to the same federation"
           }
-          return parents[0]
+
+          return parentsWithFedCode[0]
         })
     })
 }
