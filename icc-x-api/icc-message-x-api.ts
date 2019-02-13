@@ -683,45 +683,51 @@ export class IccMessageXApi extends iccMessageApi {
       undefined,
       100
     ).then(parents => {
-      const msgsForHcp = ((parents && parents.rows) || []).filter(
+      const msgsForHcp: MessageDto[] = _.filter(
+        parents && parents.rows,
         (p: MessageDto) => p.responsible === hcp.id
       )
       if (!msgsForHcp.length) {
         throw new Error(`Cannot find parent with ref ${ref}`)
       }
-      const parentMessage: MessageDto = msgsForHcp[0]
 
       const messageType = efactMessage.detail!!.substr(0, 6)
       const parser: EfactMessageReader | null =
         messageType === "920098"
           ? new EfactMessage920098Reader(efactMessage)
           : messageType === "920099"
-          ? new EfactMessage920099Reader(efactMessage)
-          : messageType === "920900"
-          ? new EfactMessage920900Reader(efactMessage)
-          : messageType === "920999"
-          ? new EfactMessage920999Reader(efactMessage)
-          : messageType === "931000"
-          ? new EfactMessage931000Reader(efactMessage)
-          : null
+            ? new EfactMessage920099Reader(efactMessage)
+            : messageType === "920900"
+              ? new EfactMessage920900Reader(efactMessage)
+              : messageType === "920999"
+                ? new EfactMessage920999Reader(efactMessage)
+                : messageType === "931000"
+                  ? new EfactMessage931000Reader(efactMessage)
+                  : null
 
       if (!parser) {
         throw Error(`Unsupported message type ${messageType}`)
       }
 
       const parsedRecords = parser.read()
-
       if (!parsedRecords) {
         throw new Error("Cannot parse...")
       }
 
-      const errors = this.extractErrors(parsedRecords)
+      // Find message for Hcp based on the invoiceReference if present (!931000)
+      const fileReference = _.get(parsedRecords, "zone300.invoiceReference")
+      const parentMessage = fileReference
+        ? _.find(msgsForHcp, m => uuidBase36Half(m.id!!) === fileReference.trim())
+        : msgsForHcp[0]
 
+      if (!parentMessage) {
+        throw new Error(`Cannot match parent with fileReference for file with ref ${ref}`)
+      }
+
+      const errors = this.extractErrors(parsedRecords)
       const statuses =
         (["920999", "920099"].includes(messageType) ? 1 << 17 /*STATUS_ERROR*/ : 0) |
-        (["920900", "920098"].includes(messageType) && errors.length
-          ? 1 << 16 /*STATUS_WARNING*/
-          : 0) |
+        (["920900"].includes(messageType) && errors.length ? 1 << 16 /*STATUS_WARNING*/ : 0) |
         (["920900"].includes(messageType) && !errors.length ? 1 << 15 /*STATUS_SUCCESS*/ : 0) |
         (["920999"].includes(messageType) ? 1 << 12 /*STATUS_REJECTED*/ : 0) |
         (["920900", "920098", "920099"].includes(messageType) ? 1 << 11 /*STATUS_ACCEPTED*/ : 0) |
@@ -840,10 +846,13 @@ export class IccMessageXApi extends iccMessageApi {
                 )
               ])
             )
-            .then(() =>
-              ["920999", "920099", "920900"].includes(messageType)
-                ? this.invoiceXApi.getInvoices(new ListOfIdsDto({ ids: parentMessage.invoiceIds }))
-                : Promise.resolve([])
+            .then(
+              () =>
+                ["920999", "920099", "920900"].includes(messageType)
+                  ? this.invoiceXApi.getInvoices(
+                      new ListOfIdsDto({ ids: parentMessage.invoiceIds })
+                    )
+                  : Promise.resolve([])
             )
             .then((invoices: Array<models.InvoiceDto>) => {
               // RejectAll if "920999", "920099"
