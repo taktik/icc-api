@@ -88,10 +88,13 @@ export class IccBekmehrXApi extends iccBekmehrApi {
     healthcarePartyId: string,
     language: string,
     body: models.SoftwareMedicalFileExportDto,
-    progressCallback?: (progress: number) => void
+    progressCallback?: (progress: number) => void,
+    sessionId?: string
   ): Promise<Blob> {
     return new Promise((resolve, reject) => {
-      const socket = new WebSocket(this.wssHost + "/be_kmehr/generateSmf")
+      const socket = new WebSocket(
+        `${this.wssHost}/be_kmehr/generateSmf${sessionId ? `;jsessionid=${sessionId}` : ""}`
+      )
       socket.addEventListener("open", function() {
         socket.send(
           JSON.stringify({ parameters: { patientId: patientId, language: language, info: body } })
@@ -110,10 +113,13 @@ export class IccBekmehrXApi extends iccBekmehrApi {
     patientId: string,
     healthcarePartyId: string,
     language: string,
-    body: models.SumehrExportInfoDto
+    body: models.SumehrExportInfoDto,
+    sessionId?: string
   ): Promise<Blob> {
     return new Promise((resolve, reject) => {
-      const socket = new WebSocket(this.wssHost + "/be_kmehr/generateSumehr")
+      const socket = new WebSocket(
+        `${this.wssHost}/be_kmehr/generateSmf${sessionId ? `;jsessionid=${sessionId}` : ""}`
+      )
       socket.addEventListener("open", function() {
         socket.send(
           JSON.stringify({ parameters: { patientId: patientId, language: language, info: body } })
@@ -132,13 +138,18 @@ export class IccBekmehrXApi extends iccBekmehrApi {
     healthcarePartyId: string,
     language: string,
     version: number,
-    body: models.MedicationSchemeExportInfoDto
+    body: models.MedicationSchemeExportInfoDto,
+    sessionId?: string
   ): Promise<Blob> {
     return new Promise((resolve, reject) => {
-      const socket = new WebSocket(this.wssHost + "/be_kmehr/generateMedicationScheme")
+      const socket = new WebSocket(
+        `${this.wssHost}/be_kmehr/generateSmf${sessionId ? `;jsessionid=${sessionId}` : ""}`
+      )
       socket.addEventListener("open", function() {
         socket.send(
-          JSON.stringify({ parameters: { patientId: patientId, language: language, version: version, info: body } })
+          JSON.stringify({
+            parameters: { patientId: patientId, language: language, version: version, info: body }
+          })
         )
       })
       // Listen for messages
