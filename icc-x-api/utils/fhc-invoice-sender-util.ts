@@ -11,10 +11,10 @@ export function toInvoiceSender(hcp: HealthcarePartyDto) {
 
   const invoiceSender: InvoiceSender = {
     bce: Number(hcp.cbe),
-    bic: hcp.bic,
+    bic: hcp.financialInstitutionInformation![0].bic!.replace(/ /g, ""),
     conventionCode: hcp.convention,
     firstName: hcp.firstName,
-    iban: hcp.bankAccount,
+    iban: hcp.financialInstitutionInformation![0].bankAccount!.replace(/ /g, ""),
     lastName: hcp.lastName,
     nihii: Number(hcp.nihii),
     phoneNumber: phoneNumber,
