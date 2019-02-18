@@ -84,6 +84,14 @@ export class IccCryptoXApi {
         .then(keyPair =>
           this.RSA.decrypt(keyPair.privateKey, this.utils.hex2ua(encryptedHcPartyKey))
         )
+        .catch(e => {
+          console.log(
+            `Cannot decrypt RSA encrypted AES HcPartyKey from ${delegatorId} to ${delegateHcPartyId} as ${
+              encryptedForDelegator ? "delegator" : "delegate"
+            }`
+          )
+          throw e
+        })
         .then(decryptedHcPartyKey => this.AES.importKey("raw", decryptedHcPartyKey))
         .then(
           decryptedImportedHcPartyKey =>
@@ -252,12 +260,30 @@ export class IccCryptoXApi {
         Promise.all([
           Promise.all(((modifiedObject.delegations || {})[delegateId] || []).map(
             (d: DelegationDto) =>
-              d.key && this.AES.decrypt(importedAESHcPartyKey.key, this.utils.hex2ua(d.key))
+              d.key &&
+              this.AES.decrypt(importedAESHcPartyKey.key, this.utils.hex2ua(d.key)).catch(() => {
+                console.log(
+                  `Cannot decrypt delegation from ${d.owner} to ${
+                    d.delegatedTo
+                  } for object with id ${modifiedObject.id}:`,
+                  modifiedObject
+                )
+                return null
+              })
           ) as Array<Promise<ArrayBuffer>>),
 
           Promise.all(((modifiedObject.cryptedForeignKeys || {})[delegateId] || []).map(
             (d: DelegationDto) =>
-              d.key && this.AES.decrypt(importedAESHcPartyKey.key, this.utils.hex2ua(d.key))
+              d.key &&
+              this.AES.decrypt(importedAESHcPartyKey.key, this.utils.hex2ua(d.key)).catch(() => {
+                console.log(
+                  `Cannot decrypt cryptedForeignKeys from ${d.owner} to ${
+                    d.delegatedTo
+                  } for object with id ${modifiedObject.id}:`,
+                  modifiedObject
+                )
+                return null
+              })
           ) as Array<Promise<ArrayBuffer>>),
 
           this.AES.encrypt(importedAESHcPartyKey.key, utils.text2ua(
@@ -280,7 +306,7 @@ export class IccCryptoXApi {
         ]) => {
           //try to limit the extent of the modifications to the delegations by preserving the redundant delegation already present and removing duplicates
           //For delegate delegateId, we create:
-          // 1. an array of objects { d : {owner,delegatedTo,encrypted(key)}} with one object for the existing delegations and the new key concatenated
+          // 1. an array of objects { d : {owner,delegatedTo,encrypted(key)}} with one object for each existing delegation and the new key concatenated
           // 2. an array of objects { k : decrypted(key)} with one object for the existing delegations and the new key concatenated
           // We merge them to get one array of objects: { d: {owner,delegatedTo,encrypted(key)}, k: decrypted(key)}
           const delegationCryptedDecrypted = _.merge(
@@ -294,7 +320,11 @@ export class IccCryptoXApi {
               ])
               .map((d: DelegationDto) => ({ d })),
             (previousDecryptedDelegations || [])
-              .map(d => this.utils.ua2text(d))
+              .map(
+                d =>
+                  (d && this.utils.ua2text(d)) ||
+                  /* some unique id that ensures the delegation is going to be held */ this.randomUuid()
+              )
               .concat([`${modifiedObject.id}:${secretIdOfModifiedObject}`])
               .map(k => ({ k }))
           )
@@ -321,7 +351,11 @@ export class IccCryptoXApi {
               )
               .map((d: DelegationDto) => ({ d })),
             (previousDecryptedCryptedForeignKeys || [])
-              .map(d => this.utils.ua2text(d))
+              .map(
+                d =>
+                  (d && this.utils.ua2text(d)) ||
+                  /* some unique id that ensures the delegation is going to be held */ this.randomUuid()
+              )
               .concat(cryptedForeignKey ? [`${modifiedObject.id}:${parentObject.id}`] : [])
               .map(k => ({ k }))
           )
