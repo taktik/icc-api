@@ -199,7 +199,7 @@ export function toInvoiceBatch(
             invoicesBatch.ioFederationCode = fedCodes[0]
             invoicesBatch.numericalRef =
               moment().get("year") * 1000000 + Number(fedCodes[0]) * 1000 + batchNumber
-            invoicesBatch.sender = toInvoiceSender(hcp)
+            invoicesBatch.sender = toInvoiceSender(hcp, fedCodes[0])
             invoicesBatch.uniqueSendNumber = batchNumber
 
             return invoicesBatch
