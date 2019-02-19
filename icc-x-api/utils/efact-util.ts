@@ -24,7 +24,8 @@ export interface RelatedInvoiceInfo {
   invoiceReference?: string
   sendNumber?: string
   insuranceCode?: string
-  invoicingYearMonth?: string
+  invoicingYear?: string
+  invoicingMonth?: string
 }
 
 export interface InvoiceWithPatient {
@@ -125,7 +126,8 @@ export function getRelatedInvoicesInfo(
               insuranceCode: insurance.code,
               invoiceReference: relatedInvoice.invoiceReference,
               sendNumber: message.externalRef,
-              invoicingYearMonth: message.metas!!.invoiceYear + message.metas!!.invoiceMonth
+              invoicingYear: _.padStart(message.metas!!.invoiceYear, 4, "0"),
+              invoicingMonth: _.padStart(message.metas!!.invoiceMonth, 2, "0")
             })
           })
 
@@ -252,8 +254,12 @@ function toInvoice(
 
   if (relatedInvoiceInfo) {
     invoice.relatedBatchSendNumber = Number(relatedInvoiceInfo.sendNumber)
-    invoice.relatedBatchYearMonth = Number(relatedInvoiceInfo.invoicingYearMonth)
-    invoice.relatedInvoiceNumber = Number(relatedInvoiceInfo.invoiceReference)
+    invoice.relatedBatchYearMonth = Number(
+      relatedInvoiceInfo.invoicingYear!! + relatedInvoiceInfo.invoicingMonth
+    )
+    invoice.relatedInvoiceNumber = Number(
+      relatedInvoiceInfo.invoicingYear!! + relatedInvoiceInfo.invoiceReference
+    )
     invoice.relatedInvoiceIoCode = relatedInvoiceInfo.insuranceCode
   }
 
