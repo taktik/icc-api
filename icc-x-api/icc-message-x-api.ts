@@ -1131,8 +1131,8 @@ export class IccMessageXApi extends iccMessageApi {
                         metas: {
                           ioFederationCode: batch.ioFederationCode,
                           numericalRef: batch.numericalRef,
-                          invoiceMonth: batch.invoicingMonth,
-                          invoiceYear: batch.invoicingYear,
+                          invoiceMonth: _.padStart("" + batch.invoicingMonth, 2, "0"),
+                          invoiceYear: _.padStart("" + batch.invoicingYear, 4, "0"),
                           totalAmount: totalAmount,
                           fhc_server: fhcServer,
                           errors: res.error
