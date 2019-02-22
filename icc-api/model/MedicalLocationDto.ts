@@ -41,4 +41,6 @@ export class MedicalLocationDto {
   address?: models.AddressDto
 
   responsible?: string
+
+  agendaIds?: Array<string>
 }
