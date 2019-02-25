@@ -293,11 +293,11 @@ export abstract class EfactMessageReader {
     const oaContactLastName = this.log("Nom personne contact OA", zone300.zones!![i++].value)
 
     this.log("Code erreur", zone300.zones!![i++].value)
-    const oaContactFirstName = this.log("Prnom personne de contact OA", zone300.zones!![i++].value)
+    const oaContactFirstName = this.log("Prenom personne de contact OA", zone300.zones!![i++].value)
 
     this.log("Code erreur", zone300.zones!![i++].value)
     const oaContactPhoneNumber = this.log(
-      "Numro telephone personne contact OA",
+      "Numero telephone personne contact OA",
       zone300.zones!![i++].value
     )
 
