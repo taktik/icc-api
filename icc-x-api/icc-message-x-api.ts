@@ -715,9 +715,9 @@ export class IccMessageXApi extends iccMessageApi {
       }
 
       // Find message for Hcp based on the invoiceReference if present (!931000)
-      const fileReference = _.get(parsedRecords, "zone300.invoiceReference")
+      const fileReference = _.get(parsedRecords, "et10.invoiceReference")
       const parentMessage = fileReference
-        ? _.find(msgsForHcp, m => uuidBase36Half(m.id!!) === fileReference.trim())
+        ? _.find(msgsForHcp, m => uuidBase36(m.id!!) === fileReference.trim())
         : msgsForHcp[0]
 
       if (!parentMessage) {
