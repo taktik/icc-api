@@ -47,6 +47,19 @@ export function getFederaton(
       })
     )
     .then((insurances: Array<InsuranceDto>) => {
+      // We will check here for recipient which are federations (except 306).
+
+      const federations = insurances.filter(i => i.code !== "306" && i.id === i.parent)
+
+      if (federations.length > 0) {
+        console.error(
+          `Invoices directed to ${federations.map(i => i.code).join()}, invoices ${invoices.map(
+            i => i.invoiceDto.id
+          )}`
+        )
+        throw "Some invoices are directly destinated to federations inside of mutuality office !"
+      }
+
       return insuranceApi
         .getInsurances(new ListOfIdsDto({ ids: _.uniq(_.compact(insurances.map(i => i.parent))) }))
         .then((parents: Array<InsuranceDto>) => {
@@ -155,6 +168,19 @@ export function toInvoiceBatch(
       })
     )
     .then((insurances: Array<InsuranceDto>) => {
+      // We will check here for recipient which are federations (except 306).
+
+      const federations = insurances.filter(i => i.code !== "306" && i.id === i.parent)
+
+      if (federations.length > 0) {
+        console.error(
+          `Invoices directed to ${federations
+            .map(i => i.code)
+            .join()}, invoices ${invoicesWithPatient.map(i => i.invoiceDto.id)}`
+        )
+        throw "Some invoices are directly destinated to federations instead of mutuality !"
+      }
+
       return insuranceApi
         .getInsurances(new ListOfIdsDto({ ids: _.uniq(_.compact(insurances.map(i => i.parent))) }))
         .then((parents: Array<InsuranceDto>) => {
