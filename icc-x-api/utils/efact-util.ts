@@ -5,7 +5,8 @@ import {
   InvoicingCodeDto,
   ListOfIdsDto,
   PatientDto,
-  MessageDto
+  MessageDto,
+  InsurabilityDto
 } from "../../icc-api/model/models"
 import { IccInvoiceXApi, IccMessageXApi } from "../../icc-x-api"
 import { iccInsuranceApi } from "../../icc-api/api/iccInsuranceApi"
@@ -36,6 +37,21 @@ export interface InvoiceWithPatient {
 
 const base36UUID = new UuidEncoder()
 
+function ensureNoFederation(invoices: Array<InvoiceWithPatient>, insurances: Array<InsuranceDto>) {
+  // We will check here for recipient which are federations (except 306).
+
+  const federations = insurances.filter(i => i.code !== "306" && i.id === i.parent)
+
+  if (federations.length > 0) {
+    console.error(
+      `Invoices directed to ${federations.map(i => i.code).join()}, invoices ${invoices.map(
+        i => i.invoiceDto.id
+      )}`
+    )
+    throw "Some invoices are directly destinated to federations inside of mutuality office !"
+  }
+}
+
 export function getFederaton(
   invoices: Array<InvoiceWithPatient>,
   insuranceApi: iccInsuranceApi
@@ -47,6 +63,8 @@ export function getFederaton(
       })
     )
     .then((insurances: Array<InsuranceDto>) => {
+      ensureNoFederation(invoices, insurances)
+
       return insuranceApi
         .getInsurances(new ListOfIdsDto({ ids: _.uniq(_.compact(insurances.map(i => i.parent))) }))
         .then((parents: Array<InsuranceDto>) => {
@@ -155,6 +173,8 @@ export function toInvoiceBatch(
       })
     )
     .then((insurances: Array<InsuranceDto>) => {
+      ensureNoFederation(invoicesWithPatient, insurances)
+
       return insuranceApi
         .getInsurances(new ListOfIdsDto({ ids: _.uniq(_.compact(insurances.map(i => i.parent))) }))
         .then((parents: Array<InsuranceDto>) => {
