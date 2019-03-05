@@ -159,12 +159,20 @@ export class IccInvoiceXApi extends iccInvoiceApi {
     prefix: string,
     entityrefApi: iccEntityrefApi
   ): Promise<models.EntityReference> {
-    return entityrefApi.createEntityReference(
-      new models.EntityReference({
-        id: prefix + nextReference.toString().padStart(6, "0"),
-        docId
+    return entityrefApi
+      .createEntityReference(
+        new models.EntityReference({
+          id: prefix + nextReference.toString().padStart(6, "0"),
+          docId
+        })
+      )
+      .catch(err => {
+        console.log(err)
+        nextReference = nextReference + 1
+        this.createInvoiceReference(nextReference, docId, prefix, entityrefApi).catch(err =>
+          console.log(err)
+        )
       })
-    )
   }
 
   /**
