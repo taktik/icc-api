@@ -295,13 +295,14 @@ export class IccContactXApi extends iccContactApi {
 
   encrypt(user: models.UserDto, ctcs: Array<models.ContactDto>) {
     const hcpartyId = user.healthcarePartyId!
+    const bypassEncryption = false //Used for debug
+
     return Promise.all(
       ctcs.map(
         ctc =>
-          ctc.secretForeignKeys &&
-          ctc.secretForeignKeys.includes("2d3ab21f-3f2e-4db3-9535-4238c605dbf4") //Prevent encryption for test ctc
+          bypassEncryption //Prevent encryption for test ctc
             ? ctc
-            : (ctc.encryptionKeys && Object.keys(ctc.encryptionKeys).length
+            : (ctc.encryptionKeys && Object.keys(ctc.encryptionKeys || {}).length
                 ? Promise.resolve(ctc)
                 : this.initEncryptionKeys(user, ctc)
               )
@@ -643,6 +644,8 @@ export class IccContactXApi extends iccContactApi {
    * When a svc does not exist yet in the current contact but exists in a previous contact, all the scs it was belonging to are
    * copied in the current contact
    *
+   * the svc returned is the one that's inside the ctc
+   *
    * @param ctc
    * @param user
    * @param ctcs
@@ -785,7 +788,7 @@ export class IccContactXApi extends iccContactApi {
       })
     })
 
-    return (init && init(svc)) || svc
+    return (init && init(promoted)) || promoted
   }
 
   isNumeric(svc: models.ServiceDto, lng: string) {
