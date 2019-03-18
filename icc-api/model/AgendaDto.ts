@@ -38,7 +38,7 @@ export class AgendaDto {
 
   userId?: string
 
-  events?: Array<models.CalendarItem>
+  events?: Array<models.CalendarItemDto>
 
   rights?: Array<models.Right>
 }

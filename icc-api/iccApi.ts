@@ -1,5 +1,6 @@
 export * from "./api/iccAccesslogApi"
 export * from "./api/iccAgendaApi"
+export * from "./api/iccApplicationsettingsApi"
 export * from "./api/iccArticleApi"
 export * from "./api/iccAuthApi"
 export * from "./api/iccBedrugsApi"

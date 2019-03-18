@@ -5,7 +5,8 @@ import {
   InvoicingCodeDto,
   ListOfIdsDto,
   PatientDto,
-  MessageDto
+  MessageDto,
+  InsurabilityDto
 } from "../../icc-api/model/models"
 import { IccInvoiceXApi, IccMessageXApi } from "../../icc-x-api"
 import { iccInsuranceApi } from "../../icc-api/api/iccInsuranceApi"
@@ -24,6 +25,8 @@ export interface RelatedInvoiceInfo {
   invoiceReference?: string
   sendNumber?: string
   insuranceCode?: string
+  invoicingYear?: string
+  invoicingMonth?: string
 }
 
 export interface InvoiceWithPatient {
@@ -33,6 +36,21 @@ export interface InvoiceWithPatient {
 }
 
 const base36UUID = new UuidEncoder()
+
+function ensureNoFederation(invoices: Array<InvoiceWithPatient>, insurances: Array<InsuranceDto>) {
+  // We will check here for recipient which are federations (except 306).
+
+  const federations = insurances.filter(i => i.code !== "306" && i.id === i.parent)
+
+  if (federations.length > 0) {
+    console.error(
+      `Invoices directed to ${federations.map(i => i.code).join()}, invoices ${invoices.map(
+        i => i.invoiceDto.id
+      )}`
+    )
+    throw "Some invoices are directly destinated to federations inside of mutuality office !"
+  }
+}
 
 export function getFederaton(
   invoices: Array<InvoiceWithPatient>,
@@ -45,17 +63,22 @@ export function getFederaton(
       })
     )
     .then((insurances: Array<InsuranceDto>) => {
+      ensureNoFederation(invoices, insurances)
+
       return insuranceApi
         .getInsurances(new ListOfIdsDto({ ids: _.uniq(_.compact(insurances.map(i => i.parent))) }))
         .then((parents: Array<InsuranceDto>) => {
-          const fedCodes = _.compact(parents.map(i => i.code && i.code.substr(0, 3)))
-          if (!fedCodes.length) {
+          const parentsWithFedCode = parents.filter(i => i.code)
+
+          if (!parentsWithFedCode.length) {
             throw "The federation is missing from the recipients of the invoices"
           }
-          if (fedCodes.length > 1) {
+
+          if (parentsWithFedCode.length > 1) {
             throw "The provided invoices are not addressed to insurances belonging to the same federation"
           }
-          return parents[0]
+
+          return parentsWithFedCode[0]
         })
     })
 }
@@ -120,7 +143,9 @@ export function getRelatedInvoicesInfo(
               invoiceId: invoice.id!!,
               insuranceCode: insurance.code,
               invoiceReference: relatedInvoice.invoiceReference,
-              sendNumber: message.externalRef
+              sendNumber: message.externalRef,
+              invoicingYear: _.padStart(message.metas!!.invoiceYear, 4, "0"),
+              invoicingMonth: _.padStart(message.metas!!.invoiceMonth, 2, "0")
             })
           })
 
@@ -148,6 +173,8 @@ export function toInvoiceBatch(
       })
     )
     .then((insurances: Array<InsuranceDto>) => {
+      ensureNoFederation(invoicesWithPatient, insurances)
+
       return insuranceApi
         .getInsurances(new ListOfIdsDto({ ids: _.uniq(_.compact(insurances.map(i => i.parent))) }))
         .then((parents: Array<InsuranceDto>) => {
@@ -191,11 +218,23 @@ export function toInvoiceBatch(
                 )
               }
             )
-            invoicesBatch.invoicingMonth =
-              toMoment(invoicesWithPatient[0].invoiceDto.invoiceDate!!)!!.month() + 1
-            invoicesBatch.invoicingYear = toMoment(
-              invoicesWithPatient[0].invoiceDto.invoiceDate!!
-            )!!.year()
+
+            const now = new Date()
+            const invoiceDate = toMoment(invoicesWithPatient[0].invoiceDto.invoiceDate!!)
+            const invoicingMonth = invoiceDate!!.month() + 1
+            const invoicingYear = invoiceDate!!.year()
+
+            // The OA 500, matches the monthYear (zone 300) to check the batch sending number
+            // Use sending year to prevent duplicate sending number in case of invoices made
+            // on the previous year
+            if (now.getFullYear() === invoicingYear) {
+              invoicesBatch.invoicingMonth = invoicingMonth
+              invoicesBatch.invoicingYear = invoicingYear
+            } else {
+              invoicesBatch.invoicingMonth = now.getMonth() + 1
+              invoicesBatch.invoicingYear = now.getFullYear()
+            }
+
             invoicesBatch.ioFederationCode = fedCodes[0]
             invoicesBatch.numericalRef =
               moment().get("year") * 1000000 + Number(fedCodes[0]) * 1000 + batchNumber
@@ -216,10 +255,13 @@ function toInvoice(
   relatedInvoiceInfo: RelatedInvoiceInfo | undefined
 ): Invoice {
   const invoice = new Invoice({})
+  const invoiceYear = moment(invoiceDto.created)
+    .year()
+    .toString()
 
   invoice.hospitalisedPatient = isPatientHospitalized(patientDto)
   // FIXME : coder l'invoice ref
-  invoice.invoiceNumber = Number(invoiceDto.invoiceReference) || 0
+  invoice.invoiceNumber = Number(invoiceYear + invoiceDto.invoiceReference) || 0
   // FIXME : coder l'invoice ref
   invoice.invoiceRef = uuidBase36(invoiceDto.id!!)
   invoice.ioCode = insurance.code!!.substr(0, 3)
@@ -232,7 +274,12 @@ function toInvoice(
 
   if (relatedInvoiceInfo) {
     invoice.relatedBatchSendNumber = Number(relatedInvoiceInfo.sendNumber)
-    invoice.relatedInvoiceNumber = Number(relatedInvoiceInfo.invoiceReference)
+    invoice.relatedBatchYearMonth = Number(
+      relatedInvoiceInfo.invoicingYear!! + relatedInvoiceInfo.invoicingMonth
+    )
+    invoice.relatedInvoiceNumber = Number(
+      relatedInvoiceInfo.invoicingYear!! + relatedInvoiceInfo.invoiceReference
+    )
     invoice.relatedInvoiceIoCode = relatedInvoiceInfo.insuranceCode
   }
 
