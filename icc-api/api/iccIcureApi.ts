@@ -154,6 +154,23 @@ export class iccIcureApi {
       .then(doc => true)
       .catch(err => this.handleError(err))
   }
+  resolveDocumentsConflicts(ids?: string): Promise<any | Boolean> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/icure/conflicts/document" +
+      "?ts=" +
+      new Date().getTime() +
+      (ids ? "&ids=" + ids : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
+      .then(doc => true)
+      .catch(err => this.handleError(err))
+  }
   resolveFormsConflicts(): Promise<any | Boolean> {
     let _body = null
 

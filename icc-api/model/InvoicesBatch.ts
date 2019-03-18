@@ -24,41 +24,25 @@
 
 import * as models from "./models"
 
-export class FormTemplateDto {
+export class InvoicesBatch {
   constructor(json: JSON | any) {
-    Object.assign(this as FormTemplateDto, json)
+    Object.assign(this as InvoicesBatch, json)
   }
-  id?: string
+  invoicingYear?: number
 
-  rev?: string
+  invoicingMonth?: number
 
-  deletionDate?: number
+  fileRef?: string
 
-  group?: models.FormGroupDto
+  batchRef?: string
 
-  name?: string
+  ioFederationCode?: string
 
-  descr?: string
+  uniqueSendNumber?: number
 
-  hidden?: boolean
+  sender?: models.InvoiceSender
 
-  specialty?: models.CodeDto
+  numericalRef?: number
 
-  guid?: string
-
-  layout?: models.FormLayout
-
-  formInstancePreferredLocation?: string
-
-  keyboardShortcut?: string
-
-  shortReport?: string
-
-  mediumReport?: string
-
-  longReport?: string
-
-  disabled?: string
-
-  reports?: Array<string>
+  invoices?: Array<models.Invoice>
 }

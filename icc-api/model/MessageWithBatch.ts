@@ -24,41 +24,11 @@
 
 import * as models from "./models"
 
-export class FormTemplateDto {
+export class MessageWithBatch {
   constructor(json: JSON | any) {
-    Object.assign(this as FormTemplateDto, json)
+    Object.assign(this as MessageWithBatch, json)
   }
-  id?: string
+  invoicesBatch?: models.InvoicesBatch
 
-  rev?: string
-
-  deletionDate?: number
-
-  group?: models.FormGroupDto
-
-  name?: string
-
-  descr?: string
-
-  hidden?: boolean
-
-  specialty?: models.CodeDto
-
-  guid?: string
-
-  layout?: models.FormLayout
-
-  formInstancePreferredLocation?: string
-
-  keyboardShortcut?: string
-
-  shortReport?: string
-
-  mediumReport?: string
-
-  longReport?: string
-
-  disabled?: string
-
-  reports?: Array<string>
+  message?: models.MessageDto
 }

@@ -24,41 +24,27 @@
 
 import * as models from "./models"
 
-export class FormTemplateDto {
+export class InvoiceSender {
   constructor(json: JSON | any) {
-    Object.assign(this as FormTemplateDto, json)
+    Object.assign(this as InvoiceSender, json)
   }
-  id?: string
+  nihii?: number
 
-  rev?: string
+  bic?: string
 
-  deletionDate?: number
+  iban?: string
 
-  group?: models.FormGroupDto
+  bce?: number
 
-  name?: string
+  ssin?: string
 
-  descr?: string
+  lastName?: string
 
-  hidden?: boolean
+  firstName?: string
 
-  specialty?: models.CodeDto
+  phoneNumber?: number
 
-  guid?: string
+  conventionCode?: number
 
-  layout?: models.FormLayout
-
-  formInstancePreferredLocation?: string
-
-  keyboardShortcut?: string
-
-  shortReport?: string
-
-  mediumReport?: string
-
-  longReport?: string
-
-  disabled?: string
-
-  reports?: Array<string>
+  specialist?: boolean
 }

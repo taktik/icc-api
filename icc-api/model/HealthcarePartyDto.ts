@@ -99,6 +99,10 @@ export class HealthcarePartyDto {
   type?: string
 
   contactPerson?: string
+
+  contactPersonHcpId?: string
+
+  flatRateTarifications?: Array<models.FlatRateTarification>
 }
 export namespace HealthcarePartyDto {
   export enum GenderEnum {

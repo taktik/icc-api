@@ -24,41 +24,42 @@
 
 import * as models from "./models"
 
-export class FormTemplateDto {
+export class Invoice {
   constructor(json: JSON | any) {
-    Object.assign(this as FormTemplateDto, json)
+    Object.assign(this as Invoice, json)
   }
-  id?: string
+  patient?: models.PatientDto
 
-  rev?: string
+  ioCode?: string
 
-  deletionDate?: number
+  items?: Array<models.InvoiceItem>
 
-  group?: models.FormGroupDto
+  reason?: Invoice.ReasonEnum
 
-  name?: string
+  invoiceRef?: string
 
-  descr?: string
+  invoiceNumber?: number
 
-  hidden?: boolean
+  ignorePrescriptionDate?: boolean
 
-  specialty?: models.CodeDto
+  hospitalisedPatient?: boolean
 
-  guid?: string
+  creditNote?: boolean
 
-  layout?: models.FormLayout
+  relatedInvoiceIoCode?: string
 
-  formInstancePreferredLocation?: string
+  relatedInvoiceNumber?: number
 
-  keyboardShortcut?: string
+  relatedBatchSendNumber?: number
 
-  shortReport?: string
-
-  mediumReport?: string
-
-  longReport?: string
-
-  disabled?: string
-
-  reports?: Array<string>
+  relatedBatchYearMonth?: number
+}
+export namespace Invoice {
+  export enum ReasonEnum {
+    Chimiotherapy = <any>"Chimiotherapy",
+    ProfessionalDisease = <any>"ProfessionalDisease",
+    WorkAccident = <any>"WorkAccident",
+    Accident = <any>"Accident",
+    Other = <any>"Other"
+  }
 }

@@ -24,41 +24,25 @@
 
 import * as models from "./models"
 
-export class FormTemplateDto {
+export class Valorisation {
   constructor(json: JSON | any) {
-    Object.assign(this as FormTemplateDto, json)
+    Object.assign(this as Valorisation, json)
   }
-  id?: string
+  startOfValidity?: number
 
-  rev?: string
+  endOfValidity?: number
 
-  deletionDate?: number
+  predicate?: string
 
-  group?: models.FormGroupDto
+  totalAmount?: number
 
-  name?: string
+  reimbursement?: number
 
-  descr?: string
+  patientIntervention?: number
 
-  hidden?: boolean
+  doctorSupplement?: number
 
-  specialty?: models.CodeDto
+  vat?: number
 
-  guid?: string
-
-  layout?: models.FormLayout
-
-  formInstancePreferredLocation?: string
-
-  keyboardShortcut?: string
-
-  shortReport?: string
-
-  mediumReport?: string
-
-  longReport?: string
-
-  disabled?: string
-
-  reports?: Array<string>
+  label?: { [key: string]: string }
 }

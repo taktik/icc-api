@@ -24,41 +24,17 @@
 
 import * as models from "./models"
 
-export class FormTemplateDto {
+export class EIDItem {
   constructor(json: JSON | any) {
-    Object.assign(this as FormTemplateDto, json)
+    Object.assign(this as EIDItem, json)
   }
-  id?: string
+  deviceType?: string
 
-  rev?: string
+  readDate?: number
 
-  deletionDate?: number
+  readHour?: number
 
-  group?: models.FormGroupDto
+  readType?: string
 
-  name?: string
-
-  descr?: string
-
-  hidden?: boolean
-
-  specialty?: models.CodeDto
-
-  guid?: string
-
-  layout?: models.FormLayout
-
-  formInstancePreferredLocation?: string
-
-  keyboardShortcut?: string
-
-  shortReport?: string
-
-  mediumReport?: string
-
-  longReport?: string
-
-  disabled?: string
-
-  reports?: Array<string>
+  readvalue?: string
 }

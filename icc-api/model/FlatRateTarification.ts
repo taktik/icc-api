@@ -24,41 +24,22 @@
 
 import * as models from "./models"
 
-export class FormTemplateDto {
+export class FlatRateTarification {
   constructor(json: JSON | any) {
-    Object.assign(this as FormTemplateDto, json)
+    Object.assign(this as FlatRateTarification, json)
   }
-  id?: string
+  code?: string
 
-  rev?: string
+  flatRateType?: FlatRateTarification.FlatRateTypeEnum
 
-  deletionDate?: number
+  label?: { [key: string]: string }
 
-  group?: models.FormGroupDto
-
-  name?: string
-
-  descr?: string
-
-  hidden?: boolean
-
-  specialty?: models.CodeDto
-
-  guid?: string
-
-  layout?: models.FormLayout
-
-  formInstancePreferredLocation?: string
-
-  keyboardShortcut?: string
-
-  shortReport?: string
-
-  mediumReport?: string
-
-  longReport?: string
-
-  disabled?: string
-
-  reports?: Array<string>
+  valorisations?: Array<models.Valorisation>
+}
+export namespace FlatRateTarification {
+  export enum FlatRateTypeEnum {
+    Physician = <any>"physician",
+    Physiotherapist = <any>"physiotherapist",
+    Nurse = <any>"nurse"
+  }
 }
