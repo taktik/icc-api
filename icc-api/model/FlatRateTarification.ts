@@ -24,21 +24,22 @@
 
 import * as models from "./models"
 
-export class AgendaDto {
+export class FlatRateTarification {
   constructor(json: JSON | any) {
-    Object.assign(this as AgendaDto, json)
+    Object.assign(this as FlatRateTarification, json)
   }
-  id?: string
+  code?: string
 
-  rev?: string
+  flatRateType?: FlatRateTarification.FlatRateTypeEnum
 
-  deletionDate?: number
+  label?: { [key: string]: string }
 
-  name?: string
-
-  userId?: string
-
-  events?: Array<models.CalendarItemDto>
-
-  rights?: Array<models.Right>
+  valorisations?: Array<models.Valorisation>
+}
+export namespace FlatRateTarification {
+  export enum FlatRateTypeEnum {
+    Physician = <any>"physician",
+    Physiotherapist = <any>"physiotherapist",
+    Nurse = <any>"nurse"
+  }
 }

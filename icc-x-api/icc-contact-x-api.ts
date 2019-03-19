@@ -163,42 +163,52 @@ export class IccContactXApi extends iccContactApi {
     startDocumentId?: string,
     limit?: number,
     body?: models.FilterChain
-  ): Promise<models.ContactPaginatedList | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+  ): never {
+    throw new Error(
+      "Cannot call a method that returns contacts without providing a user for de/encryption"
+    )
   }
 
-  findByHCPartyFormId(
-    hcPartyId?: string,
-    formId?: string
-  ): Promise<Array<models.ContactDto> | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+  findByHCPartyFormId(hcPartyId?: string, formId?: string): never {
+    throw new Error(
+      "Cannot call a method that returns contacts without providing a user for de/encryption"
+    )
   }
 
-  findByHCPartyFormIds(
-    hcPartyId?: string,
-    body?: models.ListOfIdsDto
-  ): Promise<Array<models.ContactDto> | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+  findByHCPartyFormIds(hcPartyId?: string, body?: models.ListOfIdsDto): never {
+    throw new Error(
+      "Cannot call a method that returns contacts without providing a user for de/encryption"
+    )
   }
 
-  getContact(contactId: string): Promise<models.ContactDto | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+  getContact(contactId: string): never {
+    throw new Error(
+      "Cannot call a method that returns contacts without providing a user for de/encryption"
+    )
   }
 
-  getContacts(body?: models.ListOfIdsDto): Promise<Array<models.ContactDto> | any> {
-    throw "Cannot call a method that returns contacts without providing a user for de/encryption"
+  getContacts(body?: models.ListOfIdsDto): never {
+    throw new Error(
+      "Cannot call a method that returns contacts without providing a user for de/encryption"
+    )
   }
 
-  modifyContact(body?: ContactDto): Promise<ContactDto | any> {
-    throw "Cannot call a method that modify contacts without providing a user for de/encryption"
+  modifyContact(body?: ContactDto): never {
+    throw new Error(
+      "Cannot call a method that modify contacts without providing a user for de/encryption"
+    )
   }
 
-  modifyContacts(body?: Array<ContactDto>): Promise<Array<ContactDto> | any> {
-    throw "Cannot call a method that modify contacts without providing a user for de/encryption"
+  modifyContacts(body?: Array<ContactDto>): never {
+    throw new Error(
+      "Cannot call a method that modify contacts without providing a user for de/encryption"
+    )
   }
 
-  createContact(body?: ContactDto): Promise<ContactDto | any> {
-    throw "Cannot call a method that modify contacts without providing a user for de/encryption"
+  createContact(body?: ContactDto): never {
+    throw new Error(
+      "Cannot call a method that modify contacts without providing a user for de/encryption"
+    )
   }
 
   findByHCPartyPatientSecretFKeys(
@@ -295,13 +305,14 @@ export class IccContactXApi extends iccContactApi {
 
   encrypt(user: models.UserDto, ctcs: Array<models.ContactDto>) {
     const hcpartyId = user.healthcarePartyId!
+    const bypassEncryption = false //Used for debug
+
     return Promise.all(
       ctcs.map(
         ctc =>
-          ctc.secretForeignKeys &&
-          ctc.secretForeignKeys.includes("2d3ab21f-3f2e-4db3-9535-4238c605dbf4") //Prevent encryption for test ctc
+          bypassEncryption //Prevent encryption for test ctc
             ? ctc
-            : (ctc.encryptionKeys && Object.keys(ctc.encryptionKeys).length
+            : (ctc.encryptionKeys && Object.keys(ctc.encryptionKeys || {}).length
                 ? Promise.resolve(ctc)
                 : this.initEncryptionKeys(user, ctc)
               )
@@ -352,7 +363,7 @@ export class IccContactXApi extends iccContactApi {
           )
           .then(({ extractedKeys: sfks }) => {
             if (!sfks || !sfks.length) {
-              //console.log("Cannot decrypt contact", ctc.id)
+              console.log("Cannot decrypt contact", ctc.id)
               return Promise.resolve(ctc)
             }
             return Promise.all(
@@ -643,6 +654,8 @@ export class IccContactXApi extends iccContactApi {
    * When a svc does not exist yet in the current contact but exists in a previous contact, all the scs it was belonging to are
    * copied in the current contact
    *
+   * the svc returned is the one that's inside the ctc
+   *
    * @param ctc
    * @param user
    * @param ctcs
@@ -785,7 +798,7 @@ export class IccContactXApi extends iccContactApi {
       })
     })
 
-    return (init && init(svc)) || svc
+    return (init && init(promoted)) || promoted
   }
 
   isNumeric(svc: models.ServiceDto, lng: string) {

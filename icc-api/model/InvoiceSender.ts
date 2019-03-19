@@ -24,29 +24,27 @@
 
 import * as models from "./models"
 
-export class Telecom {
+export class InvoiceSender {
   constructor(json: JSON | any) {
-    Object.assign(this as Telecom, json)
+    Object.assign(this as InvoiceSender, json)
   }
-  telecomType?: Telecom.TelecomTypeEnum
+  nihii?: number
 
-  telecomNumber?: string
+  bic?: string
 
-  telecomDescription?: string
-}
-export namespace Telecom {
-  export enum TelecomTypeEnum {
-    Mobile = <any>"mobile",
-    Phone = <any>"phone",
-    Email = <any>"email",
-    Fax = <any>"fax",
-    Skype = <any>"skype",
-    Im = <any>"im",
-    Medibridge = <any>"medibridge",
-    Ehealthbox = <any>"ehealthbox",
-    Apicrypt = <any>"apicrypt",
-    Web = <any>"web",
-    Print = <any>"print",
-    Disk = <any>"disk"
-  }
+  iban?: string
+
+  bce?: number
+
+  ssin?: string
+
+  lastName?: string
+
+  firstName?: string
+
+  phoneNumber?: number
+
+  conventionCode?: number
+
+  specialist?: boolean
 }

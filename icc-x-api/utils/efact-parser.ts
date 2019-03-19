@@ -1435,7 +1435,11 @@ export class EfactMessage920099Reader extends EfactMessageReader {
         const et20 = this.readET20(rawRecords[i])
         i++
         const items = []
-        while (rawRecords[i].zones!![0].value === "50" || rawRecords[i].zones!![0].value === "51") {
+        while (
+          rawRecords[i].zones!![0].value === "50" ||
+          rawRecords[i].zones!![0].value === "51" ||
+          rawRecords[i].zones!![0].value === "52"
+        ) {
           let et50
           let et51
           let et52

@@ -24,15 +24,17 @@
 
 import * as models from "./models"
 
-export class CalendarItemTag {
+export class EIDItem {
   constructor(json: JSON | any) {
-    Object.assign(this as CalendarItemTag, json)
+    Object.assign(this as EIDItem, json)
   }
-  code?: string
+  deviceType?: string
 
-  date?: number
+  readDate?: number
 
-  userId?: string
+  readHour?: number
 
-  userName?: string
+  readType?: string
+
+  readvalue?: string
 }

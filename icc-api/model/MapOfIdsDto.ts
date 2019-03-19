@@ -24,15 +24,9 @@
 
 import * as models from "./models"
 
-export class Delegation {
+export class MapOfIdsDto {
   constructor(json: JSON | any) {
-    Object.assign(this as Delegation, json)
+    Object.assign(this as MapOfIdsDto, json)
   }
-  owner?: string
-
-  delegatedTo?: string
-
-  key?: string
-
-  tag?: string
+  mapOfIds?: { [key: string]: Array<string> }
 }

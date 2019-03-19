@@ -24,21 +24,11 @@
 
 import * as models from "./models"
 
-export class AgendaDto {
+export class MessageWithBatch {
   constructor(json: JSON | any) {
-    Object.assign(this as AgendaDto, json)
+    Object.assign(this as MessageWithBatch, json)
   }
-  id?: string
+  invoicesBatch?: models.InvoicesBatch
 
-  rev?: string
-
-  deletionDate?: number
-
-  name?: string
-
-  userId?: string
-
-  events?: Array<models.CalendarItemDto>
-
-  rights?: Array<models.Right>
+  message?: models.MessageDto
 }

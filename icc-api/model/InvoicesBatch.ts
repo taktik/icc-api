@@ -24,36 +24,25 @@
 
 import * as models from "./models"
 
-export class Address {
+export class InvoicesBatch {
   constructor(json: JSON | any) {
-    Object.assign(this as Address, json)
+    Object.assign(this as InvoicesBatch, json)
   }
-  addressType?: Address.AddressTypeEnum
+  invoicingYear?: number
 
-  descr?: string
+  invoicingMonth?: number
 
-  street?: string
+  fileRef?: string
 
-  houseNumber?: string
+  batchRef?: string
 
-  postboxNumber?: string
+  ioFederationCode?: string
 
-  postalCode?: string
+  uniqueSendNumber?: number
 
-  city?: string
+  sender?: models.InvoiceSender
 
-  country?: string
+  numericalRef?: number
 
-  telecoms?: Array<models.Telecom>
-}
-export namespace Address {
-  export enum AddressTypeEnum {
-    Home = <any>"home",
-    Work = <any>"work",
-    Vacation = <any>"vacation",
-    Hospital = <any>"hospital",
-    Clinic = <any>"clinic",
-    Hq = <any>"hq",
-    Other = <any>"other"
-  }
+  invoices?: Array<models.Invoice>
 }

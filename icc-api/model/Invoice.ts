@@ -24,69 +24,42 @@
 
 import * as models from "./models"
 
-export class FlowItem {
+export class Invoice {
   constructor(json: JSON | any) {
-    Object.assign(this as FlowItem, json)
+    Object.assign(this as Invoice, json)
   }
-  id?: string
+  patient?: models.PatientDto
 
-  title?: string
+  ioCode?: string
 
-  comment?: string
+  items?: Array<models.InvoiceItem>
 
-  receptionDate?: number
+  reason?: Invoice.ReasonEnum
 
-  processingDate?: number
+  invoiceRef?: string
 
-  processer?: string
+  invoiceNumber?: number
 
-  cancellationDate?: number
+  ignorePrescriptionDate?: boolean
 
-  canceller?: string
+  hospitalisedPatient?: boolean
 
-  cancellationReason?: string
+  creditNote?: boolean
 
-  cancellationNote?: string
+  relatedInvoiceIoCode?: string
 
-  status?: string
+  relatedInvoiceNumber?: number
 
-  homeVisit?: boolean
+  relatedBatchSendNumber?: number
 
-  municipality?: string
-
-  town?: string
-
-  zipCode?: string
-
-  street?: string
-
-  building?: string
-
-  buildingNumber?: string
-
-  doorbellName?: string
-
-  floor?: string
-
-  letterBox?: string
-
-  notesOps?: string
-
-  notesContact?: string
-
-  latitude?: string
-
-  longitude?: string
-
-  type?: string
-
-  emergency?: boolean
-
-  phoneNumber?: string
-
-  patientId?: string
-
-  patientLastName?: string
-
-  patientFirstName?: string
+  relatedBatchYearMonth?: number
+}
+export namespace Invoice {
+  export enum ReasonEnum {
+    Chimiotherapy = <any>"Chimiotherapy",
+    ProfessionalDisease = <any>"ProfessionalDisease",
+    WorkAccident = <any>"WorkAccident",
+    Accident = <any>"Accident",
+    Other = <any>"Other"
+  }
 }

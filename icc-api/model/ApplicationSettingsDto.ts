@@ -24,9 +24,9 @@
 
 import * as models from "./models"
 
-export class AgendaDto {
+export class ApplicationSettingsDto {
   constructor(json: JSON | any) {
-    Object.assign(this as AgendaDto, json)
+    Object.assign(this as ApplicationSettingsDto, json)
   }
   id?: string
 
@@ -34,11 +34,5 @@ export class AgendaDto {
 
   deletionDate?: number
 
-  name?: string
-
-  userId?: string
-
-  events?: Array<models.CalendarItemDto>
-
-  rights?: Array<models.Right>
+  settings?: { [key: string]: string }
 }

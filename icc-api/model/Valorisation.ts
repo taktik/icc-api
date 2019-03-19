@@ -24,15 +24,25 @@
 
 import * as models from "./models"
 
-export class CodeStub {
+export class Valorisation {
   constructor(json: JSON | any) {
-    Object.assign(this as CodeStub, json)
+    Object.assign(this as Valorisation, json)
   }
-  code?: string
+  startOfValidity?: number
 
-  type?: string
+  endOfValidity?: number
 
-  version?: string
+  predicate?: string
 
-  id?: string
+  totalAmount?: number
+
+  reimbursement?: number
+
+  patientIntervention?: number
+
+  doctorSupplement?: number
+
+  vat?: number
+
+  label?: { [key: string]: string }
 }

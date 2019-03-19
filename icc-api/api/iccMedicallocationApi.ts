@@ -62,7 +62,7 @@ export class iccMedicallocationApi {
 
     const _url =
       this.host +
-      "/medicallocation/{placeIds}".replace("{locationIds}", locationIds + "") +
+      "/medicallocation/{locationIds}".replace("{locationIds}", locationIds + "") +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -78,7 +78,7 @@ export class iccMedicallocationApi {
 
     const _url =
       this.host +
-      "/medicallocation/{placeId}".replace("{locationId}", locationId + "") +
+      "/medicallocation/{locationId}".replace("{locationId}", locationId + "") +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers

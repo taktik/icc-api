@@ -38,17 +38,17 @@ export class CalendarItem {
 
   responsible?: string
 
-  codes?: Array<models.CodeStub>
+  codes?: Array<models.Code>
 
-  tags?: Array<models.CodeStub>
+  tags?: Array<models.Code>
 
   secretForeignKeys?: Array<string>
 
-  cryptedForeignKeys?: { [key: string]: Array<models.Delegation> }
+  cryptedForeignKeys?: { [key: string]: Array<models.DelegationDto> }
 
-  delegations?: { [key: string]: Array<models.Delegation> }
+  delegations?: { [key: string]: Array<models.DelegationDto> }
 
-  encryptionKeys?: { [key: string]: Array<models.Delegation> }
+  encryptionKeys?: { [key: string]: Array<models.DelegationDto> }
 
   medicalLocationId?: string
 
@@ -68,7 +68,7 @@ export class CalendarItem {
 
   placeId?: string
 
-  address?: models.Address
+  address?: models.AddressDto
 
   addressText?: string
 
@@ -86,9 +86,9 @@ export class CalendarItem {
 
   agendaId?: string
 
-  meetingTags?: Array<models.CalendarItemTag>
+  meetingTags?: Array<models.CalendarItemTagDto>
 
-  flowItem?: models.FlowItem
+  flowItem?: models.FlowItemDto
 
   attachments?: { [key: string]: models.Attachment }
 
