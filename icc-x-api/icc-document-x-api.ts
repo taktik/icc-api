@@ -635,14 +635,18 @@ export class IccDocumentXApi extends iccDocumentApi {
     documentId: string,
     attachmentId: string,
     sfks: Array<{ delegatorId: string; key: CryptoKey }>,
-    sessionId?: string
+    sessionId?: string,
+    fileName?: string
   ) {
     return (
       this.host +
       `/document/${documentId}/attachment/${attachmentId}${
         sessionId ? `;jsessionid=${sessionId}` : ""
       }` +
-      (sfks && sfks.length ? "?enckeys=" + sfks.join(",") : "")
+      (sfks && sfks.length ? "?enckeys=" + sfks.join(",") : "") +
+      (fileName && fileName.length
+        ? `${sfks && sfks.length ? "&" : "?"}fileName=${encodeURIComponent(fileName)}`
+        : "")
     )
   }
 
