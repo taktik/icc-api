@@ -978,7 +978,28 @@ export class IccMessageXApi extends iccMessageApi {
                 promise = promise.then(invoices => {
                   return (newInvoicePromise
                     ? newInvoicePromise
-                        .then(niv => this.invoiceXApi.createInvoice(niv, invoicePrefix))
+                        .then(niv => {
+                          if (!invoicePrefix) {
+                            return (
+                              (niv.recipientId &&
+                                this.insuranceApi
+                                  .getInsurance(niv.recipientId)
+                                  .then(ins => this.insuranceApi.getInsurance(ins.parent))
+                                  .then(ins =>
+                                    this.invoiceXApi.createInvoice(
+                                      niv,
+                                      `invoice:${user.healthcarePartyId}:${ins.code}:`
+                                    )
+                                  )) ||
+                              this.invoiceXApi.createInvoice(
+                                niv,
+                                `invoice:${user.healthcarePartyId}:000:`
+                              )
+                            )
+                          } else {
+                            return this.invoiceXApi.createInvoice(niv, invoicePrefix)
+                          }
+                        })
                         .then(niv => invoices.push(niv))
                     : Promise.resolve(0)
                   )
