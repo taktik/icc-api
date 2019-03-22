@@ -1070,7 +1070,7 @@ export class IccMessageXApi extends iccMessageApi {
     const year = moment().year()
 
     return getFederaton(invoices, this.insuranceApi).then(fed => {
-      const prefix = `efact:${hcp.id}:${fed.code}:`
+      const prefix = `efact:${hcp.id}:${fed.code === "306" ? "300" : fed.code}:`
       return this.entityReferenceApi
         .getLatest(prefix)
         .then((er: EntityReference) => {
