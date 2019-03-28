@@ -42,14 +42,15 @@ export class iccBeresultimportApi {
     else throw Error("api-error" + e.status)
   }
 
-  canHandle(id: string): Promise<boolean | any> {
+  canHandle(id: string, enckeys?: string): Promise<boolean | any> {
     let _body = null
 
     const _url =
       this.host +
       "/be_result_import/canhandle/{id}".replace("{id}", id + "") +
       "?ts=" +
-      new Date().getTime()
+      new Date().getTime() +
+      (enckeys ? "&enckeys=" + enckeys : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -65,6 +66,7 @@ export class iccBeresultimportApi {
     protocolIds?: string,
     formIds?: string,
     planOfActionId?: string,
+    enckeys?: string,
     body?: models.ContactDto
   ): Promise<models.ContactDto | any> {
     let _body = null
@@ -80,7 +82,8 @@ export class iccBeresultimportApi {
       new Date().getTime() +
       (protocolIds ? "&protocolIds=" + protocolIds : "") +
       (formIds ? "&formIds=" + formIds : "") +
-      (planOfActionId ? "&planOfActionId=" + planOfActionId : "")
+      (planOfActionId ? "&planOfActionId=" + planOfActionId : "") +
+      (enckeys ? "&enckeys=" + enckeys : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -89,14 +92,22 @@ export class iccBeresultimportApi {
       .then(doc => new models.ContactDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  getInfos(id: string): Promise<Array<models.ResultInfoDto> | any> {
+  getInfos(
+    id: string,
+    full?: boolean,
+    language?: string,
+    enckeys?: string
+  ): Promise<Array<models.ResultInfoDto> | any> {
     let _body = null
 
     const _url =
       this.host +
       "/be_result_import/infos/{id}".replace("{id}", id + "") +
       "?ts=" +
-      new Date().getTime()
+      new Date().getTime() +
+      (full ? "&full=" + full : "") +
+      (language ? "&language=" + language : "") +
+      (enckeys ? "&enckeys=" + enckeys : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")

@@ -55,6 +55,37 @@ export class iccCodeApi {
       .then(doc => new models.CodeDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+  filterBy(
+    startKey?: string,
+    startDocumentId?: string,
+    limit?: number,
+    skip?: number,
+    sort?: string,
+    desc?: boolean,
+    body?: models.FilterChain
+  ): Promise<models.CodePaginatedList | any> {
+    let _body = null
+    _body = body
+
+    const _url =
+      this.host +
+      "/code/filter" +
+      "?ts=" +
+      new Date().getTime() +
+      (startKey ? "&startKey=" + startKey : "") +
+      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
+      (limit ? "&limit=" + limit : "") +
+      (skip ? "&skip=" + skip : "") +
+      (sort ? "&sort=" + sort : "") +
+      (desc ? "&desc=" + desc : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
+      .then(doc => new models.CodePaginatedList(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
   findCodeTypes(region?: string, type?: string): Promise<Array<string> | any> {
     let _body = null
 

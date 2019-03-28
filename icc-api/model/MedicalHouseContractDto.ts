@@ -78,10 +78,11 @@ export class MedicalHouseContractDto {
 }
 export namespace MedicalHouseContractDto {
   export enum SuspensionReasonEnum {
-    Mutation = <any>"mutation",
     NotInsured = <any>"notInsured",
-    ForcedByUser = <any>"forcedByUser",
-    ChangeMedicalHouse = <any>"changeMedicalHouse"
+    NoReasonGiven = <any>"noReasonGiven",
+    IsHospitalized = <any>"isHospitalized",
+    OutsideOfCountry = <any>"outsideOfCountry",
+    ChangeOfMutuality = <any>"changeOfMutuality"
   }
   export enum ChangeTypeEnum {
     InscriptionStart = <any>"inscriptionStart",

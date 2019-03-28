@@ -24,41 +24,43 @@
 
 import * as models from "./models"
 
-export class FormTemplateDto {
+export class AppointmentImportDto {
   constructor(json: JSON | any) {
-    Object.assign(this as FormTemplateDto, json)
+    Object.assign(this as AppointmentImportDto, json)
   }
-  id?: string
+  comments?: string
 
-  rev?: string
+  externalCustomerId?: string
 
-  deletionDate?: number
+  customerId?: string
 
-  group?: models.FormGroupDto
+  customerComments?: string
 
-  name?: string
+  title?: string
 
-  descr?: string
+  endTime?: Date
 
-  hidden?: boolean
+  startTime?: Date
 
-  specialty?: models.CodeDto
+  type?: string
 
-  guid?: string
+  customerName?: string
 
-  layout?: models.FormLayout
+  customerFirstname?: string
 
-  formInstancePreferredLocation?: string
+  customerEmail?: string
 
-  keyboardShortcut?: string
+  city?: string
 
-  shortReport?: string
+  postcode?: string
 
-  mediumReport?: string
+  street?: string
 
-  longReport?: string
+  sex?: string
 
-  disabled?: string
+  customerBirthDate?: Date
 
-  reports?: Array<string>
+  customerGsm?: string
+
+  customerFixPhone?: string
 }
