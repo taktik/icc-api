@@ -169,6 +169,18 @@ export class IccContactXApi extends iccContactApi {
     )
   }
 
+  listContactsByOpeningDate(
+    startKey: number,
+    endKey: number,
+    hcpartyid: string,
+    startDocumentId?: string,
+    limit?: number
+  ): never {
+    throw new Error(
+      "Cannot call a method that returns contacts without providing a user for de/encryption"
+    )
+  }
+
   findByHCPartyFormId(hcPartyId?: string, formId?: string): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
@@ -232,6 +244,22 @@ export class IccContactXApi extends iccContactApi {
     return super
       .filterBy(startKey, startDocumentId, limit, body)
       .then(ctcs => this.decrypt(user.healthcarePartyId!, ctcs))
+  }
+
+  listContactsByOpeningDateWithUser(
+    user: models.UserDto,
+    startKey: number,
+    endKey: number,
+    hcpartyid: string,
+    startDocumentId?: string,
+    limit?: number
+  ): Promise<models.ContactPaginatedList | any> {
+    return super
+      .listContactsByOpeningDate(startKey, endKey, hcpartyid, startDocumentId, limit)
+      .then(ctcs => {
+        ctcs.rows = this.decrypt(user.healthcarePartyId!, ctcs.rows)
+        return ctcs
+      })
   }
 
   findByHCPartyFormIdWithUser(
