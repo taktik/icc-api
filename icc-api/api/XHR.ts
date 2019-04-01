@@ -48,7 +48,7 @@ export namespace XHR {
       Object.assign(
         {
           method: method,
-          credentials: "same-origin",
+          credentials: "include",
           headers:
             (headers &&
               headers
@@ -78,8 +78,8 @@ export namespace XHR {
       return (ct.startsWith("application/octet-stream")
         ? response.arrayBuffer()
         : ct.startsWith("application/json")
-        ? response.json()
-        : response.text()
+          ? response.json()
+          : response.text()
       ).then(d => new Data(response.status, ct, d))
     })
   }
