@@ -24,19 +24,19 @@
 
 import * as models from "./models"
 
-export class FlatRateTarification {
+export class FlatRateTarificationDto {
   constructor(json: JSON | any) {
-    Object.assign(this as FlatRateTarification, json)
+    Object.assign(this as FlatRateTarificationDto, json)
   }
   code?: string
 
-  flatRateType?: FlatRateTarification.FlatRateTypeEnum
+  flatRateType?: FlatRateTarificationDto.FlatRateTypeEnum
 
   label?: { [key: string]: string }
 
-  valorisations?: Array<models.Valorisation>
+  valorisations?: Array<models.ValorisationDto>
 }
-export namespace FlatRateTarification {
+export namespace FlatRateTarificationDto {
   export enum FlatRateTypeEnum {
     Physician = <any>"physician",
     Physiotherapist = <any>"physiotherapist",

@@ -12,6 +12,7 @@ import {
   Filter,
   FilterChain,
   HealthcarePartyDto,
+  InsuranceDto,
   InvoiceDto,
   ListOfIdsDto,
   MessageDto,
@@ -672,7 +673,8 @@ export class IccMessageXApi extends iccMessageApi {
     user: UserDto,
     hcp: HealthcarePartyDto,
     efactMessage: EfactMessage,
-    invoicePrefix?: string
+    invoicePrefix?: string,
+    invoicePrefixer?: (invoice: InvoiceDto, hcpId: string) => Promise<string>
   ): Promise<{ message: MessageDto; invoices: Array<InvoiceDto> }> {
     const ref = Number(efactMessage.commonOutput!!.inputReference!!) % 10000000000
 
@@ -726,13 +728,16 @@ export class IccMessageXApi extends iccMessageApi {
 
       const errors = this.extractErrors(parsedRecords)
       const statuses =
-        (["920999", "920099"].includes(messageType) ? 1 << 17 /*STATUS_ERROR*/ : 0) |
-        (["920900", "920098"].includes(messageType) && errors.length
-          ? 1 << 16 /*STATUS_WARNING*/
+        (["920999", "920099"].includes(messageType) ? 1 << 17 /*STATUS_FULL_ERROR*/ : 0) |
+        (["920900"].includes(messageType) && errors.length
+          ? 1 << 16 /*STATUS_PARTIAL_SUCCESS*/
           : 0) |
-        (["920900"].includes(messageType) && !errors.length ? 1 << 15 /*STATUS_SUCCESS*/ : 0) |
+        (["920900"].includes(messageType) && !errors.length ? 1 << 15 /*STATUS_FULL_SUCCESS*/ : 0) |
         (["920999"].includes(messageType) ? 1 << 12 /*STATUS_REJECTED*/ : 0) |
         (["920900", "920098", "920099"].includes(messageType) ? 1 << 11 /*STATUS_ACCEPTED*/ : 0) |
+        (["920098"].includes(messageType) && errors.length
+          ? 1 << 22 /*STATUS_ERRORS_IN_PRELIMINARY_CONTROL*/
+          : 0) |
         (["931000"].includes(messageType) ? 1 << 10 /*STATUS_ACCEPTED_FOR_TREATMENT*/ : 0) |
         (["931000", "920999"].includes(messageType) ? 1 << 9 /*STATUS_RECEIVED*/ : 0)
 
@@ -978,28 +983,12 @@ export class IccMessageXApi extends iccMessageApi {
                 promise = promise.then(invoices => {
                   return (newInvoicePromise
                     ? newInvoicePromise
-                        .then(niv => {
-                          if (!invoicePrefix) {
-                            return (
-                              (niv.recipientId &&
-                                this.insuranceApi
-                                  .getInsurance(niv.recipientId)
-                                  .then(ins => this.insuranceApi.getInsurance(ins.parent))
-                                  .then(ins =>
-                                    this.invoiceXApi.createInvoice(
-                                      niv,
-                                      `invoice:${user.healthcarePartyId}:${ins.code}:`
-                                    )
-                                  )) ||
-                              this.invoiceXApi.createInvoice(
-                                niv,
-                                `invoice:${user.healthcarePartyId}:000:`
-                              )
-                            )
-                          } else {
-                            return this.invoiceXApi.createInvoice(niv, invoicePrefix)
-                          }
-                        })
+                        .then(niv =>
+                          (invoicePrefixer
+                            ? invoicePrefixer(niv, user.healthcarePartyId!)
+                            : Promise.resolve(invoicePrefix)
+                          ).then(pfx => this.invoiceXApi.createInvoice(niv, pfx))
+                        )
                         .then(niv => invoices.push(niv))
                     : Promise.resolve(0)
                   )
@@ -1060,7 +1049,8 @@ export class IccMessageXApi extends iccMessageApi {
     xFHCTokenId: string,
     xFHCPassPhrase: string,
     efactApi: fhcEfactcontrollerApi,
-    fhcServer: string | undefined = undefined
+    fhcServer: string | undefined = undefined,
+    prefixer?: (fed: InsuranceDto, hcpId: string) => Promise<string>
   ): Promise<models.MessageDto> {
     const uuid = this.crypto.randomUuid()
     const smallBase36 = uuidBase36Half(uuid)
@@ -1070,119 +1060,124 @@ export class IccMessageXApi extends iccMessageApi {
     const year = moment().year()
 
     return getFederaton(invoices, this.insuranceApi).then(fed => {
-      const prefix = `efact:${hcp.id}:${fed.code === "306" ? "300" : fed.code}:`
-      return this.entityReferenceApi
-        .getLatest(prefix)
-        .then((er: EntityReference) => {
-          let nextSeqNumber =
-            er && er.id && er.id!.startsWith(prefix)
-              ? (Number(er.id!.split(":").pop()) || 0) + 1
-              : 1
-          return this.entityReferenceApi.createEntityReference(
-            new EntityReference({
-              id: prefix + _.padStart("" + (nextSeqNumber % 1000000000), 9, "0"),
-              docId: uuid
-            })
+      return (prefixer
+        ? prefixer(fed, hcp.id!)
+        : Promise.resolve(`efact:${hcp.id}:${year}:${fed.code === "306" ? "300" : fed.code}:`)
+      ).then(prefix => {
+        return this.entityReferenceApi
+          .getLatest(prefix)
+          .then((er: EntityReference) => {
+            let nextSeqNumber =
+              er && er.id && er.id!.startsWith(prefix)
+                ? (Number(er.id!.split(":").pop()) || 0) + 1
+                : 1
+            return this.entityReferenceApi.createEntityReference(
+              new EntityReference({
+                id: prefix + _.padStart("" + (nextSeqNumber % 1000000000), 9, "0"),
+                docId: uuid
+              })
+            )
+          })
+          .then(er =>
+            toInvoiceBatch(
+              invoices,
+              hcp,
+              fullBase36,
+              er && er.id ? Number(er.id.substr(prefix.length)) % 1000 : 0,
+              smallBase36,
+              this.insuranceApi,
+              this.invoiceXApi,
+              this
+            )
           )
-        })
-        .then(er =>
-          toInvoiceBatch(
-            invoices,
-            hcp,
-            fullBase36,
-            er && er.id ? Number(er.id.substr(prefix.length)) % 1000 : 0,
-            smallBase36,
-            this.insuranceApi,
-            this.invoiceXApi,
-            this
-          )
-        )
-        .then(batch =>
-          efactApi
-            .sendBatchUsingPOST(xFHCKeystoreId, xFHCTokenId, xFHCPassPhrase, batch)
-            //.then(() => { throw "ERREUR FORCEE" })
-            .catch(err => {
-              // The FHC has crashed but the batch could be sent, so be careful !
-              const errorMessage = _.get(
-                err,
-                "message",
-                err.toString ? err.toString() : "Server error"
-              )
-              const blockingErrors = [
-                "Gateway Timeout", // based on the user feedback (including Frederic)
-                "Failed to fetch" // is due to internet connection lost (shutdown wifi just before sending batch)
-              ]
+          .then(batch =>
+            efactApi
+              .sendBatchUsingPOST(xFHCKeystoreId, xFHCTokenId, xFHCPassPhrase, batch)
+              //.then(() => { throw "ERREUR FORCEE" })
+              .catch(err => {
+                // The FHC has crashed but the batch could be sent, so be careful !
+                const errorMessage = _.get(
+                  err,
+                  "message",
+                  err.toString ? err.toString() : "Server error"
+                )
+                const blockingErrors = [
+                  "Gateway Timeout", // based on the user feedback (including Frederic)
+                  "Failed to fetch" // is due to internet connection lost (shutdown wifi just before sending batch)
+                ]
 
-              if (_.includes(blockingErrors, errorMessage.trim())) {
-                throw errorMessage
-              }
-              return { error: errorMessage }
-            })
-            .then((res: EfactSendResponseWithError) => {
-              if (res.success || res.error) {
-                let promise = Promise.resolve(true)
-                let totalAmount = 0
-                _.forEach(invoices, iv => {
-                  promise = promise.then(() => {
-                    _.forEach(iv.invoiceDto.invoicingCodes, code => {
-                      code.pending = true // STATUS_PENDING
-                      totalAmount += code.reimbursement || 0
-                    })
-                    iv.invoiceDto.sentDate = sentDate
-                    return this.invoiceXApi.modifyInvoice(iv.invoiceDto).catch(() => {
-                      errors.push(`efac-management.CANNOT_UPDATE_INVOICE.${iv.invoiceDto.id}`)
+                if (_.includes(blockingErrors, errorMessage.trim())) {
+                  throw errorMessage
+                }
+                return { error: errorMessage }
+              })
+              .then((res: EfactSendResponseWithError) => {
+                if (res.success || res.error) {
+                  let promise = Promise.resolve(true)
+                  let totalAmount = 0
+                  _.forEach(invoices, iv => {
+                    promise = promise.then(() => {
+                      _.forEach(iv.invoiceDto.invoicingCodes, code => {
+                        code.pending = true // STATUS_PENDING
+                        totalAmount += code.reimbursement || 0
+                      })
+                      iv.invoiceDto.sentDate = sentDate
+                      return this.invoiceXApi.modifyInvoice(iv.invoiceDto).catch(() => {
+                        errors.push(`efac-management.CANNOT_UPDATE_INVOICE.${iv.invoiceDto.id}`)
+                      })
                     })
                   })
-                })
-                return promise
-                  .then(() =>
-                    this.newInstance(user, {
-                      id: uuid,
-                      invoiceIds: invoices.map(i => i.invoiceDto.id),
-                      // tslint:disable-next-line:no-bitwise
-                      status: 1 << 6, // STATUS_EFACT
-                      externalRef: _.padStart("" + batch.uniqueSendNumber, 3, "0"),
-                      transportGuid: "EFACT:BATCH:" + batch.numericalRef,
-                      sent: timeEncode(new Date()),
-                      fromHealthcarePartyId: hcp.id,
-                      recipients: [fed.id],
-                      recipientsType: "org.taktik.icure.entities.Insurance"
-                    })
-                  )
-                  .then(message =>
-                    this.createMessage(
-                      Object.assign(message, {
-                        sent: sentDate,
-                        status: (message.status || 0) | (res.success ? 1 << 7 : 0) /*STATUS_SENT*/,
-                        metas: {
-                          ioFederationCode: batch.ioFederationCode,
-                          numericalRef: batch.numericalRef,
-                          invoiceMonth: _.padStart("" + batch.invoicingMonth, 2, "0"),
-                          invoiceYear: _.padStart("" + batch.invoicingYear, 4, "0"),
-                          totalAmount: totalAmount,
-                          fhc_server: fhcServer,
-                          errors: res.error
-                        }
+                  return promise
+                    .then(() =>
+                      this.newInstance(user, {
+                        id: uuid,
+                        invoiceIds: invoices.map(i => i.invoiceDto.id),
+                        // tslint:disable-next-line:no-bitwise
+                        status: 1 << 6, // STATUS_EFACT
+                        externalRef: _.padStart("" + batch.uniqueSendNumber, 3, "0"),
+                        transportGuid: "EFACT:BATCH:" + batch.numericalRef,
+                        sent: timeEncode(new Date()),
+                        fromHealthcarePartyId: hcp.id,
+                        recipients: [fed.id],
+                        recipientsType: "org.taktik.icure.entities.Insurance"
                       })
                     )
-                  )
-                  .then((msg: MessageDto) => {
-                    if (res.success) {
-                      // Continue even if error ...
-                      this.saveMessageAttachment(user, msg, res)
-                    }
-                    return msg
-                  })
-              } else {
-                throw "Cannot send batch"
-              }
-            })
-        )
-        .catch(err => {
-          console.log(err)
-          errors.push(err)
-          throw new Error(errors.join(","))
-        })
+                    .then(message =>
+                      this.createMessage(
+                        Object.assign(message, {
+                          sent: sentDate,
+                          status:
+                            (message.status || 0) | (res.success ? 1 << 7 : 0) /*STATUS_SENT*/,
+                          metas: {
+                            ioFederationCode: batch.ioFederationCode,
+                            numericalRef: batch.numericalRef,
+                            invoiceMonth: _.padStart("" + batch.invoicingMonth, 2, "0"),
+                            invoiceYear: _.padStart("" + batch.invoicingYear, 4, "0"),
+                            totalAmount: totalAmount,
+                            fhc_server: fhcServer,
+                            errors: res.error
+                          }
+                        })
+                      )
+                    )
+                    .then((msg: MessageDto) => {
+                      if (res.success) {
+                        // Continue even if error ...
+                        this.saveMessageAttachment(user, msg, res)
+                      }
+                      return msg
+                    })
+                } else {
+                  throw "Cannot send batch"
+                }
+              })
+          )
+          .catch(err => {
+            console.log(err)
+            errors.push(err)
+            throw new Error(errors.join(","))
+          })
+      })
     })
   }
 
