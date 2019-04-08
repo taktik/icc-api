@@ -58,5 +58,7 @@ export class FormTemplateDto {
 
   longReport?: string
 
+  disabled?: string
+
   reports?: Array<string>
 }

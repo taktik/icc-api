@@ -24,30 +24,43 @@
 
 import * as models from "./models"
 
-export class TypedValueDto {
+export class AppointmentImportDto {
   constructor(json: JSON | any) {
-    Object.assign(this as TypedValueDto, json)
+    Object.assign(this as AppointmentImportDto, json)
   }
-  type?: TypedValueDto.TypeEnum
+  comments?: string
 
-  booleanValue?: boolean
+  externalCustomerId?: string
 
-  integerValue?: number
+  customerId?: string
 
-  doubleValue?: number
+  customerComments?: string
 
-  stringValue?: string
+  title?: string
 
-  dateValue?: Date
-}
-export namespace TypedValueDto {
-  export enum TypeEnum {
-    BOOLEAN = <any>"BOOLEAN",
-    INTEGER = <any>"INTEGER",
-    DOUBLE = <any>"DOUBLE",
-    STRING = <any>"STRING",
-    DATE = <any>"DATE",
-    CLOB = <any>"CLOB",
-    JSON = <any>"JSON"
-  }
+  endTime?: Date
+
+  startTime?: Date
+
+  type?: string
+
+  customerName?: string
+
+  customerFirstname?: string
+
+  customerEmail?: string
+
+  city?: string
+
+  postcode?: string
+
+  street?: string
+
+  sex?: string
+
+  customerBirthDate?: Date
+
+  customerGsm?: string
+
+  customerFixPhone?: string
 }

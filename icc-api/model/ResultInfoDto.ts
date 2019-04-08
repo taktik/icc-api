@@ -51,4 +51,6 @@ export class ResultInfoDto {
   engine?: string
 
   codes?: Array<models.CodeDto>
+
+  services?: Array<models.ServiceDto>
 }

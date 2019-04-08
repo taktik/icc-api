@@ -88,6 +88,8 @@ export class CalendarItemDto {
 
   agendaId?: string
 
+  wasMigrated?: boolean
+
   meetingTags?: Array<models.CalendarItemTagDto>
 
   flowItem?: models.FlowItemDto
