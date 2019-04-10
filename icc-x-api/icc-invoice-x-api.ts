@@ -170,10 +170,7 @@ export class IccInvoiceXApi extends iccInvoiceApi {
       )
       .catch(err => {
         console.log(err)
-        nextReference = nextReference + 1
-        this.createInvoiceReference(nextReference, docId, prefix, entityrefApi).catch(err =>
-          console.log(err)
-        )
+        return this.createInvoiceReference(nextReference + 1, docId, prefix, entityrefApi)
       })
   }
 
