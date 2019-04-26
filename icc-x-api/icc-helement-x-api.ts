@@ -103,11 +103,16 @@ export class IccHelementXApi extends iccHelementApi {
   findBy(hcpartyId: string, patient: models.PatientDto, keepObsoleteVersions: boolean = false) {
     return this.crypto
       .extractDelegationsSFKs(patient, hcpartyId)
-      .then(secretForeignKeys =>
-        this.findByHCPartyPatientSecretFKeys(
-          secretForeignKeys.hcpartyId,
-          secretForeignKeys.extractedKeys.join(",")
-        )
+      .then(
+        secretForeignKeys =>
+          secretForeignKeys &&
+          secretForeignKeys.extractedKeys &&
+          secretForeignKeys.extractedKeys.length > 0
+            ? this.findByHCPartyPatientSecretFKeys(
+                secretForeignKeys.hcpartyId,
+                secretForeignKeys.extractedKeys.join(",")
+              )
+            : Promise.resolve([])
       )
       .then((decryptedHelements: Array<models.HealthElementDto>) => {
         const byIds: { [key: string]: models.HealthElementDto } = {}
