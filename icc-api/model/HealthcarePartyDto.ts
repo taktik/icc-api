@@ -99,6 +99,8 @@ export class HealthcarePartyDto {
   type?: string
 
   contactPerson?: string
+
+  contactPersonHcpId?: string
 }
 export namespace HealthcarePartyDto {
   export enum GenderEnum {
