@@ -210,7 +210,8 @@ export function toInvoiceBatch(
                 }
 
                 return toInvoice(
-                  hcp.nihii!!,
+                  // hcp.nihii!!, FIXME is the old version (good)
+                  invoice.supervisorNihii!!, // FIXME BAD
                   invoice,
                   invWithPat.patientDto,
                   insurance,
