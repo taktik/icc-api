@@ -1033,7 +1033,8 @@ export class IccMessageXApi extends iccMessageApi {
     xFHCTokenId: string,
     xFHCPassPhrase: string,
     efactApi: fhcEfactcontrollerApi,
-    fhcServer: string | undefined = undefined
+    fhcServer: string | undefined = undefined,
+    isConnectedAsPmg: boolean = false
   ): Promise<models.MessageDto> {
     const uuid = this.crypto.randomUuid()
     const smallBase36 = uuidBase36Half(uuid)
@@ -1073,7 +1074,13 @@ export class IccMessageXApi extends iccMessageApi {
         )
         .then(batch =>
           efactApi
-            .sendBatchUsingPOST(xFHCKeystoreId, xFHCTokenId, xFHCPassPhrase, batch)
+            .sendBatchUsingPOST(
+              xFHCKeystoreId,
+              xFHCTokenId,
+              xFHCPassPhrase,
+              batch,
+              isConnectedAsPmg
+            )
             //.then(() => { throw "ERREUR FORCEE" })
             .catch(err => {
               // The FHC has crashed but the batch could be sent, so be careful !
