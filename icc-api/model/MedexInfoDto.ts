@@ -24,32 +24,33 @@
 
 import * as models from "./models"
 
-export class UserStubDto {
+export class MedexInfoDto {
   constructor(json: JSON | any) {
-    Object.assign(this as UserStubDto, json)
+    Object.assign(this as MedexInfoDto, json)
   }
-  id?: string
+  author?: models.HealthcarePartyDto
 
-  rev?: string
+  patient?: models.PatientDto
 
-  deletionDate?: number
+  patientLanguage?: string
 
-  name?: string
+  incapacityType?: string
 
-  healthcarePartyId?: string
+  incapacityReason?: string
 
-  email?: string
+  outOfHomeAllowed?: boolean
 
-  autoDelegations?: { [key: string]: Array<string> }
+  certificateDate?: number
 
-  virtualHostDependency?: UserStubDto.VirtualHostDependencyEnum
+  contentDate?: number
 
-  virtualHosts?: Array<string>
-}
-export namespace UserStubDto {
-  export enum VirtualHostDependencyEnum {
-    NONE = <any>"NONE",
-    DIRECT = <any>"DIRECT",
-    FULL = <any>"FULL"
-  }
+  beginDate?: number
+
+  endDate?: number
+
+  diagnosisICPC?: string
+
+  diagnosisICD?: string
+
+  diagnosisDescr?: string
 }
