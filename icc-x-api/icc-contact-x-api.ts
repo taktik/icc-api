@@ -148,14 +148,16 @@ export class IccContactXApi extends iccContactApi {
    * @param patient (Promise)
    */
   findBy(hcpartyId: string, patient: models.PatientDto) {
-    return this.crypto
-      .extractDelegationsSFKs(patient, hcpartyId)
-      .then(secretForeignKeys =>
-        this.findByHCPartyPatientSecretFKeys(
-          secretForeignKeys.hcpartyId,
-          secretForeignKeys.extractedKeys.join(",")
-        )
-      )
+    return this.crypto.extractDelegationsSFKs(patient, hcpartyId).then(secretForeignKeys => {
+      return secretForeignKeys &&
+        secretForeignKeys.extractedKeys &&
+        secretForeignKeys.extractedKeys.length > 0
+        ? this.findByHCPartyPatientSecretFKeys(
+            secretForeignKeys.hcpartyId,
+            secretForeignKeys.extractedKeys.join(",")
+          )
+        : Promise.resolve([])
+    })
   }
 
   filterBy(
