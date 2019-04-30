@@ -100,6 +100,8 @@ export class InvoicingCodeDto {
 
   archived?: boolean
 
+  lost?: boolean
+
   insuranceJustification?: number
 
   cancelPatientInterventionReason?: number
