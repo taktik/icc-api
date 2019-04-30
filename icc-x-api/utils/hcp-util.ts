@@ -83,6 +83,26 @@ export const SPECIALITIES_KEYS: { [spec: string]: string } = _.fromPairs(
   SPECIALITIES.map(spec => [spec, "hcp-form.SPECIALITIES." + spec])
 )
 
+export function isDoctor(nihii: string): boolean {
+  return (
+    !!nihii &&
+    nihii.length === 11 &&
+    nihii.startsWith("1") &&
+    !nihii.endsWith("005") &&
+    !nihii.endsWith("006")
+  )
+}
+
+export function isDoctorAssistant(nihii: string): boolean {
+  return (
+    !!nihii &&
+    nihii.length === 11 &&
+    nihii.startsWith("1") &&
+    nihii.endsWith("005") &&
+    nihii.endsWith("006")
+  )
+}
+
 export function getPhoneNumber(
   hcp: HealthcarePartyDto,
   maxLength: number | undefined

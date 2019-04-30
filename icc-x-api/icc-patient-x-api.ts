@@ -12,6 +12,8 @@ import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
 import { DocumentDto, ListOfIdsDto } from "../icc-api/model/models"
 import { retry } from "./utils/net-utils"
+import { AES } from "./crypto/AES"
+import { utils } from "./crypto/utils"
 
 // noinspection JSUnusedGlobalSymbols
 export class IccPatientXApi extends iccPatientApi {
@@ -479,11 +481,39 @@ export class IccPatientXApi extends iccPatientApi {
       .then(pats => pats[0])
   }
 
-  encrypt(user: models.UserDto, pats: Array<models.PatientDto>) {
-    return Promise.resolve(pats)
+  encrypt(user: models.UserDto, pats: Array<models.PatientDto>): Promise<Array<models.PatientDto>> {
+    return Promise.all(
+      pats.map(p =>
+        (p.encryptionKeys && Object.keys(p.encryptionKeys).length
+          ? Promise.resolve(p)
+          : this.initEncryptionKeys(user, p)
+        )
+          .then(p =>
+            this.crypto.extractKeysFromDelegationsForHcpHierarchy(
+              user.healthcarePartyId!,
+              p.id!,
+              p.encryptionKeys!
+            )
+          )
+          .then((sfks: { extractedKeys: Array<string>; hcpartyId: string }) =>
+            AES.importKey("raw", utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
+          )
+          .then((key: CryptoKey) =>
+            AES.encrypt(key, utils.utf82ua(JSON.stringify({ note: p.note }))).then(es => {
+              p.encryptedSelf = btoa(utils.ua2text(es))
+              delete p.note
+              return p
+            })
+          )
+      )
+    )
   }
 
-  decrypt(user: models.UserDto, pats: Array<models.PatientDto>, fillDelegations: boolean = true) {
+  decrypt(
+    user: models.UserDto,
+    pats: Array<models.PatientDto>,
+    fillDelegations: boolean = true
+  ): Promise<Array<models.PatientDto>> {
     //First check that we have no dangling delegation
     const patsWithMissingDelegations = pats.filter(
       p =>
@@ -506,12 +536,90 @@ export class IccPatientXApi extends iccPatientApi {
         )
       })
 
-    return prom.then((acc: { [key: string]: models.PatientDto }) =>
-      pats.map(p => {
-        const fixedPatient = acc[p.id!]
-        return fixedPatient || p
+    return prom
+      .then((acc: { [key: string]: models.PatientDto }) =>
+        pats.map(p => {
+          const fixedPatient = acc[p.id!]
+          return fixedPatient || p
+        })
+      )
+      .then(pats => {
+        return Promise.all(
+          pats.map(p => {
+            return p.encryptedSelf
+              ? this.crypto
+                  .extractKeysFromDelegationsForHcpHierarchy(
+                    user.healthcarePartyId!,
+                    p.id!,
+                    _.size(p.encryptionKeys) ? p.encryptionKeys! : p.delegations!
+                  )
+                  .then(({ extractedKeys: sfks }) => {
+                    if (!sfks || !sfks.length) {
+                      //console.log("Cannot decrypt contact", ctc.id)
+                      return Promise.resolve(p)
+                    }
+                    return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(
+                      key =>
+                        new Promise<models.PatientDto>(
+                          (resolve: (value: models.PatientDto) => any) => {
+                            AES.decrypt(key, utils.text2ua(atob(p.encryptedSelf!))).then(
+                              dec => {
+                                let jsonContent
+                                try {
+                                  jsonContent = dec && utils.ua2utf8(dec)
+                                  jsonContent && _.assign(p, JSON.parse(jsonContent))
+                                } catch (e) {
+                                  console.log(
+                                    "Cannot parse ctc",
+                                    p.id,
+                                    jsonContent || "<- Invalid encoding"
+                                  )
+                                }
+                                resolve(p)
+                              },
+                              () => {
+                                console.log("Cannot decrypt contact", p.id)
+                                resolve(p)
+                              }
+                            )
+                          }
+                        )
+                    )
+                  })
+              : Promise.resolve(p)
+          })
+        )
       })
-    )
+  }
+
+  initEncryptionKeys(user: models.UserDto, pat: models.PatientDto) {
+    return this.crypto.initEncryptionKeys(pat, user.healthcarePartyId!).then(eks => {
+      let promise = Promise.resolve(
+        _.extend(pat, {
+          encryptionKeys: eks.encryptionKeys
+        })
+      )
+      ;(user.autoDelegations
+        ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
+        : []
+      ).forEach(
+        delegateId =>
+          (promise = promise.then(contact =>
+            this.crypto
+              .appendEncryptionKeys(contact, user.healthcarePartyId!, delegateId, eks.secretId)
+              .then(extraEks => {
+                return _.extend(contact, {
+                  encryptionKeys: extraEks.encryptionKeys
+                })
+              })
+              .catch(e => {
+                console.log(e.message)
+                return contact
+              })
+          ))
+      )
+      return promise
+    })
   }
 
   share(

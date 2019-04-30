@@ -103,11 +103,16 @@ export class IccHelementXApi extends iccHelementApi {
   findBy(hcpartyId: string, patient: models.PatientDto, keepObsoleteVersions: boolean = false) {
     return this.crypto
       .extractDelegationsSFKs(patient, hcpartyId)
-      .then(secretForeignKeys =>
-        this.findByHCPartyPatientSecretFKeys(
-          secretForeignKeys.hcpartyId,
-          secretForeignKeys.extractedKeys.join(",")
-        )
+      .then(
+        secretForeignKeys =>
+          secretForeignKeys &&
+          secretForeignKeys.extractedKeys &&
+          secretForeignKeys.extractedKeys.length > 0
+            ? this.findByHCPartyPatientSecretFKeys(
+                secretForeignKeys.hcpartyId,
+                secretForeignKeys.extractedKeys.join(",")
+              )
+            : Promise.resolve([])
       )
       .then((decryptedHelements: Array<models.HealthElementDto>) => {
         const byIds: { [key: string]: models.HealthElementDto } = {}
@@ -144,57 +149,46 @@ export class IccHelementXApi extends iccHelementApi {
     return Promise.all(
       hes.map(he =>
         this.crypto
-          .decryptAndImportAesHcPartyKeysInDelegations(hcpartyId, he.delegations!)
-          .then(
-            (
-              decryptedAndImportedAesHcPartyKeys: Array<{
-                delegatorId: string
-                key: CryptoKey
-              }>
-            ) => {
-              var collatedAesKeys: { [key: string]: CryptoKey } = {}
-              decryptedAndImportedAesHcPartyKeys.forEach(
-                k => (collatedAesKeys[k.delegatorId] = k.key)
-              )
-              return this.crypto
-                .decryptKeyInDelegationLikes(he.delegations![hcpartyId], collatedAesKeys, he.id!)
-                .then((sfks: Array<string>) => {
-                  if (!sfks || !sfks.length) {
-                    console.log("Cannot decrypt helement", he.id)
-                    return Promise.resolve(he)
-                  }
-                  if (he.encryptedSelf) {
-                    return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(
-                      key =>
-                        new Promise((resolve: (value: any) => any) =>
-                          AES.decrypt(key, utils.text2ua(atob(he.encryptedSelf!))).then(
-                            dec => {
-                              let jsonContent
-                              try {
-                                jsonContent = dec && utils.ua2utf8(dec)
-                                jsonContent && _.assign(he, JSON.parse(jsonContent))
-                              } catch (e) {
-                                console.log(
-                                  "Cannot parse he",
-                                  he.id,
-                                  jsonContent || "<- Invalid encoding"
-                                )
-                              }
-                              resolve(he)
-                            },
-                            () => {
-                              console.log("Cannot decrypt helement", he.id)
-                              resolve(he)
-                            }
-                          )
-                        )
-                    )
-                  } else {
-                    return Promise.resolve(he)
-                  }
-                })
-            }
+          .extractKeysFromDelegationsForHcpHierarchy(
+            hcpartyId,
+            he.id!,
+            _.size(he.encryptionKeys) ? he.encryptionKeys! : he.delegations!
           )
+          .then(({ extractedKeys: sfks }) => {
+            if (!sfks || !sfks.length) {
+              console.log("Cannot decrypt helement", he.id)
+              return Promise.resolve(he)
+            }
+            if (he.encryptedSelf) {
+              return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(
+                key =>
+                  new Promise((resolve: (value: any) => any) =>
+                    AES.decrypt(key, utils.text2ua(atob(he.encryptedSelf!))).then(
+                      dec => {
+                        let jsonContent
+                        try {
+                          jsonContent = dec && utils.ua2utf8(dec)
+                          jsonContent && _.assign(he, JSON.parse(jsonContent))
+                        } catch (e) {
+                          console.log(
+                            "Cannot parse he",
+                            he.id,
+                            jsonContent || "<- Invalid encoding"
+                          )
+                        }
+                        resolve(he)
+                      },
+                      () => {
+                        console.log("Cannot decrypt contact", he.id)
+                        resolve(he)
+                      }
+                    )
+                  )
+              )
+            } else {
+              return Promise.resolve(he)
+            }
+          })
       )
     )
   }

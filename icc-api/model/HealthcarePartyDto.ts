@@ -101,6 +101,8 @@ export class HealthcarePartyDto {
   contactPerson?: string
 
   contactPersonHcpId?: string
+
+  flatRateTarifications?: Array<models.FlatRateTarificationDto>
 }
 export namespace HealthcarePartyDto {
   export enum GenderEnum {
