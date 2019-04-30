@@ -30,7 +30,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "prepare": "rimraf dist && npm run build",
-    "precommit": "pretty-quick --staged"
+    "precommit": "pretty-quick --staged",
+    "pretty-quick": "pretty-quick"
   },
   "repository": {
     "type": "git",
