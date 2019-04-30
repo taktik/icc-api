@@ -38,7 +38,8 @@ export namespace XHR {
     method: string,
     url: string,
     headers: Array<Header> | null,
-    data: string | any = ""
+    data: any = "",
+    contentTypeOverride?: "application/json" | "text/plain" | "application/octet-stream"
   ): Promise<Data> {
     const contentType =
       headers &&
@@ -74,7 +75,7 @@ export namespace XHR {
       if (response.status >= 400) {
         throw new XHRError(response.statusText, response.status, response.status, response.headers)
       }
-      const ct = response.headers.get("content-type") || "text/plain"
+      const ct = contentTypeOverride || response.headers.get("content-type") || "text/plain"
       return (ct.startsWith("application/octet-stream")
         ? response.arrayBuffer()
         : ct.startsWith("application/json")
