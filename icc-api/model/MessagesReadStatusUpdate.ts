@@ -24,11 +24,15 @@
 
 import * as models from "./models"
 
-export class MessageReadStatus {
+export class MessagesReadStatusUpdate {
   constructor(json: JSON | any) {
-    Object.assign(this as MessageReadStatus, json)
+    Object.assign(this as MessagesReadStatusUpdate, json)
   }
+  ids?: Array<string>
+
   time?: number
 
-  read?: boolean
+  status?: boolean
+
+  userId?: string
 }
