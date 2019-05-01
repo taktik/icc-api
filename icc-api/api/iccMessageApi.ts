@@ -143,6 +143,7 @@ export class iccMessageApi {
       .catch(err => this.handleError(err))
   }
   findMessagesByFromAddress(
+    hcpId?: string,
     fromAddress?: string,
     startKey?: string,
     startDocumentId?: string,
@@ -155,6 +156,7 @@ export class iccMessageApi {
       "/message/byFromAddress" +
       "?ts=" +
       new Date().getTime() +
+      (hcpId ? "&hcpId=" + hcpId : "") +
       (fromAddress ? "&fromAddress=" + fromAddress : "") +
       (startKey ? "&startKey=" + startKey : "") +
       (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
@@ -195,6 +197,7 @@ export class iccMessageApi {
       .catch(err => this.handleError(err))
   }
   findMessagesByTransportGuid(
+    hcpId?: string,
     transportGuid?: string,
     received?: boolean,
     startKey?: string,
@@ -208,6 +211,7 @@ export class iccMessageApi {
       "/message/byTransportGuid" +
       "?ts=" +
       new Date().getTime() +
+      (hcpId ? "&hcpId=" + hcpId : "") +
       (transportGuid ? "&transportGuid=" + transportGuid : "") +
       (received ? "&received=" + received : "") +
       (startKey ? "&startKey=" + startKey : "") +
