@@ -143,11 +143,11 @@ export class iccMessageApi {
       .catch(err => this.handleError(err))
   }
   findMessagesByFromAddress(
-    hcpId?: string,
     fromAddress?: string,
     startKey?: string,
     startDocumentId?: string,
-    limit?: number
+    limit?: number,
+    hcpId?: string
   ): Promise<models.MessagePaginatedList | any> {
     let _body = null
 
@@ -156,11 +156,11 @@ export class iccMessageApi {
       "/message/byFromAddress" +
       "?ts=" +
       new Date().getTime() +
-      (hcpId ? "&hcpId=" + hcpId : "") +
       (fromAddress ? "&fromAddress=" + fromAddress : "") +
       (startKey ? "&startKey=" + startKey : "") +
       (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (limit ? "&limit=" + limit : "") +
+      (hcpId ? "&hcpId=" + hcpId : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -197,12 +197,12 @@ export class iccMessageApi {
       .catch(err => this.handleError(err))
   }
   findMessagesByTransportGuid(
-    hcpId?: string,
     transportGuid?: string,
     received?: boolean,
     startKey?: string,
     startDocumentId?: string,
-    limit?: number
+    limit?: number,
+    hcpId?: string
   ): Promise<models.MessagePaginatedList | any> {
     let _body = null
 
@@ -211,12 +211,12 @@ export class iccMessageApi {
       "/message/byTransportGuid" +
       "?ts=" +
       new Date().getTime() +
-      (hcpId ? "&hcpId=" + hcpId : "") +
       (transportGuid ? "&transportGuid=" + transportGuid : "") +
       (received ? "&received=" + received : "") +
       (startKey ? "&startKey=" + startKey : "") +
       (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (limit ? "&limit=" + limit : "") +
+      (hcpId ? "&hcpId=" + hcpId : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
