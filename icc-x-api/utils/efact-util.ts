@@ -164,7 +164,8 @@ export function toInvoiceBatch(
   fileRef: string,
   insuranceApi: iccInsuranceApi,
   invoiceXApi: IccInvoiceXApi,
-  messageXApi: IccMessageXApi
+  messageXApi: IccMessageXApi,
+  hcpNihiiByIds?: { [key: string]: string }
 ): Promise<InvoicesBatch> {
   return insuranceApi
     .getInsurances(
@@ -210,12 +211,12 @@ export function toInvoiceBatch(
                 }
 
                 return toInvoice(
-                  // hcp.nihii!!, FIXME is the old version (good)
-                  invoice.supervisorNihii!!, // FIXME BAD
+                  hcp.nihii!!,
                   invoice,
                   invWithPat.patientDto,
                   insurance,
-                  relatedInvoiceInfo
+                  relatedInvoiceInfo,
+                  hcpNihiiByIds
                 )
               }
             )
@@ -253,7 +254,8 @@ function toInvoice(
   invoiceDto: InvoiceDto,
   patientDto: PatientDto,
   insurance: InsuranceDto,
-  relatedInvoiceInfo: RelatedInvoiceInfo | undefined
+  relatedInvoiceInfo: RelatedInvoiceInfo | undefined,
+  hcpNihiiByIds?: { [key: string]: string }
 ): Invoice {
   const invoice = new Invoice({})
   const invoiceYear = moment(invoiceDto.created)
@@ -267,7 +269,12 @@ function toInvoice(
   invoice.invoiceRef = uuidBase36(invoiceDto.id!!)
   invoice.ioCode = insurance.code!!.substr(0, 3)
   invoice.items = _.map(invoiceDto.invoicingCodes, (invoicingCodeDto: InvoicingCodeDto) => {
-    return toInvoiceItem(nihiiHealthcareProvider, patientDto, invoiceDto, invoicingCodeDto)
+    return toInvoiceItem(
+      (hcpNihiiByIds || {})[invoiceDto.responsible!!] || nihiiHealthcareProvider,
+      patientDto,
+      invoiceDto,
+      invoicingCodeDto
+    )
   })
   invoice.patient = toPatient(patientDto)
   invoice.ignorePrescriptionDate = !!invoiceDto.longDelayJustification
