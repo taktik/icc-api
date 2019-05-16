@@ -146,7 +146,8 @@ export class iccMessageApi {
     fromAddress?: string,
     startKey?: string,
     startDocumentId?: string,
-    limit?: number
+    limit?: number,
+    hcpId?: string
   ): Promise<models.MessagePaginatedList | any> {
     let _body = null
 
@@ -158,7 +159,8 @@ export class iccMessageApi {
       (fromAddress ? "&fromAddress=" + fromAddress : "") +
       (startKey ? "&startKey=" + startKey : "") +
       (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (limit ? "&limit=" + limit : "") +
+      (hcpId ? "&hcpId=" + hcpId : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -172,7 +174,8 @@ export class iccMessageApi {
     startKey?: string,
     startDocumentId?: string,
     limit?: number,
-    reverse?: boolean
+    reverse?: boolean,
+    hcpId?: string
   ): Promise<models.MessagePaginatedList | any> {
     let _body = null
 
@@ -185,7 +188,8 @@ export class iccMessageApi {
       (startKey ? "&startKey=" + startKey : "") +
       (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
       (limit ? "&limit=" + limit : "") +
-      (reverse ? "&reverse=" + reverse : "")
+      (reverse ? "&reverse=" + reverse : "") +
+      (hcpId ? "&hcpId=" + hcpId : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -199,7 +203,8 @@ export class iccMessageApi {
     received?: boolean,
     startKey?: string,
     startDocumentId?: string,
-    limit?: number
+    limit?: number,
+    hcpId?: string
   ): Promise<models.MessagePaginatedList | any> {
     let _body = null
 
@@ -212,7 +217,8 @@ export class iccMessageApi {
       (received ? "&received=" + received : "") +
       (startKey ? "&startKey=" + startKey : "") +
       (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (limit ? "&limit=" + limit : "") +
+      (hcpId ? "&hcpId=" + hcpId : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
