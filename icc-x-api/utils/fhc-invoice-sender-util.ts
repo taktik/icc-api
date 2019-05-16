@@ -1,5 +1,5 @@
 import { HealthcarePartyDto } from "../../icc-api/model/models"
-import { InvoiceSender } from "fhc-api/dist/model/models"
+import { InvoiceSender } from "fhc-api"
 import { getPhoneNumber } from "./hcp-util"
 
 export function toInvoiceSender(hcp: HealthcarePartyDto) {
