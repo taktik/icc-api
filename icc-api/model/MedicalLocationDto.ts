@@ -40,7 +40,19 @@ export class MedicalLocationDto {
 
   address?: models.AddressDto
 
+  cbe?: string
+
+  bic?: string
+
+  bankAccount?: string
+
+  nihii?: string
+
+  ssin?: string
+
   responsible?: string
 
   agendaIds?: Array<string>
+
+  guardPost?: boolean
 }

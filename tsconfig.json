@@ -14,7 +14,10 @@
     "outDir": "./dist",
     "strict": true,
     "baseUrl": "./",
-    "types": ["base64-js", "lodash"]
+    "types": ["base64-js", "lodash"],
+    "paths": {
+      "fhc-api": ["./node_modules/@antoinepairet/fhc-api"]
+    }
   },
   "include": ["index.ts", "icc-api/*", "icc-x-api/*", "icc-api/**/*", "icc-x-api/**/*"]
 }

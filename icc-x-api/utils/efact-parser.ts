@@ -1,6 +1,6 @@
-import { EfactMessage } from "fhc-api/dist/model/EfactMessage"
-import { ErrorDetail } from "fhc-api/dist/model/ErrorDetail"
-import { Record } from "fhc-api/dist/model/Record"
+import { EfactMessage } from "fhc-api"
+import { ErrorDetail } from "fhc-api"
+import { Record } from "fhc-api"
 
 export interface Zone200Data extends ETData {
   isTest: boolean

@@ -31,10 +31,9 @@ import {
   uuidBase36Half
 } from "./utils/efact-util"
 import { timeEncode } from "./utils/formatting-util"
-import { fhcEfactcontrollerApi } from "fhc-api"
-import { EfactSendResponse } from "fhc-api/dist/model/EfactSendResponse"
+import { fhcEfactcontrollerApi, EfactSendResponse } from "fhc-api"
 import { utils } from "./crypto/utils"
-import { EfactMessage } from "fhc-api/dist/model/EfactMessage"
+import { EfactMessage } from "fhc-api"
 import {
   EfactMessage920098Reader,
   EfactMessage920099Reader,
@@ -48,15 +47,15 @@ import {
   ET92Data,
   File920900Data
 } from "./utils/efact-parser"
-import { ErrorDetail } from "fhc-api/dist/model/ErrorDetail"
+import { ErrorDetail } from "fhc-api"
 import { IccReceiptXApi } from "./icc-receipt-x-api"
-import { DmgsList } from "fhc-api/dist/model/DmgsList"
-import { DmgClosure } from "fhc-api/dist/model/DmgClosure"
-import { DmgExtension } from "fhc-api/dist/model/DmgExtension"
+import { DmgsList } from "fhc-api"
+import { DmgClosure } from "fhc-api"
+import { DmgExtension } from "fhc-api"
 import { IccPatientXApi } from "./icc-patient-x-api"
-import { HcpartyType } from "fhc-api/dist/model/HcpartyType"
-import { IDHCPARTY } from "fhc-api/dist/model/IDHCPARTY"
-import { GenAsyncResponse } from "fhc-api/dist/model/GenAsyncResponse"
+import { HcpartyType } from "fhc-api"
+import { IDHCPARTY } from "fhc-api"
+import { GenAsyncResponse } from "fhc-api"
 
 interface StructError {
   itemId: string | null
@@ -1050,7 +1049,9 @@ export class IccMessageXApi extends iccMessageApi {
     xFHCPassPhrase: string,
     efactApi: fhcEfactcontrollerApi,
     fhcServer: string | undefined = undefined,
-    prefixer?: (fed: InsuranceDto, hcpId: string) => Promise<string>
+    prefixer?: (fed: InsuranceDto, hcpId: string) => Promise<string>,
+    isConnectedAsPmg: boolean = false,
+    hcpNihiiByIds?: { [key: string]: string }
   ): Promise<models.MessageDto> {
     const uuid = this.crypto.randomUuid()
     const smallBase36 = uuidBase36Half(uuid)
@@ -1087,12 +1088,19 @@ export class IccMessageXApi extends iccMessageApi {
               smallBase36,
               this.insuranceApi,
               this.invoiceXApi,
-              this
+              this,
+              hcpNihiiByIds
             )
           )
           .then(batch =>
             efactApi
-              .sendBatchUsingPOST(xFHCKeystoreId, xFHCTokenId, xFHCPassPhrase, batch)
+              .sendBatchUsingPOST(
+                xFHCKeystoreId,
+                xFHCTokenId,
+                xFHCPassPhrase,
+                batch,
+                isConnectedAsPmg
+              )
               //.then(() => { throw "ERREUR FORCEE" })
               .catch(err => {
                 // The FHC has crashed but the batch could be sent, so be careful !

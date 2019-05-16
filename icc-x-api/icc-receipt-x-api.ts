@@ -13,7 +13,7 @@ import {
   DmgRegistration,
   InsurabilityInfoDto,
   TarificationConsultationResult
-} from "fhc-api/dist/model/models"
+} from "fhc-api"
 
 export class IccReceiptXApi extends iccReceiptApi {
   crypto: IccCryptoXApi
