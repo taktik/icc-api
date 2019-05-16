@@ -78,6 +78,8 @@ export class MessageDto {
 
   metas?: { [key: string]: string }
 
+  readStatus?: { [key: string]: models.MessageReadStatus }
+
   transportGuid?: string
 
   remark?: string

@@ -347,6 +347,21 @@ export class iccMessageApi {
       .then(doc => new models.MessageDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+  setMessagesReadStatus(
+    body?: models.MessagesReadStatusUpdate
+  ): Promise<Array<models.MessageDto> | any> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + "/message/readstatus" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.MessageDto(it)))
+      .catch(err => this.handleError(err))
+  }
   setMessagesStatusBits(
     status: number,
     body?: models.ListOfIdsDto
