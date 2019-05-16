@@ -24,32 +24,9 @@
 
 import * as models from "./models"
 
-export class UserStubDto {
+export class MapOfIdsDto {
   constructor(json: JSON | any) {
-    Object.assign(this as UserStubDto, json)
+    Object.assign(this as MapOfIdsDto, json)
   }
-  id?: string
-
-  rev?: string
-
-  deletionDate?: number
-
-  name?: string
-
-  healthcarePartyId?: string
-
-  email?: string
-
-  autoDelegations?: { [key: string]: Array<string> }
-
-  virtualHosts?: Array<string>
-
-  virtualHostDependency?: UserStubDto.VirtualHostDependencyEnum
-}
-export namespace UserStubDto {
-  export enum VirtualHostDependencyEnum {
-    NONE = <any>"NONE",
-    DIRECT = <any>"DIRECT",
-    FULL = <any>"FULL"
-  }
+  mapOfIds?: { [key: string]: Array<string> }
 }

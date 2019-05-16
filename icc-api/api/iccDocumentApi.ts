@@ -151,7 +151,8 @@ export class iccDocumentApi {
   getAttachment(
     documentId: string,
     attachmentId: string,
-    enckeys?: string
+    enckeys?: string,
+    fileName?: string
   ): Promise<ArrayBuffer | any> {
     let _body = null
 
@@ -162,7 +163,8 @@ export class iccDocumentApi {
         .replace("{attachmentId}", attachmentId + "") +
       "?ts=" +
       new Date().getTime() +
-      (enckeys ? "&enckeys=" + enckeys : "")
+      (enckeys ? "&enckeys=" + enckeys : "") +
+      (fileName ? "&fileName=" + fileName : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")

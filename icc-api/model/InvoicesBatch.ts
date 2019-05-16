@@ -24,32 +24,25 @@
 
 import * as models from "./models"
 
-export class UserStubDto {
+export class InvoicesBatch {
   constructor(json: JSON | any) {
-    Object.assign(this as UserStubDto, json)
+    Object.assign(this as InvoicesBatch, json)
   }
-  id?: string
+  invoicingYear?: number
 
-  rev?: string
+  invoicingMonth?: number
 
-  deletionDate?: number
+  fileRef?: string
 
-  name?: string
+  batchRef?: string
 
-  healthcarePartyId?: string
+  ioFederationCode?: string
 
-  email?: string
+  uniqueSendNumber?: number
 
-  autoDelegations?: { [key: string]: Array<string> }
+  sender?: models.InvoiceSender
 
-  virtualHosts?: Array<string>
+  numericalRef?: number
 
-  virtualHostDependency?: UserStubDto.VirtualHostDependencyEnum
-}
-export namespace UserStubDto {
-  export enum VirtualHostDependencyEnum {
-    NONE = <any>"NONE",
-    DIRECT = <any>"DIRECT",
-    FULL = <any>"FULL"
-  }
+  invoices?: Array<models.Invoice>
 }

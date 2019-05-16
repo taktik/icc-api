@@ -240,7 +240,7 @@ export function toInvoiceBatch(
             invoicesBatch.ioFederationCode = fedCodes[0]
             invoicesBatch.numericalRef =
               moment().get("year") * 1000000 + Number(fedCodes[0]) * 1000 + batchNumber
-            invoicesBatch.sender = toInvoiceSender(hcp)
+            invoicesBatch.sender = toInvoiceSender(hcp, fedCodes[0])
             invoicesBatch.uniqueSendNumber = batchNumber
 
             return invoicesBatch
@@ -294,6 +294,7 @@ function toInvoice(
   // TODO : fix me later
   invoice.reason = Invoice.ReasonEnum.Other
   invoice.creditNote = invoiceDto.creditNote
+
   return invoice
 }
 
@@ -335,6 +336,7 @@ function toInvoiceItem(
   invoiceItem.timeOfDay = getTimeOfDay(invoicingCode.timeOfDay || 0)
   invoiceItem.units = invoicingCode.units || 1
   invoiceItem.derogationMaxNumber = getDerogationMaxNumber(invoicingCode.derogationMaxNumber || 0)
+  invoiceItem.internshipNihii = invoiceDto.internshipNihii
 
   return invoiceItem
 }

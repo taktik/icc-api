@@ -24,32 +24,17 @@
 
 import * as models from "./models"
 
-export class UserStubDto {
+export class EIDItem {
   constructor(json: JSON | any) {
-    Object.assign(this as UserStubDto, json)
+    Object.assign(this as EIDItem, json)
   }
-  id?: string
+  deviceType?: string
 
-  rev?: string
+  readDate?: number
 
-  deletionDate?: number
+  readHour?: number
 
-  name?: string
+  readType?: string
 
-  healthcarePartyId?: string
-
-  email?: string
-
-  autoDelegations?: { [key: string]: Array<string> }
-
-  virtualHosts?: Array<string>
-
-  virtualHostDependency?: UserStubDto.VirtualHostDependencyEnum
-}
-export namespace UserStubDto {
-  export enum VirtualHostDependencyEnum {
-    NONE = <any>"NONE",
-    DIRECT = <any>"DIRECT",
-    FULL = <any>"FULL"
-  }
+  readvalue?: string
 }

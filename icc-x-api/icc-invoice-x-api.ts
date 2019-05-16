@@ -131,19 +131,20 @@ export class IccInvoiceXApi extends iccInvoiceApi {
     if (!prefix) {
       return super.createInvoice(invoice)
     }
-    return this.getNextInvoiceReference(prefix, this.entityrefApi).then(reference => {
-      invoice.invoiceReference = reference.toString().padStart(6, "0")
-      return super.createInvoice(invoice).then(newInvoiceCreated => {
-        return this.createInvoiceReference(
-          reference,
-          newInvoiceCreated.id,
-          prefix,
-          this.entityrefApi
-        ).then(() => {
-          return newInvoiceCreated
-        })
+    if (!invoice.id) {
+      invoice.id = this.crypto.randomUuid()
+    }
+    return this.getNextInvoiceReference(prefix, this.entityrefApi)
+      .then(reference =>
+        this.createInvoiceReference(reference, invoice.id!, prefix, this.entityrefApi)
+      )
+      .then(entityReference => {
+        if (!entityReference.id) {
+          throw new Error("Cannot create invoice")
+        }
+        invoice.invoiceReference = entityReference.id.substr(prefix.length)
+        return super.createInvoice(invoice)
       })
-    })
   }
 
   getNextInvoiceReference(prefix: string, entityrefApi: iccEntityrefApi): Promise<number> {
@@ -160,12 +161,17 @@ export class IccInvoiceXApi extends iccInvoiceApi {
     prefix: string,
     entityrefApi: iccEntityrefApi
   ): Promise<models.EntityReference> {
-    return entityrefApi.createEntityReference(
-      new models.EntityReference({
-        id: prefix + nextReference.toString().padStart(6, "0"),
-        docId
+    return entityrefApi
+      .createEntityReference(
+        new models.EntityReference({
+          id: prefix + nextReference.toString().padStart(6, "0"),
+          docId
+        })
+      )
+      .catch(err => {
+        console.log(err)
+        return this.createInvoiceReference(nextReference + 1, docId, prefix, entityrefApi)
       })
-    )
   }
 
   /**

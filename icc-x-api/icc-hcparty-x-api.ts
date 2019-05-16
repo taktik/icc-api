@@ -42,11 +42,11 @@ export class IccHcpartyXApi extends iccHcpartyApi {
       const c = this.cache[x]
       return c && c[0] > Date.now() ? c : null
     })
-    const toFetch = ids.map((id, idx) => !cached[idx] && id)
+    const toFetch = _.compact(ids.map((id, idx) => (!cached[idx] && id) || null))
 
     return toFetch.length
       ? super
-          .getHealthcareParties(_.compact(toFetch).join(","))
+          .getHealthcareParties(toFetch.join(","))
           .then((hcps: Array<HealthcarePartyDto>) =>
             Promise.all(
               ids.map(

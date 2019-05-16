@@ -148,14 +148,16 @@ export class IccContactXApi extends iccContactApi {
    * @param patient (Promise)
    */
   findBy(hcpartyId: string, patient: models.PatientDto) {
-    return this.crypto
-      .extractDelegationsSFKs(patient, hcpartyId)
-      .then(secretForeignKeys =>
-        this.findByHCPartyPatientSecretFKeys(
-          secretForeignKeys.hcpartyId,
-          secretForeignKeys.extractedKeys.join(",")
-        )
-      )
+    return this.crypto.extractDelegationsSFKs(patient, hcpartyId).then(secretForeignKeys => {
+      return secretForeignKeys &&
+        secretForeignKeys.extractedKeys &&
+        secretForeignKeys.extractedKeys.length > 0
+        ? this.findByHCPartyPatientSecretFKeys(
+            secretForeignKeys.hcpartyId,
+            secretForeignKeys.extractedKeys.join(",")
+          )
+        : Promise.resolve([])
+    })
   }
 
   filterBy(
@@ -333,13 +335,14 @@ export class IccContactXApi extends iccContactApi {
 
   encrypt(user: models.UserDto, ctcs: Array<models.ContactDto>) {
     const hcpartyId = user.healthcarePartyId!
+    const bypassEncryption = false //Used for debug
+
     return Promise.all(
       ctcs.map(
         ctc =>
-          ctc.secretForeignKeys &&
-          ctc.secretForeignKeys.includes("2d3ab21f-3f2e-4db3-9535-4238c605dbf4") //Prevent encryption for test ctc
+          bypassEncryption //Prevent encryption for test ctc
             ? ctc
-            : (ctc.encryptionKeys && Object.keys(ctc.encryptionKeys).length
+            : (ctc.encryptionKeys && Object.keys(ctc.encryptionKeys || {}).length
                 ? Promise.resolve(ctc)
                 : this.initEncryptionKeys(user, ctc)
               )
@@ -611,6 +614,18 @@ export class IccContactXApi extends iccContactApi {
     )
   }
 
+  contentValue(c: models.ContentDto) {
+    return (
+      c.stringValue ||
+      ((c.numberValue || c.numberValue === 0) && c.numberValue) ||
+      (c.measureValue && (c.measureValue.value || c.measureValue.value === 0)
+        ? c.measureValue
+        : null) ||
+      c.medicationValue ||
+      c.booleanValue
+    )
+  }
+
   shortServiceDescription(svc: models.ServiceDto, lng: string) {
     const c = this.preferredContent(svc, lng)
     return !c ? "" : this.shortContentDescription(c, lng, svc.label)
@@ -624,8 +639,8 @@ export class IccContactXApi extends iccContactApi {
         "" +
           (c.measureValue.value || c.measureValue.value === 0 ? c.measureValue.value : "-") +
           (c.measureValue.unit ? " " + c.measureValue.unit : "")) ||
-      ((c.booleanValue && label) || "OK") ||
-      (c.medicationValue ? this.medication().medicationToString(c.medicationValue, lng) : null)
+      (c.medicationValue ? this.medication().medicationToString(c.medicationValue, lng) : null) ||
+      ((c.booleanValue && label) || "OK")
     )
   }
 
@@ -668,6 +683,8 @@ export class IccContactXApi extends iccContactApi {
    *
    * When a svc does not exist yet in the current contact but exists in a previous contact, all the scs it was belonging to are
    * copied in the current contact
+   *
+   * the svc returned is the one that's inside the ctc
    *
    * @param ctc
    * @param user
@@ -811,7 +828,7 @@ export class IccContactXApi extends iccContactApi {
       })
     })
 
-    return (init && init(svc)) || svc
+    return (init && init(promoted)) || promoted
   }
 
   isNumeric(svc: models.ServiceDto, lng: string) {

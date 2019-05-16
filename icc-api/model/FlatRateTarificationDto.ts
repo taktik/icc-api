@@ -24,32 +24,22 @@
 
 import * as models from "./models"
 
-export class UserStubDto {
+export class FlatRateTarificationDto {
   constructor(json: JSON | any) {
-    Object.assign(this as UserStubDto, json)
+    Object.assign(this as FlatRateTarificationDto, json)
   }
-  id?: string
+  code?: string
 
-  rev?: string
+  label?: { [key: string]: string }
 
-  deletionDate?: number
+  valorisations?: Array<models.ValorisationDto>
 
-  name?: string
-
-  healthcarePartyId?: string
-
-  email?: string
-
-  autoDelegations?: { [key: string]: Array<string> }
-
-  virtualHosts?: Array<string>
-
-  virtualHostDependency?: UserStubDto.VirtualHostDependencyEnum
+  flatRateType?: FlatRateTarificationDto.FlatRateTypeEnum
 }
-export namespace UserStubDto {
-  export enum VirtualHostDependencyEnum {
-    NONE = <any>"NONE",
-    DIRECT = <any>"DIRECT",
-    FULL = <any>"FULL"
+export namespace FlatRateTarificationDto {
+  export enum FlatRateTypeEnum {
+    Physician = <any>"physician",
+    Physiotherapist = <any>"physiotherapist",
+    Nurse = <any>"nurse"
   }
 }

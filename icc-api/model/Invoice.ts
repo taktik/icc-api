@@ -24,32 +24,42 @@
 
 import * as models from "./models"
 
-export class UserStubDto {
+export class Invoice {
   constructor(json: JSON | any) {
-    Object.assign(this as UserStubDto, json)
+    Object.assign(this as Invoice, json)
   }
-  id?: string
+  patient?: models.PatientDto
 
-  rev?: string
+  ioCode?: string
 
-  deletionDate?: number
+  items?: Array<models.InvoiceItem>
 
-  name?: string
+  reason?: Invoice.ReasonEnum
 
-  healthcarePartyId?: string
+  invoiceRef?: string
 
-  email?: string
+  invoiceNumber?: number
 
-  autoDelegations?: { [key: string]: Array<string> }
+  ignorePrescriptionDate?: boolean
 
-  virtualHosts?: Array<string>
+  hospitalisedPatient?: boolean
 
-  virtualHostDependency?: UserStubDto.VirtualHostDependencyEnum
+  creditNote?: boolean
+
+  relatedInvoiceIoCode?: string
+
+  relatedInvoiceNumber?: number
+
+  relatedBatchSendNumber?: number
+
+  relatedBatchYearMonth?: number
 }
-export namespace UserStubDto {
-  export enum VirtualHostDependencyEnum {
-    NONE = <any>"NONE",
-    DIRECT = <any>"DIRECT",
-    FULL = <any>"FULL"
+export namespace Invoice {
+  export enum ReasonEnum {
+    Chimiotherapy = <any>"Chimiotherapy",
+    ProfessionalDisease = <any>"ProfessionalDisease",
+    WorkAccident = <any>"WorkAccident",
+    Accident = <any>"Accident",
+    Other = <any>"Other"
   }
 }
