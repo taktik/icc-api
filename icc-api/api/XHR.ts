@@ -34,16 +34,30 @@ export namespace XHR {
     }
   }
 
+  function fetchWithTimeout(url: string, init: RequestInit, timeout = 10000): Promise<Response> {
+    return new Promise((resolve, reject) => {
+      // Set timeout timer
+      let timer = setTimeout(
+        () => reject({ message: "Request timed out", status: "Request timed out" }),
+        timeout
+      )
+      fetch(url, init)
+        .then(response => resolve(response), err => reject(err))
+        .finally(() => clearTimeout(timer))
+    })
+  }
+
   export function sendCommand(
     method: string,
     url: string,
     headers: Array<Header> | null,
-    data: string | any = ""
+    data: string | any = "",
+    timeout: number = 600000
   ): Promise<Data> {
     const contentType =
       headers &&
       headers.find(it => (it.header ? it.header.toLowerCase() === "content-type" : false))
-    return fetch(
+    return fetchWithTimeout(
       url,
       Object.assign(
         {
@@ -69,7 +83,8 @@ export namespace XHR {
                   : data
             }
           : {}
-      )
+      ),
+      timeout
     ).then(function(response) {
       if (response.status >= 400) {
         throw new XHRError(response.statusText, response.status, response.status, response.headers)
