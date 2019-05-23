@@ -42,8 +42,14 @@ export namespace XHR {
         timeout
       )
       fetch(url, init)
-        .then(response => resolve(response), err => reject(err))
-        .finally(() => clearTimeout(timer))
+        .then(response => {
+          clearTimeout(timer)
+          resolve(response)
+        })
+        .catch(err => {
+          clearTimeout(timer)
+          reject(err)
+        })
     })
   }
 
