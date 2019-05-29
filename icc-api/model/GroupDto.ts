@@ -24,30 +24,27 @@
 
 import * as models from "./models"
 
-export class TypedValueDto {
+export class GroupDto {
   constructor(json: JSON | any) {
-    Object.assign(this as TypedValueDto, json)
+    Object.assign(this as GroupDto, json)
   }
-  type?: TypedValueDto.TypeEnum
+  name?: string
 
-  booleanValue?: boolean
+  password?: string
 
-  integerValue?: number
+  attachments?: { [key: string]: models.Attachment }
 
-  doubleValue?: number
+  deleted?: number
 
-  stringValue?: string
+  id?: string
 
-  dateValue?: Date
-}
-export namespace TypedValueDto {
-  export enum TypeEnum {
-    BOOLEAN = <any>"BOOLEAN",
-    INTEGER = <any>"INTEGER",
-    DOUBLE = <any>"DOUBLE",
-    STRING = <any>"STRING",
-    DATE = <any>"DATE",
-    CLOB = <any>"CLOB",
-    JSON = <any>"JSON"
-  }
+  rev?: string
+
+  revsInfo?: Array<models.RevisionInfo>
+
+  conflicts?: Array<string>
+
+  javaType?: string
+
+  revHistory?: { [key: string]: string }
 }

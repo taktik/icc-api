@@ -24,30 +24,11 @@
 
 import * as models from "./models"
 
-export class TypedValueDto {
+export class MessageReadStatus {
   constructor(json: JSON | any) {
-    Object.assign(this as TypedValueDto, json)
+    Object.assign(this as MessageReadStatus, json)
   }
-  type?: TypedValueDto.TypeEnum
+  time?: number
 
-  booleanValue?: boolean
-
-  integerValue?: number
-
-  doubleValue?: number
-
-  stringValue?: string
-
-  dateValue?: Date
-}
-export namespace TypedValueDto {
-  export enum TypeEnum {
-    BOOLEAN = <any>"BOOLEAN",
-    INTEGER = <any>"INTEGER",
-    DOUBLE = <any>"DOUBLE",
-    STRING = <any>"STRING",
-    DATE = <any>"DATE",
-    CLOB = <any>"CLOB",
-    JSON = <any>"JSON"
-  }
+  read?: boolean
 }

@@ -416,10 +416,15 @@ export class iccInvoiceApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.InvoiceDto(it)))
       .catch(err => this.handleError(err))
   }
-  listToPatients(): Promise<Array<models.InvoiceDto> | any> {
+  listToPatients(hcPartyId?: string): Promise<Array<models.InvoiceDto> | any> {
     let _body = null
 
-    const _url = this.host + "/invoice/toPatients" + "?ts=" + new Date().getTime()
+    const _url =
+      this.host +
+      "/invoice/toPatients" +
+      "?ts=" +
+      new Date().getTime() +
+      (hcPartyId ? "&hcPartyId=" + hcPartyId : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -428,10 +433,15 @@ export class iccInvoiceApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.InvoiceDto(it)))
       .catch(err => this.handleError(err))
   }
-  listToPatientsUnsent(): Promise<Array<models.InvoiceDto> | any> {
+  listToPatientsUnsent(hcPartyId?: string): Promise<Array<models.InvoiceDto> | any> {
     let _body = null
 
-    const _url = this.host + "/invoice/toPatients/unsent" + "?ts=" + new Date().getTime()
+    const _url =
+      this.host +
+      "/invoice/toPatients/unsent" +
+      "?ts=" +
+      new Date().getTime() +
+      (hcPartyId ? "&hcPartyId=" + hcPartyId : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")

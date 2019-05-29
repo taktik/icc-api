@@ -24,30 +24,33 @@
 
 import * as models from "./models"
 
-export class TypedValueDto {
+export class MedexInfoDto {
   constructor(json: JSON | any) {
-    Object.assign(this as TypedValueDto, json)
+    Object.assign(this as MedexInfoDto, json)
   }
-  type?: TypedValueDto.TypeEnum
+  author?: models.HealthcarePartyDto
 
-  booleanValue?: boolean
+  patient?: models.PatientDto
 
-  integerValue?: number
+  patientLanguage?: string
 
-  doubleValue?: number
+  incapacityType?: string
 
-  stringValue?: string
+  incapacityReason?: string
 
-  dateValue?: Date
-}
-export namespace TypedValueDto {
-  export enum TypeEnum {
-    BOOLEAN = <any>"BOOLEAN",
-    INTEGER = <any>"INTEGER",
-    DOUBLE = <any>"DOUBLE",
-    STRING = <any>"STRING",
-    DATE = <any>"DATE",
-    CLOB = <any>"CLOB",
-    JSON = <any>"JSON"
-  }
+  outOfHomeAllowed?: boolean
+
+  certificateDate?: number
+
+  contentDate?: number
+
+  beginDate?: number
+
+  endDate?: number
+
+  diagnosisICPC?: string
+
+  diagnosisICD?: string
+
+  diagnosisDescr?: string
 }
