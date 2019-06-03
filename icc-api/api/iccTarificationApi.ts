@@ -27,7 +27,7 @@ import * as models from "../model/models"
 
 export class iccTarificationApi {
   host: string
-  headers: { [key: string]: string }
+  headers: Array<XHR.Header>
   constructor(host: string, headers: any) {
     this.host = host
     this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
