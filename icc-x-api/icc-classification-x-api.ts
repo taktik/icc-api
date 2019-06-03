@@ -10,7 +10,7 @@ import { XHR } from "../icc-api/api/XHR"
 export class IccClassificationXApi extends iccClassificationApi {
   crypto: IccCryptoXApi
 
-  constructor(host: string, headers: Array<XHR.Header>, crypto: IccCryptoXApi) {
+  constructor(host: string, headers: { [key: string]: string }, crypto: IccCryptoXApi) {
     super(host, headers)
     this.crypto = crypto
   }

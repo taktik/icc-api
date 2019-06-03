@@ -7,7 +7,7 @@ import * as models from "../icc-api/model/models"
 export class IccBedrugsXApi extends iccBedrugsApi {
   atcCache: { [key: string]: Promise<Array<models.MppPreview>> } = {}
 
-  constructor(host: string, headers: Array<XHR.Header>) {
+  constructor(host: string, headers: { [key: string]: string }) {
     super(host, headers)
   }
 

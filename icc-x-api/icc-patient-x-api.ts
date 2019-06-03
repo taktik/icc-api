@@ -27,7 +27,7 @@ export class IccPatientXApi extends iccPatientApi {
 
   constructor(
     host: string,
-    headers: Array<XHR.Header>,
+    headers: { [key: string]: string },
     crypto: IccCryptoXApi,
     contactApi: IccContactXApi,
     helementApi: IccHelementXApi,

@@ -12,7 +12,7 @@ export class IccInvoiceXApi extends iccInvoiceApi {
 
   constructor(
     host: string,
-    headers: Array<XHR.Header>,
+    headers: { [key: string]: string },
     crypto: IccCryptoXApi,
     entityrefApi: iccEntityrefApi
   ) {

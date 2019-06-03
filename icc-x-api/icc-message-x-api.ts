@@ -82,7 +82,7 @@ export class IccMessageXApi extends iccMessageApi {
 
   constructor(
     host: string,
-    headers: Array<XHR.Header>,
+    headers: { [key: string]: string },
     crypto: IccCryptoXApi,
     insuranceApi: iccInsuranceApi,
     entityReferenceApi: iccEntityrefApi,

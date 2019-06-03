@@ -12,7 +12,7 @@ import { AES } from "./crypto/AES"
 export class IccHelementXApi extends iccHelementApi {
   crypto: IccCryptoXApi
 
-  constructor(host: string, headers: Array<XHR.Header>, crypto: IccCryptoXApi) {
+  constructor(host: string, headers: { [key: string]: string }, crypto: IccCryptoXApi) {
     super(host, headers)
     this.crypto = crypto
   }

@@ -543,7 +543,7 @@ export class IccDocumentXApi extends iccDocumentApi {
     "x-music/x-midi": "public.midi"
   }
 
-  constructor(host: string, headers: Array<XHR.Header>, crypto: IccCryptoXApi) {
+  constructor(host: string, headers: { [key: string]: string }, crypto: IccCryptoXApi) {
     super(host, headers)
     this.crypto = crypto
   }

@@ -12,7 +12,7 @@ export class IccBekmehrXApi extends iccBekmehrApi {
 
   constructor(
     host: string,
-    headers: Array<XHR.Header>,
+    headers: { [key: string]: string },
     ctcApi: IccContactXApi,
     helementApi: IccHelementXApi
   ) {

@@ -44,7 +44,7 @@ export class IccCryptoXApi {
   RSA: RSAUtils = RSA
   utils: UtilsClass = utils
 
-  constructor(host: string, headers: Array<XHR.Header>, hcpartyBaseApi: iccHcpartyApi) {
+  constructor(host: string, headers: { [key: string]: string }, hcpartyBaseApi: iccHcpartyApi) {
     this.hcpartyBaseApi = hcpartyBaseApi
   }
 

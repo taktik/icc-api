@@ -1,6 +1,5 @@
 {
   "name": "icc-api",
-  "version": "1.0.136",
   "description": "Typescript version of iCure standalone API client",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -25,6 +24,7 @@
     "typescript": "^2.9.2"
   },
   "scripts": {
+    "genhtml": "java -classpath swagger-codegen-cli.jar io.swagger.codegen.SwaggerCodegen generate -i https://backendb.svc.icure.cloud/rest/v1/swagger.json -l html --additional-properties classPrefix=icc -o ./apidocs",
     "gen": "java -classpath swagger-codegen-cli.jar io.swagger.codegen.SwaggerCodegen generate -i https://backendb.svc.icure.cloud/rest/v1/swagger.json -l typescript --additional-properties classPrefix=icc -o ./icc-api",
     "genloc": "java -classpath swagger-codegen-cli.jar io.swagger.codegen.SwaggerCodegen generate -i http://127.0.0.1:16043/rest/v1/swagger.json -l typescript --additional-properties classPrefix=icc -o ./icc-api",
     "test": "echo \"Error: no test specified\" && exit 1",
