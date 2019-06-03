@@ -241,9 +241,9 @@ export class UtilsClass {
    * @param ua {Uint8Array} or ArrayBuffer
    * @returns {String} Hex String
    */
-  ua2hex(ua: Uint8Array | ArrayBuffer): string {
+  ua2hex(uaOrAb: Uint8Array | ArrayBuffer): string {
     var s = ""
-    ua = ua instanceof Uint8Array ? ua : new Uint8Array(ua)
+    const ua: Uint8Array = uaOrAb instanceof Uint8Array ? uaOrAb : new Uint8Array(uaOrAb)
     for (var i = 0; i < ua.length; i++) {
       var hhb = (ua[i] & 0xf0) >> 4
       var lhb = ua[i] & 0x0f
@@ -268,7 +268,7 @@ export class UtilsClass {
     for (offset = 0; offset < abLen; offset += CHUNK_SIZE) {
       len = Math.min(CHUNK_SIZE, abLen - offset)
       subab = ab.subarray(offset, offset + len)
-      str += String.fromCharCode.apply(null, subab)
+      str += String.fromCharCode.apply(null, subab as any)
     }
     return str
   }
