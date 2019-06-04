@@ -1,3 +1,5 @@
+import { parseNumber, formatNumber, isValidNumber } from "libphonenumber-js"
+
 import * as moment from "moment"
 import * as _ from "lodash"
 import { Moment } from "moment"
@@ -57,6 +59,7 @@ export function ssinValidate(ssin: string): boolean {
   return !!ssin.match(ssinRegExp)
 }
 
+/* Alternate lib free version
 export function phoneNumberValidate(phoneNumber: string): boolean {
   return (
     !!phoneNumber.match(/(?:\+|00)([1-9][0-9]{1-2})([- /.]*([0-9]+))+/) ||
@@ -74,6 +77,20 @@ export function phoneNumberFormat(phoneNumber: string): string {
     return `+32 ${match[1]} ${match[2].replace(/[- /.]/g, " ")}`.replace(/  /g, " ")
   }
   return phoneNumber
+}
+*/
+
+export function phoneNumberValidate(phoneNumber: string): boolean {
+  return isValidNumber(phoneNumber)
+}
+
+export function phoneNumberFormat(phoneNumber: string): string {
+  const parsedPhoneNumber = parseNumber(phoneNumber, DEFAULT_COUNTRY)
+  if (_.isEmpty(parsedPhoneNumber)) {
+    // The number is not valid, so we leave the input string as-is.
+    return phoneNumber
+  }
+  return formatNumber(parsedPhoneNumber, "International")
 }
 
 /**
