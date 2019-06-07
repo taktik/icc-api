@@ -57,12 +57,15 @@ export namespace XHR {
     method: string,
     url: string,
     headers: Array<Header> | null,
-    data: string | any = "",
-    timeout: number = 600000
+    data: string | any = ""
   ): Promise<Data> {
     const contentType =
       headers &&
       headers.find(it => (it.header ? it.header.toLowerCase() === "content-type" : false))
+    const clientTimeout =
+      headers &&
+      headers.find(it => (it.header ? it.header.toUpperCase() === "X-CLIENT-SIDE-TIMEOUT" : false))
+    const timeout = clientTimeout ? Number(clientTimeout.data) : 600000
     return fetchWithTimeout(
       url,
       Object.assign(
