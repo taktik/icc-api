@@ -76,7 +76,10 @@ export namespace XHR {
             (headers &&
               headers
                 .filter(
-                  h => h.header.toLowerCase() !== "content-type" || h.data !== "multipart/form-data"
+                  h =>
+                    (h.header.toLowerCase() !== "content-type" ||
+                      h.data !== "multipart/form-data") &&
+                    h.header.toUpperCase() !== "X-CLIENT-SIDE-TIMEOUT"
                 )
                 .reduce((acc: { [key: string]: string }, h) => {
                   acc[h.header] = h.data
