@@ -1,4 +1,4 @@
-//import { parseNumber, formatNumber, isValidNumber } from "libphonenumber-js"
+import { parseNumber, formatNumber, isValidNumber } from "libphonenumber-js"
 
 import * as moment from "moment"
 import * as _ from "lodash"
@@ -59,7 +59,7 @@ export function ssinValidate(ssin: string): boolean {
   return !!ssin.match(ssinRegExp)
 }
 
-/* Alternate lib free version */
+/* Alternate lib free version
 export function phoneNumberValidate(phoneNumber: string): boolean {
   return (
     !!phoneNumber.match(/(?:\+|00)([1-9][0-9]{1-2})([- /.]*([0-9]+))+/) ||
@@ -78,8 +78,8 @@ export function phoneNumberFormat(phoneNumber: string): string {
   }
   return phoneNumber
 }
+*/
 
-/* Original version
 export function phoneNumberValidate(phoneNumber: string): boolean {
   return isValidNumber(phoneNumber)
 }
@@ -92,7 +92,6 @@ export function phoneNumberFormat(phoneNumber: string): string {
   }
   return formatNumber(parsedPhoneNumber, "International")
 }
-*/
 
 /**
  * Converts a backend date number (e.g., patient birth date) into a Date object.
