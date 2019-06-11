@@ -2,7 +2,7 @@ import { iccHcpartyApi } from "../icc-api/iccApi"
 
 import { XHR } from "../icc-api/api/XHR"
 import { HealthcarePartyDto } from "../icc-api/model/HealthcarePartyDto"
-import _ from "lodash"
+import * as _ from "lodash"
 
 // noinspection JSUnusedGlobalSymbols
 export class IccHcpartyXApi extends iccHcpartyApi {

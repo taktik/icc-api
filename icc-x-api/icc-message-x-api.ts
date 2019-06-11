@@ -4,8 +4,7 @@ import { IccDocumentXApi } from "./icc-document-x-api"
 import { IccInvoiceXApi } from "./icc-invoice-x-api"
 
 import * as _ from "lodash"
-import moment from "moment"
-import { XHR } from "../icc-api/api/XHR"
+import * as moment from "moment"
 import * as models from "../icc-api/model/models"
 import {
   EntityReference,

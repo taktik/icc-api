@@ -43,6 +43,7 @@ export namespace XHR {
     const contentType =
       headers &&
       headers.find(it => (it.header ? it.header.toLowerCase() === "content-type" : false))
+
     return fetch(
       url,
       Object.assign(

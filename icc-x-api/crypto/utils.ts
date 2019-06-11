@@ -1,5 +1,7 @@
 import * as base64js from "base64-js"
-import moment, { Moment } from "moment"
+import * as moment from "moment"
+import { Moment } from "moment"
+import * as _ from "lodash";
 
 export class UtilsClass {
   /**

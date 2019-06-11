@@ -4,8 +4,7 @@ import { IccCryptoXApi } from "./icc-crypto-x-api"
 import * as models from "../icc-api/model/models"
 
 import * as _ from "lodash"
-import moment from "moment"
-import { XHR } from "../icc-api/api/XHR"
+import * as moment from "moment"
 
 export class IccClassificationXApi extends iccClassificationApi {
   crypto: IccCryptoXApi
