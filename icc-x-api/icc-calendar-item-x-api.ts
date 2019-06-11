@@ -191,7 +191,10 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
             AES.importKey("raw", utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
           )
           .then((key: CryptoKey) => {
-            AES.encrypt(key, utils.utf82ua(JSON.stringify({ details: item.details })))
+            AES.encrypt(
+              key,
+              utils.utf82ua(JSON.stringify({ details: item.details, title: item.title }))
+            )
           })
           .then(() => {
             return item

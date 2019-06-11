@@ -25,6 +25,8 @@ export class IccPatientXApi extends iccPatientApi {
   documentApi: IccDocumentXApi
   classificationApi: IccClassificationXApi
 
+  private cryptedKeys: Array<string>
+
   constructor(
     host: string,
     headers: { [key: string]: string },
@@ -34,7 +36,8 @@ export class IccPatientXApi extends iccPatientApi {
     invoiceApi: IccInvoiceXApi,
     documentApi: IccDocumentXApi,
     hcpartyApi: IccHcpartyXApi,
-    classificationApi: IccClassificationXApi
+    classificationApi: IccClassificationXApi,
+    cryptedKeys: Array<string> = ["note"]
   ) {
     super(host, headers)
     this.crypto = crypto
@@ -44,6 +47,8 @@ export class IccPatientXApi extends iccPatientApi {
     this.hcpartyApi = hcpartyApi
     this.documentApi = documentApi
     this.classificationApi = classificationApi
+
+    this.cryptedKeys = cryptedKeys
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -499,11 +504,12 @@ export class IccPatientXApi extends iccPatientApi {
             AES.importKey("raw", utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
           )
           .then((key: CryptoKey) =>
-            AES.encrypt(key, utils.utf82ua(JSON.stringify({ note: p.note }))).then(es => {
-              p.encryptedSelf = btoa(utils.ua2text(es))
-              delete p.note
-              return p
-            })
+            utils.crypt(
+              p,
+              (obj: { [key: string]: string }) =>
+                AES.encrypt(key, utils.utf82ua(JSON.stringify(obj))),
+              this.cryptedKeys
+            )
           )
       )
     )
@@ -558,32 +564,22 @@ export class IccPatientXApi extends iccPatientApi {
                       //console.log("Cannot decrypt contact", ctc.id)
                       return Promise.resolve(p)
                     }
-                    return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(
-                      key =>
-                        new Promise<models.PatientDto>(
-                          (resolve: (value: models.PatientDto) => any) => {
-                            AES.decrypt(key, utils.text2ua(atob(p.encryptedSelf!))).then(
-                              dec => {
-                                let jsonContent
-                                try {
-                                  jsonContent = dec && utils.ua2utf8(dec)
-                                  jsonContent && _.assign(p, JSON.parse(jsonContent))
-                                } catch (e) {
-                                  console.log(
-                                    "Cannot parse ctc",
-                                    p.id,
-                                    jsonContent || "<- Invalid encoding"
-                                  )
-                                }
-                                resolve(p)
-                              },
-                              () => {
-                                console.log("Cannot decrypt contact", p.id)
-                                resolve(p)
-                              }
+                    return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(key =>
+                      utils.decrypt(p, ec =>
+                        AES.decrypt(key, ec).then(dec => {
+                          const jsonContent = dec && utils.ua2utf8(dec)
+                          try {
+                            return JSON.parse(jsonContent)
+                          } catch (e) {
+                            console.log(
+                              "Cannot parse patient",
+                              p.id,
+                              jsonContent || "Invalid content"
                             )
+                            return {}
                           }
-                        )
+                        })
+                      )
                     )
                   })
               : Promise.resolve(p)
