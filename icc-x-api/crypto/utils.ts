@@ -372,7 +372,7 @@ export class UtilsClass {
       const k2 = k.substr(k1.length + 3)
 
       const mapped = await Promise.all(
-        _.get(obj, k1).map((so: any) =>
+        (_.get(obj, k1) || []).map((so: any) =>
           this.crypt(so, cryptor, k2.startsWith("[") ? JSON.parse(k2) : [k2])
         )
       )

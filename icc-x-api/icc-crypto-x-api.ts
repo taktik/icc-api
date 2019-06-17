@@ -38,13 +38,21 @@ export class IccCryptoXApi {
   keychainLocalStoreIdPrefix: String = "org.taktik.icure.ehealth.keychain."
   hcpPreferenceKeyEhealthCert: string = "eHealthCRT"
 
-  hcpartyBaseApi: iccHcpartyApi
+  private hcpartyBaseApi: iccHcpartyApi
+  private patientBaseApi: iccHcpartyApi
+
   AES: AESUtils = AES
   RSA: RSAUtils = RSA
   utils: UtilsClass = utils
 
-  constructor(host: string, headers: { [key: string]: string }, hcpartyBaseApi: iccHcpartyApi) {
+  constructor(
+    host: string,
+    headers: { [key: string]: string },
+    hcpartyBaseApi: iccHcpartyApi,
+    patientBaseApi: iccHcpartyApi
+  ) {
     this.hcpartyBaseApi = hcpartyBaseApi
+    this.patientBaseApi = patientBaseApi
   }
 
   randomUuid() {

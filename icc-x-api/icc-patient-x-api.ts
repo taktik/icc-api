@@ -243,7 +243,11 @@ export class IccPatientXApi extends iccPatientApi {
       .then(pats => this.decrypt(user, pats))
   }
 
-  getPatient(patientId: string): never {
+  getPatient(patientId: string): Promise<models.PatientDto | any> {
+    return super.getPatient(patientId)
+  }
+
+  getPatientRaw(patientId: string): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
     )
@@ -448,6 +452,10 @@ export class IccPatientXApi extends iccPatientApi {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
     )
+  }
+
+  modifyPatientRaw(body?: models.PatientDto): Promise<models.PatientDto | any> {
+    return super.modifyPatient(body)
   }
 
   modifyPatientWithUser(
