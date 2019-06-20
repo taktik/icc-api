@@ -42,6 +42,35 @@ export class iccBekmehrApi {
     else throw Error("api-error" + e.status)
   }
 
+  checkIfSMFPatientsExists(
+    documentId: string,
+    documentKey?: string,
+    patientId?: string,
+    language?: string,
+    body?: any
+  ): Promise<Array<models.CheckSMFPatientResult> | any> {
+    let _body = null
+    _body = body
+
+    const _url =
+      this.host +
+      "/be_kmehr/smf/{documentId}/checkIfSMFPatientsExists".replace(
+        "{documentId}",
+        documentId + ""
+      ) +
+      "?ts=" +
+      new Date().getTime() +
+      (documentKey ? "&documentKey=" + documentKey : "") +
+      (patientId ? "&patientId=" + patientId : "") +
+      (language ? "&language=" + language : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.CheckSMFPatientResult(it)))
+      .catch(err => this.handleError(err))
+  }
   generateMedicationSchemeExport(
     patientId: string,
     language?: string,
@@ -110,7 +139,7 @@ export class iccBekmehrApi {
       .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }
-  generateSumehrPlusPlus(
+  generateSumehrV2(
     patientId: string,
     language?: string,
     body?: models.SumehrExportInfoDto
@@ -120,7 +149,7 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/sumehrpp/{patientId}/export".replace("{patientId}", patientId + "") +
+      "/be_kmehr/sumehrv2/{patientId}/export".replace("{patientId}", patientId + "") +
       "?ts=" +
       new Date().getTime() +
       (language ? "&language=" + language : "")
@@ -152,7 +181,27 @@ export class iccBekmehrApi {
       .then(doc => new models.SumehrContentDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  getSumehrContentPlusPlus(
+  getSumehrMd5(
+    patientId: string,
+    body?: models.SumehrExportInfoDto
+  ): Promise<models.ContentDto | any> {
+    let _body = null
+    _body = body
+
+    const _url =
+      this.host +
+      "/be_kmehr/sumehr/{patientId}/md5".replace("{patientId}", patientId + "") +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
+      .then(doc => new models.ContentDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+  getSumehrV2Content(
     patientId: string,
     body?: models.SumehrExportInfoDto
   ): Promise<models.SumehrContentDto | any> {
@@ -161,7 +210,7 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/sumehrpp/{patientId}/content".replace("{patientId}", patientId + "") +
+      "/be_kmehr/sumehrv2/{patientId}/content".replace("{patientId}", patientId + "") +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -172,25 +221,23 @@ export class iccBekmehrApi {
       .then(doc => new models.SumehrContentDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  getSumehrMd5(
+  getSumehrV2Md5(
     patientId: string,
-    hcPartyId?: string,
-    secretFKeys?: string
+    body?: models.SumehrExportInfoDto
   ): Promise<models.ContentDto | any> {
     let _body = null
+    _body = body
 
     const _url =
       this.host +
-      "/be_kmehr/sumehr/{patientId}/md5".replace("{patientId}", patientId + "") +
+      "/be_kmehr/sumehrv2/{patientId}/md5".replace("{patientId}", patientId + "") +
       "?ts=" +
-      new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
-      (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
+      new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.ContentDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -272,25 +319,37 @@ export class iccBekmehrApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.ImportResultDto(it)))
       .catch(err => this.handleError(err))
   }
-  isSumehrValid(
-    patientId: string,
-    hcPartyId?: string,
-    secretFKeys?: string
-  ): Promise<string | any> {
+  isSumehrV2Valid(patientId: string, body?: models.SumehrExportInfoDto): Promise<string | any> {
     let _body = null
+    _body = body
+
+    const _url =
+      this.host +
+      "/be_kmehr/sumehrv2/{patientId}/valid".replace("{patientId}", patientId + "") +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
+      .then(doc => JSON.parse(JSON.stringify(doc.body)))
+      .catch(err => this.handleError(err))
+  }
+  isSumehrValid(patientId: string, body?: models.SumehrExportInfoDto): Promise<string | any> {
+    let _body = null
+    _body = body
 
     const _url =
       this.host +
       "/be_kmehr/sumehr/{patientId}/valid".replace("{patientId}", patientId + "") +
       "?ts=" +
-      new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
-      (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
+      new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => JSON.parse(JSON.stringify(doc.body)))
       .catch(err => this.handleError(err))
   }
@@ -305,6 +364,28 @@ export class iccBekmehrApi {
     const _url =
       this.host +
       "/be_kmehr/sumehr/{patientId}/validate".replace("{patientId}", patientId + "") +
+      "?ts=" +
+      new Date().getTime() +
+      (language ? "&language=" + language : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
+      .then(doc => doc.body)
+      .catch(err => this.handleError(err))
+  }
+  validateSumehrV2(
+    patientId: string,
+    language?: string,
+    body?: models.SumehrExportInfoDto
+  ): Promise<ArrayBuffer | any> {
+    let _body = null
+    _body = body
+
+    const _url =
+      this.host +
+      "/be_kmehr/sumehrv2/{patientId}/validate".replace("{patientId}", patientId + "") +
       "?ts=" +
       new Date().getTime() +
       (language ? "&language=" + language : "")

@@ -24,15 +24,19 @@
 
 import * as models from "./models"
 
-export class SumehrExportInfoDto {
+export class CheckSMFPatientResult {
   constructor(json: JSON | any) {
-    Object.assign(this as SumehrExportInfoDto, json)
+    Object.assign(this as CheckSMFPatientResult, json)
   }
-  secretForeignKeys?: Array<string>
+  firstName?: string
 
-  excludedIds?: Array<string>
+  lastName?: string
 
-  recipient?: models.HealthcarePartyDto
+  ssin?: string
 
-  comment?: string
+  dateOfBirth?: number
+
+  exists?: boolean
+
+  existingPatientId?: string
 }

@@ -46,6 +46,8 @@ export class AddressDto {
 
   country?: string
 
+  encryptedSelf?: string
+
   telecoms?: Array<models.TelecomDtoEmbed>
 }
 export namespace AddressDto {
