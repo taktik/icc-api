@@ -238,12 +238,12 @@ export class UtilsClass {
   /**
    * Uint8Array/ArrayBuffer to hex String
    *
-   * @param ua {Uint8Array} or ArrayBuffer
+   * @param _ua {Uint8Array} or ArrayBuffer
    * @returns {String} Hex String
    */
-  ua2hex(ua: Uint8Array | ArrayBuffer): string {
+  ua2hex(_ua: Uint8Array | ArrayBuffer): string {
     var s = ""
-    ua = ua instanceof Uint8Array ? ua : new Uint8Array(ua)
+    var ua = new Uint8Array(_ua)
     for (var i = 0; i < ua.length; i++) {
       var hhb = (ua[i] & 0xf0) >> 4
       var lhb = ua[i] & 0x0f
