@@ -185,11 +185,11 @@ export class IccPatientXApi extends iccPatientApi {
     )
   }
 
-  findByAccessLogUserAfterDate_1WithUser(
+  findByExternalIdWithUser(
     user: models.UserDto,
     externalId: string
   ): Promise<models.PatientDto | any> {
-    return super.findByAccessLogUserAfterDate_1(externalId).then(pats => this.decrypt(user, pats))
+    return super.findByExternalId(externalId).then(pats => this.decrypt(user, pats))
   }
 
   findByNameBirthSsinAuto(
@@ -304,13 +304,13 @@ export class IccPatientXApi extends iccPatientApi {
     )
   }
 
-  listDeletedPatients_2WithUser(
+  listDeletedPatientsByNameWithUser(
     user: models.UserDto,
     firstName?: string,
     lastName?: string
   ): Promise<Array<models.PatientPaginatedList> | any> {
     return super
-      .listDeletedPatients_2(firstName, lastName)
+      .listDeletedPatientsByName(firstName, lastName)
       .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
   }
 

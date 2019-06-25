@@ -42,7 +42,23 @@ export class iccBeMikronoApi {
     else throw Error("api-error" + e.status)
   }
 
-  appointments(
+  appointmentsByDate(date: number): Promise<Array<models.AppointmentDto> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/be_mikrono/appointments/byDate/{date}".replace("{date}", date + "") +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.AppointmentDto(it)))
+      .catch(err => this.handleError(err))
+  }
+  appointmentsByPatient(
     patientId: string,
     from?: number,
     from2?: number
@@ -56,22 +72,6 @@ export class iccBeMikronoApi {
       new Date().getTime() +
       (from ? "&from=" + from : "") +
       (from2 ? "&from2=" + from2 : "")
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.AppointmentDto(it)))
-      .catch(err => this.handleError(err))
-  }
-  appointments_1(date: number): Promise<Array<models.AppointmentDto> | any> {
-    let _body = null
-
-    const _url =
-      this.host +
-      "/be_mikrono/appointments/byDate/{date}".replace("{date}", date + "") +
-      "?ts=" +
-      new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")

@@ -1,11 +1,11 @@
-import { iccBekmehrApi } from "../icc-api/iccApi"
+import { iccBeKmehrApi } from "../icc-api/iccApi"
 
 import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
 import { IccContactXApi } from "./icc-contact-x-api"
 import { IccHelementXApi } from "./icc-helement-x-api"
 
-export class IccBekmehrXApi extends iccBekmehrApi {
+export class IccBekmehrXApi extends iccBeKmehrApi {
   private readonly ctcApi: IccContactXApi
   private readonly helementApi: IccHelementXApi
   private readonly wssHost: string

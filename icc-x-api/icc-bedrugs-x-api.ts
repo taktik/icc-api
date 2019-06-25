@@ -1,10 +1,10 @@
-import { iccBedrugsApi } from "../icc-api/iccApi"
+import { iccBeDrugsApi } from "../icc-api/iccApi"
 
 import * as _ from "lodash"
 import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
 
-export class IccBedrugsXApi extends iccBedrugsApi {
+export class IccBedrugsXApi extends iccBeDrugsApi {
   atcCache: { [key: string]: Promise<Array<models.MppPreview>> } = {}
 
   constructor(host: string, headers: { [key: string]: string }) {
