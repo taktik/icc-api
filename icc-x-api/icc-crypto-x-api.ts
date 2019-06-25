@@ -1,17 +1,21 @@
-import { iccHcpartyApi } from "../icc-api/iccApi"
+import { iccHcpartyApi, iccPatientApi } from "../icc-api/iccApi"
 import { AES, AESUtils } from "./crypto/AES"
 import { RSA, RSAUtils } from "./crypto/RSA"
 import { utils, UtilsClass } from "./crypto/utils"
 
 import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
-import { HealthcarePartyDto, DelegationDto } from "../icc-api/model/models"
+import { HealthcarePartyDto, DelegationDto, PatientDto } from "../icc-api/model/models"
 
 export class IccCryptoXApi {
   hcPartyKeysCache: {
     [key: string]: { delegatorId: string; key: CryptoKey }
   } = {}
-  hcPartiesRequestsCache: { [key: string]: Promise<models.HealthcarePartyDto> } = {}
+  hcPartiesRequestsCache: {
+    [key: string]:
+      | { entityType: "hcp"; entity: Promise<models.HealthcarePartyDto> }
+      | { entityType: "patient"; entity: Promise<models.PatientDto> }
+  } = {}
   hcPartyKeysRequestsCache: { [key: string]: Promise<any> } = {}
 
   emptyHcpCache(hcpartyId: string) {
@@ -20,10 +24,60 @@ export class IccCryptoXApi {
   }
 
   private getHealthcareParty(hcpartyId: string): Promise<models.HealthcarePartyDto> {
-    return (
-      this.hcPartiesRequestsCache[hcpartyId] ||
-      (this.hcPartiesRequestsCache[hcpartyId] = this.hcpartyBaseApi.getHealthcareParty(hcpartyId))
-    )
+    const cached = this.hcPartiesRequestsCache[hcpartyId]
+    return cached
+      ? cached.entityType === "hcp"
+        ? cached.entity
+        : Promise.reject("Wrong type in cache")
+      : (this.hcPartiesRequestsCache[hcpartyId] = {
+          entityType: "hcp",
+          entity: this.hcpartyBaseApi.getHealthcareParty(hcpartyId)
+        }).entity
+  }
+
+  private getPatient(patientId: string): Promise<models.HealthcarePartyDto> {
+    const cached = this.hcPartiesRequestsCache[patientId]
+    return cached
+      ? cached.entityType === "patient"
+        ? cached.entity
+        : Promise.reject("Wrong type in cache")
+      : (this.hcPartiesRequestsCache[patientId] = {
+          entityType: "patient",
+          entity: this.patientBaseApi.getPatient(patientId)
+        }).entity
+  }
+
+  private getHcpOrPatient(
+    hcpartyId: string
+  ): Promise<models.HealthcarePartyDto | models.PatientDto> {
+    const cached = this.hcPartiesRequestsCache[hcpartyId]
+
+    return cached
+      ? cached.entity.catch(() => {
+          cached.entityType = "hcp"
+          const p = this.hcpartyBaseApi.getHealthcareParty(hcpartyId).catch(() => {
+            cached.entityType = "patient"
+            const pp = this.patientBaseApi.getPatient(hcpartyId)
+            cached.entity = pp
+            return pp
+          })
+          cached.entity = p
+          return p
+        })
+      : (this.hcPartiesRequestsCache[hcpartyId] = {
+          entityType: "hcp",
+          entity: this.hcpartyBaseApi.getHealthcareParty(hcpartyId).catch(() => {
+            const cached = this.hcPartiesRequestsCache[hcpartyId]!!
+            cached.entityType = "patient"
+            const pp = this.patientBaseApi.getPatient(hcpartyId)
+            cached.entity = pp
+            return pp
+          })
+        }).entity
+  }
+
+  private getCachedHcpOrPatientType(hcpartyId: string): string | undefined {
+    return (this.hcPartiesRequestsCache[hcpartyId] || {}).entityType
   }
 
   private getHcPartyKeysForDelegate(delegateHcPartyId: string): Promise<{ [key: string]: string }> {
@@ -31,7 +85,9 @@ export class IccCryptoXApi {
       this.hcPartyKeysRequestsCache[delegateHcPartyId] ||
       (this.hcPartyKeysRequestsCache[
         delegateHcPartyId
-      ] = this.hcpartyBaseApi.getHcPartyKeysForDelegate(delegateHcPartyId))
+      ] = this.hcpartyBaseApi
+        .getHcPartyKeysForDelegate(delegateHcPartyId)
+        .catch(() => this.patientBaseApi.getPatient(delegateHcPartyId).then(p => p.hcPartyKeys)))
     )
   }
 
@@ -39,7 +95,7 @@ export class IccCryptoXApi {
   hcpPreferenceKeyEhealthCert: string = "eHealthCRT"
 
   private hcpartyBaseApi: iccHcpartyApi
-  private patientBaseApi: iccHcpartyApi
+  private patientBaseApi: iccPatientApi
 
   AES: AESUtils = AES
   RSA: RSAUtils = RSA
@@ -49,7 +105,7 @@ export class IccCryptoXApi {
     host: string,
     headers: { [key: string]: string },
     hcpartyBaseApi: iccHcpartyApi,
-    patientBaseApi: iccHcpartyApi
+    patientBaseApi: iccPatientApi
   ) {
     this.hcpartyBaseApi = hcpartyBaseApi
     this.patientBaseApi = patientBaseApi
@@ -167,10 +223,10 @@ export class IccCryptoXApi {
         delegatorIds[delegation.owner!] = true
       })
     } else if (fallbackOnParent) {
-      return this.getHealthcareParty(healthcarePartyId).then(
+      return this.getHcpOrPatient(healthcarePartyId).then(
         hcp =>
-          hcp.parentId
-            ? this.decryptAndImportAesHcPartyKeysInDelegations(hcp.parentId, delegations)
+          (hcp as any).parentId
+            ? this.decryptAndImportAesHcPartyKeysInDelegations((hcp as any).parentId, delegations)
             : Promise.resolve([])
       )
     }
@@ -193,7 +249,7 @@ export class IccCryptoXApi {
     secretId: string
   }> {
     const secretId = this.randomUuid()
-    return this.getHealthcareParty(ownerId)
+    return this.getHcpOrPatient(ownerId)
       .then(owner => owner.hcPartyKeys![ownerId][0])
       .then(encryptedHcPartyKey =>
         this.decryptHcPartyKey(ownerId, ownerId, encryptedHcPartyKey, true)
@@ -261,7 +317,7 @@ export class IccCryptoXApi {
         secretId: null
       })
     }
-    return this.getHealthcareParty(ownerId)
+    return this.getHcpOrPatient(ownerId)
       .then(owner => {
         if (!owner.hcPartyKeys![delegateId]) {
           return this.generateKeyForDelegate(ownerId, delegateId).then(
@@ -865,10 +921,7 @@ export class IccCryptoXApi {
   }
 
   generateKeyForDelegate(ownerId: string, delegateId: string) {
-    return Promise.all([
-      this.getHealthcareParty(ownerId),
-      this.getHealthcareParty(delegateId)
-    ]).then(
+    return Promise.all([this.getHcpOrPatient(ownerId), this.getHcpOrPatient(delegateId)]).then(
       ([owner, delegate]) =>
         delegate.publicKey
           ? this.AES.generateCryptoKey(true)
@@ -894,7 +947,10 @@ export class IccCryptoXApi {
                   ])
               )
               .then(() =>
-                this.hcpartyBaseApi.modifyHealthcareParty(owner).then(hcp => {
+                (this.getCachedHcpOrPatientType(owner.id!!) === "hcp"
+                  ? this.hcpartyBaseApi.modifyHealthcareParty(owner as HealthcarePartyDto)
+                  : this.patientBaseApi.modifyPatient(owner as PatientDto)
+                ).then(hcp => {
                   // invalidate the hcp cache for the modified hcp
                   this.emptyHcpCache(ownerId)
                   // invalidate the hcPartyKeys cache for the delegate hcp (who was not modified, but the view for its
