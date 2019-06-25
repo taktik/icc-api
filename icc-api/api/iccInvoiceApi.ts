@@ -105,7 +105,7 @@ export class iccInvoiceApi {
       .catch(err => this.handleError(err))
   }
   findByAuthor(
-    userId: string,
+    hcPartyId: string,
     fromDate?: number,
     toDate?: number,
     startKey?: string,
@@ -116,7 +116,7 @@ export class iccInvoiceApi {
 
     const _url =
       this.host +
-      "/invoice/byauthor/{userId}".replace("{userId}", userId + "") +
+      "/invoice/byauthor/{hcPartyId}".replace("{hcPartyId}", hcPartyId + "") +
       "?ts=" +
       new Date().getTime() +
       (fromDate ? "&fromDate=" + fromDate : "") +
@@ -281,8 +281,8 @@ export class iccInvoiceApi {
   }
   listByHcPartySentMediumTypeInvoiceTypeSentDate(
     hcPartyId: string,
-    sentMediumType: string,
-    invoiceType: string,
+    sentMediumType: "cdrom" | "eattest" | "efact" | "email" | "mediprima" | "paper",
+    invoiceType: "patient" | "mutualfund" | "payingagency" | "insurance" | "efact" | "other",
     sent: boolean,
     from?: number,
     to?: number

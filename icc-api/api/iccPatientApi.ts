@@ -131,7 +131,23 @@ export class iccPatientApi {
       .then(doc => new models.PatientPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  findByAccessLogUserAfterDate(
+  findByAccessLogUserAfterDate(externalId: string): Promise<models.PatientDto | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/patient/byExternalId/{externalId}".replace("{externalId}", externalId + "") +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => new models.PatientDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+  findByAccessLogUserAfterDate_1(
     userId: string,
     accessType?: string,
     startDate?: number,
@@ -157,22 +173,6 @@ export class iccPatientApi {
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.PatientPaginatedList(doc.body as JSON))
-      .catch(err => this.handleError(err))
-  }
-  findByAccessLogUserAfterDate_1(externalId: string): Promise<models.PatientDto | any> {
-    let _body = null
-
-    const _url =
-      this.host +
-      "/patient/byExternalId/{externalId}".replace("{externalId}", externalId + "") +
-      "?ts=" +
-      new Date().getTime()
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => new models.PatientDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
   findByNameBirthSsinAuto(
@@ -257,6 +257,27 @@ export class iccPatientApi {
       .catch(err => this.handleError(err))
   }
   listDeletedPatients(
+    firstName?: string,
+    lastName?: string
+  ): Promise<Array<models.PatientPaginatedList> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/patient/deleted/by_name" +
+      "?ts=" +
+      new Date().getTime() +
+      (firstName ? "&firstName=" + firstName : "") +
+      (lastName ? "&lastName=" + lastName : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.PatientPaginatedList(it)))
+      .catch(err => this.handleError(err))
+  }
+  listDeletedPatients_2(
     startDate?: number,
     endDate?: number,
     desc?: boolean,
@@ -281,27 +302,6 @@ export class iccPatientApi {
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
       .then(doc => new models.PatientPaginatedList(doc.body as JSON))
-      .catch(err => this.handleError(err))
-  }
-  listDeletedPatients_2(
-    firstName?: string,
-    lastName?: string
-  ): Promise<Array<models.PatientPaginatedList> | any> {
-    let _body = null
-
-    const _url =
-      this.host +
-      "/patient/deleted/by_name" +
-      "?ts=" +
-      new Date().getTime() +
-      (firstName ? "&firstName=" + firstName : "") +
-      (lastName ? "&lastName=" + lastName : "")
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.PatientPaginatedList(it)))
       .catch(err => this.handleError(err))
   }
   listOfMergesAfter(date: number): Promise<Array<models.PatientDto> | any> {

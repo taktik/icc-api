@@ -38,13 +38,15 @@ export class UserStubDto {
 
   healthcarePartyId?: string
 
+  patientId?: string
+
   email?: string
 
   autoDelegations?: { [key: string]: Array<string> }
 
-  virtualHosts?: Array<string>
-
   virtualHostDependency?: UserStubDto.VirtualHostDependencyEnum
+
+  virtualHosts?: Array<string>
 }
 export namespace UserStubDto {
   export enum VirtualHostDependencyEnum {
