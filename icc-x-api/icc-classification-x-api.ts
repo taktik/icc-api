@@ -25,7 +25,7 @@ export class IccClassificationXApi extends iccClassificationApi {
         _type: "org.taktik.icure.entities.Classification",
         created: new Date().getTime(),
         modified: new Date().getTime(),
-        responsible: user.healthcarePartyId,
+        responsible: user.healthcarePartyId || user.patientId,
         author: user.id,
         codes: [],
         tags: [],
@@ -43,13 +43,14 @@ export class IccClassificationXApi extends iccClassificationApi {
     patient: models.PatientDto,
     classification: models.ClassificationDto
   ): Promise<models.ClassificationDto> {
+    const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto
-      .extractDelegationsSFKs(patient, user.healthcarePartyId!)
+      .extractDelegationsSFKs(patient, hcpId!)
       .then(secretForeignKeys =>
         this.crypto.initObjectDelegations(
           classification,
           patient,
-          user.healthcarePartyId!,
+          hcpId!,
           secretForeignKeys.extractedKeys[0]
         )
       )
@@ -71,7 +72,7 @@ export class IccClassificationXApi extends iccClassificationApi {
                 .extendedDelegationsAndCryptedForeignKeys(
                   classification,
                   patient,
-                  user.healthcarePartyId!,
+                  hcpId!,
                   delegateId,
                   initData.secretId
                 )

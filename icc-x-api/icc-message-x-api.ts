@@ -120,13 +120,14 @@ export class IccMessageXApi extends iccMessageApi {
       m || {}
     )
 
+    const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto
-      .extractDelegationsSFKs(patient, user.healthcarePartyId!)
+      .extractDelegationsSFKs(patient, hcpId)
       .then(secretForeignKeys =>
         this.crypto.initObjectDelegations(
           message,
           patient,
-          user.healthcarePartyId!,
+          hcpId!,
           secretForeignKeys.extractedKeys[0]
         )
       )
@@ -148,7 +149,7 @@ export class IccMessageXApi extends iccMessageApi {
                 .extendedDelegationsAndCryptedForeignKeys(
                   helement,
                   patient,
-                  user.healthcarePartyId!,
+                  hcpId!,
                   delegateId,
                   initData.secretId
                 )

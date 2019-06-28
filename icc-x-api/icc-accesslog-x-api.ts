@@ -1,4 +1,4 @@
-import { iccHelementApi } from "../icc-api/iccApi"
+import { iccAccesslogApi } from "../icc-api/iccApi"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 
 import * as models from "../icc-api/model/models"
@@ -8,7 +8,7 @@ import * as moment from "moment"
 import { utils } from "./crypto/utils"
 import { AES } from "./crypto/AES"
 
-export class IccHelementXApi extends iccHelementApi {
+export class IccAccesslogXApi extends iccAccesslogApi {
   crypto: IccCryptoXApi
 
   constructor(host: string, headers: { [key: string]: string }, crypto: IccCryptoXApi) {
@@ -18,18 +18,19 @@ export class IccHelementXApi extends iccHelementApi {
 
   newInstance(user: models.UserDto, patient: models.PatientDto, h: any) {
     const hcpId = user.healthcarePartyId || user.patientId
-    const helement = _.assign(
+    const accessslog = _.assign(
       {
         id: this.crypto.randomUuid(),
-        _type: "org.taktik.icure.entities.HealthElement",
+        _type: "org.taktik.icure.entities.AccessLog",
         created: new Date().getTime(),
         modified: new Date().getTime(),
+        date: +new Date(),
         responsible: hcpId,
         author: user.id,
         codes: [],
         tags: [],
-        healthElementId: this.crypto.randomUuid(),
-        openingDate: parseInt(moment().format("YYYYMMDDHHmmss"))
+        user: user.id,
+        accessType: "USER_ACCESS"
       },
       h || {}
     )
@@ -38,20 +39,20 @@ export class IccHelementXApi extends iccHelementApi {
       .extractDelegationsSFKs(patient, hcpId)
       .then(secretForeignKeys =>
         this.crypto.initObjectDelegations(
-          helement,
+          accessslog,
           patient,
           hcpId!,
           secretForeignKeys.extractedKeys[0]
         )
       )
       .then(initData => {
-        _.extend(helement, {
+        _.extend(accessslog, {
           delegations: initData.delegations,
           cryptedForeignKeys: initData.cryptedForeignKeys,
           secretForeignKeys: initData.secretForeignKeys
         })
 
-        let promise = Promise.resolve(helement)
+        let promise = Promise.resolve(accessslog)
         ;(user.autoDelegations
           ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
           : []

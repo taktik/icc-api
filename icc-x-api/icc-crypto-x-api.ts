@@ -642,9 +642,9 @@ export class IccCryptoXApi {
       | models.ReceiptDto
       | models.ClassificationDto
       | null,
-    hcpartyId: string
-  ): Promise<{ extractedKeys: Array<string>; hcpartyId: string }> {
-    if (!document) {
+    hcpartyId?: string
+  ): Promise<{ extractedKeys: Array<string>; hcpartyId?: string }> {
+    if (!document || !hcpartyId) {
       return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
     }
     const delegationsForAllDelegates = document.delegations
@@ -713,6 +713,25 @@ export class IccCryptoXApi {
       document.id!,
       eckeysForAllDelegates
     )
+  }
+
+  extractDelegationsSFKsAndEncryptionSKs(
+    ety:
+      | models.PatientDto
+      | models.ContactDto
+      | models.InvoiceDto
+      | models.DocumentDto
+      | models.HealthElementDto,
+    ownerId: string
+  ) {
+    const delegationsSfksOwnerPromise = this.extractDelegationsSFKs(ety, ownerId).then(
+      xks => xks.extractedKeys
+    ) //Will climb up hierarchy
+    const encryptionKeysOwnerPromise = this.extractEncryptionsSKs(ety, ownerId).then(
+      xks => xks.extractedKeys
+    ) //Will climb up hierarchy
+
+    return Promise.all([delegationsSfksOwnerPromise, encryptionKeysOwnerPromise])
   }
 
   extractKeysFromDelegationsForHcpHierarchy(
@@ -964,7 +983,7 @@ export class IccCryptoXApi {
   }
 
   // noinspection JSUnusedGlobalSymbols
-  checkPrivateKeyValidity(hcp: models.HealthcarePartyDto): Promise<boolean> {
+  checkPrivateKeyValidity(hcp: models.HealthcarePartyDto | models.PatientDto): Promise<boolean> {
     return new Promise<boolean>(resolve => {
       this.RSA.importKey("jwk", utils.spkiToJwk(utils.hex2ua(hcp.publicKey!)), ["encrypt"])
         .then(k => this.RSA.encrypt(k, this.utils.utf82ua("shibboleth")))
