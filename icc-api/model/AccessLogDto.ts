@@ -34,6 +34,30 @@ export class AccessLogDto {
 
   deletionDate?: number
 
+  created?: number
+
+  modified?: number
+
+  endOfLife?: number
+
+  author?: string
+
+  responsible?: string
+
+  medicalLocationId?: string
+
+  codes?: Array<models.CodeDto>
+
+  tags?: Array<models.CodeDto>
+
+  secretForeignKeys?: Array<string>
+
+  cryptedForeignKeys?: { [key: string]: Array<models.DelegationDto> }
+
+  delegations?: { [key: string]: Array<models.DelegationDto> }
+
+  encryptionKeys?: { [key: string]: Array<models.DelegationDto> }
+
   accessType?: string
 
   date?: number
@@ -41,4 +65,6 @@ export class AccessLogDto {
   patientId?: string
 
   user?: string
+
+  detail?: string
 }

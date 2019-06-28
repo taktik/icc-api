@@ -10,6 +10,7 @@ import { AES } from "./crypto/AES"
 
 export class IccAccesslogXApi extends iccAccesslogApi {
   crypto: IccCryptoXApi
+  cryptedKeys = ["detail"]
 
   constructor(host: string, headers: { [key: string]: string }, crypto: IccCryptoXApi) {
     super(host, headers)
@@ -101,7 +102,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
    * @param keepObsoleteVersions
    */
 
-  findBy(hcpartyId: string, patient: models.PatientDto, keepObsoleteVersions: boolean = false) {
+  findBy(hcpartyId: string, patient: models.PatientDto) {
     return this.crypto
       .extractDelegationsSFKs(patient, hcpartyId)
       .then(
@@ -110,28 +111,11 @@ export class IccAccesslogXApi extends iccAccesslogApi {
           secretForeignKeys.extractedKeys &&
           secretForeignKeys.extractedKeys.length > 0
             ? this.findByHCPartyPatientSecretFKeys(
-                secretForeignKeys.hcpartyId,
+                secretForeignKeys.hcpartyId!,
                 secretForeignKeys.extractedKeys.join(",")
               )
             : Promise.resolve([])
       )
-      .then((decryptedHelements: Array<models.HealthElementDto>) => {
-        const byIds: { [key: string]: models.HealthElementDto } = {}
-
-        if (keepObsoleteVersions) {
-          return decryptedHelements
-        } else {
-          decryptedHelements.forEach(he => {
-            if (he.healthElementId) {
-              const phe = byIds[he.healthElementId]
-              if (!phe || !phe.modified || (he.modified && phe.modified < he.modified)) {
-                byIds[he.healthElementId] = he
-              }
-            }
-          })
-          return _.values(byIds).filter((s: any) => !s.endOfLife)
-        }
-      })
   }
 
   findByHCPartyPatientSecretFKeys(
@@ -140,91 +124,98 @@ export class IccAccesslogXApi extends iccAccesslogApi {
   ): Promise<Array<models.ContactDto> | any> {
     return super
       .findByHCPartyPatientSecretFKeys(hcPartyId, secretFKeys)
-      .then(helements => this.decrypt(hcPartyId, helements))
+      .then(accesslogs => this.decrypt(hcPartyId, accesslogs))
   }
 
-  decrypt(
-    hcpartyId: string,
-    hes: Array<models.HealthElementDto>
-  ): Promise<Array<models.HealthElementDto>> {
+  decrypt(hcpId: string, pats: Array<models.PatientDto>): Promise<Array<models.PatientDto>> {
+    //First check that we have no dangling delegation
+
     return Promise.all(
-      hes.map(he =>
-        this.crypto
-          .extractKeysFromDelegationsForHcpHierarchy(
-            hcpartyId,
-            he.id!,
-            _.size(he.encryptionKeys) ? he.encryptionKeys! : he.delegations!
-          )
-          .then(({ extractedKeys: sfks }) => {
-            if (!sfks || !sfks.length) {
-              console.log("Cannot decrypt helement", he.id)
-              return Promise.resolve(he)
-            }
-            if (he.encryptedSelf) {
-              return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(
-                key =>
-                  new Promise((resolve: (value: any) => any) =>
-                    AES.decrypt(key, utils.text2ua(atob(he.encryptedSelf!))).then(
-                      dec => {
-                        let jsonContent
-                        try {
-                          jsonContent = dec && utils.ua2utf8(dec)
-                          jsonContent && _.assign(he, JSON.parse(jsonContent))
-                        } catch (e) {
-                          console.log(
-                            "Cannot parse he",
-                            he.id,
-                            jsonContent || "<- Invalid encoding"
-                          )
-                        }
-                        resolve(he)
-                      },
-                      () => {
-                        console.log("Cannot decrypt contact", he.id)
-                        resolve(he)
-                      }
-                    )
-                  )
+      pats.map(p => {
+        return p.encryptedSelf
+          ? this.crypto
+              .extractKeysFromDelegationsForHcpHierarchy(
+                hcpId!,
+                p.id!,
+                _.size(p.encryptionKeys) ? p.encryptionKeys! : p.delegations!
               )
-            } else {
-              return Promise.resolve(he)
-            }
-          })
-      )
+              .then(({ extractedKeys: sfks }) => {
+                if (!sfks || !sfks.length) {
+                  //console.log("Cannot decrypt contact", ctc.id)
+                  return Promise.resolve(p)
+                }
+                return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(key =>
+                  utils.decrypt(p, ec =>
+                    AES.decrypt(key, ec).then(dec => {
+                      const jsonContent = dec && utils.ua2utf8(dec)
+                      try {
+                        return JSON.parse(jsonContent)
+                      } catch (e) {
+                        console.log(
+                          "Cannot parse access log",
+                          p.id,
+                          jsonContent || "Invalid content"
+                        )
+                        return {}
+                      }
+                    })
+                  )
+                )
+              })
+          : Promise.resolve(p)
+      })
     )
   }
 
-  // noinspection JSUnusedGlobalSymbols
-  serviceToHealthElement(
-    user: models.UserDto,
-    patient: models.PatientDto,
-    heSvc: models.ServiceDto,
-    descr: string
-  ) {
-    return this.newInstance(user, patient, {
-      idService: heSvc.id,
-      author: heSvc.author,
-      responsible: heSvc.responsible,
-      openingDate: heSvc.valueDate || heSvc.openingDate,
-      descr: descr,
-      idOpeningContact: heSvc.contactId,
-      modified: heSvc.modified,
-      created: heSvc.created,
-      codes: heSvc.codes,
-      tags: heSvc.tags
-    }).then(he => {
-      return this.createHealthElement(he)
+  initEncryptionKeys(user: models.UserDto, calendarItem: models.PatientDto) {
+    const hcpId = user.healthcarePartyId || user.patientId
+    return this.crypto.initEncryptionKeys(calendarItem, hcpId!).then(eks => {
+      let promise = Promise.resolve(calendarItem)
+      ;(user.autoDelegations
+        ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
+        : []
+      ).forEach(
+        delegateId =>
+          (promise = promise.then(item =>
+            this.crypto
+              .appendEncryptionKeys(item, hcpId!, delegateId, eks.secretId)
+              .then(extraEks => {
+                return _.extend(item, {
+                  encryptionKeys: extraEks.encryptionKeys
+                })
+              })
+          ))
+      )
+      return promise
     })
   }
 
-  // noinspection JSUnusedGlobalSymbols, JSMethodCanBeStatic
-  stringToCode(code: string) {
-    const c = code.split("|")
-    return new models.CodeDto({
-      type: c[0],
-      code: c[1],
-      version: c[2],
-      id: code
-    })
+  encrypt(user: models.UserDto, pats: Array<models.PatientDto>): Promise<Array<models.PatientDto>> {
+    return Promise.all(
+      pats.map(p =>
+        (p.encryptionKeys && Object.keys(p.encryptionKeys).length
+          ? Promise.resolve(p)
+          : this.initEncryptionKeys(user, p)
+        )
+          .then(p =>
+            this.crypto.extractKeysFromDelegationsForHcpHierarchy(
+              user.healthcarePartyId!,
+              p.id!,
+              p.encryptionKeys!
+            )
+          )
+          .then((sfks: { extractedKeys: Array<string>; hcpartyId: string }) =>
+            AES.importKey("raw", utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
+          )
+          .then((key: CryptoKey) =>
+            utils.crypt(
+              p,
+              (obj: { [key: string]: string }) =>
+                AES.encrypt(key, utils.utf82ua(JSON.stringify(obj))),
+              this.cryptedKeys
+            )
+          )
+      )
+    )
   }
 }

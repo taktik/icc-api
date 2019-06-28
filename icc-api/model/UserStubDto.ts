@@ -44,9 +44,9 @@ export class UserStubDto {
 
   autoDelegations?: { [key: string]: Array<string> }
 
-  virtualHosts?: Array<string>
-
   virtualHostDependency?: UserStubDto.VirtualHostDependencyEnum
+
+  virtualHosts?: Array<string>
 }
 export namespace UserStubDto {
   export enum VirtualHostDependencyEnum {

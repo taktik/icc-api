@@ -109,7 +109,7 @@ export class IccHelementXApi extends iccHelementApi {
           secretForeignKeys.extractedKeys &&
           secretForeignKeys.extractedKeys.length > 0
             ? this.findByHCPartyPatientSecretFKeys(
-                secretForeignKeys.hcpartyId,
+                secretForeignKeys.hcpartyId!,
                 secretForeignKeys.extractedKeys.join(",")
               )
             : Promise.resolve([])

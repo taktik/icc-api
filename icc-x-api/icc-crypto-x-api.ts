@@ -905,7 +905,7 @@ export class IccCryptoXApi {
 
   /**
    * Returns true if a key has been set in the localstorage
-   * @param hcp The healthcare party
+   * @param hcpId The healthcare party id
    */
   syncEhealthCertificate(hcpId: string): Promise<boolean> {
     return this.hcpartyBaseApi.getHealthcareParty(hcpId).then(hcp => {
