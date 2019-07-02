@@ -20,20 +20,18 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
   }
 
   newInstance(user: UserDto, ci: CalendarItemDto) {
-    const calendarItem = new models.CalendarItemDto(
-      _.extend(
-        {
-          id: this.crypto.randomUuid(),
-          _type: "org.taktik.icure.entities.CalendarItem",
-          created: new Date().getTime(),
-          modified: new Date().getTime(),
-          responsible: user.healthcarePartyId,
-          author: user.id,
-          codes: [],
-          tags: []
-        },
-        ci || {}
-      )
+    const calendarItem = _.extend(
+      {
+        id: this.crypto.randomUuid(),
+        _type: "org.taktik.icure.entities.CalendarItem",
+        created: new Date().getTime(),
+        modified: new Date().getTime(),
+        responsible: user.healthcarePartyId,
+        author: user.id,
+        codes: [],
+        tags: []
+      },
+      ci || {}
     )
     
 

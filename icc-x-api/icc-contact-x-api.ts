@@ -52,9 +52,9 @@ export class IccContactXApi extends iccContactApi {
    * 1. Extract(decrypt) the patient's secretForeignKeys from the 
    * "delegations" object.
    * 2. Initialize & encrypt the Contact's delegations & cryptedForeignKeys.
-   * 3. Initialize & encrypt the Contact's encryptedForeignKeys.
+   * 3. Initialize & encrypt the Contact's encryptionKeys.
    * 4. Return the contact with the extended delegations, cryptedForeignKeys
-   * & encryptedForeignKeys.
+   * & encryptionKeys.
    */
   private initDelegationsAndEncryptionKeys(
     user: models.UserDto,
