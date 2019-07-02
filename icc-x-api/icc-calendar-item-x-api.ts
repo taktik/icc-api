@@ -20,19 +20,22 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
   }
 
   newInstance(user: UserDto, ci: CalendarItemDto) {
-    const calendarItem = _.extend(
-      {
-        id: this.crypto.randomUuid(),
-        _type: "org.taktik.icure.entities.CalendarItem",
-        created: new Date().getTime(),
-        modified: new Date().getTime(),
-        responsible: user.healthcarePartyId,
-        author: user.id,
-        codes: [],
-        tags: []
-      },
-      ci || {}
+    const calendarItem = new models.CalendarItemDto(
+      _.extend(
+        {
+          id: this.crypto.randomUuid(),
+          _type: "org.taktik.icure.entities.CalendarItem",
+          created: new Date().getTime(),
+          modified: new Date().getTime(),
+          responsible: user.healthcarePartyId,
+          author: user.id,
+          codes: [],
+          tags: []
+        },
+        ci || {}
+      )
     )
+    
 
     return this.crypto
       .initObjectDelegations(calendarItem, null, user.healthcarePartyId!, null)
@@ -65,7 +68,7 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
     user: models.UserDto,
     patient: models.PatientDto,
     ci: any
-  ): Promise<models.ContactDto> {
+  ): Promise<models.CalendarItemDto> {
     const calendarItem = _.extend(
       {
         id: this.crypto.randomUuid(),
@@ -83,35 +86,35 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
     return this.initDelegationsAndEncryptionKeys(user, patient, calendarItem)
   }
 
-  private initDelegationsAndEncryptionKeys(
+  initDelegationsAndEncryptionKeys(
     user: models.UserDto,
     patient: models.PatientDto,
-    contact: models.ContactDto
-  ): Promise<models.ContactDto> {
+    calendarItem: models.CalendarItemDto
+  ): Promise<models.CalendarItemDto> {
     return this.crypto
       .extractDelegationsSFKs(patient, user.healthcarePartyId!)
       .then(secretForeignKeys =>
         Promise.all([
           this.crypto.initObjectDelegations(
-            contact,
+            calendarItem,
             patient,
             user.healthcarePartyId!,
             secretForeignKeys.extractedKeys[0]
           ),
-          this.crypto.initEncryptionKeys(contact, user.healthcarePartyId!)
+          this.crypto.initEncryptionKeys(calendarItem, user.healthcarePartyId!)
         ])
       )
       .then(initData => {
         const dels = initData[0]
         const eks = initData[1]
-        _.extend(contact, {
+        _.extend(calendarItem, {
           delegations: dels.delegations,
           cryptedForeignKeys: dels.cryptedForeignKeys,
           secretForeignKeys: dels.secretForeignKeys,
           encryptionKeys: eks.encryptionKeys
         })
 
-        let promise = Promise.resolve(contact)
+        let promise = Promise.resolve(calendarItem)
         ;(user.autoDelegations
           ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
           : []
@@ -199,4 +202,5 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
       )
     )
   }
+  
 }

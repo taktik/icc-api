@@ -27,6 +27,13 @@ export class IccCryptoXApi {
     )
   }
 
+  /**
+   * Return the encryption keys corresponding to a single
+   * Health Care Party provider, either from the cache
+   * or asking the backend.
+   * 
+   * @param delegateHcPartyId The Health Care Party id
+   */
   private getHcPartyKeysForDelegate(delegateHcPartyId: string): Promise<{ [key: string]: string }> {
     return (
       this.hcPartyKeysRequestsCache[delegateHcPartyId] ||
@@ -62,6 +69,15 @@ export class IccCryptoXApi {
     )
   }
 
+  /**
+   * Retrieve the decrypted hcPartyOwner key from cache, or
+   * fetch the hcPartyOwner's keypair and decrypt the key
+   * with the hcPartyOwner's private key.
+   * @param {string} delegatorId 
+   * @param {string} delegateHcPartyId 
+   * @param {string} encryptedHcPartyKey 
+   * @param {boolean} encryptedForDelegator 
+   */
   decryptHcPartyKey(
     delegatorId: string,
     delegateHcPartyId: string,
@@ -121,6 +137,15 @@ export class IccCryptoXApi {
     })
   }
 
+  /**
+   * 1. Get the keys from the delegateHealthCareParty (cache/backend).
+   * 2. For each key in the delegators, decrypt it with the delegator's
+   * private key
+   * 3. Filter out undefined keys and return th
+   * 
+   * @param delegatorsHcPartyIdsSet 
+   * @param delegateHcPartyId 
+   */
   decryptAndImportAesHcPartyKeysForDelegators(
     delegatorsHcPartyIdsSet: Array<string>,
     delegateHcPartyId: string
@@ -149,6 +174,17 @@ export class IccCryptoXApi {
     })
   }
 
+  /**
+   * 1. Checks whether the delegations' object has a delegation for the
+   * given healthCarePartyId. 
+   * 2. Enumerates all the delegators (delegation.owner) present in 
+   * the delegations.
+   * 3. Decrypt's delegators' keys and returns them.
+   * 
+   * @param {string} healthcarePartyId The Health Care Party Id.
+   * @param {object} delegations The delegations object 
+   * @param {boolean} fallbackOnParent use parent's healthCarePartyId.
+   */
   decryptAndImportAesHcPartyKeysInDelegations(
     healthcarePartyId: string,
     delegations: { [key: string]: Array<models.DelegationDto> },
@@ -174,6 +210,11 @@ export class IccCryptoXApi {
     )
   }
 
+  /**
+   * Retreive the owner HealthCareParty key and use it to encrypt
+   * both the delegations (createdObject.id) and the cryptedForeignKeys
+   * (parentObject.id), and returns them in an object.
+   */
   initObjectDelegations(
     createdObject: any,
     parentObject: any,
@@ -385,6 +426,13 @@ export class IccCryptoXApi {
       )
   }
 
+  /**
+   * Retrieve the owners HealthCareParty key, decrypt it, and
+   * use it to encrypt & initialize the "encryptionKeys" object
+   * and return it.
+   * @param createdObject 
+   * @param ownerId 
+   */
   initEncryptionKeys(
     createdObject: any,
     ownerId: string
@@ -578,6 +626,7 @@ export class IccCryptoXApi {
       | models.HealthElementDto
       | models.ReceiptDto
       | models.ClassificationDto
+      | models.CalendarItemDto
       | null,
     hcpartyId: string
   ): Promise<{ extractedKeys: Array<string>; hcpartyId: string }> {
@@ -606,6 +655,7 @@ export class IccCryptoXApi {
       | models.InvoiceDto
       | models.HealthElementDto
       | models.ReceiptDto
+      | models.CalendarItemDto
       | models.ClassificationDto
       | null,
     hcpartyId: string
@@ -652,6 +702,12 @@ export class IccCryptoXApi {
     )
   }
 
+  /**
+   * 1. Get HealthCarePartyDto from it's Id.
+   * 2. Decrypt the keys of the given HCP.
+   * 3. Decrypt the parent's key if it has parent.
+   * 4. Return the decrypted key corresponding to the Health Care Party.
+   */
   extractKeysFromDelegationsForHcpHierarchy(
     hcpartyId: string,
     objectId: string,
