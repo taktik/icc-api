@@ -48,6 +48,14 @@ export class IccContactXApi extends iccContactApi {
     return this.initDelegationsAndEncryptionKeys(user, patient, contact)
   }
 
+  /**
+   * 1. Extract(decrypt) the patient's secretForeignKeys from the 
+   * "delegations" object.
+   * 2. Initialize & encrypt the Contact's delegations & cryptedForeignKeys.
+   * 3. Initialize & encrypt the Contact's encryptionKeys.
+   * 4. Return the contact with the extended delegations, cryptedForeignKeys
+   * & encryptionKeys.
+   */
   private initDelegationsAndEncryptionKeys(
     user: models.UserDto,
     patient: models.PatientDto,
@@ -76,8 +84,9 @@ export class IccContactXApi extends iccContactApi {
           encryptionKeys: eks.encryptionKeys
         })
 
-        let promise = Promise.resolve(contact)
-        ;(user.autoDelegations
+        let promise = Promise.resolve(contact);
+        
+        (user.autoDelegations
           ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
           : []
         ).forEach(
