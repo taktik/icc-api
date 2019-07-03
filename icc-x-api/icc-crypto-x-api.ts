@@ -39,17 +39,15 @@ export class IccCryptoXApi {
           entity: this.hcpartyBaseApi
             .getHealthcareParty(hcpartyId)
             .then(hcp => {
-              const cached = this.hcPartiesRequestsCache[hcpartyId]!!
-              cached.entity = Promise.resolve(hcp)
+              this.hcPartiesRequestsCache[hcpartyId]!.entityType = "hcp"
               return hcp
             })
-            .catch(() => {
-              const cached = this.hcPartiesRequestsCache[hcpartyId]!!
-              cached.entityType = "patient"
-              const pp = this.patientBaseApi.getPatient(hcpartyId)
-              cached.entity = Promise.resolve(pp)
-              return pp
-            })
+            .catch(() =>
+              this.patientBaseApi.getPatient(hcpartyId).then(pat => {
+                this.hcPartiesRequestsCache[hcpartyId]!.entityType = "patient"
+                return pat
+              })
+            )
         }).entity
   }
 
