@@ -24,30 +24,6 @@ export class IccCryptoXApi {
     delete this.hcPartyKeysRequestsCache[hcpartyId]
   }
 
-  private getHealthcareParty(hcpartyId: string): Promise<models.HealthcarePartyDto> {
-    const cached = this.hcPartiesRequestsCache[hcpartyId]
-    return cached
-      ? cached.entityType === "hcp"
-        ? cached.entity
-        : Promise.reject("Wrong type in cache")
-      : (this.hcPartiesRequestsCache[hcpartyId] = {
-          entityType: "hcp",
-          entity: this.hcpartyBaseApi.getHealthcareParty(hcpartyId)
-        }).entity
-  }
-
-  private getPatient(patientId: string): Promise<models.HealthcarePartyDto> {
-    const cached = this.hcPartiesRequestsCache[patientId]
-    return cached
-      ? cached.entityType === "patient"
-        ? cached.entity
-        : Promise.reject("Wrong type in cache")
-      : (this.hcPartiesRequestsCache[patientId] = {
-          entityType: "patient",
-          entity: this.patientBaseApi.getPatient(patientId)
-        }).entity
-  }
-
   private getHcpOrPatient(
     hcpartyId: string
   ): Promise<models.HealthcarePartyDto | models.PatientDto> {
@@ -501,7 +477,7 @@ export class IccCryptoXApi {
     if (!secretIdOfModifiedObject) {
       return Promise.resolve({ encryptionKeys: modifiedObject.encryptionKeys, secretId: null })
     }
-    return this.getHealthcareParty(ownerId)
+    return this.getHcpOrPatient(ownerId)
       .then(owner => {
         if (!owner.hcPartyKeys![delegateId]) {
           return this.generateKeyForDelegate(ownerId, delegateId).then(
@@ -745,7 +721,7 @@ export class IccCryptoXApi {
     objectId: string,
     delegations: { [key: string]: Array<models.DelegationDto> }
   ): Promise<{ extractedKeys: Array<string>; hcpartyId: string }> {
-    return this.getHealthcareParty(hcpartyId).then(hcp =>
+    return this.getHcpOrPatient(hcpartyId).then(hcp =>
       (delegations[hcpartyId] && delegations[hcpartyId].length
         ? this.decryptAndImportAesHcPartyKeysInDelegations(hcpartyId, delegations, false).then(
             decryptedAndImportedAesHcPartyKeys => {
@@ -763,9 +739,9 @@ export class IccCryptoXApi {
         : Promise.resolve([])
       ).then(
         extractedKeys =>
-          hcp.parentId
+          (hcp as HealthcarePartyDto).parentId
             ? this.extractKeysFromDelegationsForHcpHierarchy(
-                hcp.parentId,
+                (hcp as HealthcarePartyDto).parentId!,
                 objectId,
                 delegations
               ).then(parentResponse =>
