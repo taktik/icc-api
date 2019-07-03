@@ -790,14 +790,17 @@ export class IccCryptoXApi {
   }
 
   loadKeyPairsAsTextInBrowserLocalStorage(healthcarePartyId: string, privateKey: Uint8Array) {
-    return this.hcpartyBaseApi
-      .getPublicKey(healthcarePartyId)
-      .then((publicKey: models.PublicKeyDto) => {
+    return this.getHcpOrPatient(healthcarePartyId)
+      .then(hcpOrPat => hcpOrPat.publicKey)
+      .then((publicKey?: string) => {
+        if (!publicKey) {
+          throw new Error("No public key has been defined for hcp")
+        }
         return this.RSA.importKeyPair(
           "jwk",
           this.utils.pkcs8ToJwk(privateKey),
           "jwk",
-          utils.spkiToJwk(utils.hex2ua(publicKey.hexString!))
+          utils.spkiToJwk(utils.hex2ua(publicKey))
         )
       })
       .then((keyPair: { publicKey: CryptoKey; privateKey: CryptoKey }) => {
