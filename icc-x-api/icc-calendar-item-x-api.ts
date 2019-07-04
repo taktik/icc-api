@@ -133,6 +133,23 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
       })
   }
 
+  /**
+   * Remove the following delegation objects from the 
+   * CalendarItem instance:
+   * delegations, cryptedForeignKeys, encryptionKeys, secretForeignKeys
+   * @param calendarItem The Calendar Item object
+   */
+  resetCalendarDelegationObjects(calendarItem: models.CalendarItemDto): models.CalendarItemDto {
+    const {
+      delegations,
+      cryptedForeignKeys,
+      encryptionKeys,
+      secretForeignKeys,
+      ...resetCalendarItem
+    } = calendarItem;
+    return resetCalendarItem;
+  }
+
   modifyCalendarItemWithHcParty(
     user: models.UserDto,
     body?: models.CalendarItemDto
