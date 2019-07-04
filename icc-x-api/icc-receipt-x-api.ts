@@ -30,7 +30,7 @@ export class IccReceiptXApi extends iccReceiptApi {
           _type: "org.taktik.icure.entities.Receipt",
           created: new Date().getTime(),
           modified: new Date().getTime(),
-          responsible: user.healthcarePartyId,
+          responsible: user.healthcarePartyId || user.patientId,
           author: user.id,
           codes: [],
           tags: []
@@ -47,8 +47,13 @@ export class IccReceiptXApi extends iccReceiptApi {
     receipt: models.ReceiptDto
   ): Promise<models.ReceiptDto> {
     return Promise.all([
-      this.crypto.initObjectDelegations(receipt, null, user.healthcarePartyId!, null),
-      this.crypto.initEncryptionKeys(receipt, user.healthcarePartyId!)
+      this.crypto.initObjectDelegations(
+        receipt,
+        null,
+        (user.healthcarePartyId || user.patientId)!,
+        null
+      ),
+      this.crypto.initEncryptionKeys(receipt, (user.healthcarePartyId || user.patientId)!)
     ]).then(initData => {
       const dels = initData[0]
       const eks = initData[1]
@@ -70,7 +75,7 @@ export class IccReceiptXApi extends iccReceiptApi {
               .addDelegationsAndEncryptionKeys(
                 null,
                 receipt,
-                user.healthcarePartyId!,
+                (user.healthcarePartyId || user.patientId)!,
                 delegateId,
                 dels.secretId,
                 eks.secretId
@@ -86,29 +91,36 @@ export class IccReceiptXApi extends iccReceiptApi {
   }
 
   initEncryptionKeys(user: models.UserDto, rcpt: models.ReceiptDto) {
-    return this.crypto.initEncryptionKeys(rcpt, user.healthcarePartyId!).then(eks => {
-      let promise = Promise.resolve(
-        _.extend(rcpt, {
-          encryptionKeys: eks.encryptionKeys
-        })
-      )
-      ;(user.autoDelegations
-        ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
-        : []
-      ).forEach(
-        delegateId =>
-          (promise = promise.then(receipt =>
-            this.crypto
-              .appendEncryptionKeys(receipt, user.healthcarePartyId!, delegateId, eks.secretId)
-              .then(extraEks => {
-                return _.extend(receipt, {
-                  encryptionKeys: extraEks.encryptionKeys
+    return this.crypto
+      .initEncryptionKeys(rcpt, (user.healthcarePartyId || user.patientId)!)
+      .then(eks => {
+        let promise = Promise.resolve(
+          _.extend(rcpt, {
+            encryptionKeys: eks.encryptionKeys
+          })
+        )
+        ;(user.autoDelegations
+          ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
+          : []
+        ).forEach(
+          delegateId =>
+            (promise = promise.then(receipt =>
+              this.crypto
+                .appendEncryptionKeys(
+                  receipt,
+                  (user.healthcarePartyId || user.patientId)!,
+                  delegateId,
+                  eks.secretId
+                )
+                .then(extraEks => {
+                  return _.extend(receipt, {
+                    encryptionKeys: extraEks.encryptionKeys
+                  })
                 })
-              })
-          ))
-      )
-      return promise
-    })
+            ))
+        )
+        return promise
+      })
   }
 
   logReceipt(

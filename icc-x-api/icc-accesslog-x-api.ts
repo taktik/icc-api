@@ -199,7 +199,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
         )
           .then(p =>
             this.crypto.extractKeysFromDelegationsForHcpHierarchy(
-              user.healthcarePartyId!,
+              (user.healthcarePartyId || user.patientId)!,
               p.id!,
               p.encryptionKeys!
             )

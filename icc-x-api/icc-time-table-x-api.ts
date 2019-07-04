@@ -24,7 +24,7 @@ export class IccTimeTableXApi extends iccTimeTableApi {
         _type: "org.taktik.icure.entities.CalendarItem",
         created: new Date().getTime(),
         modified: new Date().getTime(),
-        responsible: user.healthcarePartyId,
+        responsible: user.healthcarePartyId || user.patientId,
         author: user.id,
         codes: [],
         tags: []
@@ -33,7 +33,7 @@ export class IccTimeTableXApi extends iccTimeTableApi {
     )
 
     return this.crypto
-      .initObjectDelegations(timeTable, null, user.healthcarePartyId!, null)
+      .initObjectDelegations(timeTable, null, (user.healthcarePartyId || user.patientId)!, null)
       .then(initData => {
         _.extend(timeTable, { delegations: initData.delegations })
 
@@ -48,7 +48,7 @@ export class IccTimeTableXApi extends iccTimeTableApi {
                 this.crypto.extendedDelegationsAndCryptedForeignKeys(
                   patient,
                   null,
-                  user.healthcarePartyId!,
+                  (user.healthcarePartyId || user.patientId)!,
                   delegateId,
                   initData.secretId
                 )

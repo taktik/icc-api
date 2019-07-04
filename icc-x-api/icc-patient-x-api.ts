@@ -59,7 +59,7 @@ export class IccPatientXApi extends iccPatientApi {
         _type: "org.taktik.icure.entities.Patient",
         created: new Date().getTime(),
         modified: new Date().getTime(),
-        responsible: user.healthcarePartyId,
+        responsible: user.healthcarePartyId || user.patientId,
         author: user.id,
         codes: [],
         tags: []
@@ -75,7 +75,12 @@ export class IccPatientXApi extends iccPatientApi {
     secretForeignKey?: string
   ): Promise<models.PatientDto> {
     return this.crypto
-      .initObjectDelegations(patient, null, user.healthcarePartyId!, secretForeignKey || null)
+      .initObjectDelegations(
+        patient,
+        null,
+        (user.healthcarePartyId || user.patientId)!,
+        secretForeignKey || null
+      )
       .then(initData => {
         _.extend(patient, { delegations: initData.delegations })
 
@@ -90,7 +95,7 @@ export class IccPatientXApi extends iccPatientApi {
                 this.crypto.extendedDelegationsAndCryptedForeignKeys(
                   patient,
                   null,
-                  user.healthcarePartyId!,
+                  (user.healthcarePartyId || user.patientId)!,
                   delegateId,
                   initData.secretId
                 )
@@ -503,7 +508,7 @@ export class IccPatientXApi extends iccPatientApi {
         )
           .then(p =>
             this.crypto.extractKeysFromDelegationsForHcpHierarchy(
-              user.healthcarePartyId!,
+              (user.healthcarePartyId || user.patientId)!,
               p.id!,
               p.encryptionKeys!
             )
