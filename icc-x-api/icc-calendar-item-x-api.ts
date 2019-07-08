@@ -135,15 +135,18 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
 
   /**
    * Remove the following delegation objects from the 
-   * CalendarItem instance:
-   * delegations, cryptedForeignKeys, encryptionKeys, secretForeignKeys
+   * CalendarItem instance: cryptedForeignKeys, secretForeignKeys.
+   * 
+   * The delegations & encryptionKeys objects are not removed because
+   * in the case the CalendarItem is saved in the DB & then encrypted,
+   * if later we remove the patient from it, it'd reset the delegations
+   * and encryptionKeys thus impossibilitating further access.
+   * 
    * @param calendarItem The Calendar Item object
    */
   resetCalendarDelegationObjects(calendarItem: models.CalendarItemDto): models.CalendarItemDto {
     const {
-      delegations,
       cryptedForeignKeys,
-      encryptionKeys,
       secretForeignKeys,
       ...resetCalendarItem
     } = calendarItem;
