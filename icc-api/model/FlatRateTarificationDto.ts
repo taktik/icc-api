@@ -24,25 +24,22 @@
 
 import * as models from "./models"
 
-export class Valorisation {
+export class FlatRateTarificationDto {
   constructor(json: JSON | any) {
-    Object.assign(this as Valorisation, json)
+    Object.assign(this as FlatRateTarificationDto, json)
   }
-  startOfValidity?: number
+  code?: string
 
-  endOfValidity?: number
-
-  predicate?: string
-
-  totalAmount?: number
-
-  reimbursement?: number
-
-  patientIntervention?: number
-
-  doctorSupplement?: number
-
-  vat?: number
+  flatRateType?: FlatRateTarificationDto.FlatRateTypeEnum
 
   label?: { [key: string]: string }
+
+  valorisations?: Array<models.ValorisationDto>
+}
+export namespace FlatRateTarificationDto {
+  export enum FlatRateTypeEnum {
+    Physician = <any>"physician",
+    Physiotherapist = <any>"physiotherapist",
+    Nurse = <any>"nurse"
+  }
 }

@@ -56,11 +56,7 @@ export class IccDoctemplateXApi extends iccDoctemplateApi {
   }
 
   // noinspection JSUnusedGlobalSymbols
-  getAttachmentUrl(
-    documentId: string,
-    attachmentId: string,
-    sfks: Array<{ delegatorId: string; key: CryptoKey }>
-  ) {
+  getAttachmentUrl(documentId: string, attachmentId: string) {
     return (
       this.host +
       "/doctemplate/{documentId}/attachment/{attachmentId}"
