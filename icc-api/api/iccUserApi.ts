@@ -61,6 +61,19 @@ export class iccUserApi {
       .then(doc => new models.UserDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+  checkPassword(password?: string): Promise<boolean | any> {
+    let _body = null
+
+    const _url = this.host + "/user/checkPassword" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    password && (headers = headers.concat(new XHR.Header("password", password)))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => JSON.parse(JSON.stringify(doc.body)))
+      .catch(err => this.handleError(err))
+  }
   createUser(body?: models.UserDto): Promise<models.UserDto | any> {
     let _body = null
     _body = body

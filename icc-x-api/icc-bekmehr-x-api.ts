@@ -1,18 +1,18 @@
-import { iccBekmehrApi } from "../icc-api/iccApi"
+import { iccBeKmehrApi } from "../icc-api/iccApi"
 
 import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
 import { IccContactXApi } from "./icc-contact-x-api"
 import { IccHelementXApi } from "./icc-helement-x-api"
 
-export class IccBekmehrXApi extends iccBekmehrApi {
+export class IccBekmehrXApi extends iccBeKmehrApi {
   private readonly ctcApi: IccContactXApi
   private readonly helementApi: IccHelementXApi
   private readonly wssHost: string
 
   constructor(
     host: string,
-    headers: Array<XHR.Header>,
+    headers: { [key: string]: string },
     ctcApi: IccContactXApi,
     helementApi: IccHelementXApi
   ) {
@@ -111,7 +111,7 @@ export class IccBekmehrXApi extends iccBekmehrApi {
   ): Promise<Blob> {
     return new Promise((resolve, reject) => {
       const socket = new WebSocket(
-        `${this.wssHost}/be_kmehr/generateSmf${sessionId ? `;jsessionid=${sessionId}` : ""}`
+        `${this.wssHost}/be_kmehr/generateSumehr${sessionId ? `;jsessionid=${sessionId}` : ""}`
       )
       socket.addEventListener("open", function() {
         socket.send(

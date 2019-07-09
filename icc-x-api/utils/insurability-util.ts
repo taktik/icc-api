@@ -1,4 +1,4 @@
-import _ from "lodash"
+import * as _ from "lodash"
 import { PatientDto, InsurabilityDto } from "../../icc-api/model/models"
 
 export function isBIM(ct1: number | string, ct2: number | string): boolean {

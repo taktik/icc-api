@@ -1,10 +1,9 @@
 import { iccReceiptApi } from "../icc-api/iccApi"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 import { utils } from "./crypto/utils"
-import moment from "moment"
+import * as moment from "moment"
 import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
-import { XHR } from "../icc-api/api/XHR"
 import {
   AgreementResponse,
   DmgAcknowledge,
@@ -18,7 +17,7 @@ import {
 export class IccReceiptXApi extends iccReceiptApi {
   crypto: IccCryptoXApi
 
-  constructor(host: string, headers: Array<XHR.Header>, crypto: IccCryptoXApi) {
+  constructor(host: string, headers: { [key: string]: string }, crypto: IccCryptoXApi) {
     super(host, headers)
     this.crypto = crypto
   }

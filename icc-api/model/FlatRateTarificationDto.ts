@@ -30,11 +30,11 @@ export class FlatRateTarificationDto {
   }
   code?: string
 
-  flatRateType?: FlatRateTarificationDto.FlatRateTypeEnum
-
   label?: { [key: string]: string }
 
   valorisations?: Array<models.ValorisationDto>
+
+  flatRateType?: FlatRateTarificationDto.FlatRateTypeEnum
 }
 export namespace FlatRateTarificationDto {
   export enum FlatRateTypeEnum {

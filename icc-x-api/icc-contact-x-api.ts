@@ -5,17 +5,16 @@ import i18n from "./rsrc/contact.i18n"
 import { utils } from "./crypto/utils"
 import { AES } from "./crypto/AES"
 
-import moment from "moment"
+import * as moment from "moment"
 import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
-import { XHR } from "../icc-api/api/XHR"
 import { ContactDto } from "../icc-api/model/models"
 
 export class IccContactXApi extends iccContactApi {
   i18n: any = i18n
   crypto: IccCryptoXApi
 
-  constructor(host: string, headers: Array<XHR.Header>, crypto: IccCryptoXApi) {
+  constructor(host: string, headers: { [key: string]: string }, crypto: IccCryptoXApi) {
     super(host, headers)
     this.crypto = crypto
   }
@@ -32,7 +31,7 @@ export class IccContactXApi extends iccContactApi {
           _type: "org.taktik.icure.entities.Contact",
           created: new Date().getTime(),
           modified: new Date().getTime(),
-          responsible: user.healthcarePartyId,
+          responsible: user.healthcarePartyId || user.patientId,
           author: user.id,
           codes: [],
           tags: [],
@@ -53,17 +52,18 @@ export class IccContactXApi extends iccContactApi {
     patient: models.PatientDto,
     contact: models.ContactDto
   ): Promise<models.ContactDto> {
+    const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto
-      .extractDelegationsSFKs(patient, user.healthcarePartyId!)
+      .extractDelegationsSFKs(patient, hcpId!)
       .then(secretForeignKeys =>
         Promise.all([
           this.crypto.initObjectDelegations(
             contact,
             patient,
-            user.healthcarePartyId!,
+            hcpId!,
             secretForeignKeys.extractedKeys[0]
           ),
-          this.crypto.initEncryptionKeys(contact, user.healthcarePartyId!)
+          this.crypto.initEncryptionKeys(contact, hcpId!)
         ])
       )
       .then(initData => {
@@ -87,7 +87,7 @@ export class IccContactXApi extends iccContactApi {
                 .addDelegationsAndEncryptionKeys(
                   patient,
                   contact,
-                  user.healthcarePartyId!,
+                  hcpId!,
                   delegateId,
                   dels.secretId,
                   eks.secretId
@@ -103,7 +103,8 @@ export class IccContactXApi extends iccContactApi {
   }
 
   initEncryptionKeys(user: models.UserDto, ctc: models.ContactDto) {
-    return this.crypto.initEncryptionKeys(ctc, user.healthcarePartyId!).then(eks => {
+    const hcpId = user.healthcarePartyId || user.patientId
+    return this.crypto.initEncryptionKeys(ctc, hcpId!).then(eks => {
       let promise = Promise.resolve(
         _.extend(ctc, {
           encryptionKeys: eks.encryptionKeys
@@ -116,7 +117,7 @@ export class IccContactXApi extends iccContactApi {
         delegateId =>
           (promise = promise.then(contact =>
             this.crypto
-              .appendEncryptionKeys(contact, user.healthcarePartyId!, delegateId, eks.secretId)
+              .appendEncryptionKeys(contact, hcpId!, delegateId, eks.secretId)
               .then(extraEks => {
                 return _.extend(contact, {
                   encryptionKeys: extraEks.encryptionKeys
@@ -151,6 +152,7 @@ export class IccContactXApi extends iccContactApi {
     return this.crypto.extractDelegationsSFKs(patient, hcpartyId).then(secretForeignKeys => {
       return secretForeignKeys &&
         secretForeignKeys.extractedKeys &&
+        secretForeignKeys.hcpartyId &&
         secretForeignKeys.extractedKeys.length > 0
         ? this.findByHCPartyPatientSecretFKeys(
             secretForeignKeys.hcpartyId,
@@ -233,7 +235,7 @@ export class IccContactXApi extends iccContactApi {
   ): Promise<models.ContactPaginatedList | any> {
     return super
       .filterBy(startKey, startDocumentId, limit, body)
-      .then(ctcs => this.decrypt(user.healthcarePartyId!, ctcs))
+      .then(ctcs => this.decrypt((user.healthcarePartyId || user.patientId)!, ctcs))
   }
 
   findByHCPartyFormIdWithUser(
@@ -243,7 +245,7 @@ export class IccContactXApi extends iccContactApi {
   ): Promise<Array<models.ContactDto> | any> {
     return super
       .findByHCPartyFormId(hcPartyId, formId)
-      .then(ctcs => this.decrypt(user.healthcarePartyId!, ctcs))
+      .then(ctcs => this.decrypt((user.healthcarePartyId || user.patientId)!, ctcs))
   }
 
   findByHCPartyFormIdsWithUser(
@@ -253,13 +255,13 @@ export class IccContactXApi extends iccContactApi {
   ): Promise<Array<models.ContactDto> | any> {
     return super
       .findByHCPartyFormIds(hcPartyId, body)
-      .then(ctcs => this.decrypt(user.healthcarePartyId!, ctcs))
+      .then(ctcs => this.decrypt((user.healthcarePartyId || user.patientId)!, ctcs))
   }
 
   getContactWithUser(user: models.UserDto, contactId: string): Promise<models.ContactDto | any> {
     return super
       .getContact(contactId)
-      .then(ctc => this.decrypt(user.healthcarePartyId!, [ctc]))
+      .then(ctc => this.decrypt((user.healthcarePartyId || user.patientId)!, [ctc]))
       .then(ctcs => ctcs[0])
   }
 
@@ -267,7 +269,9 @@ export class IccContactXApi extends iccContactApi {
     user: models.UserDto,
     body?: models.ListOfIdsDto
   ): Promise<Array<models.ContactDto> | any> {
-    return super.getContacts(body).then(ctcs => this.decrypt(user.healthcarePartyId!, ctcs))
+    return super
+      .getContacts(body)
+      .then(ctcs => this.decrypt((user.healthcarePartyId || user.patientId)!, ctcs))
   }
 
   modifyContactWithUser(
@@ -277,7 +281,7 @@ export class IccContactXApi extends iccContactApi {
     return body
       ? this.encrypt(user, [_.cloneDeep(body)])
           .then(ctcs => super.modifyContact(ctcs[0]))
-          .then(ctc => this.decrypt(user.healthcarePartyId!, [ctc]))
+          .then(ctc => this.decrypt((user.healthcarePartyId || user.patientId)!, [ctc]))
           .then(ctcs => ctcs[0])
       : Promise.resolve(null)
   }
@@ -289,7 +293,7 @@ export class IccContactXApi extends iccContactApi {
     return bodies
       ? this.encrypt(user, bodies.map(c => _.cloneDeep(c)))
           .then(ctcs => super.modifyContacts(ctcs))
-          .then(ctcs => this.decrypt(user.healthcarePartyId!, ctcs))
+          .then(ctcs => this.decrypt((user.healthcarePartyId || user.patientId)!, ctcs))
       : Promise.resolve(null)
   }
 
@@ -300,13 +304,13 @@ export class IccContactXApi extends iccContactApi {
     return body
       ? this.encrypt(user, [_.cloneDeep(body)])
           .then(ctcs => super.createContact(ctcs[0]))
-          .then(ctc => this.decrypt(user.healthcarePartyId!, [ctc]))
+          .then(ctc => this.decrypt((user.healthcarePartyId || user.patientId)!, [ctc]))
           .then(ctcs => ctcs[0])
       : Promise.resolve(null)
   }
 
   encrypt(user: models.UserDto, ctcs: Array<models.ContactDto>) {
-    const hcpartyId = user.healthcarePartyId!
+    const hcpartyId = (user.healthcarePartyId || user.patientId)!
     const bypassEncryption = false //Used for debug
 
     return Promise.all(
@@ -685,7 +689,7 @@ export class IccContactXApi extends iccContactApi {
     const existing = ctc.services!.find(s => s.id === svc.id)
     const promoted = _.extend(_.extend(existing || {}, svc), {
       author: user.id,
-      responsible: user.healthcarePartyId,
+      responsible: user.healthcarePartyId || user.patientId,
       modified: new Date().getTime()
     })
     if (!existing) {
@@ -817,7 +821,7 @@ export class IccContactXApi extends iccContactApi {
             _type: "org.taktik.icure.entities.embed.Service",
             created: new Date().getTime(),
             modified: new Date().getTime(),
-            responsible: user.healthcarePartyId,
+            responsible: user.healthcarePartyId || user.patientId,
             author: user.id,
             codes: [],
             tags: [],

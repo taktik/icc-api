@@ -13,7 +13,7 @@ export class IccCodeXApi extends iccCodeApi {
   icpc2: any = icpc2
   codeLanguages: any = codeLanguages
 
-  constructor(host: string, headers: Array<XHR.Header>) {
+  constructor(host: string, headers: { [key: string]: string }) {
     super(host, headers)
   }
 

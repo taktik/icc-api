@@ -25,16 +25,19 @@ export class IccPatientXApi extends iccPatientApi {
   documentApi: IccDocumentXApi
   classificationApi: IccClassificationXApi
 
+  private cryptedKeys: Array<string>
+
   constructor(
     host: string,
-    headers: Array<XHR.Header>,
+    headers: { [key: string]: string },
     crypto: IccCryptoXApi,
     contactApi: IccContactXApi,
     helementApi: IccHelementXApi,
     invoiceApi: IccInvoiceXApi,
     documentApi: IccDocumentXApi,
     hcpartyApi: IccHcpartyXApi,
-    classificationApi: IccClassificationXApi
+    classificationApi: IccClassificationXApi,
+    cryptedKeys: Array<string> = ["note"]
   ) {
     super(host, headers)
     this.crypto = crypto
@@ -44,6 +47,8 @@ export class IccPatientXApi extends iccPatientApi {
     this.hcpartyApi = hcpartyApi
     this.documentApi = documentApi
     this.classificationApi = classificationApi
+
+    this.cryptedKeys = cryptedKeys
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -180,11 +185,11 @@ export class IccPatientXApi extends iccPatientApi {
     )
   }
 
-  findByAccessLogUserAfterDate_1WithUser(
+  findByExternalIdWithUser(
     user: models.UserDto,
     externalId: string
   ): Promise<models.PatientDto | any> {
-    return super.findByAccessLogUserAfterDate_1(externalId).then(pats => this.decrypt(user, pats))
+    return super.findByExternalId(externalId).then(pats => this.decrypt(user, pats))
   }
 
   findByNameBirthSsinAuto(
@@ -244,6 +249,10 @@ export class IccPatientXApi extends iccPatientApi {
     )
   }
 
+  getPatientRaw(patientId: string): Promise<models.PatientDto | any> {
+    return super.getPatient(patientId)
+  }
+
   getPatientWithUser(user: models.UserDto, patientId: string): Promise<models.PatientDto | any> {
     return super
       .getPatient(patientId)
@@ -295,13 +304,13 @@ export class IccPatientXApi extends iccPatientApi {
     )
   }
 
-  listDeletedPatients_2WithUser(
+  listDeletedPatientsByNameWithUser(
     user: models.UserDto,
     firstName?: string,
     lastName?: string
   ): Promise<Array<models.PatientPaginatedList> | any> {
     return super
-      .listDeletedPatients_2(firstName, lastName)
+      .listDeletedPatientsByName(firstName, lastName)
       .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
   }
 
@@ -445,6 +454,10 @@ export class IccPatientXApi extends iccPatientApi {
     )
   }
 
+  modifyPatientRaw(body?: models.PatientDto): Promise<models.PatientDto | any> {
+    return super.modifyPatient(body)
+  }
+
   modifyPatientWithUser(
     user: models.UserDto,
     body?: models.PatientDto
@@ -499,11 +512,12 @@ export class IccPatientXApi extends iccPatientApi {
             AES.importKey("raw", utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
           )
           .then((key: CryptoKey) =>
-            AES.encrypt(key, utils.utf82ua(JSON.stringify({ note: p.note }))).then(es => {
-              p.encryptedSelf = btoa(utils.ua2text(es))
-              delete p.note
-              return p
-            })
+            utils.crypt(
+              p,
+              (obj: { [key: string]: string }) =>
+                AES.encrypt(key, utils.utf82ua(JSON.stringify(obj))),
+              this.cryptedKeys
+            )
           )
       )
     )
@@ -514,12 +528,13 @@ export class IccPatientXApi extends iccPatientApi {
     pats: Array<models.PatientDto>,
     fillDelegations: boolean = true
   ): Promise<Array<models.PatientDto>> {
+    const hcpId = user.healthcarePartyId || user.patientId
     //First check that we have no dangling delegation
     const patsWithMissingDelegations = pats.filter(
       p =>
         p.delegations &&
-        p.delegations[user.healthcarePartyId!] &&
-        !p.delegations[user.healthcarePartyId!].length &&
+        p.delegations[hcpId!] &&
+        !p.delegations[hcpId!].length &&
         !Object.values(p.delegations).some(d => d.length > 0)
     )
 
@@ -549,7 +564,7 @@ export class IccPatientXApi extends iccPatientApi {
             return p.encryptedSelf
               ? this.crypto
                   .extractKeysFromDelegationsForHcpHierarchy(
-                    user.healthcarePartyId!,
+                    hcpId!,
                     p.id!,
                     _.size(p.encryptionKeys) ? p.encryptionKeys! : p.delegations!
                   )
@@ -558,32 +573,22 @@ export class IccPatientXApi extends iccPatientApi {
                       //console.log("Cannot decrypt contact", ctc.id)
                       return Promise.resolve(p)
                     }
-                    return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(
-                      key =>
-                        new Promise<models.PatientDto>(
-                          (resolve: (value: models.PatientDto) => any) => {
-                            AES.decrypt(key, utils.text2ua(atob(p.encryptedSelf!))).then(
-                              dec => {
-                                let jsonContent
-                                try {
-                                  jsonContent = dec && utils.ua2utf8(dec)
-                                  jsonContent && _.assign(p, JSON.parse(jsonContent))
-                                } catch (e) {
-                                  console.log(
-                                    "Cannot parse ctc",
-                                    p.id,
-                                    jsonContent || "<- Invalid encoding"
-                                  )
-                                }
-                                resolve(p)
-                              },
-                              () => {
-                                console.log("Cannot decrypt contact", p.id)
-                                resolve(p)
-                              }
+                    return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(key =>
+                      utils.decrypt(p, ec =>
+                        AES.decrypt(key, ec).then(dec => {
+                          const jsonContent = dec && utils.ua2utf8(dec)
+                          try {
+                            return JSON.parse(jsonContent)
+                          } catch (e) {
+                            console.log(
+                              "Cannot parse patient",
+                              p.id,
+                              jsonContent || "Invalid content"
                             )
+                            return {}
                           }
-                        )
+                        })
+                      )
                     )
                   })
               : Promise.resolve(p)
@@ -593,7 +598,8 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   initEncryptionKeys(user: models.UserDto, pat: models.PatientDto) {
-    return this.crypto.initEncryptionKeys(pat, user.healthcarePartyId!).then(eks => {
+    const hcpId = user.healthcarePartyId || user.patientId
+    return this.crypto.initEncryptionKeys(pat, hcpId!).then(eks => {
       let promise = Promise.resolve(
         _.extend(pat, {
           encryptionKeys: eks.encryptionKeys
@@ -606,7 +612,7 @@ export class IccPatientXApi extends iccPatientApi {
         delegateId =>
           (promise = promise.then(contact =>
             this.crypto
-              .appendEncryptionKeys(contact, user.healthcarePartyId!, delegateId, eks.secretId)
+              .appendEncryptionKeys(contact, hcpId!, delegateId, eks.secretId)
               .then(extraEks => {
                 return _.extend(contact, {
                   encryptionKeys: extraEks.encryptionKeys
@@ -661,8 +667,9 @@ export class IccPatientXApi extends iccPatientApi {
       }
       return retry(() => this.getPatientWithUser(user, patId)).then(
         (patient: models.PatientDto) => {
-          return this.extractDelegationsSFKsAndEncryptionSKs(patient, ownerId).then(
-            ([delSfks, ecKeys]) => {
+          return this.crypto
+            .extractDelegationsSFKsAndEncryptionSKs(patient, ownerId)
+            .then(([delSfks, ecKeys]) => {
               return delSfks.length
                 ? Promise.all([
                     retry(() =>
@@ -1002,30 +1009,10 @@ export class IccPatientXApi extends iccPatientApi {
                       status.patient.error = e
                       return { patient: patient, statuses: status }
                     })
-            }
-          )
+            })
         }
       )
     })
-  }
-
-  private extractDelegationsSFKsAndEncryptionSKs(
-    ety:
-      | models.PatientDto
-      | models.ContactDto
-      | models.InvoiceDto
-      | models.DocumentDto
-      | models.HealthElementDto,
-    ownerId: string
-  ) {
-    const delegationsSfksOwnerPromise = this.crypto
-      .extractDelegationsSFKs(ety, ownerId)
-      .then(xks => xks.extractedKeys) //Will climb up hierarchy
-    const encryptionKeysOwnerPromise = this.crypto
-      .extractEncryptionsSKs(ety, ownerId)
-      .then(xks => xks.extractedKeys) //Will climb up hierarchy
-
-    return Promise.all([delegationsSfksOwnerPromise, encryptionKeysOwnerPromise])
   }
 
   checkInami(inami: String): Boolean {

@@ -59,6 +59,27 @@ export function ssinValidate(ssin: string): boolean {
   return !!ssin.match(ssinRegExp)
 }
 
+/* Alternate lib free version
+export function phoneNumberValidate(phoneNumber: string): boolean {
+  return (
+    !!phoneNumber.match(/(?:\+|00)([1-9][0-9]{1-2})([- /.]*([0-9]+))+/) ||
+    !!phoneNumber.match(/(0[1-9][0-9]*)([- /.]*([0-9]+))+/)
+  )
+}
+
+export function phoneNumberFormat(phoneNumber: string): string {
+  let match = phoneNumber.match(/(?:\+|00)([1-9][0-9]{1-2})([- /.]*([0-9]+))+/)
+  if (match) {
+    return `+${match[1]} ${match[2].replace(/[- /.]/g, " ")}`.replace(/  /g, " ")
+  }
+  match = phoneNumber.match(/0([1-9][0-9]*)([- /.]*([0-9]+))+/)
+  if (match) {
+    return `+32 ${match[1]} ${match[2].replace(/[- /.]/g, " ")}`.replace(/  /g, " ")
+  }
+  return phoneNumber
+}
+*/
+
 export function phoneNumberValidate(phoneNumber: string): boolean {
   return isValidNumber(phoneNumber)
 }

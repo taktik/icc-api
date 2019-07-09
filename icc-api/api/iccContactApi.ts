@@ -292,6 +292,33 @@ export class iccContactApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.LabelledOccurenceDto(it)))
       .catch(err => this.handleError(err))
   }
+  listContactsByOpeningDate(
+    startKey: number,
+    endKey: number,
+    hcpartyid: string,
+    startDocumentId?: string,
+    limit?: number
+  ): Promise<models.ContactPaginatedList | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/contact/byOpeningDate" +
+      "?ts=" +
+      new Date().getTime() +
+      (startKey ? "&startKey=" + startKey : "") +
+      (endKey ? "&endKey=" + endKey : "") +
+      (hcpartyid ? "&hcpartyid=" + hcpartyid : "") +
+      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
+      (limit ? "&limit=" + limit : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => new models.ContactPaginatedList(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
   matchBy(body?: models.Filter): Promise<Array<string> | any> {
     let _body = null
     _body = body

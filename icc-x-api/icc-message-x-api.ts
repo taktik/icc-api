@@ -4,8 +4,7 @@ import { IccDocumentXApi } from "./icc-document-x-api"
 import { IccInvoiceXApi } from "./icc-invoice-x-api"
 
 import * as _ from "lodash"
-import moment from "moment"
-import { XHR } from "../icc-api/api/XHR"
+import * as moment from "moment"
 import * as models from "../icc-api/model/models"
 import {
   EntityReference,
@@ -82,7 +81,7 @@ export class IccMessageXApi extends iccMessageApi {
 
   constructor(
     host: string,
-    headers: Array<XHR.Header>,
+    headers: { [key: string]: string },
     crypto: IccCryptoXApi,
     insuranceApi: iccInsuranceApi,
     entityReferenceApi: iccEntityrefApi,
@@ -121,13 +120,14 @@ export class IccMessageXApi extends iccMessageApi {
       m || {}
     )
 
+    const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto
-      .extractDelegationsSFKs(patient, user.healthcarePartyId!)
+      .extractDelegationsSFKs(patient, hcpId)
       .then(secretForeignKeys =>
         this.crypto.initObjectDelegations(
           message,
           patient,
-          user.healthcarePartyId!,
+          hcpId!,
           secretForeignKeys.extractedKeys[0]
         )
       )
@@ -149,7 +149,7 @@ export class IccMessageXApi extends iccMessageApi {
                 .extendedDelegationsAndCryptedForeignKeys(
                   helement,
                   patient,
-                  user.healthcarePartyId!,
+                  hcpId!,
                   delegateId,
                   initData.secretId
                 )

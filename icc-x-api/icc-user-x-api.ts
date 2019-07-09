@@ -3,7 +3,7 @@ import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
 
 export class IccUserXApi extends iccUserApi {
-  constructor(host: string, headers: Array<XHR.Header>) {
+  constructor(host: string, headers: { [key: string]: string }) {
     super(host, headers)
   }
 
