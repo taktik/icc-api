@@ -67,4 +67,6 @@ export class AccessLogDto {
   user?: string
 
   detail?: string
+
+  encryptedSelf?: string
 }
