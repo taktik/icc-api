@@ -218,4 +218,22 @@ export class IccAccesslogXApi extends iccAccesslogApi {
       )
     )
   }
+
+  createAccessLog(body?: models.AccessLogDto): never {
+    throw new Error(
+      "Cannot call a method that returns access logs without providing a user for de/encryption"
+    )
+  }
+
+  createAccessLogWithUser(
+    user: models.UserDto,
+    body?: models.AccessLogDto
+  ): Promise<models.AccessLogDto | any> {
+    return body
+      ? this.encrypt(user, [_.cloneDeep(body)])
+          .then(als => super.createAccessLog(als[0]))
+          .then(p => this.decrypt((user.healthcarePartyId || user.patientId)!, [p]))
+          .then(als => als[0])
+      : Promise.resolve(null)
+  }
 }
