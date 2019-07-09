@@ -238,7 +238,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
     return body
       ? this.encrypt(user, [_.cloneDeep(body)])
           .then(als => super.createAccessLog(als[0]))
-          .then(p => this.decrypt((user.healthcarePartyId || user.patientId)!, [p]))
+          .then(al => this.decrypt((user.healthcarePartyId || user.patientId)!, [al]))
           .then(als => als[0])
       : Promise.resolve(null)
   }
@@ -249,8 +249,8 @@ export class IccAccesslogXApi extends iccAccesslogApi {
   ): Promise<models.AccessLogDto | any> {
     return super
       .getAccessLog(accessLogId)
-      .then(p => this.decrypt((user.healthcarePartyId || user.patientId)!, [p]))
-      .then(pats => pats[0])
+      .then(al => this.decrypt((user.healthcarePartyId || user.patientId)!, [al]))
+      .then(als => als[0])
   }
 
   listAccessLogsWithUser(
@@ -261,9 +261,9 @@ export class IccAccesslogXApi extends iccAccesslogApi {
   ): Promise<models.PatientPaginatedList | any> {
     return super
       .listAccessLogs(startKey, startDocumentId, limit)
-      .then(pl =>
-        this.decrypt((user.healthcarePartyId || user.patientId)!, pl.rows).then(dr =>
-          Object.assign(pl, { rows: dr })
+      .then(al =>
+        this.decrypt((user.healthcarePartyId || user.patientId)!, al.rows).then(dr =>
+          Object.assign(al, { rows: dr })
         )
       )
   }
@@ -274,9 +274,9 @@ export class IccAccesslogXApi extends iccAccesslogApi {
   ): Promise<models.AccessLogDto | null> {
     return body
       ? this.encrypt(user, [_.cloneDeep(body)])
-          .then(pats => super.modifyAccessLog(pats[0]))
-          .then(p => this.decrypt((user.healthcarePartyId || user.patientId)!, [p]))
-          .then(pats => pats[0])
+          .then(als => super.modifyAccessLog(als[0]))
+          .then(al => this.decrypt((user.healthcarePartyId || user.patientId)!, [al]))
+          .then(als => als[0])
       : Promise.resolve(null)
   }
 }
