@@ -590,7 +590,7 @@ export class IccPatientXApi extends iccPatientApi {
                             }
                           })
                           .catch(err => {
-                            console.log("Cannot decrypt patient", p.id)
+                            console.log("Cannot decrypt patient", p.id, err)
                             return p
                           })
                       )
