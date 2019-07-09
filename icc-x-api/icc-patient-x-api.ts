@@ -575,19 +575,24 @@ export class IccPatientXApi extends iccPatientApi {
                     }
                     return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(key =>
                       utils.decrypt(p, ec =>
-                        AES.decrypt(key, ec).then(dec => {
-                          const jsonContent = dec && utils.ua2utf8(dec)
-                          try {
-                            return JSON.parse(jsonContent)
-                          } catch (e) {
-                            console.log(
-                              "Cannot parse patient",
-                              p.id,
-                              jsonContent || "Invalid content"
-                            )
-                            return {}
-                          }
-                        })
+                        AES.decrypt(key, ec)
+                          .then(dec => {
+                            const jsonContent = dec && utils.ua2utf8(dec)
+                            try {
+                              return JSON.parse(jsonContent)
+                            } catch (e) {
+                              console.log(
+                                "Cannot parse patient",
+                                p.id,
+                                jsonContent || "Invalid content"
+                              )
+                              return p
+                            }
+                          })
+                          .catch(err => {
+                            console.log("Cannot decrypt patient", p.id)
+                            return p
+                          })
                       )
                     )
                   })
