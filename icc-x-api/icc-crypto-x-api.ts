@@ -414,10 +414,12 @@ export class IccCryptoXApi {
           )
 
           const allCryptedForeignKeys = _.cloneDeep(modifiedObject.cryptedForeignKeys || {})
-          allCryptedForeignKeys[delegateId] = _.uniqBy(
-            cryptedForeignKeysCryptedDecrypted,
-            (x: any) => x.k
-          ).map((x: any) => x.d)
+          if (cryptedForeignKeysCryptedDecrypted.length > 0) {
+            allCryptedForeignKeys[delegateId] = _.uniqBy(
+              cryptedForeignKeysCryptedDecrypted,
+              (x: any) => x.k
+            ).map((x: any) => x.d)
+          }
 
           return {
             delegations: allDelegations,
