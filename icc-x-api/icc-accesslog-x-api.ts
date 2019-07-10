@@ -187,7 +187,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
             this.crypto
               .appendEncryptionKeys(accessLog, hcpId!, delegateId, eks.secretId)
               .then(extraEks => {
-                return _.extend(item, {
+                return _.extend(accessLog, {
                   encryptionKeys: extraEks.encryptionKeys
                 })
               })
