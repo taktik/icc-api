@@ -154,7 +154,11 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
   initEncryptionKeys(user: models.UserDto, calendarItem: models.CalendarItemDto) {
     const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto.initEncryptionKeys(calendarItem, hcpId!).then(eks => {
-      let promise = Promise.resolve(calendarItem)
+      let promise = Promise.resolve(
+        _.extend(calendarItem, {
+          encryptionKeys: eks.encryptionKeys
+        })
+      )
       ;(user.autoDelegations
         ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
         : []

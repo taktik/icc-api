@@ -173,10 +173,11 @@ export class IccAccesslogXApi extends iccAccesslogApi {
   initEncryptionKeys(user: models.UserDto, accessLogDto: models.AccessLogDto) {
     const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto.initEncryptionKeys(accessLogDto, hcpId!).then(eks => {
-      _.extend(accessLogDto, {
-        encryptionKeys: eks.encryptionKeys
-      })
-      let promise = Promise.resolve(accessLogDto)
+      let promise = Promise.resolve(
+        _.extend(accessLogDto, {
+          encryptionKeys: eks.encryptionKeys
+        })
+      )
       ;(user.autoDelegations
         ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
         : []
