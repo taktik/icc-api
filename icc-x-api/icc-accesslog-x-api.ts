@@ -173,6 +173,9 @@ export class IccAccesslogXApi extends iccAccesslogApi {
   initEncryptionKeys(user: models.UserDto, accessLogDto: models.AccessLogDto) {
     const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto.initEncryptionKeys(accessLogDto, hcpId!).then(eks => {
+      _.extend(accessLogDto, {
+        encryptionKeys: eks.encryptionKeys
+      })
       let promise = Promise.resolve(accessLogDto)
       ;(user.autoDelegations
         ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
@@ -183,9 +186,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
             this.crypto
               .appendEncryptionKeys(item, hcpId!, delegateId, eks.secretId)
               .then(extraEks => {
-                return _.extend(item, {
-                  encryptionKeys: extraEks.encryptionKeys
-                })
+                return _.extend(item.encryptionKeys, extraEks.encryptionKeys)
               })
           ))
       )
@@ -203,11 +204,11 @@ export class IccAccesslogXApi extends iccAccesslogApi {
           ? Promise.resolve(al)
           : this.initEncryptionKeys(user, al)
         )
-          .then(p =>
+          .then(al =>
             this.crypto.extractKeysFromDelegationsForHcpHierarchy(
               (user.healthcarePartyId || user.patientId)!,
-              p.id!,
-              p.encryptionKeys!
+              al.id!,
+              al.encryptionKeys!
             )
           )
           .then((sfks: { extractedKeys: Array<string>; hcpartyId: string }) =>
