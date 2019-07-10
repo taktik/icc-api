@@ -183,9 +183,9 @@ export class IccAccesslogXApi extends iccAccesslogApi {
         : []
       ).forEach(
         delegateId =>
-          (promise = promise.then(item =>
+          (promise = promise.then(accessLog =>
             this.crypto
-              .appendEncryptionKeys(item, hcpId!, delegateId, eks.secretId)
+              .appendEncryptionKeys(accessLog, hcpId!, delegateId, eks.secretId)
               .then(extraEks => {
                 return _.extend(item, {
                   encryptionKeys: extraEks.encryptionKeys
