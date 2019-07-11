@@ -247,6 +247,12 @@ export class IccAccesslogXApi extends iccAccesslogApi {
       : Promise.resolve(null)
   }
 
+  getAccessLog(accessLogId: string): never {
+    throw new Error(
+      "Cannot call a method that returns access logs without providing a user for de/encryption"
+    )
+  }
+
   getAccessLogWithUser(
     user: models.UserDto,
     accessLogId: string
@@ -255,6 +261,12 @@ export class IccAccesslogXApi extends iccAccesslogApi {
       .getAccessLog(accessLogId)
       .then(al => this.decrypt((user.healthcarePartyId || user.patientId)!, [al]))
       .then(als => als[0])
+  }
+
+  listAccessLogs(startKey?: string, startDocumentId?: string, limit?: string): never {
+    throw new Error(
+      "Cannot call a method that returns access logs without providing a user for de/encryption"
+    )
   }
 
   listAccessLogsWithUser(
@@ -272,6 +284,12 @@ export class IccAccesslogXApi extends iccAccesslogApi {
       )
   }
 
+  modifyAccessLog(body?: models.AccessLogDto): never {
+    throw new Error(
+      "Cannot call a method that returns access logs without providing a user for de/encryption"
+    )
+  }
+
   modifyAccessLogWithUser(
     user: models.UserDto,
     body?: models.AccessLogDto
@@ -282,5 +300,46 @@ export class IccAccesslogXApi extends iccAccesslogApi {
           .then(al => this.decrypt((user.healthcarePartyId || user.patientId)!, [al]))
           .then(als => als[0])
       : Promise.resolve(null)
+  }
+
+  findByUserAfterDate(
+    userId: string,
+    accessType?: string,
+    startDate?: number,
+    startKey?: string,
+    startDocumentId?: string,
+    limit?: number,
+    descending?: boolean
+  ): never {
+    throw new Error(
+      "Cannot call a method that returns access logs without providing a user for de/encryption"
+    )
+  }
+
+  findByUserAfterDateWithUser(
+    user: models.UserDto,
+    userId: string,
+    accessType?: string,
+    startDate?: number,
+    startKey?: string,
+    startDocumentId?: string,
+    limit?: number,
+    descending?: boolean
+  ): Promise<models.AccessLogDto | any> {
+    return super
+      .findByUserAfterDate(
+        userId,
+        accessType,
+        startDate,
+        startKey,
+        startDocumentId,
+        limit,
+        descending
+      )
+      .then(al =>
+        this.decrypt((user.healthcarePartyId || user.patientId)!, al.rows).then(dr =>
+          Object.assign(al, { rows: dr })
+        )
+      )
   }
 }
