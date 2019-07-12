@@ -4,27 +4,27 @@ import { IccCryptoXApi } from "./icc-crypto-x-api"
 import * as models from "../icc-api/model/models"
 
 import * as _ from "lodash"
-import moment from "moment"
-import { XHR } from "../icc-api/api/XHR"
+import * as moment from "moment"
 import { utils } from "./crypto/utils"
 import { AES } from "./crypto/AES"
 
 export class IccHelementXApi extends iccHelementApi {
   crypto: IccCryptoXApi
 
-  constructor(host: string, headers: Array<XHR.Header>, crypto: IccCryptoXApi) {
+  constructor(host: string, headers: { [key: string]: string }, crypto: IccCryptoXApi) {
     super(host, headers)
     this.crypto = crypto
   }
 
   newInstance(user: models.UserDto, patient: models.PatientDto, h: any) {
+    const hcpId = user.healthcarePartyId || user.patientId
     const helement = _.assign(
       {
         id: this.crypto.randomUuid(),
         _type: "org.taktik.icure.entities.HealthElement",
         created: new Date().getTime(),
         modified: new Date().getTime(),
-        responsible: user.healthcarePartyId,
+        responsible: hcpId,
         author: user.id,
         codes: [],
         tags: [],
@@ -35,12 +35,12 @@ export class IccHelementXApi extends iccHelementApi {
     )
 
     return this.crypto
-      .extractDelegationsSFKs(patient, user.healthcarePartyId!)
+      .extractDelegationsSFKs(patient, hcpId)
       .then(secretForeignKeys =>
         this.crypto.initObjectDelegations(
           helement,
           patient,
-          user.healthcarePartyId!,
+          hcpId!,
           secretForeignKeys.extractedKeys[0]
         )
       )
@@ -62,7 +62,7 @@ export class IccHelementXApi extends iccHelementApi {
                 .extendedDelegationsAndCryptedForeignKeys(
                   helement,
                   patient,
-                  user.healthcarePartyId!,
+                  hcpId!,
                   delegateId,
                   initData.secretId
                 )
@@ -109,7 +109,7 @@ export class IccHelementXApi extends iccHelementApi {
           secretForeignKeys.extractedKeys &&
           secretForeignKeys.extractedKeys.length > 0
             ? this.findByHCPartyPatientSecretFKeys(
-                secretForeignKeys.hcpartyId,
+                secretForeignKeys.hcpartyId!,
                 secretForeignKeys.extractedKeys.join(",")
               )
             : Promise.resolve([])

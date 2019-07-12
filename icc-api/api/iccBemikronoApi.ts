@@ -25,7 +25,7 @@
 import { XHR } from "./XHR"
 import * as models from "../model/models"
 
-export class iccBemikronoApi {
+export class iccBeMikronoApi {
   host: string
   headers: Array<XHR.Header>
   constructor(host: string, headers: any) {
@@ -42,7 +42,7 @@ export class iccBemikronoApi {
     else throw Error("api-error" + e.status)
   }
 
-  appointments(date: number): Promise<Array<models.AppointmentDto> | any> {
+  appointmentsByDate(date: number): Promise<Array<models.AppointmentDto> | any> {
     let _body = null
 
     const _url =
@@ -58,7 +58,7 @@ export class iccBemikronoApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.AppointmentDto(it)))
       .catch(err => this.handleError(err))
   }
-  appointments_1(
+  appointmentsByPatient(
     patientId: string,
     from?: number,
     from2?: number

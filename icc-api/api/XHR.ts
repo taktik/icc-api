@@ -34,6 +34,25 @@ export namespace XHR {
     }
   }
 
+  function fetchWithTimeout(url: string, init: RequestInit, timeout = 10000): Promise<Response> {
+    return new Promise((resolve, reject) => {
+      // Set timeout timer
+      let timer = setTimeout(
+        () => reject({ message: "Request timed out", status: "Request timed out" }),
+        timeout
+      )
+      fetch(url, init)
+        .then(response => {
+          clearTimeout(timer)
+          resolve(response)
+        })
+        .catch(err => {
+          clearTimeout(timer)
+          reject(err)
+        })
+    })
+  }
+
   export function sendCommand(
     method: string,
     url: string,
@@ -44,7 +63,11 @@ export namespace XHR {
     const contentType =
       headers &&
       headers.find(it => (it.header ? it.header.toLowerCase() === "content-type" : false))
-    return fetch(
+    const clientTimeout =
+      headers &&
+      headers.find(it => (it.header ? it.header.toUpperCase() === "X-CLIENT-SIDE-TIMEOUT" : false))
+    const timeout = clientTimeout ? Number(clientTimeout.data) : 600000
+    return fetchWithTimeout(
       url,
       Object.assign(
         {
@@ -54,7 +77,10 @@ export namespace XHR {
             (headers &&
               headers
                 .filter(
-                  h => h.header.toLowerCase() !== "content-type" || h.data !== "multipart/form-data"
+                  h =>
+                    (h.header.toLowerCase() !== "content-type" ||
+                      h.data !== "multipart/form-data") &&
+                    h.header.toUpperCase() !== "X-CLIENT-SIDE-TIMEOUT"
                 )
                 .reduce((acc: { [key: string]: string }, h) => {
                   acc[h.header] = h.data
@@ -70,7 +96,8 @@ export namespace XHR {
                   : data
             }
           : {}
-      )
+      ),
+      timeout
     ).then(function(response) {
       if (response.status >= 400) {
         throw new XHRError(response.statusText, response.status, response.status, response.headers)

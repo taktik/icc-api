@@ -281,8 +281,8 @@ export class iccInvoiceApi {
   }
   listByHcPartySentMediumTypeInvoiceTypeSentDate(
     hcPartyId: string,
-    sentMediumType: string,
-    invoiceType: string,
+    sentMediumType: "cdrom" | "eattest" | "efact" | "email" | "mediprima" | "paper",
+    invoiceType: "patient" | "mutualfund" | "payingagency" | "insurance" | "efact" | "other",
     sent: boolean,
     from?: number,
     to?: number

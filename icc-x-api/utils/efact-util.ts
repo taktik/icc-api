@@ -18,7 +18,7 @@ import { toInvoiceSender } from "./fhc-invoice-sender-util"
 import { isPatientHospitalized, getInsurability } from "./insurability-util"
 import * as _ from "lodash"
 import { UuidEncoder } from "./uuid-encoder"
-import moment from "moment"
+import * as moment from "moment"
 
 export interface RelatedInvoiceInfo {
   invoiceId: string

@@ -543,7 +543,7 @@ export class IccDocumentXApi extends iccDocumentApi {
     "x-music/x-midi": "public.midi"
   }
 
-  constructor(host: string, headers: Array<XHR.Header>, crypto: IccCryptoXApi) {
+  constructor(host: string, headers: { [key: string]: string }, crypto: IccCryptoXApi) {
     super(host, headers)
     this.crypto = crypto
   }
@@ -556,7 +556,7 @@ export class IccDocumentXApi extends iccDocumentApi {
         _type: "org.taktik.icure.entities.Document",
         created: new Date().getTime(),
         modified: new Date().getTime(),
-        responsible: user.healthcarePartyId,
+        responsible: user.healthcarePartyId || user.patientId,
         author: user.id,
         codes: [],
         tags: []
@@ -572,17 +572,18 @@ export class IccDocumentXApi extends iccDocumentApi {
     message: models.MessageDto | null,
     document: models.DocumentDto
   ): Promise<models.DocumentDto> {
+    const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto
-      .extractDelegationsSFKs(message, user.healthcarePartyId!)
+      .extractDelegationsSFKs(message, hcpId)
       .then(secretForeignKeys =>
         Promise.all([
           this.crypto.initObjectDelegations(
             document,
             message,
-            user.healthcarePartyId!,
+            hcpId!,
             secretForeignKeys.extractedKeys[0]
           ),
-          this.crypto.initEncryptionKeys(document, user.healthcarePartyId!)
+          this.crypto.initEncryptionKeys(document, hcpId!)
         ])
       )
       .then(initData => {
@@ -606,7 +607,7 @@ export class IccDocumentXApi extends iccDocumentApi {
                 .addDelegationsAndEncryptionKeys(
                   message,
                   document,
-                  user.healthcarePartyId!,
+                  hcpId!,
                   delegateId,
                   dels.secretId,
                   eks.secretId
@@ -622,7 +623,8 @@ export class IccDocumentXApi extends iccDocumentApi {
   }
 
   initEncryptionKeys(user: models.UserDto, document: models.DocumentDto) {
-    return this.crypto.initEncryptionKeys(document, user.healthcarePartyId!).then(eks => {
+    const hcpId = user.healthcarePartyId || user.patientId
+    return this.crypto.initEncryptionKeys(document, hcpId!).then(eks => {
       let promise = Promise.resolve(
         _.extend(document, {
           encryptionKeys: eks.encryptionKeys
@@ -635,7 +637,7 @@ export class IccDocumentXApi extends iccDocumentApi {
         delegateId =>
           (promise = promise.then(document =>
             this.crypto
-              .appendEncryptionKeys(document, user.healthcarePartyId!, delegateId, eks.secretId)
+              .appendEncryptionKeys(document, hcpId!, delegateId, eks.secretId)
               .then(extraEks => {
                 return _.extend(document, {
                   encryptionKeys: extraEks.encryptionKeys
