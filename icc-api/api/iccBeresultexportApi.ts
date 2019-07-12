@@ -25,7 +25,7 @@
 import { XHR } from "./XHR"
 import * as models from "../model/models"
 
-export class iccBeResultExportApi {
+export class iccBeResultexportApi {
   host: string
   headers: Array<XHR.Header>
   constructor(host: string, headers: any) {
