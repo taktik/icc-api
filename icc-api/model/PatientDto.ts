@@ -62,6 +62,8 @@ export class PatientDto {
 
   mergedIds?: Array<string>
 
+  nonDuplicateIds?: Array<string>
+
   firstName?: string
 
   lastName?: string
