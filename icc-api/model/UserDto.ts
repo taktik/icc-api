@@ -74,6 +74,8 @@ export class UserDto {
 
   healthcarePartyId?: string
 
+  patientId?: string
+
   roles?: Array<string>
 
   email?: string
@@ -82,9 +84,9 @@ export class UserDto {
 
   applicationTokens?: { [key: string]: string }
 
-  virtualHosts?: Array<string>
-
   virtualHostDependency?: UserDto.VirtualHostDependencyEnum
+
+  virtualHosts?: Array<string>
 }
 export namespace UserDto {
   export enum TypeEnum {

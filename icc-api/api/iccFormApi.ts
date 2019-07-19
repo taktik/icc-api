@@ -124,10 +124,15 @@ export class iccFormApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.FormDto(it)))
       .catch(err => this.handleError(err))
   }
-  findFormTemplates(): Promise<Array<models.FormTemplateDto> | any> {
+  findFormTemplates(loadLayout?: boolean): Promise<Array<models.FormTemplateDto> | any> {
     let _body = null
 
-    const _url = this.host + "/form/template" + "?ts=" + new Date().getTime()
+    const _url =
+      this.host +
+      "/form/template" +
+      "?ts=" +
+      new Date().getTime() +
+      (loadLayout ? "&loadLayout=" + loadLayout : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -284,6 +289,29 @@ export class iccFormApi {
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body)
       .then(doc => new models.FormDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+  setAttachmentMulti(formTemplateId: string, attachment?: Array<string>): Promise<string | any> {
+    let _body = null
+    attachment &&
+      (_body = _body || new FormData()).append(
+        "attachment",
+        new Blob(attachment, { type: "application/octet-stream" })
+      )
+    const _url =
+      this.host +
+      "/form/template/{formTemplateId}/attachment/multipart".replace(
+        "{formTemplateId}",
+        formTemplateId + ""
+      ) +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "multipart/form-data"))
+    return XHR.sendCommand("PUT", _url, headers, _body)
+      .then(doc => JSON.parse(JSON.stringify(doc.body)))
       .catch(err => this.handleError(err))
   }
   updateFormTemplate(

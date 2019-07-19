@@ -159,7 +159,7 @@ export class iccPatientApi {
       .then(doc => new models.PatientPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  findByAccessLogUserAfterDate_1(externalId: string): Promise<models.PatientDto | any> {
+  findByExternalId(externalId: string): Promise<models.PatientDto | any> {
     let _body = null
 
     const _url =
@@ -227,6 +227,22 @@ export class iccPatientApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.PatientDto(it)))
       .catch(err => this.handleError(err))
   }
+  getHcPartyKeysForDelegate(healthcarePartyId: string): Promise<{ [key: string]: string } | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/hcparty/{healthcarePartyId}/keys".replace("{healthcarePartyId}", healthcarePartyId + "") +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => JSON.parse(JSON.stringify(doc.body)))
+      .catch(err => this.handleError(err))
+  }
   getPatient(patientId: string): Promise<models.PatientDto | any> {
     let _body = null
 
@@ -283,7 +299,7 @@ export class iccPatientApi {
       .then(doc => new models.PatientPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  listDeletedPatients_2(
+  listDeletedPatientsByName(
     firstName?: string,
     lastName?: string
   ): Promise<Array<models.PatientPaginatedList> | any> {

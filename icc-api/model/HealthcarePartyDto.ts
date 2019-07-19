@@ -66,6 +66,8 @@ export class HealthcarePartyDto {
 
   ssin?: string
 
+  picture?: Array<string>
+
   cbe?: string
 
   convention?: number

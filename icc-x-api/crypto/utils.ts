@@ -1,5 +1,7 @@
 import * as base64js from "base64-js"
-import moment, { Moment } from "moment"
+import * as moment from "moment"
+import { Moment } from "moment"
+import * as _ from "lodash"
 
 export class UtilsClass {
   /**
@@ -241,9 +243,9 @@ export class UtilsClass {
    * @param ua {Uint8Array} or ArrayBuffer
    * @returns {String} Hex String
    */
-  ua2hex(ua: Uint8Array | ArrayBuffer): string {
+  ua2hex(uaOrAb: Uint8Array | ArrayBuffer): string {
     var s = ""
-    ua = ua instanceof Uint8Array ? ua : new Uint8Array(ua)
+    const ua: Uint8Array = uaOrAb instanceof Uint8Array ? uaOrAb : new Uint8Array(uaOrAb)
     for (var i = 0; i < ua.length; i++) {
       var hhb = (ua[i] & 0xf0) >> 4
       var lhb = ua[i] & 0x0f
@@ -268,7 +270,7 @@ export class UtilsClass {
     for (offset = 0; offset < abLen; offset += CHUNK_SIZE) {
       len = Math.min(CHUNK_SIZE, abLen - offset)
       subab = ab.subarray(offset, offset + len)
-      str += String.fromCharCode.apply(null, subab)
+      str += String.fromCharCode.apply(null, subab as any)
     }
     return str
   }
@@ -346,6 +348,62 @@ export class UtilsClass {
     } else {
       return moment(epochOrLongCalendar)
     }
+  }
+
+  /**
+   * Encrypt object graph recursively
+   *
+   * @param obj the object to encrypt
+   * @param cryptor the cryptor function (returns a promise)
+   * @param keys the keys to be crypted: ex for a Patient ['note', 'addresses.*.["street", "houseNumber", "telecoms.*.telecomNumber"]']
+   */
+  async crypt(
+    obj: any,
+    cryptor: (obj: { [key: string]: string }) => Promise<ArrayBuffer>,
+    keys: Array<string>
+  ) {
+    const subObj = _.pick(obj, keys.filter(k => !k.includes("*")))
+    obj.encryptedSelf = btoa(this.ua2text(await cryptor(subObj)))
+    Object.keys(subObj).forEach(k => delete obj[k])
+
+    await keys.filter(k => k.includes("*")).reduce(async (prev: Promise<void>, k: any) => {
+      await prev
+      const k1 = k.split(".*.")[0]
+      const k2 = k.substr(k1.length + 3)
+
+      const mapped = await Promise.all(
+        (_.get(obj, k1) || []).map((so: any) =>
+          this.crypt(so, cryptor, k2.startsWith("[") ? JSON.parse(k2) : [k2])
+        )
+      )
+      _.set(obj, k1, mapped)
+    }, Promise.resolve())
+
+    return obj
+  }
+
+  /**
+   * Decrypt object graph recursively
+   *
+   * @param obj the object to encrypt
+   * @param decryptor the decryptor function (returns a promise)
+   */
+  async decrypt(obj: any, decryptor: (obj: Uint8Array) => Promise<{ [key: string]: string }>) {
+    await Object.keys(obj).reduce(async (prev: Promise<void>, k: any) => {
+      await prev
+      if (Array.isArray(obj[k])) {
+        await (obj[k] as Array<any>)
+          .filter(o => typeof o === "object" && o !== null)
+          .reduce(async (prev: Promise<void>, so: any) => {
+            await prev
+            await this.decrypt(so, decryptor)
+          }, Promise.resolve())
+      }
+    }, Promise.resolve())
+    if (obj.encryptedSelf) {
+      Object.assign(obj, await decryptor(utils.text2ua(atob(obj.encryptedSelf))))
+    }
+    return obj
   }
 }
 

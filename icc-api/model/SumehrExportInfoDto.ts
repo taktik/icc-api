@@ -30,6 +30,8 @@ export class SumehrExportInfoDto {
   }
   secretForeignKeys?: Array<string>
 
+  excludedIds?: Array<string>
+
   recipient?: models.HealthcarePartyDto
 
   comment?: string

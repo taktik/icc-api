@@ -30,7 +30,7 @@ export class TypedValueDto {
   }
   type?: TypedValueDto.TypeEnum
 
-  booleanValue?: number
+  booleanValue?: boolean
 
   integerValue?: number
 

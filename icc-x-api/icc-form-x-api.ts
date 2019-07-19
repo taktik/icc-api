@@ -12,7 +12,7 @@ import { AES } from "./crypto/AES"
 export class IccFormXApi extends iccFormApi {
   crypto: IccCryptoXApi
 
-  constructor(host: string, headers: Array<XHR.Header>, crypto: IccCryptoXApi) {
+  constructor(host: string, headers: { [key: string]: string }, crypto: IccCryptoXApi) {
     super(host, headers)
     this.crypto = crypto
   }
@@ -25,7 +25,7 @@ export class IccFormXApi extends iccFormApi {
         _type: "org.taktik.icure.entities.Form",
         created: new Date().getTime(),
         modified: new Date().getTime(),
-        responsible: user.healthcarePartyId,
+        responsible: user.healthcarePartyId || user.patientId,
         author: user.id,
         codes: [],
         tags: []
@@ -41,17 +41,18 @@ export class IccFormXApi extends iccFormApi {
     patient: models.PatientDto,
     form: models.FormDto
   ): Promise<models.FormDto> {
+    const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto
-      .extractDelegationsSFKs(patient, user.healthcarePartyId!)
+      .extractDelegationsSFKs(patient, hcpId!)
       .then(secretForeignKeys =>
         Promise.all([
           this.crypto.initObjectDelegations(
             form,
             patient,
-            user.healthcarePartyId!,
+            hcpId!,
             secretForeignKeys.extractedKeys[0]
           ),
-          this.crypto.initEncryptionKeys(form, user.healthcarePartyId!)
+          this.crypto.initEncryptionKeys(form, hcpId!)
         ])
       )
       .then(initData => {
@@ -75,7 +76,7 @@ export class IccFormXApi extends iccFormApi {
                 .addDelegationsAndEncryptionKeys(
                   patient,
                   form,
-                  user.healthcarePartyId!,
+                  hcpId!,
                   delegateId,
                   dels.secretId,
                   eks.secretId
@@ -91,7 +92,8 @@ export class IccFormXApi extends iccFormApi {
   }
 
   initEncryptionKeys(user: models.UserDto, form: models.FormDto) {
-    return this.crypto.initEncryptionKeys(form, user.healthcarePartyId!).then(eks => {
+    const hcpId = user.healthcarePartyId || user.patientId
+    return this.crypto.initEncryptionKeys(form, hcpId!).then(eks => {
       let promise = Promise.resolve(
         _.extend(form, {
           encryptionKeys: eks.encryptionKeys
@@ -104,7 +106,7 @@ export class IccFormXApi extends iccFormApi {
         delegateId =>
           (promise = promise.then(contact =>
             this.crypto
-              .appendEncryptionKeys(contact, user.healthcarePartyId!, delegateId, eks.secretId)
+              .appendEncryptionKeys(contact, hcpId!, delegateId, eks.secretId)
               .then(extraEks => {
                 return _.extend(contact, {
                   encryptionKeys: extraEks.encryptionKeys

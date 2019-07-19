@@ -116,6 +116,10 @@ export class PatientDto {
 
   externalId?: string
 
+  hcPartyKeys?: { [key: string]: Array<string> }
+
+  publicKey?: string
+
   addresses?: Array<models.AddressDto>
 
   insurabilities?: Array<models.InsurabilityDto>

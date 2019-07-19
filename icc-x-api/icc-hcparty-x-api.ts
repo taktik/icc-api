@@ -2,14 +2,14 @@ import { iccHcpartyApi } from "../icc-api/iccApi"
 
 import { XHR } from "../icc-api/api/XHR"
 import { HealthcarePartyDto } from "../icc-api/model/HealthcarePartyDto"
-import _ from "lodash"
+import * as _ from "lodash"
 
 // noinspection JSUnusedGlobalSymbols
 export class IccHcpartyXApi extends iccHcpartyApi {
   hcPartyKeysCache: { [key: string]: string } = {}
   cache: { [key: string]: [number, Promise<HealthcarePartyDto>] } = {}
   private CACHE_RETENTION_IN_MS: number = 300_000
-  constructor(host: string, headers: Array<XHR.Header>) {
+  constructor(host: string, headers: { [key: string]: string }) {
     super(host, headers)
   }
 

@@ -33,6 +33,8 @@ export class TelecomDtoEmbed {
   telecomNumber?: string
 
   telecomDescription?: string
+
+  encryptedSelf?: string
 }
 export namespace TelecomDtoEmbed {
   export enum TelecomTypeEnum {
