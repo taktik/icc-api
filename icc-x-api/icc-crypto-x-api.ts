@@ -915,7 +915,8 @@ export class IccCryptoXApi {
 
   generateKeyForDelegate(ownerId: string, delegateId: string) {
     return Promise.all([
-      this.getHealthcareParty(ownerId),
+      // skip the cache: we want to avoid any revision conflicts when inserting the key
+      this.hcpartyBaseApi.getHealthcareParty(ownerId),
       this.getHealthcareParty(delegateId)
     ]).then(
       ([owner, delegate]) =>
