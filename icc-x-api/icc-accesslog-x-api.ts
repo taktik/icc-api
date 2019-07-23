@@ -39,18 +39,22 @@ export class IccAccesslogXApi extends iccAccesslogApi {
     return this.crypto
       .extractDelegationsSFKs(patient, hcpId)
       .then(secretForeignKeys =>
-        this.crypto.initObjectDelegations(
-          accessslog,
-          patient,
-          hcpId!,
-          secretForeignKeys.extractedKeys[0]
-        )
+        Promise.all([
+          this.crypto.initObjectDelegations(
+            accessslog,
+            patient,
+            hcpId!,
+            secretForeignKeys.extractedKeys[0]
+          ),
+          this.crypto.initEncryptionKeys(accessslog, hcpId!)
+        ])
       )
-      .then(initData => {
+      .then(([dels, eks]) => {
         _.extend(accessslog, {
-          delegations: initData.delegations,
-          cryptedForeignKeys: initData.cryptedForeignKeys,
-          secretForeignKeys: initData.secretForeignKeys
+          delegations: dels.delegations,
+          cryptedForeignKeys: dels.cryptedForeignKeys,
+          secretForeignKeys: dels.secretForeignKeys,
+          encryptionKeys: eks.encryptionKeys
         })
 
         let promise = Promise.resolve(accessslog)
@@ -61,22 +65,17 @@ export class IccAccesslogXApi extends iccAccesslogApi {
           delegateId =>
             (promise = promise.then(helement =>
               this.crypto
-                .extendedDelegationsAndCryptedForeignKeys(
-                  helement,
+                .addDelegationsAndEncryptionKeys(
                   patient,
+                  accessslog,
                   hcpId!,
                   delegateId,
-                  initData.secretId
-                )
-                .then(extraData =>
-                  _.extend(helement, {
-                    delegations: extraData.delegations,
-                    cryptedForeignKeys: extraData.cryptedForeignKeys
-                  })
+                  dels.secretId,
+                  eks.secretId
                 )
                 .catch(e => {
                   console.log(e)
-                  return helement
+                  return accessslog
                 })
             ))
         )
@@ -134,21 +133,23 @@ export class IccAccesslogXApi extends iccAccesslogApi {
     //First check that we have no dangling delegation
 
     return Promise.all(
-      accessLogs.map(al => {
-        return al.encryptedSelf
+      accessLogs.map(accessLog => {
+        return accessLog.encryptedSelf
           ? this.crypto
               .extractKeysFromDelegationsForHcpHierarchy(
                 hcpId!,
-                al.id!,
-                _.size(al.encryptionKeys) ? al.encryptionKeys! : al.delegations!
+                accessLog.id!,
+                _.size(accessLog.encryptionKeys)
+                  ? accessLog.encryptionKeys!
+                  : accessLog.delegations!
               )
               .then(({ extractedKeys: sfks }) => {
                 if (!sfks || !sfks.length) {
                   //console.log("Cannot decrypt contact", ctc.id)
-                  return Promise.resolve(al)
+                  return Promise.resolve(accessLog)
                 }
                 return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(key =>
-                  utils.decrypt(al, ec =>
+                  utils.decrypt(accessLog, ec =>
                     AES.decrypt(key, ec).then(dec => {
                       const jsonContent = dec && utils.ua2utf8(dec)
                       try {
@@ -156,7 +157,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
                       } catch (e) {
                         console.log(
                           "Cannot parse access log",
-                          al.id,
+                          accessLog.id,
                           jsonContent || "Invalid content"
                         )
                         return {}
@@ -165,7 +166,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
                   )
                 )
               })
-          : Promise.resolve(al)
+          : Promise.resolve(accessLog)
       })
     )
   }
@@ -202,16 +203,16 @@ export class IccAccesslogXApi extends iccAccesslogApi {
     accessLogs: Array<models.AccessLogDto>
   ): Promise<Array<models.AccessLogDto>> {
     return Promise.all(
-      accessLogs.map(al =>
-        (al.encryptionKeys && Object.keys(al.encryptionKeys).length
-          ? Promise.resolve(al)
-          : this.initEncryptionKeys(user, al)
+      accessLogs.map(accessLog =>
+        (accessLog.encryptionKeys && Object.keys(accessLog.encryptionKeys).length
+          ? Promise.resolve(accessLog)
+          : this.initEncryptionKeys(user, accessLog)
         )
-          .then(al =>
+          .then(accessLog =>
             this.crypto.extractKeysFromDelegationsForHcpHierarchy(
               (user.healthcarePartyId || user.patientId)!,
-              al.id!,
-              al.encryptionKeys!
+              accessLog.id!,
+              accessLog.encryptionKeys!
             )
           )
           .then((sfks: { extractedKeys: Array<string>; hcpartyId: string }) =>
@@ -219,7 +220,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
           )
           .then((key: CryptoKey) =>
             utils.crypt(
-              al,
+              accessLog,
               (obj: { [key: string]: string }) =>
                 AES.encrypt(key, utils.utf82ua(JSON.stringify(obj))),
               this.cryptedKeys
@@ -242,7 +243,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
     return body
       ? this.encrypt(user, [_.cloneDeep(body)])
           .then(als => super.createAccessLog(als[0]))
-          .then(al => this.decrypt((user.healthcarePartyId || user.patientId)!, [al]))
+          .then(accessLog => this.decrypt((user.healthcarePartyId || user.patientId)!, [accessLog]))
           .then(als => als[0])
       : Promise.resolve(null)
   }
@@ -259,7 +260,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
   ): Promise<models.AccessLogDto | any> {
     return super
       .getAccessLog(accessLogId)
-      .then(al => this.decrypt((user.healthcarePartyId || user.patientId)!, [al]))
+      .then(accessLog => this.decrypt((user.healthcarePartyId || user.patientId)!, [accessLog]))
       .then(als => als[0])
   }
 
@@ -277,9 +278,9 @@ export class IccAccesslogXApi extends iccAccesslogApi {
   ): Promise<models.PatientPaginatedList | any> {
     return super
       .listAccessLogs(startKey, startDocumentId, limit)
-      .then(al =>
-        this.decrypt((user.healthcarePartyId || user.patientId)!, al.rows).then(dr =>
-          Object.assign(al, { rows: dr })
+      .then(accessLog =>
+        this.decrypt((user.healthcarePartyId || user.patientId)!, accessLog.rows).then(dr =>
+          Object.assign(accessLog, { rows: dr })
         )
       )
   }
@@ -297,7 +298,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
     return body
       ? this.encrypt(user, [_.cloneDeep(body)])
           .then(als => super.modifyAccessLog(als[0]))
-          .then(al => this.decrypt((user.healthcarePartyId || user.patientId)!, [al]))
+          .then(accessLog => this.decrypt((user.healthcarePartyId || user.patientId)!, [accessLog]))
           .then(als => als[0])
       : Promise.resolve(null)
   }
@@ -336,9 +337,9 @@ export class IccAccesslogXApi extends iccAccesslogApi {
         limit,
         descending
       )
-      .then(al =>
-        this.decrypt((user.healthcarePartyId || user.patientId)!, al.rows).then(dr =>
-          Object.assign(al, { rows: dr })
+      .then(accessLog =>
+        this.decrypt((user.healthcarePartyId || user.patientId)!, accessLog.rows).then(dr =>
+          Object.assign(accessLog, { rows: dr })
         )
       )
   }

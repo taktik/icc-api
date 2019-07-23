@@ -66,9 +66,7 @@ export class IccContactXApi extends iccContactApi {
           this.crypto.initEncryptionKeys(contact, hcpId!)
         ])
       )
-      .then(initData => {
-        const dels = initData[0]
-        const eks = initData[1]
+      .then(([dels, eks]) => {
         _.extend(contact, {
           delegations: dels.delegations,
           cryptedForeignKeys: dels.cryptedForeignKeys,
