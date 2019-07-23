@@ -215,8 +215,8 @@ export class IccAccesslogXApi extends iccAccesslogApi {
               accessLog.encryptionKeys!
             )
           )
-          .then((sfks: { extractedKeys: Array<string>; hcpartyId: string }) =>
-            AES.importKey("raw", utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
+          .then((eks: { extractedKeys: Array<string>; hcpartyId: string }) =>
+            AES.importKey("raw", utils.hex2ua(eks.extractedKeys[0].replace(/-/g, "")))
           )
           .then((key: CryptoKey) =>
             utils.crypt(
