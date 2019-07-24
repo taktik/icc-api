@@ -620,17 +620,17 @@ export class IccPatientXApi extends iccPatientApi {
         : []
       ).forEach(
         delegateId =>
-          (promise = promise.then(contact =>
+          (promise = promise.then(patient =>
             this.crypto
-              .appendEncryptionKeys(contact, hcpId!, delegateId, eks.secretId)
+              .appendEncryptionKeys(patient, hcpId!, delegateId, eks.secretId)
               .then(extraEks => {
-                return _.extend(contact, {
+                return _.extend(patient, {
                   encryptionKeys: extraEks.encryptionKeys
                 })
               })
               .catch(e => {
                 console.log(e.message)
-                return contact
+                return patient
               })
           ))
       )
