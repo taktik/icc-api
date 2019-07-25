@@ -161,7 +161,7 @@ export class iccAccesslogApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.AccessLogDto(it)))
+      .then(doc => new models.AccessLogPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
   modifyAccessLog(body?: models.AccessLogDto): Promise<models.AccessLogDto | any> {
