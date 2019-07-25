@@ -274,10 +274,11 @@ export class IccAccesslogXApi extends iccAccesslogApi {
     user: models.UserDto,
     startKey?: string,
     startDocumentId?: string,
-    limit?: string
+    limit?: string,
+    descending?: boolean
   ): Promise<models.PatientPaginatedList | any> {
     return super
-      .listAccessLogs(startKey, startDocumentId, limit)
+      .listAccessLogs(startKey, startDocumentId, limit, descending)
       .then(accessLog =>
         this.decrypt((user.healthcarePartyId || user.patientId)!, accessLog.rows).then(dr =>
           Object.assign(accessLog, { rows: dr })

@@ -142,7 +142,8 @@ export class iccAccesslogApi {
   listAccessLogs(
     startKey?: string,
     startDocumentId?: string,
-    limit?: string
+    limit?: string,
+    descending?: boolean
   ): Promise<Array<models.AccessLogDto> | any> {
     let _body = null
 
@@ -153,7 +154,8 @@ export class iccAccesslogApi {
       new Date().getTime() +
       (startKey ? "&startKey=" + startKey : "") +
       (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (limit ? "&limit=" + limit : "") +
+      (descending ? "&descending=" + descending : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
