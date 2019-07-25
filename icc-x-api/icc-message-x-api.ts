@@ -1050,8 +1050,7 @@ export class IccMessageXApi extends iccMessageApi {
     efactApi: fhcEfactcontrollerApi,
     fhcServer: string | undefined = undefined,
     prefixer?: (fed: InsuranceDto, hcpId: string) => Promise<string>,
-    isConnectedAsPmg: boolean = false,
-    hcpNihiiByIds?: { [key: string]: string }
+    isConnectedAsPmg: boolean = false
   ): Promise<models.MessageDto> {
     const uuid = this.crypto.randomUuid()
     const smallBase36 = uuidBase36Half(uuid)
@@ -1088,8 +1087,7 @@ export class IccMessageXApi extends iccMessageApi {
               smallBase36,
               this.insuranceApi,
               this.invoiceXApi,
-              this,
-              hcpNihiiByIds
+              this
             )
           )
           .then(batch =>

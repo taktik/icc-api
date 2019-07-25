@@ -233,7 +233,8 @@ export class iccMessageApi {
     to?: number,
     startKey?: string,
     startDocumentId?: string,
-    limit?: number
+    limit?: number,
+    hcpId?: string
   ): Promise<models.MessagePaginatedList | any> {
     let _body = null
 
@@ -247,7 +248,8 @@ export class iccMessageApi {
       (to ? "&to=" + to : "") +
       (startKey ? "&startKey=" + startKey : "") +
       (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (limit ? "&limit=" + limit : "") +
+      (hcpId ? "&hcpId=" + hcpId : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
