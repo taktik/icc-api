@@ -164,8 +164,7 @@ export function toInvoiceBatch(
   fileRef: string,
   insuranceApi: iccInsuranceApi,
   invoiceXApi: IccInvoiceXApi,
-  messageXApi: IccMessageXApi,
-  hcpNihiiByIds?: { [key: string]: string }
+  messageXApi: IccMessageXApi
 ): Promise<InvoicesBatch> {
   return insuranceApi
     .getInsurances(
@@ -210,14 +209,7 @@ export function toInvoiceBatch(
                   throw "Insurance is invalid for patient " + invWithPat.patientDto.id
                 }
 
-                return toInvoice(
-                  hcp.nihii!!,
-                  invoice,
-                  invWithPat.patientDto,
-                  insurance,
-                  relatedInvoiceInfo,
-                  hcpNihiiByIds
-                )
+                return toInvoice(invoice, invWithPat.patientDto, insurance, relatedInvoiceInfo)
               }
             )
 
@@ -250,12 +242,10 @@ export function toInvoiceBatch(
 }
 
 function toInvoice(
-  nihiiHealthcareProvider: string,
   invoiceDto: InvoiceDto,
   patientDto: PatientDto,
   insurance: InsuranceDto,
-  relatedInvoiceInfo: RelatedInvoiceInfo | undefined,
-  hcpNihiiByIds?: { [key: string]: string }
+  relatedInvoiceInfo: RelatedInvoiceInfo | undefined
 ): Invoice {
   const invoice = new Invoice({})
   const invoiceYear = moment(invoiceDto.created)
@@ -269,7 +259,7 @@ function toInvoice(
   invoice.invoiceRef = uuidBase36(invoiceDto.id!!)
   invoice.ioCode = insurance.code!!.substr(0, 3)
   invoice.items = _.map(invoiceDto.invoicingCodes, (invoicingCodeDto: InvoicingCodeDto) => {
-    return toInvoiceItem(nihiiHealthcareProvider, patientDto, invoiceDto, invoicingCodeDto)
+    return toInvoiceItem(invoiceDto.supervisorNihii, patientDto, invoiceDto, invoicingCodeDto)
   })
   invoice.patient = toPatient(patientDto)
   invoice.ignorePrescriptionDate = !!invoiceDto.longDelayJustification
@@ -340,62 +330,62 @@ function getSideCode(code: number) {
   return code === 0
     ? InvoiceItem.SideCodeEnum.None
     : code === 1
-    ? InvoiceItem.SideCodeEnum.Left
-    : code === 2
-    ? InvoiceItem.SideCodeEnum.Right
-    : InvoiceItem.SideCodeEnum.None
+      ? InvoiceItem.SideCodeEnum.Left
+      : code === 2
+        ? InvoiceItem.SideCodeEnum.Right
+        : InvoiceItem.SideCodeEnum.None
 }
 
 function getTimeOfDay(code: number) {
   return code === 0
     ? InvoiceItem.TimeOfDayEnum.Other
     : code === 1
-    ? InvoiceItem.TimeOfDayEnum.Night
-    : code === 2
-    ? InvoiceItem.TimeOfDayEnum.Weekend
-    : code === 3
-    ? InvoiceItem.TimeOfDayEnum.Bankholiday
-    : code === 4
-    ? InvoiceItem.TimeOfDayEnum.Urgent
-    : InvoiceItem.TimeOfDayEnum.Other
+      ? InvoiceItem.TimeOfDayEnum.Night
+      : code === 2
+        ? InvoiceItem.TimeOfDayEnum.Weekend
+        : code === 3
+          ? InvoiceItem.TimeOfDayEnum.Bankholiday
+          : code === 4
+            ? InvoiceItem.TimeOfDayEnum.Urgent
+            : InvoiceItem.TimeOfDayEnum.Other
 }
 
 function getPrescriberNorm(code: number) {
   return code === 0
     ? InvoiceItem.PrescriberNormEnum.None
     : code === 1
-    ? InvoiceItem.PrescriberNormEnum.OnePrescriber
-    : code === 3
-    ? InvoiceItem.PrescriberNormEnum.SelfPrescriber
-    : code === 4
-    ? InvoiceItem.PrescriberNormEnum.AddedCode
-    : code === 9
-    ? InvoiceItem.PrescriberNormEnum.ManyPrescribers
-    : InvoiceItem.PrescriberNormEnum.None
+      ? InvoiceItem.PrescriberNormEnum.OnePrescriber
+      : code === 3
+        ? InvoiceItem.PrescriberNormEnum.SelfPrescriber
+        : code === 4
+          ? InvoiceItem.PrescriberNormEnum.AddedCode
+          : code === 9
+            ? InvoiceItem.PrescriberNormEnum.ManyPrescribers
+            : InvoiceItem.PrescriberNormEnum.None
 }
 
 export function getDerogationMaxNumber(code: number): InvoiceItem.DerogationMaxNumberEnum {
   return code === 0
     ? InvoiceItem.DerogationMaxNumberEnum.Other
     : code === 1
-    ? InvoiceItem.DerogationMaxNumberEnum.DerogationMaxNumber
-    : code === 2
-    ? InvoiceItem.DerogationMaxNumberEnum.OtherPrescription
-    : code === 3
-    ? InvoiceItem.DerogationMaxNumberEnum.SecondPrestationOfDay
-    : InvoiceItem.DerogationMaxNumberEnum.ThirdAndNextPrestationOfDay
+      ? InvoiceItem.DerogationMaxNumberEnum.DerogationMaxNumber
+      : code === 2
+        ? InvoiceItem.DerogationMaxNumberEnum.OtherPrescription
+        : code === 3
+          ? InvoiceItem.DerogationMaxNumberEnum.SecondPrestationOfDay
+          : InvoiceItem.DerogationMaxNumberEnum.ThirdAndNextPrestationOfDay
 }
 
 export function toDerogationMaxNumber(derogation: InvoiceItem.DerogationMaxNumberEnum): number {
   return derogation === InvoiceItem.DerogationMaxNumberEnum.Other
     ? 0
     : derogation === InvoiceItem.DerogationMaxNumberEnum.DerogationMaxNumber
-    ? 1
-    : derogation === InvoiceItem.DerogationMaxNumberEnum.OtherPrescription
-    ? 2
-    : derogation === InvoiceItem.DerogationMaxNumberEnum.SecondPrestationOfDay
-    ? 3
-    : 4
+      ? 1
+      : derogation === InvoiceItem.DerogationMaxNumberEnum.OtherPrescription
+        ? 2
+        : derogation === InvoiceItem.DerogationMaxNumberEnum.SecondPrestationOfDay
+          ? 3
+          : 4
 }
 
 export function uuidBase36(uuid: string): string {
