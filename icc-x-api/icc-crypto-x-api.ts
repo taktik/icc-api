@@ -2,6 +2,7 @@ import { iccHcpartyApi, iccPatientApi } from "../icc-api/iccApi"
 import { AES, AESUtils } from "./crypto/AES"
 import { RSA, RSAUtils } from "./crypto/RSA"
 import { utils, UtilsClass } from "./crypto/utils"
+import { shamir, ShamirClass } from "./crypto/shamir"
 
 import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
@@ -80,6 +81,7 @@ export class IccCryptoXApi {
   AES: AESUtils = AES
   RSA: RSAUtils = RSA
   utils: UtilsClass = utils
+  shamir: ShamirClass = shamir
 
   constructor(
     host: string,
@@ -103,6 +105,37 @@ export class IccCryptoXApi {
             (15 >> (Number(c) / 4)))
         ).toString(16) //Keep that inlined or you will loose the random
     )
+  }
+
+  encryptedShamirRSAKey(
+    hcp: HealthcarePartyDto,
+    notaries: Array<HealthcarePartyDto>,
+    threshold: number
+  ): Promise<Map<String, String>> {
+    const kp = this.RSA.loadKeyPairNotImported(hcp.id!)
+    return this.RSA.exportKey(kp.privateKey, "pkcs8").then(exportedKey => {
+      const pk = exportedKey as ArrayBuffer
+      const { prime, shares } = this.shamir.split(new Uint8Array(pk), notaries.length, threshold)
+      const primeCode =
+        prime === shamir.prime512.toHex()
+          ? "512"
+          : prime === shamir.prime3217.toHex()
+            ? "3217"
+            : "19937"
+      return Promise.all(
+        notaries.map((notary, idx) => {
+          const notaryPubKey = utils.spkiToJwk(utils.hex2ua(notary.publicKey!))
+          return this.RSA.importKey("jwk", notaryPubKey, ["encrypt"])
+            .then(key => {
+              this.RSA.encrypt(
+                key,
+                this.utils.text2ua(`${primeCode}|${shares[idx].x}|${shares[idx].y}`)
+              )
+            })
+            .then(k => [notary.id, k])
+        })
+      ).then(keys => _.fromPairs(keys) as Map<string, string>)
+    })
   }
 
   decryptHcPartyKey(

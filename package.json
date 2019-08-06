@@ -11,7 +11,8 @@
     "lodash": "^4.17.12",
     "moment": "^2.22.1",
     "text-encoding": "^0.7.0",
-    "uuid-encoder": "^1.1.0"
+    "uuid-encoder": "^1.1.0",
+    "decimal.js": "latest"
   },
   "devDependencies": {
     "@types/base64-js": "^1.2.5",
