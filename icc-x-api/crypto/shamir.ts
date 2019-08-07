@@ -1,160 +1,385 @@
-import Decimal from "decimal.js"
 import { utils } from "./utils"
 
-Decimal.set({ rounding: 5 })
-Decimal.set({ modulo: Decimal.ROUND_FLOOR })
-Decimal.set({ crypto: true })
-Decimal.set({ precision: 1e4 })
-Decimal.set({ toExpPos: 1000 })
-
 export class ShamirClass {
-  prime512 = new Decimal("2").pow(512).sub(1)
-  prime3217 = new Decimal("2").pow(3217).sub(1)
-  prime19937 = new Decimal("2").pow(19937).sub(1)
-
-  divmod(a: Decimal.Value, b: Decimal.Value, n: Decimal.Value) {
-    const aCopy = Decimal.isDecimal(a) ? (a as Decimal) : new Decimal(a)
-    const bCopy = Decimal.isDecimal(b) ? (b as Decimal) : new Decimal(b)
-    const nCopy = Decimal.isDecimal(n) ? (n as Decimal) : new Decimal(n)
-
-    let t = new Decimal("0")
-    let nt = new Decimal("1")
-    let r = nCopy
-    let nr = bCopy.mod(n)
-    let tmp
-
-    while (!nr.isZero()) {
-      let quot = Decimal.floor(r.div(nr))
-      tmp = nt
-      nt = t.sub(quot.times(nt))
-      t = tmp
-      tmp = nr
-      nr = r.sub(quot.times(nr))
-      r = tmp
-    }
-
-    if (r.greaterThan(1)) return new Decimal(0)
-    if (t.isNegative()) t = t.add(n)
-    return aCopy.times(t).mod(n)
+  // Protected settings object
+  config = {
+    bits: 8, // default number of bits
+    radix: 16, // work with HEX by default
+    size: Math.pow(2, 8 /* config.bits */),
+    max: Math.pow(2, 8 /* config.bits */) - 1,
+    minBits: 3,
+    maxBits: 16, // this permits 65,535 shares, though going this high is NOT recommended in JS!
+    bytesPerChar: 2,
+    maxBytesPerChar: 6, // Math.pow(256,7) > Math.pow(2,53)
+    // Primitive polynomials (in decimal form) for Galois Fields GF(2^n), for 2 <= n <= 30
+    // The index of each term in the array corresponds to the n for that polynomial
+    // i.e. to get the polynomial for n=16, use primitivePolynomials[16]
+    primitivePolynomials: [
+      null,
+      null,
+      1,
+      3,
+      3,
+      5,
+      3,
+      3,
+      29,
+      17,
+      9,
+      5,
+      83,
+      27,
+      43,
+      3,
+      45,
+      9,
+      39,
+      39,
+      9,
+      5,
+      3,
+      33,
+      27,
+      9,
+      71,
+      39,
+      9,
+      5,
+      83
+    ],
+    // warning for insecure PRNG
+    warning:
+      "WARNING:\nA secure random number generator was not found.\nUsing Math.random(), which is NOT cryptographically strong!",
+    logs: [] as Array<number>,
+    exps: [] as Array<number>
   }
 
-  random(lowerValue: Decimal.Value, upperValue: Decimal.Value) {
-    let lower = new Decimal(lowerValue)
-    let upper = new Decimal(upperValue)
+  init() {
+    const primitive = this.config.primitivePolynomials[this.config.bits]!!
+    let x = 1
 
-    if (lower.greaterThan(upper)) {
-      const temp = lower
-      lower = upper
-      upper = temp
+    for (var i = 0; i < this.config.size; i++) {
+      this.config.exps[i] = x
+      this.config.logs[x] = i
+      x <<= 1
+      if (x >= this.config.size) {
+        x ^= primitive
+        x &= this.config.max
+      }
+    }
+  }
+
+  // Splits a number string `bits`-length segments, after first
+  // optionally zero-padding it to a length that is a multiple of `padLength.
+  // Returns array of integers (each less than 2^bits-1), with each element
+  // representing a `bits`-length segment of the input string from right to left,
+  // i.e. parts[0] represents the right-most `bits`-length segment of the input string.
+  split(str: string, padLength: number = 0) {
+    if (padLength) {
+      str = this.padLeft(str, padLength)
+    }
+    var parts = []
+    for (var i = str.length; i > this.config.bits; i -= this.config.bits) {
+      parts.push(parseInt(str.slice(i - this.config.bits, i), 2))
+    }
+    parts.push(parseInt(str.slice(0, i), 2))
+    return parts
+  }
+
+  bin2hex(str: string) {
+    var hex = "",
+      num
+    str = this.padLeft(str, 4)
+    for (var i = str.length; i >= 4; i -= 4) {
+      num = parseInt(str.slice(i - 4, i), 2)
+      if (isNaN(num)) {
+        throw new Error("Invalid binary character.")
+      }
+      hex = num.toString(16) + hex
+    }
+    return hex
+  }
+
+  hex2bin(str: string) {
+    var bin = "",
+      num
+    for (var i = str.length - 1; i >= 0; i--) {
+      num = parseInt(str[i], 16)
+      if (isNaN(num)) {
+        throw new Error("Invalid hex character.")
+      }
+      bin = this.padLeft(num.toString(2), 4) + bin
     }
 
-    return lower.add(
-      Decimal.random()
-        .times(upper.sub(lower.add(1)))
-        .floor()
+    return bin
+  }
+
+  padLeft(str: string, bits: number = this.config.bits) {
+    var missing = str.length % bits
+    return (missing ? new Array(bits - missing + 1).join("0") : "") + str
+  }
+
+  random(bits: number) {
+    const construct = (bits: number, arr: Uint32Array, size: number) => {
+      let str = "",
+        i = 0
+      const len = arr.length - 1
+      while (i < len || str.length < bits) {
+        str += this.padLeft(arr[i].toString(16), size)
+        i++
+      }
+      str = str.substr(-bits / 4)
+      return (str.match(/0/g) || []).length === str.length ? null : str
+    }
+
+    var elems = Math.ceil(bits / 32),
+      str = null,
+      arr = new Uint32Array(elems)
+
+    while (str === null) {
+      crypto.getRandomValues(arr)
+      str = construct(bits, arr, 8)
+    }
+
+    return str
+  }
+
+  share(secretString: string, numShares: number, threshold: number) {
+    if (!this.config.logs.length) {
+      this.init()
+    }
+
+    if (numShares % 1 !== 0 || numShares < 2) {
+      throw new Error(
+        "Number of shares must be an integer between 2 and 2^bits-1 (" +
+          this.config.max +
+          "), inclusive."
+      )
+    }
+    if (numShares > this.config.max) {
+      var neededBits = Math.ceil(Math.log(numShares + 1) / Math.LN2)
+      throw new Error(
+        "Number of shares must be an integer between 2 and 2^bits-1 (" +
+          this.config.max +
+          "), inclusive. To create " +
+          numShares +
+          " shares, use at least " +
+          neededBits +
+          " bits."
+      )
+    }
+    if (threshold % 1 !== 0 || threshold < 2) {
+      throw new Error(
+        "Threshold number of shares must be an integer between 2 and 2^bits-1 (" +
+          this.config.max +
+          "), inclusive."
+      )
+    }
+    if (threshold > this.config.max) {
+      var neededBits = Math.ceil(Math.log(threshold + 1) / Math.LN2)
+      throw new Error(
+        "Threshold number of shares must be an integer between 2 and 2^bits-1 (" +
+          this.config.max +
+          "), inclusive.  To use a threshold of " +
+          threshold +
+          ", use at least " +
+          neededBits +
+          " bits."
+      )
+    }
+
+    // append a 1 so that we can preserve the correct number of leading zeros in our secret
+    const secret = this.split("1" + this.hex2bin(secretString), 0)
+    const x = new Array(numShares),
+      y = new Array(numShares)
+    for (var i = 0, len = secret.length; i < len; i++) {
+      var subShares = this._getShares(secret[i], numShares, threshold)
+      for (var j = 0; j < numShares; j++) {
+        x[j] = x[j] || subShares[j].x.toString(this.config.radix)
+        y[j] = this.padLeft(subShares[j].y.toString(2)) + (y[j] ? y[j] : "")
+      }
+    }
+    const padding = this.config.max.toString(this.config.radix).length
+    return y.map(
+      (b, idx) =>
+        this.config.bits.toString(16).toUpperCase() +
+        this.padLeft(x[idx], padding) +
+        this.bin2hex(b)
     )
   }
 
-  // Polynomial function where `a` is the coefficients
-  q(xValue: Decimal.Value, { a }: { [key: string]: Array<Decimal.Value> }) {
-    let value = new Decimal(a[0])
-    const x = new Decimal(xValue)
-    for (let i = 1; i < a.length; i++) {
-      value = new Decimal(value).add(x.pow(i).times(a[i]))
-    }
+  // This is the basic polynomial generation and evaluation function
+  // for a `config.bits`-length secret (NOT an arbitrary length)
+  // Note: no error-checking at this stage! If `secrets` is NOT
+  // a NUMBER less than 2^bits-1, the output will be incorrect!
+  _getShares(secret: number, numShares: number, threshold: number) {
+    var shares = []
+    var coeffs = [secret]
 
-    return value
+    for (var i = 1; i < threshold; i++) {
+      coeffs[i] = parseInt(this.random(this.config.bits), 16)
+    }
+    for (var i = 1, len = numShares + 1; i < len; i++) {
+      shares[i - 1] = {
+        x: i,
+        y: this.horner(i, coeffs)
+      }
+    }
+    return shares
   }
 
-  split(
-    secret: Uint8Array,
-    n: number,
-    k: number
-  ): { prime: string; shares: Array<{ x: string; y: string }> } {
-    const S = new Decimal("0x" + utils.ua2hex(secret))
-    const p = S.lessThanOrEqualTo(this.prime512)
-      ? new Decimal(this.prime512)
-      : S.lessThanOrEqualTo(this.prime3217)
-        ? new Decimal(this.prime3217)
-        : new Decimal(this.prime19937)
+  // Polynomial evaluation at `x` using Horner's Method
+  // TODO: this can possibly be sped up using other methods
+  // NOTE: fx=fx * x + coeff[i] ->  exp(log(fx) + log(x)) + coeff[i],
+  //       so if fx===0, just set fx to coeff[i] because
+  //       using the exp/log form will result in incorrect value
+  horner(x: number, coeffs: Array<number>) {
+    var logx = this.config.logs[x]
+    var fx = 0
+    for (var i = coeffs.length - 1; i >= 0; i--) {
+      if (fx === 0) {
+        fx = coeffs[i]
+        continue
+      }
+      fx = this.config.exps[(logx + this.config.logs[fx]) % this.config.max] ^ coeffs[i]
+    }
+    return fx
+  }
 
-    if (S.greaterThan(p)) {
-      throw new RangeError("Your secret is too big.")
+  processShare(share: string) {
+    var bits = parseInt(share[0], 16)
+    if (bits && (bits % 1 !== 0 || bits < this.config.minBits || bits > this.config.maxBits)) {
+      throw new Error(
+        "Number of bits must be an integer between " +
+          this.config.minBits +
+          " and " +
+          this.config.maxBits +
+          ", inclusive."
+      )
     }
 
-    let a = [S]
-    let D = []
+    var max = Math.pow(2, bits) - 1
+    var idLength = max.toString(this.config.radix).length
 
-    for (let i = 1; i < k; i++) {
-      let coeff = this.random(new Decimal(0), p.sub(0x1))
-      a.push(coeff)
+    var id = parseInt(share.substr(1, idLength), this.config.radix)
+    if (id % 1 !== 0 || id < 1 || id > max) {
+      throw new Error(
+        "Share id must be an integer between 1 and " + this.config.max + ", inclusive."
+      )
     }
-
-    for (let i = 0; i < n; i++) {
-      let x = new Decimal(i + 1)
-      D.push({
-        x,
-        y: this.q(x, { a }).mod(p)
-      })
+    share = share.substr(idLength + 1)
+    if (!share.length) {
+      throw new Error("Invalid share: zero-length share.")
     }
-
     return {
-      prime: p.toHex(),
-      shares: D.map(share => ({
-        x: share.x.toHex(),
-        y: share.y.toHex()
-      }))
+      bits: bits,
+      id: id,
+      value: share
     }
   }
 
-  lagrangeBasis(data: Array<{ x: Decimal; y: Decimal }>, j: number) {
-    // Lagrange basis evaluated at 0, i.e. L(0).
-    // You don't need to interpolate the whole polynomial to get the secret, you
-    // only need the constant term.
-    let denominator = new Decimal(1)
-    let numerator = new Decimal(1)
-    for (let i = 0; i < data.length; i++) {
-      if (!data[j].x.equals(data[i].x)) {
-        denominator = denominator.times(data[i].x.minus(data[j].x))
+  _combine(at: number, shares: Array<string>) {
+    if (!this.config.logs.length) {
+      this.init()
+    }
+
+    let x: Array<number> = []
+    let y: Array<Array<number>> = []
+    let result = ""
+    let idx: number
+
+    for (var i = 0, len = shares.length; i < len; i++) {
+      const share = this.processShare(shares[i])
+
+      if (x.includes(share["id"])) {
+        // repeated x value?
+        continue
+      }
+
+      idx = x.push(share["id"]) - 1
+      const shareValues = this.split(this.hex2bin(share["value"]))
+      for (var j = 0, len2 = shareValues.length; j < len2; j++) {
+        y[j] = y[j] || []
+        y[j][idx] = shareValues[j]
       }
     }
 
-    for (let i = 0; i < data.length; i++) {
-      if (!data[j].x.equals(data[i].x)) {
-        numerator = numerator.times(data[i].x)
-      }
+    for (var i = 0, len = y.length; i < len; i++) {
+      result = this.padLeft(this.lagrange(at, x, y[i]).toString(2)) + result
     }
 
-    return {
-      numerator,
-      denominator
+    if (at === 0) {
+      // reconstructing the secret
+      return this.bin2hex(result.slice(result.indexOf("1") + 1))
+    } else {
+      // generating a new share
+      return this.bin2hex(result)
     }
   }
 
-  lagrangeInterpolate(prime: Decimal, data: Array<{ x: Decimal; y: Decimal }>) {
-    let S = new Decimal(0)
-
-    for (let i = 0; i < data.length; i++) {
-      let basis = this.lagrangeBasis(data, i)
-      S = S.add(data[i].y.times(this.divmod(basis.numerator, basis.denominator, prime)))
-    }
-    return S.mod(prime)
+  combine(shares: Array<string>) {
+    return this._combine(0, shares)
   }
 
-  combine(prime: Decimal.Value, shares: Array<{ x: Decimal.Value; y: Decimal.Value }>): Uint8Array {
-    const p = new Decimal(prime)
+  // Generate a new share with id `id` (a number between 1 and 2^bits-1)
+  // `id` can be a Number or a String in the default radix (16)
+  newShare(id: number | string, shares: Array<string>) {
+    if (typeof id === "string") {
+      id = parseInt(id, this.config.radix)
+    }
 
-    // Wrap with Decimal on the input shares
-    const decimalShares = shares.map(share => ({
-      x: new Decimal(share.x),
-      y: new Decimal(share.y)
-    }))
+    var share = this.processShare(shares[0])
+    var max = Math.pow(2, share["bits"]) - 1
 
-    return utils.hex2ua(
-      this.lagrangeInterpolate(p, decimalShares)
-        .toHex()
-        .substring(2)
+    if (id % 1 !== 0 || id < 1 || id > max) {
+      throw new Error(
+        "Share id must be an integer between 1 and " + this.config.max + ", inclusive."
+      )
+    }
+
+    var padding = max.toString(this.config.radix).length
+    return (
+      this.config.bits.toString(16).toUpperCase() +
+      this.padLeft(id.toString(this.config.radix), padding) +
+      this._combine(id, shares)
     )
+  }
+
+  // Evaluate the Lagrange interpolation polynomial at x = `at`
+  // using x and y Arrays that are of the same length, with
+  // corresponding elements constituting points on the polynomial.
+  lagrange(at: number, x: Array<number>, y: Array<number>) {
+    let sum = 0,
+      product,
+      i,
+      j,
+      len
+    for (i = 0, len = x.length; i < len; i++) {
+      if (!y[i]) {
+        continue
+      }
+
+      product = this.config.logs[y[i]]
+      for (j = 0; j < len; j++) {
+        if (i === j) {
+          continue
+        }
+        if (at === x[j]) {
+          // happens when computing a share that is in the list of shares used to compute it
+          product = -1 // fix for a zero product term, after which the sum should be sum^0 = sum, not sum^1
+          break
+        }
+        product =
+          (product +
+            this.config.logs[at ^ x[j]] -
+            this.config.logs[x[i] ^ x[j]] +
+            this.config.max) /* to make sure it's not negative */ %
+          this.config.max
+      }
+
+      sum = product === -1 ? sum : sum ^ this.config.exps[product] // though exps[-1]= undefined and undefined ^ anything = anything in chrome, this behavior may not hold everywhere, so do the check
+    }
+    return sum
   }
 }
 

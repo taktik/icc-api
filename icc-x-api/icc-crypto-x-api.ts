@@ -115,22 +115,13 @@ export class IccCryptoXApi {
     const kp = this.RSA.loadKeyPairNotImported(hcp.id!)
     return this.RSA.exportKey(kp.privateKey, "pkcs8").then(exportedKey => {
       const pk = exportedKey as ArrayBuffer
-      const { prime, shares } = this.shamir.split(new Uint8Array(pk), notaries.length, threshold)
-      const primeCode =
-        prime === shamir.prime512.toHex()
-          ? "512"
-          : prime === shamir.prime3217.toHex()
-            ? "3217"
-            : "19937"
+      const shares = this.shamir.share(this.utils.ua2hex(pk), notaries.length, threshold)
       return Promise.all(
         notaries.map((notary, idx) => {
           const notaryPubKey = utils.spkiToJwk(utils.hex2ua(notary.publicKey!))
           return this.RSA.importKey("jwk", notaryPubKey, ["encrypt"])
             .then(key => {
-              this.RSA.encrypt(
-                key,
-                this.utils.text2ua(`${primeCode}|${shares[idx].x}|${shares[idx].y}`)
-              )
+              this.RSA.encrypt(key, this.utils.hex2ua(shares[idx]))
             })
             .then(k => [notary.id, k])
         })
