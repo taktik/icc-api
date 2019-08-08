@@ -697,14 +697,14 @@ export class IccMessageXApi extends iccMessageApi {
         messageType === "920098"
           ? new EfactMessage920098Reader(efactMessage)
           : messageType === "920099"
-            ? new EfactMessage920099Reader(efactMessage)
-            : messageType === "920900"
-              ? new EfactMessage920900Reader(efactMessage)
-              : messageType === "920999"
-                ? new EfactMessage920999Reader(efactMessage)
-                : messageType === "931000"
-                  ? new EfactMessage931000Reader(efactMessage)
-                  : null
+          ? new EfactMessage920099Reader(efactMessage)
+          : messageType === "920900"
+          ? new EfactMessage920900Reader(efactMessage)
+          : messageType === "920999"
+          ? new EfactMessage920999Reader(efactMessage)
+          : messageType === "931000"
+          ? new EfactMessage931000Reader(efactMessage)
+          : null
 
       if (!parser) {
         throw Error(`Unsupported message type ${messageType}`)
@@ -856,13 +856,10 @@ export class IccMessageXApi extends iccMessageApi {
                 )
               ])
             )
-            .then(
-              () =>
-                ["920999", "920099", "920900"].includes(messageType)
-                  ? this.invoiceXApi.getInvoices(
-                      new ListOfIdsDto({ ids: parentMessage.invoiceIds })
-                    )
-                  : Promise.resolve([])
+            .then(() =>
+              ["920999", "920099", "920900"].includes(messageType)
+                ? this.invoiceXApi.getInvoices(new ListOfIdsDto({ ids: parentMessage.invoiceIds }))
+                : Promise.resolve([])
             )
             .then((invoices: Array<models.InvoiceDto>) => {
               // RejectAll if "920999", "920099"
@@ -1051,7 +1048,7 @@ export class IccMessageXApi extends iccMessageApi {
     fhcServer: string | undefined = undefined,
     prefixer?: (fed: InsuranceDto, hcpId: string) => Promise<string>,
     isConnectedAsPmg: boolean = false,
-    hcpNihiiByIds?: { [key: string]: string }
+    medicalLocationId?: string
   ): Promise<models.MessageDto> {
     const uuid = this.crypto.randomUuid()
     const smallBase36 = uuidBase36Half(uuid)
@@ -1088,8 +1085,7 @@ export class IccMessageXApi extends iccMessageApi {
               smallBase36,
               this.insuranceApi,
               this.invoiceXApi,
-              this,
-              hcpNihiiByIds
+              this
             )
           )
           .then(batch =>
@@ -1139,6 +1135,7 @@ export class IccMessageXApi extends iccMessageApi {
                     .then(() =>
                       this.newInstance(user, {
                         id: uuid,
+                        medicalLocationId,
                         invoiceIds: invoices.map(i => i.invoiceDto.id),
                         // tslint:disable-next-line:no-bitwise
                         status: 1 << 6, // STATUS_EFACT
