@@ -2,6 +2,7 @@ import { iccHcpartyApi, iccPatientApi } from "../icc-api/iccApi"
 import { AES, AESUtils } from "./crypto/AES"
 import { RSA, RSAUtils } from "./crypto/RSA"
 import { utils, UtilsClass } from "./crypto/utils"
+import { shamir, ShamirClass } from "./crypto/shamir"
 
 import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
@@ -87,6 +88,7 @@ export class IccCryptoXApi {
   AES: AESUtils = AES
   RSA: RSAUtils = RSA
   utils: UtilsClass = utils
+  shamir: ShamirClass = shamir
 
   constructor(
     host: string,
@@ -110,6 +112,28 @@ export class IccCryptoXApi {
             (15 >> (Number(c) / 4)))
         ).toString(16) //Keep that inlined or you will loose the random
     )
+  }
+
+  encryptedShamirRSAKey(
+    hcp: HealthcarePartyDto,
+    notaries: Array<HealthcarePartyDto>,
+    threshold: number
+  ): Promise<Map<String, String>> {
+    const kp = this.RSA.loadKeyPairNotImported(hcp.id!)
+    return this.RSA.exportKey(kp.privateKey, "pkcs8").then(exportedKey => {
+      const pk = exportedKey as ArrayBuffer
+      const shares = this.shamir.share(this.utils.ua2hex(pk), notaries.length, threshold)
+      return Promise.all(
+        notaries.map((notary, idx) => {
+          const notaryPubKey = utils.spkiToJwk(utils.hex2ua(notary.publicKey!))
+          return this.RSA.importKey("jwk", notaryPubKey, ["encrypt"])
+            .then(key => {
+              this.RSA.encrypt(key, this.utils.hex2ua(shares[idx]))
+            })
+            .then(k => [notary.id, k])
+        })
+      ).then(keys => _.fromPairs(keys) as Map<string, string>)
+    })
   }
 
   /**
@@ -239,10 +263,11 @@ export class IccCryptoXApi {
         delegatorIds[delegation.owner!] = true
       })
     } else if (fallbackOnParent) {
-      return this.getHcpOrPatient(healthcarePartyId).then(hcp =>
-        (hcp as any).parentId
-          ? this.decryptAndImportAesHcPartyKeysInDelegations((hcp as any).parentId, delegations)
-          : Promise.resolve([])
+      return this.getHcpOrPatient(healthcarePartyId).then(
+        hcp =>
+          (hcp as any).parentId
+            ? this.decryptAndImportAesHcPartyKeysInDelegations((hcp as any).parentId, delegations)
+            : Promise.resolve([])
       )
     }
 
@@ -792,18 +817,19 @@ export class IccCryptoXApi {
             }
           )
         : Promise.resolve([])
-      ).then(extractedKeys =>
-        (hcp as HealthcarePartyDto).parentId
-          ? this.extractKeysFromDelegationsForHcpHierarchy(
-              (hcp as HealthcarePartyDto).parentId!,
-              objectId,
-              delegations
-            ).then(parentResponse =>
-              _.assign(parentResponse, {
-                extractedKeys: parentResponse.extractedKeys.concat(extractedKeys)
-              })
-            )
-          : { extractedKeys: extractedKeys, hcpartyId: hcpartyId }
+      ).then(
+        extractedKeys =>
+          (hcp as HealthcarePartyDto).parentId
+            ? this.extractKeysFromDelegationsForHcpHierarchy(
+                (hcp as HealthcarePartyDto).parentId!,
+                objectId,
+                delegations
+              ).then(parentResponse =>
+                _.assign(parentResponse, {
+                  extractedKeys: parentResponse.extractedKeys.concat(extractedKeys)
+                })
+              )
+            : { extractedKeys: extractedKeys, hcpartyId: hcpartyId }
       )
     )
   }
@@ -982,27 +1008,14 @@ export class IccCryptoXApi {
     ownerId: string,
     delegateId: string
   ): Promise<models.HealthcarePartyDto | models.PatientDto> {
-    const genProm = new Promise<
-      [null | "hcp" | "patient", models.HealthcarePartyDto | models.PatientDto]
-    >((resolve, reject) => {
-      //Those caches are invalidated first so that subsequents call to hcPartiesRequestsCache or hcPartyKeysRequestsCache take into account the newly generated keys
-      //And we do not have parallel processes for keys generations
-      // invalidate the hcp cache for the modified hcp
-      this.hcPartiesRequestsCache[ownerId] = {
-        entityType: null,
-        entity: genProm.then(hcpOrPat => {
-          this.hcPartiesRequestsCache[ownerId].entityType = hcpOrPat[0]
-          return hcpOrPat[1]
-        })
-      }
-      // invalidate the hcPartyKeys cache for the delegate hcp (who was not modified, but the view for its
-      // id was updated)
-      this.hcPartyKeysRequestsCache[delegateId] = genProm.then(() =>
-        this.forceGetHcPartyKeysForDelegate(delegateId)
-      )
+    //Preload hcp and patient because we need them and they are going to be invalidated from the caches
+    return Promise.all([this.getHcpOrPatient(ownerId), this.getHcpOrPatient(delegateId)]).then(
+      ([owner, delegate]) => {
+        const ownerType = this.getCachedHcpOrPatientType(owner.id!!)
 
-      Promise.all([this.getHcpOrPatient(ownerId), this.getHcpOrPatient(delegateId)])
-        .then(([owner, delegate]) =>
+        const genProm = new Promise<
+          [null | "hcp" | "patient", models.HealthcarePartyDto | models.PatientDto]
+        >((resolve, reject) => {
           delegate.publicKey
             ? this.AES.generateCryptoKey(true)
                 .then(AESKey => {
@@ -1027,7 +1040,7 @@ export class IccCryptoXApi {
                     ])
                 )
                 .then(() => {
-                  this.getCachedHcpOrPatientType(owner.id!!) === "hcp"
+                  ownerType === "hcp"
                     ? this.hcpartyBaseApi
                         .modifyHealthcareParty(owner as HealthcarePartyDto)
                         .then((hcp: HealthcarePartyDto) => resolve(["hcp", hcp]))
@@ -1035,11 +1048,28 @@ export class IccCryptoXApi {
                         .modifyPatient(owner as PatientDto)
                         .then((pat: PatientDto) => resolve(["patient", pat]))
                 })
+                .catch(e => reject(e))
             : reject(new Error(`Missing public key for delegate ${delegateId}`))
+        })
+
+        //Those caches are invalidated first so that subsequents call to hcPartiesRequestsCache or hcPartyKeysRequestsCache take into account the newly generated keys
+        //And we do not have parallel processes for keys generations
+        // invalidate the hcp cache for the modified hcp
+        this.hcPartiesRequestsCache[ownerId] = {
+          entityType: null,
+          entity: genProm.then(hcpOrPat => {
+            this.hcPartiesRequestsCache[ownerId].entityType = hcpOrPat[0]
+            return hcpOrPat[1]
+          })
+        }
+        // invalidate the hcPartyKeys cache for the delegate hcp (who was not modified, but the view for its
+        // id was updated)
+        this.hcPartyKeysRequestsCache[delegateId] = genProm.then(() =>
+          this.forceGetHcPartyKeysForDelegate(delegateId)
         )
-        .catch(e => reject(e))
-    })
-    return genProm.then(res => res[1])
+        return genProm.then(res => res[1])
+      }
+    )
   }
 
   // noinspection JSUnusedGlobalSymbols

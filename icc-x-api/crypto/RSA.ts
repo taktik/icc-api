@@ -193,7 +193,7 @@ export class RSAUtils {
   }
 
   /**
-   * loads the RSA key pair (hcparty) in JWK, not importet
+   * loads the RSA key pair (hcparty) in JWK, not imported
    *
    * @param id  doc id - hcpartyId
    * @returns {Object} it is in JWK - not imported

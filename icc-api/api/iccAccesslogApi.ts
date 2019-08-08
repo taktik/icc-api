@@ -142,7 +142,8 @@ export class iccAccesslogApi {
   listAccessLogs(
     startKey?: string,
     startDocumentId?: string,
-    limit?: string
+    limit?: string,
+    descending?: boolean
   ): Promise<Array<models.AccessLogDto> | any> {
     let _body = null
 
@@ -153,13 +154,14 @@ export class iccAccesslogApi {
       new Date().getTime() +
       (startKey ? "&startKey=" + startKey : "") +
       (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (limit ? "&limit=" + limit : "") +
+      (descending ? "&descending=" + descending : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.AccessLogDto(it)))
+      .then(doc => new models.AccessLogPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
   modifyAccessLog(body?: models.AccessLogDto): Promise<models.AccessLogDto | any> {
