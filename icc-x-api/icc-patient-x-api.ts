@@ -1070,4 +1070,42 @@ export class IccPatientXApi extends iccPatientApi {
 
     return isValidNiss
   }
+
+  async getPatientIdOfChildDocumentForHcpAndHcpParents(
+    childDocument: models.InvoiceDto | models.CalendarItemDto | models.ContactDto,
+    hcpId: string
+  ): Promise<string> {
+    const parentIdsArray = (await this.crypto.extractCryptedFKs(childDocument, hcpId)).extractedKeys
+
+    const multipleParentIds = _.uniq(parentIdsArray).length > 1
+
+    if (multipleParentIds)
+      throw `Child document with id ${
+        childDocument.id
+      } contains multiple parent ids in its CFKs for hcpId: ${hcpId}`
+
+    const parentId = _.first(parentIdsArray)
+
+    if (!parentId)
+      throw `Parent id is empty in CFK of child document with id ${
+        childDocument.id
+      } for hcpId: ${hcpId}`
+
+    let patient: models.PatientDto = await super.getPatient(parentId!)
+
+    let mergeLevel = 0
+    const maxMergeLevel = 10
+    while (patient.mergeToPatientId) {
+      mergeLevel++
+      if (mergeLevel == maxMergeLevel) {
+        throw `Too many merged levels for parent (Patient) of child document ${
+          childDocument.id
+        } ; hcpId: ${hcpId}`
+      }
+
+      patient = await super.getPatient(patient.mergeToPatientId!)
+    }
+
+    return patient.id!
+  }
 }
