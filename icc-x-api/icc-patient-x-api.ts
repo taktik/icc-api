@@ -1101,7 +1101,7 @@ export class IccPatientXApi extends iccPatientApi {
     const maxMergeLevel = 10
     while (patient.mergeToPatientId) {
       mergeLevel++
-      if (mergeLevel == maxMergeLevel) {
+      if (mergeLevel === maxMergeLevel) {
         throw "Too many merged levels for parent (Patient) of child document " +
           childDocument.id +
           " ; hcpId: " +
