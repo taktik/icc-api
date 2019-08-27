@@ -1079,17 +1079,21 @@ export class IccPatientXApi extends iccPatientApi {
 
     const multipleParentIds = _.uniq(parentIdsArray).length > 1
 
-    if (multipleParentIds)
-      throw `Child document with id ${
-        childDocument.id
-      } contains multiple parent ids in its CFKs for hcpId: ${hcpId}`
+    if (multipleParentIds){
+      throw "Child document with id " +
+        childDocument.id +
+        " contains multiple parent ids in its CFKs for hcpId: " +
+        hcpId
+    }
 
     const parentId = _.first(parentIdsArray)
 
-    if (!parentId)
-      throw `Parent id is empty in CFK of child document with id ${
-        childDocument.id
-      } for hcpId: ${hcpId}`
+    if (!parentId) {
+      throw "Parent id is empty in CFK of child document with id " +
+        childDocument.id +
+        " for hcpId: " +
+        hcpId
+    }
 
     let patient: models.PatientDto = await super.getPatient(parentId!)
 
@@ -1098,9 +1102,10 @@ export class IccPatientXApi extends iccPatientApi {
     while (patient.mergeToPatientId) {
       mergeLevel++
       if (mergeLevel == maxMergeLevel) {
-        throw `Too many merged levels for parent (Patient) of child document ${
-          childDocument.id
-        } ; hcpId: ${hcpId}`
+        throw "Too many merged levels for parent (Patient) of child document " +
+          childDocument.id +
+          " ; hcpId: " +
+          hcpId
       }
 
       patient = await super.getPatient(patient.mergeToPatientId!)
