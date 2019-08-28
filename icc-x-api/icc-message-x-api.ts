@@ -918,11 +918,9 @@ export class IccMessageXApi extends iccMessageApi {
 
                     newInvoicePromise = (
                       newInvoicePromise ||
-                      this.crypto
-                        .extractCryptedFKs(iv, user.healthcarePartyId!)
-                        .then(patId =>
-                          this.patientApi.getPatientWithUser(user, patId.extractedKeys[0])
-                        )
+                      this.patientApi
+                        .getPatientIdOfChildDocumentForHcpAndHcpParents(iv, user.healthcarePartyId!)
+                        .then(patientId => this.patientApi.getPatientWithUser(user, patientId!))
                         .then(pat =>
                           this.invoiceXApi.newInstance(
                             user,
