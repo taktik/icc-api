@@ -835,15 +835,29 @@ export class IccCryptoXApi {
         this.AES.decrypt(aesKeys[delegation.owner!!], this.utils.hex2ua(delegation.key!!))
           .then((result: ArrayBuffer) => {
             var results = utils.ua2text(result).split(":")
-            // results[0]: must be the ID of the object, for checksum
-            // results[1]: secretForeignKey
-            if (results[0] !== masterId) {
+
+            const objectId = results[0] //must be the ID of the object, for checksum
+            const secretId = results[1]
+
+            const details =
+              "object ID: " +
+              masterId +
+              "; generic delegation from " +
+              delegation.owner +
+              " to " +
+              delegation.delegatedTo
+
+            if (!objectId) console.warn("Object id is empty; " + details)
+            if (!secretId) console.warn("Secret id is empty; " + details)
+
+            if (objectId !== masterId) {
               console.log(
-                "Cryptographic mistake: patient ID is not equal to the concatenated id in SecretForeignKey, this may happen when patients have been merged"
+                "Cryptographic mistake: object ID is not equal to the concatenated id in delegation. This may happen when patients have been merged; " +
+                  details
               )
             }
 
-            return results[1]
+            return secretId
           })
           .catch(err => {
             console.log(
