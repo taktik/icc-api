@@ -244,6 +244,21 @@ export class IccCryptoXApi {
     secretForeignKeys: any[]
     secretId: string
   }> {
+    this.throwDetailedExceptionForInvalidParameter(
+      "createdObject.id",
+      createdObject.id,
+      "initObjectDelegations",
+      arguments
+    )
+
+    if (parentObject)
+      this.throwDetailedExceptionForInvalidParameter(
+        "parentObject.id",
+        parentObject.id,
+        "initObjectDelegations",
+        arguments
+      )
+
     const secretId = this.randomUuid()
     return this.getHealthcareParty(ownerId)
       .then(owner => owner.hcPartyKeys![ownerId][0])
@@ -341,15 +356,30 @@ export class IccCryptoXApi {
   ): Promise<{
     delegations: { [key: string]: Array<models.DelegationDto> }
     cryptedForeignKeys: { [key: string]: Array<models.DelegationDto> }
-    secretId: string   //TODO: why input parameter secretIdOfModifiedObject is returned?
+    secretId: string | null  //TODO: why input parameter secretIdOfModifiedObject is returned?
   }> {
-    if (!secretIdOfModifiedObject) { //TODO: why not thow exception?
-      return Promise.resolve({ 
-        delegations: modifiedObject.delegations,
-        cryptedForeignKeys: modifiedObject.cryptedForeignKeys,
-        secretId: null
-      })
-    }
+    this.throwDetailedExceptionForInvalidParameter(
+      "modifiedObject.id",
+      modifiedObject.id,
+      "extendedDelegationsAndCryptedForeignKeys",
+      arguments
+    ) //modifiedObject should never be null
+
+    if (parentObject)
+      this.throwDetailedExceptionForInvalidParameter(
+        "parentObject.id",
+        parentObject.id,
+        "extendedDelegationsAndCryptedForeignKeys",
+        arguments
+      )
+
+    this.throwDetailedExceptionForInvalidParameter(
+      "secretIdOfModifiedObject",
+      secretIdOfModifiedObject,
+      "extendedDelegationsAndCryptedForeignKeys",
+      arguments
+    )
+
     return this.getHealthcareParty(ownerId)
       .then(owner => {
         if (!owner.hcPartyKeys![delegateId]) {
@@ -497,6 +527,13 @@ export class IccCryptoXApi {
     encryptionKeys: any
     secretId: string
   }> {
+    this.throwDetailedExceptionForInvalidParameter(
+      "createdObject.id",
+      createdObject.id,
+      "initEncryptionKeys",
+      arguments
+    )
+
     const secretId = this.randomUuid()
     return this.getHcPartyKeysForDelegate(ownerId)
       .then(encryptedHcPartyKey =>
@@ -544,9 +581,20 @@ export class IccCryptoXApi {
     encryptionKeys: { [key: string]: Array<models.DelegationDto> }
     secretId: string | null   //TODO: why secretIdOfModifiedObject is returned?
   }> {
-    if (!secretIdOfModifiedObject) {
-      return Promise.resolve({ encryptionKeys: modifiedObject.encryptionKeys, secretId: null }) // TODO: shouldn't throw an exception instead?
-    }
+    this.throwDetailedExceptionForInvalidParameter(
+      "modifiedObject.id",
+      modifiedObject.id,
+      "appendEncryptionKeys",
+      arguments
+    ) //modifiedObject should never be null
+
+    this.throwDetailedExceptionForInvalidParameter(
+      "secretIdOfModifiedObject",
+      secretIdOfModifiedObject,
+      "appendEncryptionKeys",
+      arguments
+    )
+
     return this.getHealthcareParty(ownerId)
       .then(owner => {
         if (!owner.hcPartyKeys![delegateId]) {
@@ -650,6 +698,34 @@ export class IccCryptoXApi {
     | models.HealthElementDto
     | models.ReceiptDto
   > {
+    if (parent)
+      this.throwDetailedExceptionForInvalidParameter(
+        "parent.id",
+        parent.id,
+        "addDelegationsAndEncryptionKeys",
+        arguments
+      )
+
+    this.throwDetailedExceptionForInvalidParameter(
+      "child.id",
+      child.id,
+      "addDelegationsAndEncryptionKeys",
+      arguments
+    )
+
+    this.throwDetailedExceptionForInvalidParameter(
+      "secretDelegationKey",
+      secretDelegationKey,
+      "addDelegationsAndEncryptionKeys",
+      arguments
+    )
+
+    this.throwDetailedExceptionForInvalidParameter(
+      "secretEncryptionKey",
+      secretEncryptionKey,
+      "addDelegationsAndEncryptionKeys",
+      arguments
+    )
     return this.extendedDelegationsAndCryptedForeignKeys(
       child,
       parent,
@@ -890,23 +966,31 @@ export class IccCryptoXApi {
       var genericDelegationItem = delegationsArray[i]
 
       decryptPromises.push(
-        this.AES.decrypt(
-          aesKeys[genericDelegationItem.owner!!],
-          this.utils.hex2ua(genericDelegationItem.key!!)
-        )
+        this.AES.decrypt(aesKeys[genericDelegationItem.owner!!], this.utils.hex2ua(genericDelegationItem.key!!))
           .then((decryptedGenericDelegationKey: ArrayBuffer) => {
             const results = utils.ua2text(decryptedGenericDelegationKey).split(":")
-            const objectId = results[0]
+
+            const objectId = results[0] //must be the ID of the object, for checksum
             const genericSecretId = results[1]
+
+            const details =
+              "object ID: " +
+              masterId +
+              "; generic delegation from " +
+              genericDelegationItem.owner +
+              " to " +
+              genericDelegationItem.delegatedTo
+
+            if (!objectId) console.warn("Object id is empty; " + details)
+            if (!genericSecretId) console.warn("Secret id is empty; " + details)
+
             if (objectId !== masterId) {
               console.log(
-                `Cryptographic mistake: object ID ${masterId} within decrypted generic delegations, from ${
-                  genericDelegationItem.owner
-                } to ${
-                  genericDelegationItem.delegatedTo
-                }, is not the one expected. This may happen when patients have been merged`
+                "Cryptographic mistake: object ID is not equal to the concatenated id within decrypted generic delegation. This may happen when patients have been merged; " +
+                  details
               )
             }
+
             return genericSecretId
           })
           .catch(err => {
@@ -1121,5 +1205,27 @@ export class IccCryptoXApi {
         })
         .catch(() => resolve(false))
     })
+  }
+
+  private throwDetailedExceptionForInvalidParameter(
+    argName: string,
+    argValue: any,
+    methodName: string,
+    methodArgs: any
+  ) {
+    if (argValue) return
+
+    let details = "\nMethod name: icc-crypto-x-api." + methodName + "()\nArguments:"
+
+    if (methodArgs) {
+      try {
+        const argsArray = [...methodArgs]
+        _.each(argsArray, (arg, index) => (details += "\n[" + index + "]: " + JSON.stringify(arg)))
+      } catch (ex) {
+        details += "; a problem occured while logging arguments details: " + ex
+      }
+    }
+
+    throw "### THIS SHOULD NOT HAPPEN: " + argName + " has an invalid value: " + argValue + details
   }
 }
