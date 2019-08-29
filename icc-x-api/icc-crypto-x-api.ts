@@ -16,7 +16,9 @@ export class IccCryptoXApi {
 
   //[delegateId][delegatorId] = delegateEncryptedHcPartyKey
   //for each delegate, it stores the list of delegators and the corresponding delegateEncryptedHcPartyKey (shared HcPartyKey, from delegator to delegate, encrypted with the RSA key of the delegate)
-  hcPartyKeysRequestsCache: { [delegateId: string]: Promise<{ [delegatorId: string]: string }> } = {}
+  hcPartyKeysRequestsCache: {
+    [delegateId: string]: Promise<{ [delegatorId: string]: string }>
+  } = {}
 
   emptyHcpCache(hcpartyId: string) {
     delete this.hcPartiesRequestsCache[hcpartyId]
@@ -32,12 +34,13 @@ export class IccCryptoXApi {
 
   /**
    * Gets all delegate encrypted HcParty keys of the delegate with the given `delegateHcPartyId`, and for each key the delegator id
-   * If the keys are not cached, are retrieved from the backend.
+   * If the keys are not cached, they are retrieved from the backend.
    *
    * @param delegateHcPartyId The Health Care Party id
    * @returns  \{delegatorId: delegateEncryptedHcPartyKey\}
    */
-  private getHcPartyKeysForDelegate( //TODO: suggested name: getAllEncryptedHcPKeysOfDelegate
+  private getHcPartyKeysForDelegate(
+    //TODO: suggested name: getAllEncryptedHcPKeysOfDelegate
     delegateHcPartyId: string
   ): Promise<{ [delegatorId: string]: string }> {
     return (
@@ -91,7 +94,8 @@ export class IccCryptoXApi {
     delegateHcPartyId: string,
     encryptedHcPartyKey: string,
     encryptedForDelegator: boolean = false //TODO: suggestion: break this into 2 separate methods: decryptDelegatorEncryptedHcPartyKey() and decryptDelegateEncryptedHcPartyKey()
-  ): Promise<{ delegatorId: string; key: CryptoKey }> {   //TODO: why the delegatorId is also returned?
+  ): Promise<{ delegatorId: string; key: CryptoKey }> {
+    //TODO: why the delegatorId is also returned?
     const cacheKey =
       delegatorId + "|" + delegateHcPartyId + "|" + (encryptedForDelegator ? "->" : "<-")
     const res = this.hcPartyKeysCache[cacheKey]
@@ -159,7 +163,8 @@ export class IccCryptoXApi {
    * @returns - **delegatorId** : the id of the delegator HcP that shares the **key** with the `delegateHcPartyId`
    *  - **key** the decrypted HcPartyKey, shared between **delegatorId** and `delegateHcPartyId`
    */
-  decryptAndImportAesHcPartyKeysForDelegators( //TODO:  suggested name: getDecryptedHcPKeysSharedBetweenDelegateAndDelegators
+  decryptAndImportAesHcPartyKeysForDelegators(
+    //TODO:  suggested name: getDecryptedHcPKeysSharedBetweenDelegateAndDelegators
     delegatorsHcPartyIdsSet: Array<string>,
     delegateHcPartyId: string
   ): Promise<Array<{ delegatorId: string; key: CryptoKey }>> {
@@ -198,12 +203,13 @@ export class IccCryptoXApi {
    * 3. Decrypt's delegators' keys and returns them.
    *
    * @param healthcarePartyId : the id of the delegate HCP
-   * @param delegations : generic delegations (can be SPKs, CFKs, EKs) for all delegates 
+   * @param delegations : generic delegations (can be SPKs, CFKs, EKs) for all delegates
    * @param fallbackOnParent  default true; use parent's healthCarePartyId in case there's no delegation for the `healthcarePartyId`
    * @returns  - **delegatorId** : the id of the delegator HcP that shares the **key** with the `healthcarePartyId`
    *  - **key** the decrypted HcPartyKey, shared between **delegatorId** and `healthcarePartyId`
    */
-  decryptAndImportAesHcPartyKeysInDelegations( //TODO: suggested name: getDecryptedHcPKeysOfDelegateAndParentsFromGenericDelegations
+  decryptAndImportAesHcPartyKeysInDelegations(
+    //TODO: suggested name: getDecryptedHcPKeysOfDelegateAndParentsFromGenericDelegations
     healthcarePartyId: string,
     delegations: { [key: string]: Array<models.DelegationDto> },
     fallbackOnParent = true
@@ -327,16 +333,16 @@ export class IccCryptoXApi {
   /**
    * Gets updated instances of SPKs and CKFs for the child object `modifiedObject`.
    * These updated SPKs and CKFs contain new SPKs/CFKs to provide delegation from delegator HcP with id `ownerId` to delegate HcP with id `delegateId`
-   * 
+   *
    * 1. if `secretIdOfModifiedObject` is not provided, the method will throw an exception; this `secretIdOfModifiedObject` is used to generate a new delegation (SPK) in step 3;
    *  the `secretIdOfModifiedObject` is returned, unmodified, as `secretId`
    * 2. if the owner (delegator) did not perform a delegation to the delegate, then this HcP delegation (creation of a new HcPKey) is performed now
-   * 3. creates a new delegation (Secret Primary Keys) on the `modifiedObject` encrypted with the HcPKey from owner to the delegate; 
-   * 4. if `parentObject` != null, creates a new CFK on the `modifiedObject` encrypted with the HcPKey from owner to the delegate; 
+   * 3. creates a new delegation (Secret Primary Keys) on the `modifiedObject` encrypted with the HcPKey from owner to the delegate;
+   * 4. if `parentObject` != null, creates a new CFK on the `modifiedObject` encrypted with the HcPKey from owner to the delegate;
    * 5. this new delegation (from step 3) is added to the list of existing delegations (Secret Primary Keys) on the `modifiedObject` for the delegate given by `delegateId`
    * 6. if the CFK (from step 4) can be created, this new CFK is added to the list of existing CFKs on the `modifiedObject` for the delegate given by `delegateId`
-   * 7. then some duplicates delegations (SPKs) and CKFs are removed 
-   *  
+   * 7. then some duplicates delegations (SPKs) and CKFs are removed
+   *
    * @param modifiedObject : the object of which SPKs and CFKs will be cloned, the clones will be modified and then used as returned values ; it's a 'child' of `parentObject`; will NOT be mutated
    * @param parentObject : will NOT be mutated
    * @param ownerId : the HcP id of the delegator
@@ -347,7 +353,8 @@ export class IccCryptoXApi {
    * - **secretId** which is the given input parameter `secretIdOfModifiedObject`
    */
 
-  async extendedDelegationsAndCryptedForeignKeys( //TODO: suggested name: getExtendedChildObjectSPKandCFKwithDelegationFromDelegatorToDelegate
+  extendedDelegationsAndCryptedForeignKeys(
+    //TODO: suggested name: getExtendedChildObjectSPKandCFKwithDelegationFromDelegatorToDelegate
     modifiedObject: any | null,
     parentObject: any | null,
     ownerId: string,
@@ -356,7 +363,7 @@ export class IccCryptoXApi {
   ): Promise<{
     delegations: { [key: string]: Array<models.DelegationDto> }
     cryptedForeignKeys: { [key: string]: Array<models.DelegationDto> }
-    secretId: string | null  //TODO: why input parameter secretIdOfModifiedObject is returned?
+    secretId: string | null //TODO: why input parameter secretIdOfModifiedObject is returned?
   }> {
     this.throwDetailedExceptionForInvalidParameter(
       "modifiedObject.id",
@@ -423,12 +430,12 @@ export class IccCryptoXApi {
           ) as Array<Promise<ArrayBuffer>>),
 
           this.AES.encrypt(importedAESHcPartyKey.key, utils.text2ua(
-        this.computeDecryptedSecretPrimaryKeyForObject(modifiedObject, secretIdOfModifiedObject)
+            this.computeDecryptedSecretPrimaryKeyForObject(modifiedObject, secretIdOfModifiedObject)
           ).buffer as ArrayBuffer),
 
           parentObject
             ? this.AES.encrypt(importedAESHcPartyKey.key, utils.text2ua(
-            this.computeDecryptedCryptedForeignKeyForObject(modifiedObject, parentObject)
+                this.computeDecryptedCryptedForeignKeyForObject(modifiedObject, parentObject)
               ).buffer as ArrayBuffer)
             : Promise.resolve(null)
         ])
@@ -461,9 +468,12 @@ export class IccCryptoXApi {
                   (d && this.utils.ua2text(d)) ||
                   /* some unique id that ensures the delegation is going to be held */ this.randomUuid()
               )
-        .concat([
-          this.computeDecryptedSecretPrimaryKeyForObject(modifiedObject, secretIdOfModifiedObject)
-        ])
+              .concat([
+                this.computeDecryptedSecretPrimaryKeyForObject(
+                  modifiedObject,
+                  secretIdOfModifiedObject!
+                )
+              ])
               .map(k => ({ k }))
           )
 
@@ -494,7 +504,16 @@ export class IccCryptoXApi {
                   (d && this.utils.ua2text(d)) ||
                   /* some unique id that ensures the delegation is going to be held */ this.randomUuid()
               )
-              .concat(cryptedForeignKey ? [this.computeDecryptedCryptedForeignKeyForObject(modifiedObject, parentObject.id)] : [])
+              .concat(
+                cryptedForeignKey
+                  ? [
+                      this.computeDecryptedCryptedForeignKeyForObject(
+                        modifiedObject,
+                        parentObject.id
+                      )
+                    ]
+                  : []
+              )
               .map(k => ({ k }))
           )
 
@@ -542,7 +561,9 @@ export class IccCryptoXApi {
       .then(importedAESHcPartyKey =>
         this.AES.encrypt(
           importedAESHcPartyKey.key,
-          utils.text2ua(this.computeDecryptedSecretPrimaryKeyForObject(createdObject.id, secretId))
+          utils.text2ua(
+            this.computeDecryptedContentEncryptionKeyForObject(createdObject.id, secretId)
+          )
         )
       )
       .then(encryptedEncryptionKeys => ({
@@ -572,14 +593,15 @@ export class IccCryptoXApi {
    * @returns - **encryptionKeys** existing EKs of the `modifiedObject`, appended with a new EK item (owner: `ownerId`, delegatedTo: `delegateId`, encrypted key with secretId: `secretIdOfModifiedObject` )
    * - **secretId** which is the given input parameter `secretIdOfModifiedObject`
    */
-  appendEncryptionKeys( //TODO: suggested name: getExtendedEKwithDelegationFromDelegatorToDelegate
+  appendEncryptionKeys(
+    //TODO: suggested name: getExtendedEKwithDelegationFromDelegatorToDelegate
     modifiedObject: any,
     ownerId: string,
     delegateId: string,
     secretIdOfModifiedObject: string
   ): Promise<{
     encryptionKeys: { [key: string]: Array<models.DelegationDto> }
-    secretId: string | null   //TODO: why secretIdOfModifiedObject is returned?
+    secretId: string | null //TODO: why secretIdOfModifiedObject is returned?
   }> {
     this.throwDetailedExceptionForInvalidParameter(
       "modifiedObject.id",
@@ -677,7 +699,8 @@ export class IccCryptoXApi {
    * @returns - an updated `child` object that will contain updated SPKs, CFKs, EKs
    *  */
 
-  addDelegationsAndEncryptionKeys( //TODO: suggested name: updateChildGenericDelegationsFromDelegatorToDelegate
+  addDelegationsAndEncryptionKeys(
+    //TODO: suggested name: updateChildGenericDelegationsFromDelegatorToDelegate
     parent: models.PatientDto | models.MessageDto | null,
     child:
       | models.PatientDto
@@ -806,7 +829,8 @@ export class IccCryptoXApi {
    * - **hcpartyId** the given `hcpartyId` OR, if a parent exist, the HcP id of the top parent in the hierarchy  (even if that parent has no delegations)
    */
   //TODO: even if there are no delegations for parent HCP (but the parent exists), the returned hcpartyId will be the one of the parent; is this ok?
-  extractDelegationsSFKs( //TODO: suggested name: getSecretIDsSPKofHcpAndParentsFromDocument
+  extractDelegationsSFKs(
+    //TODO: suggested name: getSecretIDsSPKofHcpAndParentsFromDocument
     document:
       | models.PatientDto
       | models.MessageDto
@@ -836,8 +860,9 @@ export class IccCryptoXApi {
   }
 
   // noinspection JSUnusedGlobalSymbols
-  
-  extractCryptedFKs( //TODO: suggested name: getSecretIDsCFKofHcpAndParentsFromDocument
+
+  extractCryptedFKs(
+    //TODO: suggested name: getSecretIDsCFKofHcpAndParentsFromDocument
     document:
       | models.PatientDto
       | models.MessageDto
@@ -866,8 +891,8 @@ export class IccCryptoXApi {
     )
   }
 
-  
-  extractEncryptionsSKs( //TODO: suggested name: getSecretIDsEKofHcpAndParentsFromDocument
+  extractEncryptionsSKs(
+    //TODO: suggested name: getSecretIDsEKofHcpAndParentsFromDocument
     document:
       | models.PatientDto
       | models.MessageDto
@@ -907,7 +932,8 @@ export class IccCryptoXApi {
    * - **hcpartyId** the given `hcpartyId` OR, if a parent exist, the HCP id of the top parent in the hierarchy  (even if that parent has no delegations)
    */
   //TODO: even if there are no delegations for parent HCP (but the parent exists), the returned hcpartyId will be the one of the parent
-  async extractKeysFromDelegationsForHcpHierarchy( //TODO suggested name: getSecretIdsOfHcpAndParentsFromGenericDelegations
+  async extractKeysFromDelegationsForHcpHierarchy(
+    //TODO suggested name: getSecretIdsOfHcpAndParentsFromGenericDelegations
     hcpartyId: string,
     objectId: string,
     delegations: { [key: string]: Array<models.DelegationDto> }
@@ -928,35 +954,35 @@ export class IccCryptoXApi {
             }
           )
         : Promise.resolve([])
-      ).then(
-        extractedKeys =>
-          hcp.parentId
-            ? this.extractKeysFromDelegationsForHcpHierarchy(
-                hcp.parentId,
-                objectId,
-                delegations
-              ).then(parentResponse =>
-                _.assign(parentResponse, {
-                  extractedKeys: parentResponse.extractedKeys.concat(extractedKeys)
-                })
-              )
-            : { extractedKeys: extractedKeys, hcpartyId: hcpartyId }
+      ).then(extractedKeys =>
+        hcp.parentId
+          ? this.extractKeysFromDelegationsForHcpHierarchy(
+              hcp.parentId,
+              objectId,
+              delegations
+            ).then(parentResponse =>
+              _.assign(parentResponse, {
+                extractedKeys: parentResponse.extractedKeys.concat(extractedKeys)
+              })
+            )
+          : { extractedKeys: extractedKeys, hcpartyId: hcpartyId }
       )
     )
-}
- /**
+  }
+  /**
    * Gets an array of generic secret IDs decrypted from a list of generic delegations (SPKs, CFKs, EKs) `delegationsArray`
    * If a particular generic delegation thows an exception when decrypted, the return value for it's secret ID will be 'false' and a message is logged to console
    * For each one of the delegations in the `delegationsArray`, it tries to decrypt with the decryptedHcPartyKey of the owner of that delegation;
    *
    * @param delegationsArray : generic delegations array
-   * @param aesKeys : **key** HcP ids of delegators/owners in the `delegationsArray`, each with its own decryptedHcPartyKey 
+   * @param aesKeys : **key** HcP ids of delegators/owners in the `delegationsArray`, each with its own decryptedHcPartyKey
    * @param masterId : is the object id to which the generic delegation belongs to
    * - used only to check whether the object.id matches the one stored in the decrypted generic delegation item
    * - even if there's no match, the secret ID is kept as a valid result (and a message logged to console)
    * @returns array of generic secret IDs (secretIdSPK, parentId, secretIdEK)
    */
-  decryptKeyInDelegationLikes( //TODO: suggested name: getSecretIdsFromGenericDelegations
+  decryptKeyInDelegationLikes(
+    //TODO: suggested name: getSecretIdsFromGenericDelegations
     delegationsArray: Array<models.DelegationDto>,
     aesKeys: { [key: string]: CryptoKey },
     masterId: string
@@ -966,7 +992,10 @@ export class IccCryptoXApi {
       var genericDelegationItem = delegationsArray[i]
 
       decryptPromises.push(
-        this.AES.decrypt(aesKeys[genericDelegationItem.owner!!], this.utils.hex2ua(genericDelegationItem.key!!))
+        this.AES.decrypt(
+          aesKeys[genericDelegationItem.owner!!],
+          this.utils.hex2ua(genericDelegationItem.key!!)
+        )
           .then((decryptedGenericDelegationKey: ArrayBuffer) => {
             const results = utils.ua2text(decryptedGenericDelegationKey).split(":")
 
@@ -986,7 +1015,7 @@ export class IccCryptoXApi {
 
             if (objectId !== masterId) {
               console.log(
-                "Cryptographic mistake: object ID is not equal to the concatenated id within decrypted generic delegation. This may happen when patients have been merged; " +
+                "Cryptographic mistake: object ID is not equal to the expected concatenated id within decrypted generic delegation. This may happen when patients have been merged; " +
                   details
               )
             }
@@ -1005,7 +1034,7 @@ export class IccCryptoXApi {
     }
 
     return Promise.all(decryptPromises).then(
-      genericSecretId => genericSecretId.filter(sfk => !!sfk) as string[]
+      genericSecretId => genericSecretId.filter(id => !!id) as string[]
     )
   }
 
