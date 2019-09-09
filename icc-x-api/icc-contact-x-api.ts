@@ -49,7 +49,7 @@ export class IccContactXApi extends iccContactApi {
   }
 
   /**
-   * 1. Extract(decrypt) the patient's secretForeignKeys from the 
+   * 1. Extract(decrypt) the patient's secretForeignKeys from the
    * "delegations" object.
    * 2. Initialize & encrypt the Contact's delegations & cryptedForeignKeys.
    * 3. Initialize & encrypt the Contact's encryptionKeys.
@@ -84,9 +84,9 @@ export class IccContactXApi extends iccContactApi {
           encryptionKeys: eks.encryptionKeys
         })
 
-        let promise = Promise.resolve(contact);
-        
-        (user.autoDelegations
+        let promise = Promise.resolve(contact)
+
+        ;(user.autoDelegations
           ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
           : []
         ).forEach(
@@ -167,6 +167,30 @@ export class IccContactXApi extends iccContactApi {
           )
         : Promise.resolve([])
     })
+  }
+
+  async findByPatientSFKs(
+    hcpartyId: string,
+    patients: Array<models.PatientDto>
+  ): Promise<Array<models.ContactDto>> {
+    let extractedKeys: string[] = []
+    for (const patient of patients) {
+      const secretForeignKeys = await this.crypto.extractDelegationsSFKs(patient, hcpartyId)
+
+      if (
+        secretForeignKeys &&
+        secretForeignKeys.extractedKeys &&
+        secretForeignKeys.extractedKeys.length > 0
+      ) {
+        extractedKeys = extractedKeys.concat(secretForeignKeys.extractedKeys)
+      }
+    }
+
+    const idList = new models.ListOfIdsDto({
+      ids: extractedKeys
+    })
+
+    return extractedKeys.length > 0 ? this.findByHCPartyPatientForeignKeys(hcpartyId, idList) : []
   }
 
   filterBy(
