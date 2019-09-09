@@ -24,15 +24,31 @@
 
 import * as models from "./models"
 
-export class SumehrContentDto {
+export class IngredientDto {
   constructor(json: JSON | any) {
-    Object.assign(this as SumehrContentDto, json)
+    Object.assign(this as IngredientDto, json)
   }
-  services?: Array<models.ServiceDto>
+  from?: number
 
-  healthElements?: Array<models.HealthElementDto>
+  to?: number
 
-  partnerships?: Array<models.PartnershipDto>
+  rank?: number
 
-  patientHealthcareParties?: Array<models.PatientHealthCarePartyDto>
+  type?: IngredientDto.TypeEnum
+
+  knownEffect?: boolean
+
+  strengthDescription?: string
+
+  strength?: models.QuantityDto
+
+  additionalInformation?: string
+
+  substance?: models.SubstanceDto
+}
+export namespace IngredientDto {
+  export enum TypeEnum {
+    ACTIVESUBSTANCE = <any>"ACTIVE_SUBSTANCE",
+    EXCIPIENT = <any>"EXCIPIENT"
+  }
 }

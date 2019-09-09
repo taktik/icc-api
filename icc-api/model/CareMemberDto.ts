@@ -24,15 +24,11 @@
 
 import * as models from "./models"
 
-export class SumehrContentDto {
+export class CareMemberDto {
   constructor(json: JSON | any) {
-    Object.assign(this as SumehrContentDto, json)
+    Object.assign(this as CareMemberDto, json)
   }
-  services?: Array<models.ServiceDto>
+  healthcarePartyId?: string
 
-  healthElements?: Array<models.HealthElementDto>
-
-  partnerships?: Array<models.PartnershipDto>
-
-  patientHealthcareParties?: Array<models.PatientHealthCarePartyDto>
+  quality?: models.CodeStub
 }

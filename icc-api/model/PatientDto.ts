@@ -62,6 +62,8 @@ export class PatientDto {
 
   mergedIds?: Array<string>
 
+  nonDuplicateIds?: Array<string>
+
   firstName?: string
 
   lastName?: string
@@ -110,6 +112,8 @@ export class PatientDto {
 
   preferredUserId?: string
 
+  encryptedAdministrativesDocuments?: Array<string>
+
   picture?: string
 
   userId?: string
@@ -135,6 +139,8 @@ export class PatientDto {
   financialInstitutionInformation?: Array<models.FinancialInstitutionInformationDto>
 
   parameters?: { [key: string]: Array<string> }
+
+  importedData?: { [key: string]: string }
 
   patientProfessions?: Array<models.CodeDto>
 

@@ -242,6 +242,24 @@ export class iccHcpartyApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.HealthcarePartyDto(it)))
       .catch(err => this.handleError(err))
   }
+  getHealthcarePartiesByParentId(
+    parentId: string
+  ): Promise<Array<models.HealthcarePartyDto> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/hcparty/{parentId}/children".replace("{parentId}", parentId + "") +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.HealthcarePartyDto(it)))
+      .catch(err => this.handleError(err))
+  }
   getHealthcareParty(healthcarePartyId: string): Promise<models.HealthcarePartyDto | any> {
     let _body = null
 

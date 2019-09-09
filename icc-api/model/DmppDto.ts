@@ -24,15 +24,39 @@
 
 import * as models from "./models"
 
-export class SumehrContentDto {
+export class DmppDto {
   constructor(json: JSON | any) {
-    Object.assign(this as SumehrContentDto, json)
+    Object.assign(this as DmppDto, json)
   }
-  services?: Array<models.ServiceDto>
+  from?: number
 
-  healthElements?: Array<models.HealthElementDto>
+  to?: number
 
-  partnerships?: Array<models.PartnershipDto>
+  deliveryEnvironment?: DmppDto.DeliveryEnvironmentEnum
 
-  patientHealthcareParties?: Array<models.PatientHealthCarePartyDto>
+  code?: string
+
+  codeType?: DmppDto.CodeTypeEnum
+
+  price?: string
+
+  cheap?: boolean
+
+  cheapest?: boolean
+
+  reimbursable?: boolean
+
+  reimbursements?: Array<models.ReimbursementDto>
+}
+export namespace DmppDto {
+  export enum DeliveryEnvironmentEnum {
+    P = <any>"P",
+    A = <any>"A",
+    H = <any>"H",
+    R = <any>"R"
+  }
+  export enum CodeTypeEnum {
+    CNK = <any>"CNK",
+    PSEUDO = <any>"PSEUDO"
+  }
 }

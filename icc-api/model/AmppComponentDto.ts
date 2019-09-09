@@ -24,15 +24,29 @@
 
 import * as models from "./models"
 
-export class SumehrContentDto {
+export class AmppComponentDto {
   constructor(json: JSON | any) {
-    Object.assign(this as SumehrContentDto, json)
+    Object.assign(this as AmppComponentDto, json)
   }
-  services?: Array<models.ServiceDto>
+  from?: number
 
-  healthElements?: Array<models.HealthElementDto>
+  to?: number
 
-  partnerships?: Array<models.PartnershipDto>
+  contentType?: AmppComponentDto.ContentTypeEnum
 
-  patientHealthcareParties?: Array<models.PatientHealthCarePartyDto>
+  contentMultiplier?: number
+
+  packSpecification?: string
+
+  deviceType?: models.DeviceTypeDto
+
+  packagingType?: models.PackagingTypeDto
+}
+export namespace AmppComponentDto {
+  export enum ContentTypeEnum {
+    ACTIVECOMPONENT = <any>"ACTIVE_COMPONENT",
+    SOLVENT = <any>"SOLVENT",
+    DEVICE = <any>"DEVICE",
+    EXCIPIENT = <any>"EXCIPIENT"
+  }
 }

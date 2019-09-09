@@ -24,15 +24,49 @@
 
 import * as models from "./models"
 
-export class SumehrContentDto {
+export class AmpComponentDto {
   constructor(json: JSON | any) {
-    Object.assign(this as SumehrContentDto, json)
+    Object.assign(this as AmpComponentDto, json)
   }
-  services?: Array<models.ServiceDto>
+  from?: number
 
-  healthElements?: Array<models.HealthElementDto>
+  to?: number
 
-  partnerships?: Array<models.PartnershipDto>
+  ingredients?: Array<models.IngredientDto>
 
-  patientHealthcareParties?: Array<models.PatientHealthCarePartyDto>
+  pharmaceuticalForms?: Array<models.PharmaceuticalFormDto>
+
+  routeOfAdministrations?: Array<models.RouteOfAdministrationDto>
+
+  dividable?: string
+
+  scored?: string
+
+  crushable?: AmpComponentDto.CrushableEnum
+
+  containsAlcohol?: AmpComponentDto.ContainsAlcoholEnum
+
+  modifiedReleaseType?: number
+
+  specificDrugDevice?: number
+
+  dimensions?: string
+
+  name?: models.SamTextDto
+
+  note?: models.SamTextDto
+
+  sugarFree?: boolean
+}
+export namespace AmpComponentDto {
+  export enum CrushableEnum {
+    Y = <any>"Y",
+    N = <any>"N",
+    X = <any>"X"
+  }
+  export enum ContainsAlcoholEnum {
+    Y = <any>"Y",
+    N = <any>"N",
+    X = <any>"X"
+  }
 }

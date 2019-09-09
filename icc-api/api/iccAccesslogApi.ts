@@ -74,7 +74,7 @@ export class iccAccesslogApi {
   findByHCPartyPatientSecretFKeys(
     hcPartyId?: string,
     secretFKeys?: string
-  ): Promise<Array<models.HealthElementDto> | any> {
+  ): Promise<Array<models.AccessLogDto> | any> {
     let _body = null
 
     const _url =
@@ -89,7 +89,7 @@ export class iccAccesslogApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.HealthElementDto(it)))
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.AccessLogDto(it)))
       .catch(err => this.handleError(err))
   }
   findByUserAfterDate(
@@ -144,7 +144,7 @@ export class iccAccesslogApi {
     startDocumentId?: string,
     limit?: string,
     descending?: boolean
-  ): Promise<Array<models.AccessLogDto> | any> {
+  ): Promise<models.AccessLogPaginatedList | any> {
     let _body = null
 
     const _url =

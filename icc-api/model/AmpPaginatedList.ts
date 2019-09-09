@@ -24,15 +24,15 @@
 
 import * as models from "./models"
 
-export class SumehrContentDto {
+export class AmpPaginatedList {
   constructor(json: JSON | any) {
-    Object.assign(this as SumehrContentDto, json)
+    Object.assign(this as AmpPaginatedList, json)
   }
-  services?: Array<models.ServiceDto>
+  totalSize?: number
 
-  healthElements?: Array<models.HealthElementDto>
+  pageSize?: number
 
-  partnerships?: Array<models.PartnershipDto>
+  nextKeyPair?: models.PaginatedDocumentKeyIdPair
 
-  patientHealthcareParties?: Array<models.PatientHealthCarePartyDto>
+  rows?: Array<models.AmpDto>
 }

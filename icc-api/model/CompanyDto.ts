@@ -24,15 +24,41 @@
 
 import * as models from "./models"
 
-export class SumehrContentDto {
+export class CompanyDto {
   constructor(json: JSON | any) {
-    Object.assign(this as SumehrContentDto, json)
+    Object.assign(this as CompanyDto, json)
   }
-  services?: Array<models.ServiceDto>
+  from?: number
 
-  healthElements?: Array<models.HealthElementDto>
+  to?: number
 
-  partnerships?: Array<models.PartnershipDto>
+  authorisationNr?: string
 
-  patientHealthcareParties?: Array<models.PatientHealthCarePartyDto>
+  vatNr?: { [key: string]: string }
+
+  europeanNr?: string
+
+  denomination?: string
+
+  legalForm?: string
+
+  building?: string
+
+  streetName?: string
+
+  streetNum?: string
+
+  postbox?: string
+
+  postcode?: string
+
+  city?: string
+
+  countryCode?: string
+
+  phone?: string
+
+  language?: string
+
+  website?: string
 }

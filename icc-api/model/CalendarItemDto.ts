@@ -62,6 +62,8 @@ export class CalendarItemDto {
 
   calendarItemTypeId?: string
 
+  masterCalendarItemId?: string
+
   patientId?: string
 
   important?: boolean
