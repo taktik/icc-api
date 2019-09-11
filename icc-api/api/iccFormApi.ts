@@ -97,6 +97,22 @@ export class iccFormApi {
       .then(doc => JSON.parse(JSON.stringify(doc.body)))
       .catch(err => this.handleError(err))
   }
+  deleteForms(formIds: string): Promise<Array<string> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/form/{formIds}".replace("{formIds}", formIds + "") +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("DELETE", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
+      .catch(err => this.handleError(err))
+  }
   findByHCPartyPatientSecretFKeys(
     hcPartyId?: string,
     secretFKeys?: string,

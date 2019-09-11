@@ -28,7 +28,131 @@ export class Code {
   constructor(json: JSON | any) {
     Object.assign(this as Code, json)
   }
+  author?: string
+
+  regions?: Array<string>
+
   type?: string
 
   code?: string
+
+  version?: string
+
+  level?: number
+
+  label?: { [key: string]: string }
+
+  links?: Array<string>
+
+  qualifiedLinks?: { [key: string]: Array<string> }
+
+  flags?: Array<Code.FlagsEnum>
+
+  searchTerms?: { [key: string]: Array<string> }
+
+  data?: string
+
+  parent?: string
+
+  appendices?: { [key: string]: string }
+
+  disabled?: boolean
+
+  attachments?: { [key: string]: models.Attachment }
+
+  deleted?: number
+
+  id?: string
+
+  rev?: string
+
+  revsInfo?: Array<models.RevisionInfo>
+
+  conflicts?: Array<string>
+
+  javaType?: string
+
+  revHistory?: { [key: string]: string }
+}
+export namespace Code {
+  export enum FlagsEnum {
+    MaleOnly = <any>"male_only",
+    FemaleOnly = <any>"female_only",
+    Deptkinesitherapy = <any>"deptkinesitherapy",
+    Deptnursing = <any>"deptnursing",
+    Deptgeneralpractice = <any>"deptgeneralpractice",
+    Deptsocialworker = <any>"deptsocialworker",
+    Deptpsychology = <any>"deptpsychology",
+    Deptadministrative = <any>"deptadministrative",
+    Deptdietetics = <any>"deptdietetics",
+    Deptspeechtherapy = <any>"deptspeechtherapy",
+    Deptdentistry = <any>"deptdentistry",
+    Deptoccupationaltherapy = <any>"deptoccupationaltherapy",
+    Depthealthcare = <any>"depthealthcare",
+    Deptgynecology = <any>"deptgynecology",
+    Deptpediatry = <any>"deptpediatry",
+    Deptalgology = <any>"deptalgology",
+    Deptanatomopathology = <any>"deptanatomopathology",
+    Deptanesthesiology = <any>"deptanesthesiology",
+    Deptbacteriology = <any>"deptbacteriology",
+    Deptcardiacsurgery = <any>"deptcardiacsurgery",
+    Deptcardiology = <any>"deptcardiology",
+    Deptchildandadolescentpsychiatry = <any>"deptchildandadolescentpsychiatry",
+    Deptdermatology = <any>"deptdermatology",
+    Deptdiabetology = <any>"deptdiabetology",
+    Deptemergency = <any>"deptemergency",
+    Deptendocrinology = <any>"deptendocrinology",
+    Deptgastroenterology = <any>"deptgastroenterology",
+    Deptgenetics = <any>"deptgenetics",
+    Deptgeriatry = <any>"deptgeriatry",
+    Depthandsurgery = <any>"depthandsurgery",
+    Depthematology = <any>"depthematology",
+    Deptinfectiousdisease = <any>"deptinfectiousdisease",
+    Deptintensivecare = <any>"deptintensivecare",
+    Deptlaboratory = <any>"deptlaboratory",
+    Deptmajorburns = <any>"deptmajorburns",
+    Deptmaxillofacialsurgery = <any>"deptmaxillofacialsurgery",
+    Deptmedicine = <any>"deptmedicine",
+    Deptmolecularbiology = <any>"deptmolecularbiology",
+    Deptneonatalogy = <any>"deptneonatalogy",
+    Deptnephrology = <any>"deptnephrology",
+    Deptneurology = <any>"deptneurology",
+    Deptneurosurgery = <any>"deptneurosurgery",
+    Deptnte = <any>"deptnte",
+    Deptnuclear = <any>"deptnuclear",
+    Deptnutritiondietetics = <any>"deptnutritiondietetics",
+    Deptobstetrics = <any>"deptobstetrics",
+    Deptoncology = <any>"deptoncology",
+    Deptophtalmology = <any>"deptophtalmology",
+    Deptorthopedy = <any>"deptorthopedy",
+    Deptpalliativecare = <any>"deptpalliativecare",
+    Deptpediatricintensivecare = <any>"deptpediatricintensivecare",
+    Deptpediatricsurgery = <any>"deptpediatricsurgery",
+    Deptpharmacy = <any>"deptpharmacy",
+    Deptphysicalmedecine = <any>"deptphysicalmedecine",
+    Deptphysiotherapy = <any>"deptphysiotherapy",
+    Deptplasticandreparatorysurgery = <any>"deptplasticandreparatorysurgery",
+    Deptpneumology = <any>"deptpneumology",
+    Deptpodiatry = <any>"deptpodiatry",
+    Deptpsychiatry = <any>"deptpsychiatry",
+    Deptradiology = <any>"deptradiology",
+    Deptradiotherapy = <any>"deptradiotherapy",
+    Deptrevalidation = <any>"deptrevalidation",
+    Deptrheumatology = <any>"deptrheumatology",
+    Deptrhumatology = <any>"deptrhumatology",
+    Deptsenology = <any>"deptsenology",
+    Deptsocialservice = <any>"deptsocialservice",
+    Deptsportsmedecine = <any>"deptsportsmedecine",
+    Deptstomatology = <any>"deptstomatology",
+    Deptsurgery = <any>"deptsurgery",
+    Deptthoracicsurgery = <any>"deptthoracicsurgery",
+    Depttoxicology = <any>"depttoxicology",
+    Depttropicalmedecine = <any>"depttropicalmedecine",
+    Depturology = <any>"depturology",
+    Deptvascularsurgery = <any>"deptvascularsurgery",
+    Deptvisceraldigestiveabdominalsurgery = <any>"deptvisceraldigestiveabdominalsurgery",
+    Depttransplantsurgery = <any>"depttransplantsurgery",
+    Deptpercutaneous = <any>"deptpercutaneous",
+    Deptchildbirth = <any>"deptchildbirth"
+  }
 }

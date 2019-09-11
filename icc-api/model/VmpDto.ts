@@ -24,71 +24,29 @@
 
 import * as models from "./models"
 
-export class CalendarItem {
+export class VmpDto {
   constructor(json: JSON | any) {
-    Object.assign(this as CalendarItem, json)
+    Object.assign(this as VmpDto, json)
   }
-  created?: number
+  from?: number
 
-  modified?: number
+  to?: number
 
-  endOfLife?: number
+  code?: string
 
-  author?: string
+  vmpGroup?: models.VmpGroupDto
 
-  responsible?: string
+  name?: models.SamTextDto
 
-  codes?: Array<models.Code>
+  abbreviation?: models.SamTextDto
 
-  tags?: Array<models.Code>
+  vtm?: models.VtmDto
 
-  secretForeignKeys?: Array<string>
+  wadas?: Array<models.WadaDto>
 
-  cryptedForeignKeys?: { [key: string]: Array<models.DelegationDto> }
+  components?: Array<models.VmpComponentDto>
 
-  delegations?: { [key: string]: Array<models.DelegationDto> }
-
-  encryptionKeys?: { [key: string]: Array<models.DelegationDto> }
-
-  medicalLocationId?: string
-
-  encryptedSelf?: string
-
-  title?: string
-
-  calendarItemTypeId?: string
-
-  patientId?: string
-
-  important?: boolean
-
-  homeVisit?: boolean
-
-  phoneNumber?: string
-
-  placeId?: string
-
-  address?: models.AddressDto
-
-  addressText?: string
-
-  startTime?: number
-
-  endTime?: number
-
-  duration?: number
-
-  allDay?: boolean
-
-  details?: string
-
-  wasMigrated?: boolean
-
-  agendaId?: string
-
-  meetingTags?: Array<models.CalendarItemTagDto>
-
-  flowItem?: models.FlowItemDto
+  commentedClassifications?: Array<models.CommentedClassificationDto>
 
   attachments?: { [key: string]: models.Attachment }
 

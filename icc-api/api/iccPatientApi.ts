@@ -232,7 +232,7 @@ export class iccPatientApi {
 
     const _url =
       this.host +
-      "/hcparty/{healthcarePartyId}/keys".replace("{healthcarePartyId}", healthcarePartyId + "") +
+      "/patient/{healthcarePartyId}/keys".replace("{healthcarePartyId}", healthcarePartyId + "") +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers

@@ -82,5 +82,7 @@ export class HealthElementDto {
 
   plansOfAction?: Array<models.PlanOfActionDto>
 
+  careTeam?: Array<models.CareMemberDto>
+
   encryptedSelf?: string
 }

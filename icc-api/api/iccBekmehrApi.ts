@@ -319,7 +319,38 @@ export class iccBeKmehrApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.ImportResultDto(it)))
       .catch(err => this.handleError(err))
   }
-  isSumehrV2Valid(patientId: string, body?: models.SumehrExportInfoDto): Promise<string | any> {
+  importSumehrByItemId(
+    documentId: string,
+    documentKey?: string,
+    itemId?: string,
+    patientId?: string,
+    language?: string,
+    body?: any
+  ): Promise<Array<models.ImportResultDto> | any> {
+    let _body = null
+    _body = body
+
+    const _url =
+      this.host +
+      "/be_kmehr/sumehr/{documentId}/importbyitemid".replace("{documentId}", documentId + "") +
+      "?ts=" +
+      new Date().getTime() +
+      (documentKey ? "&documentKey=" + documentKey : "") +
+      (itemId ? "&itemId=" + itemId : "") +
+      (patientId ? "&patientId=" + patientId : "") +
+      (language ? "&language=" + language : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.ImportResultDto(it)))
+      .catch(err => this.handleError(err))
+  }
+  isSumehrV2Valid(
+    patientId: string,
+    body?: models.SumehrExportInfoDto
+  ): Promise<models.SumehrValidityDto | any> {
     let _body = null
     _body = body
 
@@ -333,10 +364,13 @@ export class iccBeKmehrApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => JSON.parse(JSON.stringify(doc.body)))
+      .then(doc => new models.SumehrValidityDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-  isSumehrValid(patientId: string, body?: models.SumehrExportInfoDto): Promise<string | any> {
+  isSumehrValid(
+    patientId: string,
+    body?: models.SumehrExportInfoDto
+  ): Promise<models.SumehrValidityDto | any> {
     let _body = null
     _body = body
 
@@ -350,7 +384,7 @@ export class iccBeKmehrApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => JSON.parse(JSON.stringify(doc.body)))
+      .then(doc => new models.SumehrValidityDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
   validateSumehr(

@@ -48,7 +48,6 @@ export class iccBeResultExportApi {
     patId: string,
     date: number,
     ref: string,
-    mustCrypt?: boolean,
     body?: Array<string>
   ): Promise<ArrayBuffer | any> {
     let _body = null
@@ -63,8 +62,38 @@ export class iccBeResultExportApi {
         .replace("{date}", date + "")
         .replace("{ref}", ref + "") +
       "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/octet-stream"))
+    return XHR.sendCommand("POST", _url, headers, _body)
+      .then(doc => doc.body)
+      .catch(err => this.handleError(err))
+  }
+  exportKmehrReport(
+    fromHcpId: string,
+    toHcpId: string,
+    patId: string,
+    date: number,
+    ref: string,
+    mimeType?: boolean,
+    body?: Array<string>
+  ): Promise<ArrayBuffer | any> {
+    let _body = null
+    _body = body
+
+    const _url =
+      this.host +
+      "/be_result_export/kmehrreport/{fromHcpId}/{toHcpId}/{patId}/{date}/{ref}"
+        .replace("{fromHcpId}", fromHcpId + "")
+        .replace("{toHcpId}", toHcpId + "")
+        .replace("{patId}", patId + "")
+        .replace("{date}", date + "")
+        .replace("{ref}", ref + "") +
+      "?ts=" +
       new Date().getTime() +
-      (mustCrypt ? "&mustCrypt=" + mustCrypt : "")
+      (mimeType ? "&mimeType=" + mimeType : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -79,7 +108,6 @@ export class iccBeResultExportApi {
     patId: string,
     date: number,
     ref: string,
-    mustCrypt?: boolean,
     body?: Array<string>
   ): Promise<ArrayBuffer | any> {
     let _body = null
@@ -94,8 +122,7 @@ export class iccBeResultExportApi {
         .replace("{date}", date + "")
         .replace("{ref}", ref + "") +
       "?ts=" +
-      new Date().getTime() +
-      (mustCrypt ? "&mustCrypt=" + mustCrypt : "")
+      new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")

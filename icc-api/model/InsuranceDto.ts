@@ -42,6 +42,8 @@ export class InsuranceDto {
 
   code?: string
 
+  agreementNumber?: string
+
   parent?: string
 
   address?: models.AddressDto

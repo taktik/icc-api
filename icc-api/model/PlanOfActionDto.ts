@@ -58,5 +58,13 @@ export class PlanOfActionDto {
 
   tags?: Array<models.CodeDto>
 
+  documentIds?: Array<string>
+
+  prescriberId?: string
+
+  numberOfCares?: number
+
+  status?: number
+
   encryptedSelf?: string
 }
