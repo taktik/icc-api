@@ -85,7 +85,6 @@ export class IccContactXApi extends iccContactApi {
         })
 
         let promise = Promise.resolve(contact)
-
         ;(user.autoDelegations
           ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
           : []
@@ -278,7 +277,11 @@ export class IccContactXApi extends iccContactApi {
   ): Promise<models.ContactPaginatedList | any> {
     return super
       .filterBy(startKey, startDocumentId, limit, body)
-      .then(ctcs => this.decrypt(user.healthcarePartyId!, ctcs))
+      .then(ctcs =>
+        this.decrypt(user.healthcarePartyId!, ctcs.rows).then(decryptedRows =>
+          Object.assign(ctcs, { rows: decryptedRows })
+        )
+      )
   }
 
   listContactsByOpeningDateWithUser(
@@ -371,46 +374,43 @@ export class IccContactXApi extends iccContactApi {
     const bypassEncryption = false //Used for debug
 
     return Promise.all(
-      ctcs.map(
-        ctc =>
-          bypassEncryption //Prevent encryption for test ctc
-            ? ctc
-            : (ctc.encryptionKeys && Object.keys(ctc.encryptionKeys || {}).length
-                ? Promise.resolve(ctc)
-                : this.initEncryptionKeys(user, ctc)
+      ctcs.map(ctc =>
+        bypassEncryption //Prevent encryption for test ctc
+          ? ctc
+          : (ctc.encryptionKeys && Object.keys(ctc.encryptionKeys || {}).length
+              ? Promise.resolve(ctc)
+              : this.initEncryptionKeys(user, ctc)
+            )
+              .then(ctc =>
+                this.crypto.extractKeysFromDelegationsForHcpHierarchy(
+                  hcpartyId,
+                  ctc.id!,
+                  ctc.encryptionKeys!
+                )
               )
-                .then(ctc =>
-                  this.crypto.extractKeysFromDelegationsForHcpHierarchy(
-                    hcpartyId,
-                    ctc.id!,
-                    ctc.encryptionKeys!
+              .then((sfks: { extractedKeys: Array<string>; hcpartyId: string }) =>
+                AES.importKey("raw", utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
+              )
+              .then((key: CryptoKey) =>
+                Promise.all(
+                  ctc.services!.map(svc =>
+                    AES.encrypt(key, utils.utf82ua(JSON.stringify({ content: svc.content })))
                   )
                 )
-                .then((sfks: { extractedKeys: Array<string>; hcpartyId: string }) =>
-                  AES.importKey("raw", utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
-                )
-                .then((key: CryptoKey) =>
-                  Promise.all(
-                    ctc.services!.map(svc =>
-                      AES.encrypt(key, utils.utf82ua(JSON.stringify({ content: svc.content })))
-                    )
-                  )
-                    .then(eSvcs => {
-                      console.log("eSvcs ", eSvcs)
-                      ctc.services!.forEach((svc, idx) => {
-                        svc.encryptedSelf = btoa(utils.ua2text(eSvcs[idx]))
-                        delete svc.content
-                      })
+                  .then(eSvcs => {
+                    console.log("eSvcs ", eSvcs)
+                    ctc.services!.forEach((svc, idx) => {
+                      svc.encryptedSelf = btoa(utils.ua2text(eSvcs[idx]))
+                      delete svc.content
                     })
-                    .then(() =>
-                      AES.encrypt(key, utils.utf82ua(JSON.stringify({ descr: ctc.descr })))
-                    )
-                    .then(es => {
-                      ctc.encryptedSelf = btoa(utils.ua2text(es))
-                      delete ctc.descr
-                      return ctc
-                    })
-                )
+                  })
+                  .then(() => AES.encrypt(key, utils.utf82ua(JSON.stringify({ descr: ctc.descr }))))
+                  .then(es => {
+                    ctc.encryptedSelf = btoa(utils.ua2text(es))
+                    delete ctc.descr
+                    return ctc
+                  })
+              )
       )
     )
   }
@@ -458,27 +458,27 @@ export class IccContactXApi extends iccContactApi {
                                 }
                               )
                             : svc.encryptedSelf
-                              ? AES.decrypt(key, utils.text2ua(atob(svc.encryptedSelf!))).then(
-                                  s => {
-                                    let jsonContent
-                                    try {
-                                      jsonContent = utils.ua2utf8(s!).replace(/\0+$/g, "")
-                                      resolve(s && JSON.parse(jsonContent))
-                                    } catch (e) {
-                                      console.log(
-                                        "Cannot parse service",
-                                        svc.id,
-                                        jsonContent || "<- Invalid encoding"
-                                      )
-                                      resolve(null)
-                                    }
-                                  },
-                                  () => {
-                                    console.log("Cannot decrypt service", svc.id)
+                            ? AES.decrypt(key, utils.text2ua(atob(svc.encryptedSelf!))).then(
+                                s => {
+                                  let jsonContent
+                                  try {
+                                    jsonContent = utils.ua2utf8(s!).replace(/\0+$/g, "")
+                                    resolve(s && JSON.parse(jsonContent))
+                                  } catch (e) {
+                                    console.log(
+                                      "Cannot parse service",
+                                      svc.id,
+                                      jsonContent || "<- Invalid encoding"
+                                    )
                                     resolve(null)
                                   }
-                                )
-                              : resolve(null)
+                                },
+                                () => {
+                                  console.log("Cannot decrypt service", svc.id)
+                                  resolve(null)
+                                }
+                              )
+                            : resolve(null)
                         })
                     )
                     .then(decrypted => {
@@ -539,63 +539,62 @@ export class IccContactXApi extends iccContactApi {
             svc.id!,
             _.size(svc.encryptionKeys) ? svc.encryptionKeys! : svc.delegations!
           )
-          .then(
-            ({ extractedKeys: sfks }) =>
-              svc.encryptedContent || svc.encryptedSelf
-                ? AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
-                    .then(
-                      (key: CryptoKey) =>
-                        new Promise((resolve: (value: any) => any) => {
-                          svc.encryptedContent
-                            ? AES.decrypt(key, utils.text2ua(atob(svc.encryptedContent!))).then(
-                                c => {
-                                  let jsonContent
-                                  try {
-                                    jsonContent = utils.ua2utf8(c!).replace(/\0+$/g, "")
-                                    resolve(c && { content: JSON.parse(jsonContent) })
-                                  } catch (e) {
-                                    console.log(
-                                      "Cannot parse service",
-                                      svc.id,
-                                      jsonContent || "<- Invalid encoding"
-                                    )
-                                    resolve(null)
-                                  }
-                                },
-                                () => {
-                                  console.log("Cannot decrypt service", svc.id)
+          .then(({ extractedKeys: sfks }) =>
+            svc.encryptedContent || svc.encryptedSelf
+              ? AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
+                  .then(
+                    (key: CryptoKey) =>
+                      new Promise((resolve: (value: any) => any) => {
+                        svc.encryptedContent
+                          ? AES.decrypt(key, utils.text2ua(atob(svc.encryptedContent!))).then(
+                              c => {
+                                let jsonContent
+                                try {
+                                  jsonContent = utils.ua2utf8(c!).replace(/\0+$/g, "")
+                                  resolve(c && { content: JSON.parse(jsonContent) })
+                                } catch (e) {
+                                  console.log(
+                                    "Cannot parse service",
+                                    svc.id,
+                                    jsonContent || "<- Invalid encoding"
+                                  )
                                   resolve(null)
                                 }
-                              )
-                            : svc.encryptedSelf
-                              ? AES.decrypt(key, utils.text2ua(atob(svc.encryptedSelf!))).then(
-                                  s => {
-                                    let jsonContent
-                                    try {
-                                      jsonContent = utils.ua2utf8(s!).replace(/\0+$/g, "")
-                                      resolve(s && JSON.parse(jsonContent))
-                                    } catch (e) {
-                                      console.log(
-                                        "Cannot parse service",
-                                        svc.id,
-                                        jsonContent || "<- Invalid encoding"
-                                      )
-                                      resolve(null)
-                                    }
-                                  },
-                                  () => {
-                                    console.log("Cannot decrypt service", svc.id)
-                                    resolve(null)
-                                  }
-                                )
-                              : resolve(null)
-                        })
-                    )
-                    .then(decrypted => {
-                      decrypted && _.assign(svc, decrypted)
-                      return svc
-                    })
-                : svc
+                              },
+                              () => {
+                                console.log("Cannot decrypt service", svc.id)
+                                resolve(null)
+                              }
+                            )
+                          : svc.encryptedSelf
+                          ? AES.decrypt(key, utils.text2ua(atob(svc.encryptedSelf!))).then(
+                              s => {
+                                let jsonContent
+                                try {
+                                  jsonContent = utils.ua2utf8(s!).replace(/\0+$/g, "")
+                                  resolve(s && JSON.parse(jsonContent))
+                                } catch (e) {
+                                  console.log(
+                                    "Cannot parse service",
+                                    svc.id,
+                                    jsonContent || "<- Invalid encoding"
+                                  )
+                                  resolve(null)
+                                }
+                              },
+                              () => {
+                                console.log("Cannot decrypt service", svc.id)
+                                resolve(null)
+                              }
+                            )
+                          : resolve(null)
+                      })
+                  )
+                  .then(decrypted => {
+                    decrypted && _.assign(svc, decrypted)
+                    return svc
+                  })
+              : svc
           )
       )
     )
@@ -617,13 +616,15 @@ export class IccContactXApi extends iccContactApi {
   filteredServices(ctcs: Array<models.ContactDto>, filter: any): Array<models.ServiceDto> {
     const byIds: { [key: string]: models.ServiceDto } = {}
     ctcs.forEach(c =>
-      (c.services || []).filter(s => filter(s, c)).forEach(s => {
-        const ps = byIds[s.id!]
-        if (!ps || !ps.modified || (s.modified && ps.modified < s.modified)) {
-          byIds[s.id!] = s
-          s.contactId = c.id
-        }
-      })
+      (c.services || [])
+        .filter(s => filter(s, c))
+        .forEach(s => {
+          const ps = byIds[s.id!]
+          if (!ps || !ps.modified || (s.modified && ps.modified < s.modified)) {
+            byIds[s.id!] = s
+            s.contactId = c.id
+          }
+        })
     )
     return _.values(byIds).filter((s: any) => !s.deleted && !s.endOfLife)
   }
@@ -922,8 +923,8 @@ export class IccContactXApi extends iccContactApi {
         return m && m.compoundPrescription
           ? m.compoundPrescription
           : m && m.substanceProduct
-            ? myself.productToString(m && m.substanceProduct)
-            : myself.productToString(m && m.medicinalProduct)
+          ? myself.productToString(m && m.substanceProduct)
+          : myself.productToString(m && m.medicinalProduct)
       },
       medicationToString: (m: any, lang: string) => {
         let res = `${myself.medicationNameToString(m)}, ${myself.posologyToString(m, lang)}`
@@ -983,8 +984,8 @@ export class IccContactXApi extends iccContactApi {
           )
             ? this.i18n[lang].weekly
             : m.regimen.find((r: any) => r.date)
-              ? this.i18n[lang].monthly
-              : this.i18n[lang].daily
+            ? this.i18n[lang].monthly
+            : this.i18n[lang].daily
 
           return `${quantityUnit}, ${m.regimen.length} x ${dayPeriod}, ${_.sortBy(
             m.regimen,
@@ -995,12 +996,11 @@ export class IccContactXApi extends iccContactApi {
               (r.timeOfDay
                 ? r.timeOfDay
                 : r.dayPeriod && r.dayPeriod.code
-                  ? (regimenScores[r.dayPeriod.code] as number)
-                  : 0)
+                ? (regimenScores[r.dayPeriod.code] as number)
+                : 0)
           )
-            .map(
-              r =>
-                cplxRegimen ? myself.regimenToExtString(r, lang) : myself.regimenToString(r, lang)
+            .map(r =>
+              cplxRegimen ? myself.regimenToExtString(r, lang) : myself.regimenToString(r, lang)
             )
             .join(", ")}`
         }
@@ -1016,8 +1016,8 @@ export class IccContactXApi extends iccContactApi {
         const dayPeriod = m.regimen.find((r: any) => r.weekday !== null && r.weekday !== undefined)
           ? this.i18n[lang].weekly
           : m.regimen.find((r: any) => r.date)
-            ? this.i18n[lang].monthly
-            : this.i18n[lang].daily
+          ? this.i18n[lang].monthly
+          : this.i18n[lang].daily
 
         return `${m.regimen.length} x ${dayPeriod}`
       },
@@ -1039,10 +1039,10 @@ export class IccContactXApi extends iccContactApi {
         let res = r.date
           ? `${this.i18n[lang].the} ${moment(r.date).format("DD/MM/YYYY")}`
           : r.dayNumber
-            ? `${this.i18n[lang].onDay} ${r.dayNumber}`
-            : r.weekday && r.weekday.weekday
-              ? `${this.i18n[lang].on} ${r.weekday.weekday}`
-              : null
+          ? `${this.i18n[lang].onDay} ${r.dayNumber}`
+          : r.weekday && r.weekday.weekday
+          ? `${this.i18n[lang].on} ${r.weekday.weekday}`
+          : null
         if (r.dayPeriod && r.dayPeriod.code && r.dayPeriod.code.length) {
           res = res
             ? `${res} ${this.i18n[lang][r.dayPeriod.code] ||
@@ -1073,11 +1073,8 @@ export class IccContactXApi extends iccContactApi {
           (this.i18n[lang][s.toLowerCase()] &&
             this.i18n[lang][s.toLowerCase()]
               .split("")
-              .map(
-                (c: string, idx: number) =>
-                  idx >= s.length || s[idx].toLocaleLowerCase() === s[idx]
-                    ? c
-                    : c.toLocaleUpperCase()
+              .map((c: string, idx: number) =>
+                idx >= s.length || s[idx].toLocaleLowerCase() === s[idx] ? c : c.toLocaleUpperCase()
               )
               .join("")) ||
           s
