@@ -713,6 +713,31 @@ export class IccDocumentXApi extends iccDocumentApi {
     })
   }
 
+  //prettier-ignore
+  getAttachmentAs(documentId: string, attachmentId: string, returnType: "application/octet-stream", enckeys?: string, fileName?: string): Promise<ArrayBuffer>
+  //prettier-ignore
+  getAttachmentAs(documentId: string, attachmentId: string, returnType: "text/plain", enckeys?: string, fileName?: string): Promise<string>
+  //prettier-ignore
+  getAttachmentAs(documentId: string, attachmentId: string, returnType: "application/json", enckeys?: string, fileName?: string): Promise<any>
+  getAttachmentAs(
+    documentId: string,
+    attachmentId: string,
+    returnType: "application/octet-stream" | "text/plain" | "application/json",
+    enckeys?: string,
+    fileName?: string
+  ): Promise<any> {
+    const url =
+      this.host +
+      `/document/${documentId}/attachment/${attachmentId}` +
+      "?ts=" +
+      new Date().getTime() +
+      (enckeys ? `&enckeys=${enckeys}` : "") +
+      (fileName ? `&fileName=${fileName}` : "")
+    return XHR.sendCommand("GET", url, this.headers, null, returnType)
+      .then(doc => doc.body)
+      .catch(err => this.handleError(err))
+  }
+
   // noinspection JSUnusedGlobalSymbols
   getAttachmentUrl(
     documentId: string,

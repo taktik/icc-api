@@ -11,7 +11,7 @@ import {
 import { IccInvoiceXApi, IccMessageXApi } from "../../icc-x-api"
 import { iccInsuranceApi } from "../../icc-api/api/iccInsuranceApi"
 
-import { InvoicesBatch, InvoiceItem, Invoice, EIDItem } from "fhc-api/dist/model/models"
+import { InvoicesBatch, InvoiceItem, Invoice, EIDItem } from "fhc-api"
 import { dateEncode, toMoment } from "./formatting-util"
 import { toPatient } from "./fhc-patient-util"
 import { toInvoiceSender } from "./fhc-invoice-sender-util"
@@ -266,7 +266,12 @@ function toInvoice(
   invoice.invoiceRef = uuidBase36(invoiceDto.id!!)
   invoice.ioCode = insurance.code!!.substr(0, 3)
   invoice.items = _.map(invoiceDto.invoicingCodes, (invoicingCodeDto: InvoicingCodeDto) => {
-    return toInvoiceItem(nihiiHealthcareProvider, patientDto, invoiceDto, invoicingCodeDto)
+    return toInvoiceItem(
+      invoiceDto.supervisorNihii || nihiiHealthcareProvider,
+      patientDto,
+      invoiceDto,
+      invoicingCodeDto
+    )
   })
   invoice.patient = toPatient(patientDto)
   invoice.ignorePrescriptionDate = !!invoiceDto.longDelayJustification

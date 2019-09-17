@@ -24,67 +24,17 @@
 
 import * as models from "./models"
 
-export class HealthElementDto {
+export class EpisodeDto {
   constructor(json: JSON | any) {
-    Object.assign(this as HealthElementDto, json)
+    Object.assign(this as EpisodeDto, json)
   }
   id?: string
 
-  rev?: string
+  name?: string
 
-  deletionDate?: number
+  comment?: string
 
-  created?: number
+  startDate?: number
 
-  modified?: number
-
-  endOfLife?: number
-
-  author?: string
-
-  responsible?: string
-
-  medicalLocationId?: string
-
-  codes?: Array<models.CodeDto>
-
-  tags?: Array<models.CodeDto>
-
-  secretForeignKeys?: Array<string>
-
-  cryptedForeignKeys?: { [key: string]: Array<models.DelegationDto> }
-
-  delegations?: { [key: string]: Array<models.DelegationDto> }
-
-  encryptionKeys?: { [key: string]: Array<models.DelegationDto> }
-
-  healthElementId?: string
-
-  descr?: string
-
-  note?: string
-
-  relevant?: boolean
-
-  valueDate?: number
-
-  openingDate?: number
-
-  closingDate?: number
-
-  idOpeningContact?: string
-
-  idClosingContact?: string
-
-  status?: number
-
-  idService?: string
-
-  plansOfAction?: Array<models.PlanOfActionDto>
-
-  episodes?: Array<models.EpisodeDto>
-
-  careTeam?: Array<models.CareMemberDto>
-
-  encryptedSelf?: string
+  endDate?: number
 }
