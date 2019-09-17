@@ -34,7 +34,7 @@ export class VmpDto {
 
   code?: string
 
-  vmpGroup?: models.VmpGroupDto
+  vmpGroup?: models.VmpGroupStubDto
 
   name?: models.SamTextDto
 

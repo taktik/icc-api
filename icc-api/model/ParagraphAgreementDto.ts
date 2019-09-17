@@ -74,7 +74,7 @@ export class ParagraphAgreementDto {
 
   canceled?: boolean
 
-  inTreatment?: boolean
-
   accepted?: boolean
+
+  inTreatment?: boolean
 }
