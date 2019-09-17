@@ -58,7 +58,7 @@ export class IccCryptoXApi {
   }
 
   private getCachedHcpOrPatientType(hcpartyId: string): string | null | undefined {
-    return (this.hcPartiesRequestsCache[hcpartyId] || {}).entityType
+    return (this.hcPartiesRequestsCache[hcpartyId] || { entityType: undefined }).entityType
   }
 
   /**
