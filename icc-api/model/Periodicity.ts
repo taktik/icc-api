@@ -24,43 +24,11 @@
 
 import * as models from "./models"
 
-export class VmpDto {
+export class Periodicity {
   constructor(json: JSON | any) {
-    Object.assign(this as VmpDto, json)
+    Object.assign(this as Periodicity, json)
   }
-  from?: number
+  relatedCode?: models.CodeStub
 
-  to?: number
-
-  code?: string
-
-  vmpGroup?: models.VmpGroupStubDto
-
-  name?: models.SamTextDto
-
-  abbreviation?: models.SamTextDto
-
-  vtm?: models.VtmDto
-
-  wadas?: Array<models.WadaDto>
-
-  components?: Array<models.VmpComponentDto>
-
-  commentedClassifications?: Array<models.CommentedClassificationDto>
-
-  attachments?: { [key: string]: models.Attachment }
-
-  deleted?: number
-
-  id?: string
-
-  rev?: string
-
-  revsInfo?: Array<models.RevisionInfo>
-
-  conflicts?: Array<string>
-
-  javaType?: string
-
-  revHistory?: { [key: string]: string }
+  relatedPeriodicity?: models.CodeStub
 }

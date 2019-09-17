@@ -62,6 +62,8 @@ export class TarificationDto {
 
   appendices?: { [key: string]: string }
 
+  periodicity?: Array<models.Periodicity>
+
   disabled?: boolean
 
   valorisations?: Array<models.ValorisationDto>

@@ -32,6 +32,8 @@ export class Code {
 
   regions?: Array<string>
 
+  periodicity?: Array<models.Periodicity>
+
   type?: string
 
   code?: string

@@ -40,6 +40,8 @@ export class PlanOfActionDto {
 
   closingDate?: number
 
+  deadlineDate?: number
+
   idOpeningContact?: string
 
   idClosingContact?: string

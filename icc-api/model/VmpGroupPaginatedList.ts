@@ -24,43 +24,15 @@
 
 import * as models from "./models"
 
-export class VmpDto {
+export class VmpGroupPaginatedList {
   constructor(json: JSON | any) {
-    Object.assign(this as VmpDto, json)
+    Object.assign(this as VmpGroupPaginatedList, json)
   }
-  from?: number
+  totalSize?: number
 
-  to?: number
+  pageSize?: number
 
-  code?: string
+  nextKeyPair?: models.PaginatedDocumentKeyIdPair
 
-  vmpGroup?: models.VmpGroupStubDto
-
-  name?: models.SamTextDto
-
-  abbreviation?: models.SamTextDto
-
-  vtm?: models.VtmDto
-
-  wadas?: Array<models.WadaDto>
-
-  components?: Array<models.VmpComponentDto>
-
-  commentedClassifications?: Array<models.CommentedClassificationDto>
-
-  attachments?: { [key: string]: models.Attachment }
-
-  deleted?: number
-
-  id?: string
-
-  rev?: string
-
-  revsInfo?: Array<models.RevisionInfo>
-
-  conflicts?: Array<string>
-
-  javaType?: string
-
-  revHistory?: { [key: string]: string }
+  rows?: Array<models.VmpGroupDto>
 }

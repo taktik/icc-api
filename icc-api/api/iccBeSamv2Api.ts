@@ -171,7 +171,7 @@ export class iccBeSamv2Api {
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<models.AmpPaginatedList | any> {
+  ): Promise<models.VmpGroupPaginatedList | any> {
     let _body = null
 
     const _url =
@@ -189,7 +189,7 @@ export class iccBeSamv2Api {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => new models.AmpPaginatedList(doc.body as JSON))
+      .then(doc => new models.VmpGroupPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
   findPaginatedVmpsByGroupCode(
