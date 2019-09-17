@@ -38,6 +38,8 @@ export class UserStubDto {
 
   healthcarePartyId?: string
 
+  patientId?: string
+
   email?: string
 
   autoDelegations?: { [key: string]: Array<string> }

@@ -44,6 +44,8 @@ export class DocumentDto {
 
   responsible?: string
 
+  medicalLocationId?: string
+
   codes?: Array<models.CodeDto>
 
   tags?: Array<models.CodeDto>
@@ -57,6 +59,8 @@ export class DocumentDto {
   encryptionKeys?: { [key: string]: Array<models.DelegationDto> }
 
   attachmentId?: string
+
+  documentLocation?: DocumentDto.DocumentLocationEnum
 
   documentType?: DocumentDto.DocumentTypeEnum
 
@@ -75,6 +79,10 @@ export class DocumentDto {
   encryptedSelf?: string
 }
 export namespace DocumentDto {
+  export enum DocumentLocationEnum {
+    Annex = <any>"annex",
+    Body = <any>"body"
+  }
   export enum DocumentTypeEnum {
     Admission = <any>"admission",
     Alert = <any>"alert",
@@ -111,6 +119,8 @@ export namespace DocumentDto {
     Result = <any>"result",
     Sumehr = <any>"sumehr",
     Telemonitoring = <any>"telemonitoring",
+    Template = <any>"template",
+    TemplateAdmin = <any>"template_admin",
     Treatmentsuspension = <any>"treatmentsuspension",
     Vaccination = <any>"vaccination"
   }

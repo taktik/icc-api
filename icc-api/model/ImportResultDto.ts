@@ -37,4 +37,10 @@ export class ImportResultDto {
   warnings?: Array<string>
 
   errors?: Array<string>
+
+  forms?: Array<models.FormDto>
+
+  hcps?: Array<models.HealthcarePartyDto>
+
+  documents?: Array<models.DocumentDto>
 }

@@ -44,6 +44,8 @@ export class HealthElementDto {
 
   responsible?: string
 
+  medicalLocationId?: string
+
   codes?: Array<models.CodeDto>
 
   tags?: Array<models.CodeDto>
@@ -59,6 +61,8 @@ export class HealthElementDto {
   healthElementId?: string
 
   descr?: string
+
+  note?: string
 
   relevant?: boolean
 
@@ -77,6 +81,8 @@ export class HealthElementDto {
   idService?: string
 
   plansOfAction?: Array<models.PlanOfActionDto>
+
+  episodes?: Array<models.EpisodeDto>
 
   encryptedSelf?: string
 }

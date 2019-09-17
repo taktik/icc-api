@@ -50,6 +50,8 @@ export class TarificationDto {
 
   links?: Array<string>
 
+  qualifiedLinks?: { [key: string]: Array<string> }
+
   flags?: Array<TarificationDto.FlagsEnum>
 
   data?: string
@@ -59,6 +61,16 @@ export class TarificationDto {
   category?: { [key: string]: string }
 
   consultationCode?: boolean
+
+  hasRelatedCode?: boolean
+
+  needsPrescriber?: boolean
+
+  relatedCodes?: Array<string>
+
+  getnGroup?: string
+
+  letterValues?: Array<models.LetterValue>
 }
 export namespace TarificationDto {
   export enum FlagsEnum {

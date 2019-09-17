@@ -36,6 +36,8 @@ export class ContentDto {
 
   instantValue?: number
 
+  fuzzyDateValue?: number
+
   documentId?: string
 
   measureValue?: models.MeasureDto

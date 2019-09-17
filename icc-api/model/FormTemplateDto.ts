@@ -57,4 +57,8 @@ export class FormTemplateDto {
   mediumReport?: string
 
   longReport?: string
+
+  disabled?: string
+
+  reports?: Array<string>
 }

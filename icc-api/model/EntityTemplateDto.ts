@@ -42,5 +42,7 @@ export class EntityTemplateDto {
 
   defaultTemplate?: boolean
 
+  subType?: string
+
   entity?: Array<{ [key: string]: any }>
 }

@@ -1,27 +1,36 @@
-import { iccInvoiceApi } from "../icc-api/iccApi"
+import { iccInvoiceApi, iccEntityrefApi } from "../icc-api/iccApi"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 
 import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
 import { XHR } from "../icc-api/api/XHR"
+import { InvoiceDto } from "../icc-api/model/models"
 
-export class iccInvoiceXApi extends iccInvoiceApi {
+export class IccInvoiceXApi extends iccInvoiceApi {
   crypto: IccCryptoXApi
+  entityrefApi: iccEntityrefApi
 
-  constructor(host: string, headers: Array<XHR.Header>, crypto: IccCryptoXApi) {
+  constructor(
+    host: string,
+    headers: Array<XHR.Header>,
+    crypto: IccCryptoXApi,
+    entityrefApi: iccEntityrefApi
+  ) {
     super(host, headers)
     this.crypto = crypto
+    this.entityrefApi = entityrefApi
   }
 
   newInstance(
     user: models.UserDto,
     patient: models.PatientDto,
-    inv: any
-  ): Promise<models.ContactDto> {
+    inv?: any
+  ): Promise<models.InvoiceDto> {
     const invoice = new models.InvoiceDto(
       _.extend(
         {
           id: this.crypto.randomUuid(),
+          groupId: this.crypto.randomUuid(),
           _type: "org.taktik.icure.entities.Invoice",
           created: new Date().getTime(),
           modified: new Date().getTime(),
@@ -51,7 +60,7 @@ export class iccInvoiceXApi extends iccInvoiceApi {
             invoice,
             patient,
             user.healthcarePartyId!,
-            secretForeignKeys[0]
+            secretForeignKeys.extractedKeys[0]
           ),
           this.crypto.initEncryptionKeys(invoice, user.healthcarePartyId!)
         ])
@@ -73,14 +82,19 @@ export class iccInvoiceXApi extends iccInvoiceApi {
         ).forEach(
           delegateId =>
             (promise = promise.then(invoice =>
-              this.crypto.addDelegationsAndEncryptionKeys(
-                patient,
-                invoice,
-                user.healthcarePartyId!,
-                delegateId,
-                dels.secretId,
-                eks.secretId
-              )
+              this.crypto
+                .addDelegationsAndEncryptionKeys(
+                  patient,
+                  invoice,
+                  user.healthcarePartyId!,
+                  delegateId,
+                  dels.secretId,
+                  eks.secretId
+                )
+                .catch(e => {
+                  console.log(e)
+                  return invoice
+                })
             ))
         )
         return promise
@@ -101,7 +115,7 @@ export class iccInvoiceXApi extends iccInvoiceApi {
         delegateId =>
           (promise = promise.then(invoice =>
             this.crypto
-              .appendEncryptionKeys(invoice, user.healthcarePartyId!, eks.secretId)
+              .appendEncryptionKeys(invoice, user.healthcarePartyId!, delegateId, eks.secretId)
               .then(extraEks => {
                 return _.extend(invoice, {
                   encryptionKeys: extraEks.encryptionKeys
@@ -111,6 +125,53 @@ export class iccInvoiceXApi extends iccInvoiceApi {
       )
       return promise
     })
+  }
+
+  createInvoice(invoice: InvoiceDto, prefix?: string): Promise<InvoiceDto> {
+    if (!prefix) {
+      return super.createInvoice(invoice)
+    }
+    if (!invoice.id) {
+      invoice.id = this.crypto.randomUuid()
+    }
+    return this.getNextInvoiceReference(prefix, this.entityrefApi)
+      .then(reference =>
+        this.createInvoiceReference(reference, invoice.id!, prefix, this.entityrefApi)
+      )
+      .then(entityReference => {
+        if (!entityReference.id) {
+          throw new Error("Cannot create invoice")
+        }
+        invoice.invoiceReference = entityReference.id.substr(prefix.length)
+        return super.createInvoice(invoice)
+      })
+  }
+
+  getNextInvoiceReference(prefix: string, entityrefApi: iccEntityrefApi): Promise<number> {
+    return entityrefApi.getLatest(prefix).then((entRef: models.EntityReference) => {
+      if (!entRef || !entRef.id || !entRef.id!.startsWith(prefix)) return 1
+      const sequenceNumber = entRef.id!.split(":").pop() || 0
+      return Number(sequenceNumber) + 1
+    })
+  }
+
+  createInvoiceReference(
+    nextReference: number,
+    docId: string,
+    prefix: string,
+    entityrefApi: iccEntityrefApi
+  ): Promise<models.EntityReference> {
+    return entityrefApi
+      .createEntityReference(
+        new models.EntityReference({
+          id: prefix + nextReference.toString().padStart(6, "0"),
+          docId
+        })
+      )
+      .catch(err => {
+        console.log(err)
+        return this.createInvoiceReference(nextReference + 1, docId, prefix, entityrefApi)
+      })
   }
 
   /**
@@ -132,11 +193,14 @@ export class iccInvoiceXApi extends iccInvoiceApi {
     return this.crypto
       .extractDelegationsSFKs(patient, hcpartyId)
       .then(secretForeignKeys =>
-        this.findByHCPartyPatientSecretFKeys(hcpartyId, secretForeignKeys.join(","))
+        this.findByHCPartyPatientSecretFKeys(
+          secretForeignKeys.hcpartyId,
+          secretForeignKeys.extractedKeys.join(",")
+        )
       )
       .then(invoices => this.decrypt(hcpartyId, invoices))
-      .then(function(decryptedContacts) {
-        return decryptedContacts
+      .then(function(decryptedInvoices) {
+        return decryptedInvoices
       })
   }
 

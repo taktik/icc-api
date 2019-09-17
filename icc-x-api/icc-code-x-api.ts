@@ -34,7 +34,7 @@ export class IccCodeXApi extends iccCodeApi {
             ),
             (acc: any, pairOfRangeAndIcdInfo, code) => {
               if (!pairOfRangeAndIcdInfo) {
-                return {}
+                return acc
               }
               const shortKey = pairOfRangeAndIcdInfo[0].substr(0, 2)
               ;(
@@ -69,7 +69,7 @@ export class IccCodeXApi extends iccCodeApi {
             ),
             (acc: any, pairOfRangeAndIcdInfo, code) => {
               if (!pairOfRangeAndIcdInfo) {
-                return {}
+                return acc
               }
               const shortKey = pairOfRangeAndIcdInfo[0]
               ;(
@@ -98,7 +98,7 @@ export class IccCodeXApi extends iccCodeApi {
 
   // noinspection JSMethodCanBeStatic, JSUnusedGlobalSymbols
   normalize(c: CodeDto | string) {
-    return c instanceof String
+    return typeof c === "string"
       ? {
           id: c,
           type: c.split(/\|/)[0],

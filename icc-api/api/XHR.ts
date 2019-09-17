@@ -10,102 +10,78 @@ export namespace XHR {
   }
 
   export class Data {
-    headers: Array<Header> | string
-    body: JSON | Array<JSON> | any //stream bytes|json|array<json>
-    text: string
-    type: string
     status: number
-    statusText: string
     contentType: string
-    documentContent: Document | null
+    body: JSON | Array<JSON> | any //stream bytes|json|array<json>
 
-    constructor(jsXHR: XMLHttpRequest) {
-      this.headers = jsXHR
-        .getAllResponseHeaders()
-        .split("\n")
-        .map(h => h.split(": "))
-        .map(head => new Header(head[0], head[1]))
-      this.contentType = ""
-      this.headers.map(head => {
-        if (head.header === "content-type") {
-          this.contentType = head.data
-          if (head.data.startsWith("application/json")) {
-            this.body = JSON.parse(jsXHR.response)
-          } else if (head.data.startsWith("application/octet-stream")) {
-            try {
-              this.body = JSON.parse(jsXHR.response.toString())
-              console.log("parse done")
-            } catch (e) {
-              console.log("parse fail")
-              this.body = jsXHR.response //todo, somethings else
-            }
-          } else {
-            this.body = jsXHR.response //"text/plain"
-          }
-        }
-      })
-      this.documentContent = jsXHR.responseXML
-      this.text = jsXHR.responseText
-      this.type = jsXHR.responseType
-      this.status = jsXHR.status
-      this.statusText = jsXHR.statusText
+    constructor(status: number, contentType: string, body: JSON | Array<JSON> | any) {
+      this.status = status
+      this.contentType = contentType
+      this.body = body
     }
   }
 
-  function dataFromJSXHR(jsXHR: XMLHttpRequest): Data {
-    return new Data(jsXHR)
+  export class XHRError extends Error {
+    status: number
+    code: number
+    headers: Headers
+
+    constructor(message: string, status: number, code: number, headers: Headers) {
+      super(message)
+      this.status = status
+      this.code = code
+      this.headers = headers
+    }
   }
 
   export function sendCommand(
     method: string,
     url: string,
     headers: Array<Header> | null,
-    data: string | any = ""
+    data: any = "",
+    contentTypeOverride?: "application/json" | "text/plain" | "application/octet-stream"
   ): Promise<Data> {
-    return new Promise<Data>(function(resolve, reject) {
-      var jsXHR = new XMLHttpRequest()
-      jsXHR.open(method, url)
-      const contentType = headers && headers.find(it => it.header === "Content-Type")
-      if (headers != null) {
-        headers.forEach(header => {
-          jsXHR.setRequestHeader(header.header, header.data)
-        })
+    const contentType =
+      headers &&
+      headers.find(it => (it.header ? it.header.toLowerCase() === "content-type" : false))
+    return fetch(
+      url,
+      Object.assign(
+        {
+          method: method,
+          credentials: "include",
+          headers:
+            (headers &&
+              headers
+                .filter(
+                  h => h.header.toLowerCase() !== "content-type" || h.data !== "multipart/form-data"
+                )
+                .reduce((acc: { [key: string]: string }, h) => {
+                  acc[h.header] = h.data
+                  return acc
+                }, {})) ||
+            {}
+        },
+        method === "POST" || method === "PUT"
+          ? {
+              body:
+                (!contentType || contentType.data) === "application/json"
+                  ? JSON.stringify(data)
+                  : data
+            }
+          : {}
+      )
+    ).then(function(response) {
+      if (response.status >= 400) {
+        throw new XHRError(response.statusText, response.status, response.status, response.headers)
       }
-
-      jsXHR.onload = ev => {
-        if (jsXHR.status < 200 || jsXHR.status >= 300) {
-          reject(dataFromJSXHR(jsXHR))
-        }
-        resolve(dataFromJSXHR(jsXHR))
-      }
-      jsXHR.onerror = ev => {
-        reject("Error " + method.toUpperCase() + 'ing data to url "')
-      }
-
-      if (method === "POST" || method === "PUT") {
-        if (!contentType) {
-          jsXHR.setRequestHeader("Content-Type", "application/json")
-        }
-        jsXHR.send(JSON.stringify(data))
-      } else {
-        jsXHR.send()
-      }
+      const ct = contentTypeOverride || response.headers.get("content-type") || "text/plain"
+      return (ct.startsWith("application/octet-stream")
+        ? response.arrayBuffer()
+        : ct.startsWith("application/json")
+          ? response.json()
+          : response.text()
+      ).then(d => new Data(response.status, ct, d))
     })
   }
-
-  /*export function get(url: string, headers: Array<Header> = null): Promise<Data> {
-        return sendCommand('GET', url, headers);
-    }
-
-    export function post(url: string, data: string = "", headers: Array<Header> = null): Promise<Data> {
-        return sendCommand('POST', url, headers, data);
-    }
-
-    export function put(url: string, data: string = "", headers: Array<Header> = null): Promise<Data> {
-        return sendCommand('PUT', url, headers, data);
-    }
-
-    export function del(url:string, headers:Array<Header> = null):Promise < Data > {
-        return sendCommand('DELETE', url, headers);
-    }*/
 }

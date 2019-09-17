@@ -1,11 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "es5",
     "module": "esnext",
-    // Use esnext to enable lazy loading
     "moduleResolution": "node",
     "experimentalDecorators": true,
-    //
     "emitDecoratorMetadata": true,
     "strictNullChecks": true,
     "noImplicitThis": true,
@@ -13,11 +11,13 @@
     "allowSyntheticDefaultImports": true,
     "lib": ["es2017", "es6", "es5", "dom"],
     "declaration": true,
-    /* Generates corresponding '.d.ts' file. */
     "outDir": "./dist",
     "strict": true,
     "baseUrl": "./",
-    "types": ["base64-js", "lodash"]
+    "types": ["base64-js", "lodash"],
+    "paths": {
+      "fhc-api": ["./node_modules/@antoinepairet/fhc-api"]
+    }
   },
   "include": ["index.ts", "icc-api/*", "icc-x-api/*", "icc-api/**/*", "icc-x-api/**/*"]
 }

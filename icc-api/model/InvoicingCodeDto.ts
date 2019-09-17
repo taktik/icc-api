@@ -58,9 +58,13 @@ export class InvoicingCodeDto {
 
   vat?: number
 
+  code?: string
+
   error?: string
 
   contract?: string
+
+  contractDate?: number
 
   units?: number
 
@@ -76,11 +80,11 @@ export class InvoicingCodeDto {
 
   override3rdPayerReason?: string
 
-  gnotionNihii?: string
-
   prescriberNorm?: number
 
   percentNorm?: number
+
+  derogationMaxNumber?: number
 
   prescriberNihii?: string
 
@@ -94,19 +98,13 @@ export class InvoicingCodeDto {
 
   resent?: boolean
 
+  archived?: boolean
+
+  lost?: boolean
+
   insuranceJustification?: number
 
   cancelPatientInterventionReason?: number
-
-  longDelayJustification?: number
-
-  gnotionSsin?: string
-
-  gnotionLastName?: string
-
-  gnotionFirstName?: string
-
-  gnotionCdHcParty?: string
 
   prescriberSsin?: string
 
@@ -116,19 +114,13 @@ export class InvoicingCodeDto {
 
   prescriberCdHcParty?: string
 
-  internshipNihii?: string
-
-  internshipSsin?: string
-
-  internshipLastName?: string
-
-  internshipFirstName?: string
-
-  internshipCdHcParty?: string
-
   locationNihii?: string
 
   locationCdHcParty?: string
+
+  prescriptionDate?: number
+
+  status?: number
 }
 export namespace InvoicingCodeDto {
   export enum PaymentTypeEnum {

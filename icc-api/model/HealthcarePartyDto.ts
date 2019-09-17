@@ -34,8 +34,6 @@ export class HealthcarePartyDto {
 
   deletionDate?: number
 
-  addressDtos?: Array<models.AddressDto>
-
   name?: string
 
   lastName?: string
@@ -72,6 +70,12 @@ export class HealthcarePartyDto {
 
   convention?: number
 
+  userId?: string
+
+  parentId?: string
+
+  supervisorId?: string
+
   notes?: string
 
   sendFormats?: { [key: string]: string }
@@ -90,7 +94,15 @@ export class HealthcarePartyDto {
 
   options?: { [key: string]: string }
 
-  addressDtoEmbeds?: Array<models.AddressDto>
+  billingType?: string
+
+  type?: string
+
+  contactPerson?: string
+
+  contactPersonHcpId?: string
+
+  flatRateTarifications?: Array<models.FlatRateTarificationDto>
 }
 export namespace HealthcarePartyDto {
   export enum GenderEnum {

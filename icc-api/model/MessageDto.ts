@@ -44,6 +44,8 @@ export class MessageDto {
 
   responsible?: string
 
+  medicalLocationId?: string
+
   codes?: Array<models.CodeDto>
 
   tags?: Array<models.CodeDto>
@@ -76,6 +78,8 @@ export class MessageDto {
 
   metas?: { [key: string]: string }
 
+  readStatus?: { [key: string]: models.MessageReadStatus }
+
   transportGuid?: string
 
   remark?: string
@@ -89,6 +93,12 @@ export class MessageDto {
   parentId?: string
 
   externalRef?: string
+
+  senderReferences?: { [key: string]: string }
+
+  unassignedResults?: Array<string>
+
+  assignedResults?: { [key: string]: string }
 
   encryptedSelf?: string
 }

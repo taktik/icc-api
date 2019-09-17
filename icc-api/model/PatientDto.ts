@@ -44,6 +44,8 @@ export class PatientDto {
 
   responsible?: string
 
+  medicalLocationId?: string
+
   codes?: Array<models.CodeDto>
 
   tags?: Array<models.CodeDto>
@@ -60,6 +62,8 @@ export class PatientDto {
 
   mergedIds?: Array<string>
 
+  nonDuplicateIds?: Array<string>
+
   firstName?: string
 
   lastName?: string
@@ -67,6 +71,8 @@ export class PatientDto {
   alias?: string
 
   active?: boolean
+
+  deactivationReason?: PatientDto.DeactivationReasonEnum
 
   chronicalDisease?: string
 
@@ -98,6 +104,8 @@ export class PatientDto {
 
   note?: string
 
+  administrativeNote?: string
+
   warning?: string
 
   nationality?: string
@@ -110,6 +118,10 @@ export class PatientDto {
 
   externalId?: string
 
+  hcPartyKeys?: { [key: string]: Array<string> }
+
+  publicKey?: string
+
   addresses?: Array<models.AddressDto>
 
   insurabilities?: Array<models.InsurabilityDto>
@@ -120,6 +132,8 @@ export class PatientDto {
 
   patientHealthCareParties?: Array<models.PatientHealthCarePartyDto>
 
+  medicalHouseContracts?: Array<models.MedicalHouseContractDto>
+
   financialInstitutionInformation?: Array<models.FinancialInstitutionInformationDto>
 
   parameters?: { [key: string]: Array<string> }
@@ -127,4 +141,15 @@ export class PatientDto {
   patientProfessions?: Array<models.CodeDto>
 
   encryptedSelf?: string
+}
+export namespace PatientDto {
+  export enum DeactivationReasonEnum {
+    Deceased = <any>"deceased",
+    Moved = <any>"moved",
+    OtherDoctor = <any>"other_doctor",
+    Retired = <any>"retired",
+    NoContact = <any>"no_contact",
+    Unknown = <any>"unknown",
+    None = <any>"none"
+  }
 }

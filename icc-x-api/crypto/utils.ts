@@ -16,6 +16,17 @@ export class UtilsClass {
     return ua
   }
 
+  ua2ArrayBuffer(ua: Uint8Array): ArrayBuffer {
+    const buffer = ua.buffer
+    return (buffer.byteLength > ua.byteLength
+      ? buffer.slice(0, ua.byteLength)
+      : buffer) as ArrayBuffer
+  }
+
+  base64toArrayBuffer(s: string) {
+    return this.ua2ArrayBuffer(this.text2ua(atob(s)))
+  }
+
   /**
    * Hex String to Uint8Array
    *
@@ -227,12 +238,12 @@ export class UtilsClass {
   /**
    * Uint8Array/ArrayBuffer to hex String
    *
-   * @param ua {Uint8Array} or ArrayBuffer
+   * @param _ua {Uint8Array} or ArrayBuffer
    * @returns {String} Hex String
    */
-  ua2hex(ua: Uint8Array | ArrayBuffer): string {
+  ua2hex(_ua: Uint8Array | ArrayBuffer): string {
     var s = ""
-    ua = ua instanceof Uint8Array ? ua : new Uint8Array(ua)
+    var ua = new Uint8Array(_ua)
     for (var i = 0; i < ua.length; i++) {
       var hhb = (ua[i] & 0xf0) >> 4
       var lhb = ua[i] & 0x0f
@@ -331,7 +342,7 @@ export class UtilsClass {
     if (epochOrLongCalendar >= 18000101 && epochOrLongCalendar < 25400000) {
       return moment("" + epochOrLongCalendar, "YYYYMMDD")
     } else if (epochOrLongCalendar >= 18000101000000) {
-      return moment("" + epochOrLongCalendar, "YYYYMMDDhhmmss")
+      return moment("" + epochOrLongCalendar, "YYYYMMDDHHmmss")
     } else {
       return moment(epochOrLongCalendar)
     }

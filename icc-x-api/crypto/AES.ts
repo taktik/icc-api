@@ -22,7 +22,7 @@ export class AESUtils {
         name: this.aesAlgorithmEncryptName,
         iv: this.generateIV(this.ivLength)
       }
-      window.crypto.subtle
+      ;(typeof window === "undefined" ? self : window).crypto.subtle
         .encrypt(aesAlgorithmEncrypt, cryptoKey, plainData)
         .then(
           cipherData =>
@@ -69,7 +69,7 @@ export class AESUtils {
     * var delegateHcPartyKey = hcparty.hcPartyKeys[delegatorId][1];
     */
       }
-      window.crypto.subtle
+      ;(typeof window === "undefined" ? self : window).crypto.subtle
         .decrypt(
           aesAlgorithmEncrypt,
           cryptoKey,
@@ -92,11 +92,11 @@ export class AESUtils {
         const extractable = true
         const keyUsages = ["decrypt", "encrypt"]
         if (toHex === undefined || !toHex) {
-          return window.crypto.subtle
+          return (typeof window === "undefined" ? self : window).crypto.subtle
             .generateKey(this.aesKeyGenParams, extractable, keyUsages)
             .then(resolve, reject)
         } else {
-          return window.crypto.subtle
+          return (typeof window === "undefined" ? self : window).crypto.subtle
             .generateKey(this.aesKeyGenParams, extractable, keyUsages)
             .then(k => this.exportKey(k, "raw"), reject)
             .then(raw => resolve(utils.ua2hex(raw)), reject)
@@ -107,7 +107,9 @@ export class AESUtils {
 
   // noinspection JSMethodCanBeStatic
   generateIV(ivByteLength: number) {
-    return window.crypto.getRandomValues(new Uint8Array(ivByteLength))
+    return (typeof window === "undefined" ? self : window).crypto.getRandomValues(
+      new Uint8Array(ivByteLength)
+    )
   }
 
   /**
@@ -121,7 +123,9 @@ export class AESUtils {
   exportKey(cryptoKey: CryptoKey, format: string) {
     return new Promise(
       (resolve: (value: ArrayBuffer | JsonWebKey) => any, reject: (reason: any) => any) => {
-        return window.crypto.subtle.exportKey(format, cryptoKey).then(resolve, reject)
+        return (typeof window === "undefined" ? self : window).crypto.subtle
+          .exportKey(format, cryptoKey)
+          .then(resolve, reject)
       }
     )
   }
@@ -142,7 +146,7 @@ export class AESUtils {
     return new Promise((resolve: (value: CryptoKey) => any, reject: (reason: any) => any) => {
       var extractable = true
       var keyUsages = ["decrypt", "encrypt"]
-      return window.crypto.subtle
+      return (typeof window === "undefined" ? self : window).crypto.subtle
         .importKey(format, aesKey, this.aesKeyGenParams.name, extractable, keyUsages)
         .then(resolve, reject)
     })

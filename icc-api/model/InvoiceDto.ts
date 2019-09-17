@@ -44,6 +44,8 @@ export class InvoiceDto {
 
   responsible?: string
 
+  medicalLocationId?: string
+
   codes?: Array<models.CodeDto>
 
   tags?: Array<models.CodeDto>
@@ -64,9 +66,23 @@ export class InvoiceDto {
 
   paid?: number
 
+  paymentType?: InvoiceDto.PaymentTypeEnum
+
+  payments?: Array<models.Payment>
+
   invoicingCodes?: Array<models.InvoicingCodeDto>
 
   invoiceType?: string
+
+  sentMediumType?: string
+
+  interventionType?: string
+
+  groupId?: string
+
+  correctiveInvoiceId?: string
+
+  correctedInvoiceId?: string
 
   recipientType?: string
 
@@ -76,7 +92,76 @@ export class InvoiceDto {
 
   thirdPartyReference?: string
 
+  thirdPartyPaymentJustification?: string
+
+  thirdPartyPaymentReason?: string
+
+  gnotionNihii?: string
+
+  gnotionSsin?: string
+
+  gnotionLastName?: string
+
+  gnotionFirstName?: string
+
+  gnotionCdHcParty?: string
+
+  invoicePeriod?: number
+
+  internshipNihii?: string
+
+  internshipSsin?: string
+
+  internshipLastName?: string
+
+  internshipFirstName?: string
+
+  internshipCdHcParty?: string
+
+  internshipCbe?: string
+
+  supervisorNihii?: string
+
+  supervisorSsin?: string
+
+  supervisorLastName?: string
+
+  supervisorFirstName?: string
+
+  supervisorCdHcParty?: string
+
+  supervisorCbe?: string
+
+  longDelayJustification?: number
+
+  creditNote?: boolean
+
+  creditNoteRelatedInvoiceId?: string
+
+  careProviderType?: string
+
+  error?: string
+
+  encounterLocationName?: string
+
+  encounterLocationNihii?: string
+
+  encounterLocationNorm?: number
+
   receipts?: { [key: string]: string }
 
+  idDocument?: models.IdentityDocumentReader
+
   encryptedSelf?: string
+}
+export namespace InvoiceDto {
+  export enum PaymentTypeEnum {
+    Wired = <any>"wired",
+    Cash = <any>"cash",
+    Insurance = <any>"insurance",
+    Creditcard = <any>"creditcard",
+    Debitcard = <any>"debitcard",
+    Paypal = <any>"paypal",
+    Bitcoin = <any>"bitcoin"
+  }
 }

@@ -33,21 +33,35 @@ export class IccFormXApi extends iccFormApi {
       c || {}
     )
 
+    return this.initDelegationsAndEncryptionKeys(user, patient, form)
+  }
+
+  private initDelegationsAndEncryptionKeys(
+    user: models.UserDto,
+    patient: models.PatientDto,
+    form: models.FormDto
+  ): Promise<models.FormDto> {
     return this.crypto
       .extractDelegationsSFKs(patient, user.healthcarePartyId!)
       .then(secretForeignKeys =>
-        this.crypto.initObjectDelegations(
-          form,
-          patient,
-          user.healthcarePartyId!,
-          secretForeignKeys[0]
-        )
+        Promise.all([
+          this.crypto.initObjectDelegations(
+            form,
+            patient,
+            user.healthcarePartyId!,
+            secretForeignKeys.extractedKeys[0]
+          ),
+          this.crypto.initEncryptionKeys(form, user.healthcarePartyId!)
+        ])
       )
       .then(initData => {
+        const dels = initData[0]
+        const eks = initData[1]
         _.extend(form, {
-          delegations: initData.delegations,
-          cryptedForeignKeys: initData.cryptedForeignKeys,
-          secretForeignKeys: initData.secretForeignKeys
+          delegations: dels.delegations,
+          cryptedForeignKeys: dels.cryptedForeignKeys,
+          secretForeignKeys: dels.secretForeignKeys,
+          encryptionKeys: eks.encryptionKeys
         })
 
         let promise = Promise.resolve(form)
@@ -56,25 +70,50 @@ export class IccFormXApi extends iccFormApi {
           : []
         ).forEach(
           delegateId =>
-            (promise = promise
-              .then(form =>
-                this.crypto.appendObjectDelegations(
-                  form,
+            (promise = promise.then(form =>
+              this.crypto
+                .addDelegationsAndEncryptionKeys(
                   patient,
+                  form,
                   user.healthcarePartyId!,
                   delegateId,
-                  initData.secretId
+                  dels.secretId,
+                  eks.secretId
                 )
-              )
-              .then(extraData =>
-                _.extend(form, {
-                  delegations: extraData.delegations,
-                  cryptedForeignKeys: extraData.cryptedForeignKeys
+                .catch(e => {
+                  console.log(e)
+                  return form
                 })
-              ))
+            ))
         )
         return promise
       })
+  }
+
+  initEncryptionKeys(user: models.UserDto, form: models.FormDto) {
+    return this.crypto.initEncryptionKeys(form, user.healthcarePartyId!).then(eks => {
+      let promise = Promise.resolve(
+        _.extend(form, {
+          encryptionKeys: eks.encryptionKeys
+        })
+      )
+      ;(user.autoDelegations
+        ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
+        : []
+      ).forEach(
+        delegateId =>
+          (promise = promise.then(contact =>
+            this.crypto
+              .appendEncryptionKeys(contact, user.healthcarePartyId!, delegateId, eks.secretId)
+              .then(extraEks => {
+                return _.extend(contact, {
+                  encryptionKeys: extraEks.encryptionKeys
+                })
+              })
+          ))
+      )
+      return promise
+    })
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -97,7 +136,10 @@ export class IccFormXApi extends iccFormApi {
     return this.crypto
       .extractDelegationsSFKs(patient, hcpartyId)
       .then(secretForeignKeys =>
-        this.findByHCPartyPatientSecretFKeys(hcpartyId, secretForeignKeys.join(","))
+        this.findByHCPartyPatientSecretFKeys(
+          secretForeignKeys.hcpartyId,
+          secretForeignKeys.extractedKeys.join(",")
+        )
       )
       .then(forms => this.decrypt(hcpartyId, forms))
       .then(function(decryptedForms) {
@@ -109,50 +151,39 @@ export class IccFormXApi extends iccFormApi {
     return Promise.all(
       forms.map(form =>
         this.crypto
-          .decryptAndImportAesHcPartyKeysInDelegations(hcpartyId, form.delegations!)
-          .then(
-            (
-              decryptedAndImportedAesHcPartyKeys: Array<{
-                delegatorId: string
-                key: CryptoKey
-              }>
-            ) => {
-              var collatedAesKeys: { [key: string]: CryptoKey } = {}
-              decryptedAndImportedAesHcPartyKeys.forEach(
-                k => (collatedAesKeys[k.delegatorId] = k.key)
-              )
-              return this.crypto
-                .decryptDelegationsSFKs(form.delegations![hcpartyId], collatedAesKeys, form.id!)
-                .then((sfks: Array<string>) => {
-                  if (form.encryptedSelf) {
-                    return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
-                      .then(
-                        key =>
-                          new Promise((resolve: (value: any) => any) => {
-                            AES.decrypt(key, utils.text2ua(atob(form.encryptedSelf!))).then(
-                              resolve,
-                              () => {
-                                console.log("Cannot decrypt form", form.id)
-                                resolve(null)
-                              }
-                            )
-                          })
-                      )
-                      .then((decrypted: ArrayBuffer) => {
-                        if (decrypted) {
-                          form = _.extend(form, JSON.parse(utils.ua2text(decrypted)))
-                        }
-                        return form
-                      })
-                  } else {
-                    return Promise.resolve(form)
-                  }
-                })
-                .catch(function(e) {
-                  console.log(e)
-                })
-            }
+          .extractKeysFromDelegationsForHcpHierarchy(
+            hcpartyId,
+            form.id!,
+            _.size(form.encryptionKeys) ? form.encryptionKeys! : form.delegations!
           )
+          .then(({ extractedKeys: sfks }) => {
+            if (form.encryptedSelf) {
+              return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
+                .then(
+                  key =>
+                    new Promise((resolve: (value: any) => any) => {
+                      AES.decrypt(key, utils.text2ua(atob(form.encryptedSelf!))).then(
+                        resolve,
+                        () => {
+                          console.log("Cannot decrypt form", form.id)
+                          resolve(null)
+                        }
+                      )
+                    })
+                )
+                .then((decrypted: ArrayBuffer) => {
+                  if (decrypted) {
+                    form = _.extend(form, JSON.parse(utils.ua2text(decrypted)))
+                  }
+                  return form
+                })
+            } else {
+              return Promise.resolve(form)
+            }
+          })
+          .catch(function(e) {
+            console.log(e)
+          })
       )
     ).catch(function(e) {
       console.log(e)

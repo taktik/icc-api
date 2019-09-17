@@ -39,4 +39,8 @@ export class MeasureDto {
   unit?: string
 
   unitCodes?: Array<models.CodeDto>
+
+  comment?: string
+
+  severity?: number
 }
