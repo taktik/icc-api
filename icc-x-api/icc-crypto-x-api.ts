@@ -6,7 +6,7 @@ import { shamir, ShamirClass } from "./crypto/shamir"
 
 import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
-import { HealthcarePartyDto, DelegationDto, PatientDto } from "../icc-api/model/models"
+import { DelegationDto, HealthcarePartyDto, PatientDto } from "../icc-api/model/models"
 
 export class IccCryptoXApi {
   hcPartyKeysCache: {
@@ -342,11 +342,11 @@ export class IccCryptoXApi {
       .then(importedAESHcPartyKey =>
         Promise.all([
           this.AES.encrypt(importedAESHcPartyKey.key, utils.text2ua(
-            this.computeDecryptedSecretPrimaryKeyForObject(createdObject.id, secretId)
+            createdObject.id + ":" + secretId
           ).buffer as ArrayBuffer),
           parentObject
             ? this.AES.encrypt(importedAESHcPartyKey.key, utils.text2ua(
-                this.computeDecryptedCryptedForeignKeyForObject(createdObject.id, parentObject.id)
+                createdObject.id + ":" + parentObject.id
               ).buffer as ArrayBuffer)
             : Promise.resolve(null)
         ])
@@ -382,21 +382,6 @@ export class IccCryptoXApi {
         secretForeignKeys: (secretForeignKeyOfParent && [secretForeignKeyOfParent]) || [],
         secretId: secretId
       }))
-  }
-
-  private computeDecryptedContentEncryptionKeyForObject(
-    object: any,
-    objectSecretId: string
-  ): string {
-    return object.id + ":" + objectSecretId
-  }
-
-  private computeDecryptedSecretPrimaryKeyForObject(object: any, objectSecretId: string): string {
-    return object.id + ":" + objectSecretId
-  }
-
-  private computeDecryptedCryptedForeignKeyForObject(object: any, parentObject: any): string {
-    return object.id + ":" + parentObject.id
   }
   /**
    * Gets updated instances of SPKs and CKFs for the child object `modifiedObject`.
@@ -498,15 +483,12 @@ export class IccCryptoXApi {
           ) as Array<Promise<ArrayBuffer>>),
 
           this.AES.encrypt(importedAESHcPartyKey.key, utils.text2ua(
-            this.computeDecryptedSecretPrimaryKeyForObject(
-              modifiedObject,
-              secretIdOfModifiedObject!!
-            )
+            modifiedObject.id + ":" + secretIdOfModifiedObject!!
           ).buffer as ArrayBuffer),
 
           parentObject
             ? this.AES.encrypt(importedAESHcPartyKey.key, utils.text2ua(
-                this.computeDecryptedCryptedForeignKeyForObject(modifiedObject, parentObject)
+                modifiedObject.id + ":" + parentObject.id
               ).buffer as ArrayBuffer)
             : Promise.resolve(null)
         ])
@@ -539,12 +521,7 @@ export class IccCryptoXApi {
                   (d && this.utils.ua2text(d)) ||
                   /* some unique id that ensures the delegation is going to be held */ this.randomUuid()
               )
-              .concat([
-                this.computeDecryptedSecretPrimaryKeyForObject(
-                  modifiedObject,
-                  secretIdOfModifiedObject!
-                )
-              ])
+              .concat([modifiedObject.id + ":" + secretIdOfModifiedObject!])
               .map(k => ({ k }))
           )
 
@@ -575,16 +552,7 @@ export class IccCryptoXApi {
                   (d && this.utils.ua2text(d)) ||
                   /* some unique id that ensures the delegation is going to be held */ this.randomUuid()
               )
-              .concat(
-                cryptedForeignKey
-                  ? [
-                      this.computeDecryptedCryptedForeignKeyForObject(
-                        modifiedObject,
-                        parentObject.id
-                      )
-                    ]
-                  : []
-              )
+              .concat(cryptedForeignKey ? [modifiedObject.id + ":" + parentObject.id] : [])
               .map(k => ({ k }))
           )
 
@@ -634,9 +602,7 @@ export class IccCryptoXApi {
       .then(importedAESHcPartyKey =>
         this.AES.encrypt(
           importedAESHcPartyKey.key,
-          utils.text2ua(
-            this.computeDecryptedContentEncryptionKeyForObject(createdObject.id, secretId)
-          )
+          utils.text2ua(createdObject.id + ":" + secretId)
         )
       )
       .then(encryptedEncryptionKeys => ({
@@ -710,12 +676,7 @@ export class IccCryptoXApi {
           ) as Array<Promise<ArrayBuffer>>),
           this.AES.encrypt(
             decryptedHcPartyKey.key,
-            utils.text2ua(
-              this.computeDecryptedContentEncryptionKeyForObject(
-                modifiedObject.id,
-                secretIdOfModifiedObject
-              )
-            )
+            utils.text2ua(modifiedObject.id + ":" + secretIdOfModifiedObject)
           )
         ])
       )
@@ -737,12 +698,7 @@ export class IccCryptoXApi {
             .map((d: DelegationDto) => ({ d })),
           (previousDecryptedEncryptionKeys || [])
             .map(d => this.utils.ua2text(d))
-            .concat([
-              this.computeDecryptedContentEncryptionKeyForObject(
-                modifiedObject.id,
-                secretIdOfModifiedObject
-              )
-            ])
+            .concat([modifiedObject.id + ":" + secretIdOfModifiedObject])
             .map(k => ({ k }))
         )
 
