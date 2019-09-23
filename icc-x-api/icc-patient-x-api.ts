@@ -37,9 +37,10 @@ export class IccPatientXApi extends iccPatientApi {
     documentApi: IccDocumentXApi,
     hcpartyApi: IccHcpartyXApi,
     classificationApi: IccClassificationXApi,
-    cryptedKeys: Array<string> = ["note"]
+    cryptedKeys: Array<string> = ["note"],
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = window.fetch
   ) {
-    super(host, headers)
+    super(host, headers, fetchImpl)
     this.crypto = crypto
     this.contactApi = contactApi
     this.helementApi = helementApi

@@ -14,9 +14,10 @@ export class IccInvoiceXApi extends iccInvoiceApi {
     host: string,
     headers: { [key: string]: string },
     crypto: IccCryptoXApi,
-    entityrefApi: iccEntityrefApi
+    entityrefApi: iccEntityrefApi,
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = window.fetch
   ) {
-    super(host, headers)
+    super(host, headers, fetchImpl)
     this.crypto = crypto
     this.entityrefApi = entityrefApi
   }

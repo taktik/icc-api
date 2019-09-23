@@ -4,6 +4,19 @@ import { Moment } from "moment"
 import * as _ from "lodash"
 
 export class UtilsClass {
+  private crypto: Crypto
+
+  // @ts-ignore
+  constructor(
+    crypto: Crypto = (typeof window !== "undefined"
+      ? window
+      : typeof self !== "undefined"
+        ? self
+        : {}
+    ).crypto
+  ) {
+    this.crypto = crypto
+  }
   /**
    * String to Uint8Array
    *
