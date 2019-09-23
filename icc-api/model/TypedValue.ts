@@ -24,42 +24,30 @@
 
 import * as models from "./models"
 
-export class AddressDto {
+export class TypedValue {
   constructor(json: JSON | any) {
-    Object.assign(this as AddressDto, json)
+    Object.assign(this as TypedValue, json)
   }
-  objectType?: string
+  type?: TypedValue.TypeEnum
 
-  addressType?: AddressDto.AddressTypeEnum
+  booleanValue?: boolean
 
-  descr?: string
+  integerValue?: number
 
-  street?: string
+  doubleValue?: number
 
-  houseNumber?: string
+  stringValue?: string
 
-  postboxNumber?: string
-
-  postalCode?: string
-
-  city?: string
-
-  country?: string
-
-  encryptedSelf?: string
-
-  note?: string
-
-  telecoms?: Array<models.TelecomDtoEmbed>
+  dateValue?: number
 }
-export namespace AddressDto {
-  export enum AddressTypeEnum {
-    Home = <any>"home",
-    Work = <any>"work",
-    Vacation = <any>"vacation",
-    Hospital = <any>"hospital",
-    Clinic = <any>"clinic",
-    Hq = <any>"hq",
-    Other = <any>"other"
+export namespace TypedValue {
+  export enum TypeEnum {
+    BOOLEAN = <any>"BOOLEAN",
+    INTEGER = <any>"INTEGER",
+    DOUBLE = <any>"DOUBLE",
+    STRING = <any>"STRING",
+    DATE = <any>"DATE",
+    CLOB = <any>"CLOB",
+    JSON = <any>"JSON"
   }
 }

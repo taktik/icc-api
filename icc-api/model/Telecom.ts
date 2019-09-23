@@ -24,42 +24,31 @@
 
 import * as models from "./models"
 
-export class AddressDto {
+export class Telecom {
   constructor(json: JSON | any) {
-    Object.assign(this as AddressDto, json)
+    Object.assign(this as Telecom, json)
   }
-  objectType?: string
+  telecomType?: Telecom.TelecomTypeEnum
 
-  addressType?: AddressDto.AddressTypeEnum
+  telecomNumber?: string
 
-  descr?: string
-
-  street?: string
-
-  houseNumber?: string
-
-  postboxNumber?: string
-
-  postalCode?: string
-
-  city?: string
-
-  country?: string
+  telecomDescription?: string
 
   encryptedSelf?: string
-
-  note?: string
-
-  telecoms?: Array<models.TelecomDtoEmbed>
 }
-export namespace AddressDto {
-  export enum AddressTypeEnum {
-    Home = <any>"home",
-    Work = <any>"work",
-    Vacation = <any>"vacation",
-    Hospital = <any>"hospital",
-    Clinic = <any>"clinic",
-    Hq = <any>"hq",
-    Other = <any>"other"
+export namespace Telecom {
+  export enum TelecomTypeEnum {
+    Mobile = <any>"mobile",
+    Phone = <any>"phone",
+    Email = <any>"email",
+    Fax = <any>"fax",
+    Skype = <any>"skype",
+    Im = <any>"im",
+    Medibridge = <any>"medibridge",
+    Ehealthbox = <any>"ehealthbox",
+    Apicrypt = <any>"apicrypt",
+    Web = <any>"web",
+    Print = <any>"print",
+    Disk = <any>"disk"
   }
 }

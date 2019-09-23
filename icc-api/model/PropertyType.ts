@@ -24,42 +24,53 @@
 
 import * as models from "./models"
 
-export class AddressDto {
+export class PropertyType {
   constructor(json: JSON | any) {
-    Object.assign(this as AddressDto, json)
+    Object.assign(this as PropertyType, json)
   }
-  objectType?: string
+  identifier?: string
 
-  addressType?: AddressDto.AddressTypeEnum
+  type?: PropertyType.TypeEnum
 
-  descr?: string
+  scope?: PropertyType.ScopeEnum
 
-  street?: string
+  unique?: boolean
 
-  houseNumber?: string
+  editor?: string
 
-  postboxNumber?: string
+  localized?: boolean
 
-  postalCode?: string
+  attachments?: { [key: string]: models.Attachment }
 
-  city?: string
+  deleted?: number
 
-  country?: string
+  id?: string
 
-  encryptedSelf?: string
+  rev?: string
 
-  note?: string
+  revsInfo?: Array<models.RevisionInfo>
 
-  telecoms?: Array<models.TelecomDtoEmbed>
+  conflicts?: Array<string>
+
+  javaType?: string
+
+  revHistory?: { [key: string]: string }
 }
-export namespace AddressDto {
-  export enum AddressTypeEnum {
-    Home = <any>"home",
-    Work = <any>"work",
-    Vacation = <any>"vacation",
-    Hospital = <any>"hospital",
-    Clinic = <any>"clinic",
-    Hq = <any>"hq",
-    Other = <any>"other"
+export namespace PropertyType {
+  export enum TypeEnum {
+    BOOLEAN = <any>"BOOLEAN",
+    INTEGER = <any>"INTEGER",
+    DOUBLE = <any>"DOUBLE",
+    STRING = <any>"STRING",
+    DATE = <any>"DATE",
+    CLOB = <any>"CLOB",
+    JSON = <any>"JSON"
+  }
+  export enum ScopeEnum {
+    SYSTEM = <any>"SYSTEM",
+    NODE = <any>"NODE",
+    ROLE = <any>"ROLE",
+    USER = <any>"USER",
+    EVENT = <any>"EVENT"
   }
 }

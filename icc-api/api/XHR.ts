@@ -34,14 +34,19 @@ export namespace XHR {
     }
   }
 
-  function fetchWithTimeout(url: string, init: RequestInit, timeout = 10000): Promise<Response> {
+  function fetchWithTimeout(
+    url: string,
+    init: RequestInit,
+    timeout = 10000,
+    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
+  ): Promise<Response> {
     return new Promise((resolve, reject) => {
       // Set timeout timer
       let timer = setTimeout(
         () => reject({ message: "Request timed out", status: "Request timed out" }),
         timeout
       )
-      fetch(url, init)
+      ;(fetchImpl || window.fetch)(url, init)
         .then(response => {
           clearTimeout(timer)
           resolve(response)
@@ -57,7 +62,8 @@ export namespace XHR {
     method: string,
     url: string,
     headers: Array<Header> | null,
-    data: any = "",
+    data: string | any = "",
+    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>,
     contentTypeOverride?: "application/json" | "text/plain" | "application/octet-stream"
   ): Promise<Data> {
     const contentType =
@@ -102,7 +108,7 @@ export namespace XHR {
       if (response.status >= 400) {
         throw new XHRError(response.statusText, response.status, response.status, response.headers)
       }
-      const ct = contentTypeOverride || response.headers.get("content-type") || "text/plain"
+      const ct = response.headers.get("content-type") || "text/plain"
       return (ct.startsWith("application/json")
         ? response.json()
         : ct.startsWith("application/xml") || ct.startsWith("text/")

@@ -28,9 +28,16 @@ import * as models from "../model/models"
 export class iccHelementApi {
   host: string
   headers: Array<XHR.Header>
-  constructor(host: string, headers: any) {
+  fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
+
+  constructor(
+    host: string,
+    headers: any,
+    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
+  ) {
     this.host = host
     this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.fetchImpl = fetchImpl
   }
 
   setHeaders(h: Array<XHR.Header>) {
@@ -51,7 +58,7 @@ export class iccHelementApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.HealthElementDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -67,7 +74,7 @@ export class iccHelementApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("DELETE", _url, headers, _body)
+    return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
       .catch(err => this.handleError(err))
   }
@@ -80,7 +87,7 @@ export class iccHelementApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
       .catch(err => this.handleError(err))
   }
@@ -101,7 +108,7 @@ export class iccHelementApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.HealthElementDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -122,7 +129,7 @@ export class iccHelementApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.IcureStubDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -138,7 +145,7 @@ export class iccHelementApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.HealthElementDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -151,7 +158,7 @@ export class iccHelementApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("PUT", _url, headers, _body)
+    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.HealthElementDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -166,7 +173,7 @@ export class iccHelementApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("PUT", _url, headers, _body)
+    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.HealthElementDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -186,7 +193,7 @@ export class iccHelementApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.HealthElementDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -199,7 +206,7 @@ export class iccHelementApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => true)
       .catch(err => this.handleError(err))
   }
