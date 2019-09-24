@@ -116,8 +116,11 @@ export class IccCryptoXApi {
     headers: { [key: string]: string },
     hcpartyBaseApi: iccHcpartyApi,
     patientBaseApi: iccPatientApi,
-    crypto: Crypto = // @ts-ignore
-    (typeof window !== "undefined" ? window : typeof self !== "undefined" ? self : {}).crypto
+    crypto: Crypto = typeof window !== "undefined"
+      ? window.crypto
+      : typeof self !== "undefined"
+        ? self.crypto
+        : ({} as Crypto)
   ) {
     this.hcpartyBaseApi = hcpartyBaseApi
     this.patientBaseApi = patientBaseApi
