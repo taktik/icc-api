@@ -6,14 +6,9 @@ import * as _ from "lodash"
 export class UtilsClass {
   private crypto: Crypto
 
-  // @ts-ignore
   constructor(
-    crypto: Crypto = (typeof window !== "undefined"
-      ? window
-      : typeof self !== "undefined"
-        ? self
-        : {}
-    ).crypto
+    crypto: Crypto = // @ts-ignore
+    (typeof window !== "undefined" ? window : typeof self !== "undefined" ? self : {}).crypto
   ) {
     this.crypto = crypto
   }
