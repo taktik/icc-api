@@ -24,42 +24,11 @@
 
 import * as models from "./models"
 
-export class AddressDto {
+export class Periodicity {
   constructor(json: JSON | any) {
-    Object.assign(this as AddressDto, json)
+    Object.assign(this as Periodicity, json)
   }
-  objectType?: string
+  relatedCode?: models.CodeStub
 
-  addressType?: AddressDto.AddressTypeEnum
-
-  descr?: string
-
-  street?: string
-
-  houseNumber?: string
-
-  postboxNumber?: string
-
-  postalCode?: string
-
-  city?: string
-
-  country?: string
-
-  encryptedSelf?: string
-
-  note?: string
-
-  telecoms?: Array<models.TelecomDtoEmbed>
-}
-export namespace AddressDto {
-  export enum AddressTypeEnum {
-    Home = <any>"home",
-    Work = <any>"work",
-    Vacation = <any>"vacation",
-    Hospital = <any>"hospital",
-    Clinic = <any>"clinic",
-    Hq = <any>"hq",
-    Other = <any>"other"
-  }
+  relatedPeriodicity?: models.CodeStub
 }

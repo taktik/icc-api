@@ -1,6 +1,6 @@
 import * as _ from "lodash"
 import { HealthcarePartyDto } from "../../icc-api/model/models"
-import { Telecom } from "fhc-api/dist/model/Telecom"
+import { Telecom } from "fhc-api"
 
 export interface KendoDropdownSpeciality {
   text: string

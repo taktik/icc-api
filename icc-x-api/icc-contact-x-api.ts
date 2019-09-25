@@ -47,6 +47,14 @@ export class IccContactXApi extends iccContactApi {
     return this.initDelegationsAndEncryptionKeys(user, patient, contact)
   }
 
+  /**
+   * 1. Extract(decrypt) the patient's secretForeignKeys from the
+   * "delegations" object.
+   * 2. Initialize & encrypt the Contact's delegations & cryptedForeignKeys.
+   * 3. Initialize & encrypt the Contact's encryptionKeys.
+   * 4. Return the contact with the extended delegations, cryptedForeignKeys
+   * & encryptionKeys.
+   */
   private initDelegationsAndEncryptionKeys(
     user: models.UserDto,
     patient: models.PatientDto,
@@ -160,11 +168,47 @@ export class IccContactXApi extends iccContactApi {
     })
   }
 
+  async findByPatientSFKs(
+    hcpartyId: string,
+    patients: Array<models.PatientDto>
+  ): Promise<Array<models.ContactDto>> {
+    let extractedKeys: string[] = []
+    for (const patient of patients) {
+      const secretForeignKeys = await this.crypto.extractDelegationsSFKs(patient, hcpartyId)
+
+      if (
+        secretForeignKeys &&
+        secretForeignKeys.extractedKeys &&
+        secretForeignKeys.extractedKeys.length > 0
+      ) {
+        extractedKeys = extractedKeys.concat(secretForeignKeys.extractedKeys)
+      }
+    }
+
+    const idList = new models.ListOfIdsDto({
+      ids: extractedKeys
+    })
+
+    return extractedKeys.length > 0 ? this.findByHCPartyPatientForeignKeys(hcpartyId, idList) : []
+  }
+
   filterBy(
     startKey?: string,
     startDocumentId?: string,
     limit?: number,
     body?: models.FilterChain
+  ): never {
+    throw new Error(
+      "Cannot call a method that returns contacts without providing a user for de/encryption"
+    )
+  }
+
+  listContactsByOpeningDate(
+    startKey: number,
+    endKey: number,
+    hcpartyid: string,
+    startDocumentId?: string,
+    limit?: number
   ): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
@@ -233,7 +277,27 @@ export class IccContactXApi extends iccContactApi {
   ): Promise<models.ContactPaginatedList | any> {
     return super
       .filterBy(startKey, startDocumentId, limit, body)
-      .then(ctcs => this.decrypt((user.healthcarePartyId || user.patientId)!, ctcs))
+      .then(ctcs =>
+        this.decrypt(user.healthcarePartyId!, ctcs.rows).then(decryptedRows =>
+          Object.assign(ctcs, { rows: decryptedRows })
+        )
+      )
+  }
+
+  listContactsByOpeningDateWithUser(
+    user: models.UserDto,
+    startKey: number,
+    endKey: number,
+    hcpartyid: string,
+    startDocumentId?: string,
+    limit?: number
+  ): Promise<models.ContactPaginatedList | any> {
+    return super
+      .listContactsByOpeningDate(startKey, endKey, hcpartyid, startDocumentId, limit)
+      .then(ctcs => {
+        ctcs.rows = this.decrypt((user.healthcarePartyId || user.patientId)!, ctcs.rows)
+        return ctcs
+      })
   }
 
   findByHCPartyFormIdWithUser(

@@ -62,6 +62,8 @@ export class CodeDto {
 
   appendices?: { [key: string]: string }
 
+  periodicity?: Array<models.Periodicity>
+
   disabled?: boolean
 }
 export namespace CodeDto {

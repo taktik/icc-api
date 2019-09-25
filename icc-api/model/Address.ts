@@ -24,13 +24,11 @@
 
 import * as models from "./models"
 
-export class AddressDto {
+export class Address {
   constructor(json: JSON | any) {
-    Object.assign(this as AddressDto, json)
+    Object.assign(this as Address, json)
   }
-  objectType?: string
-
-  addressType?: AddressDto.AddressTypeEnum
+  addressType?: Address.AddressTypeEnum
 
   descr?: string
 
@@ -50,9 +48,9 @@ export class AddressDto {
 
   note?: string
 
-  telecoms?: Array<models.TelecomDtoEmbed>
+  telecoms?: Array<models.Telecom>
 }
-export namespace AddressDto {
+export namespace Address {
   export enum AddressTypeEnum {
     Home = <any>"home",
     Work = <any>"work",

@@ -24,42 +24,22 @@
 
 import * as models from "./models"
 
-export class AddressDto {
+export class CareTeamMemberDto {
   constructor(json: JSON | any) {
-    Object.assign(this as AddressDto, json)
+    Object.assign(this as CareTeamMemberDto, json)
   }
-  objectType?: string
+  id?: string
 
-  addressType?: AddressDto.AddressTypeEnum
+  careTeamMemberType?: CareTeamMemberDto.CareTeamMemberTypeEnum
 
-  descr?: string
+  healthcarePartyId?: string
 
-  street?: string
-
-  houseNumber?: string
-
-  postboxNumber?: string
-
-  postalCode?: string
-
-  city?: string
-
-  country?: string
-
-  encryptedSelf?: string
-
-  note?: string
-
-  telecoms?: Array<models.TelecomDtoEmbed>
+  quality?: models.CodeStub
 }
-export namespace AddressDto {
-  export enum AddressTypeEnum {
-    Home = <any>"home",
-    Work = <any>"work",
-    Vacation = <any>"vacation",
-    Hospital = <any>"hospital",
-    Clinic = <any>"clinic",
-    Hq = <any>"hq",
+export namespace CareTeamMemberDto {
+  export enum CareTeamMemberTypeEnum {
+    Physician = <any>"physician",
+    Specialist = <any>"specialist",
     Other = <any>"other"
   }
 }

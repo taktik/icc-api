@@ -28,29 +28,11 @@ export class VmpStubDto {
   constructor(json: JSON | any) {
     Object.assign(this as VmpStubDto, json)
   }
-  from?: number
-
-  to?: number
+  id?: string
 
   code?: string
 
   vmpGroup?: models.VmpGroupStubDto
 
   name?: models.SamTextDto
-
-  attachments?: { [key: string]: models.Attachment }
-
-  deleted?: number
-
-  id?: string
-
-  rev?: string
-
-  revsInfo?: Array<models.RevisionInfo>
-
-  conflicts?: Array<string>
-
-  javaType?: string
-
-  revHistory?: { [key: string]: string }
 }

@@ -24,42 +24,15 @@
 
 import * as models from "./models"
 
-export class AddressDto {
+export class VmpGroupPaginatedList {
   constructor(json: JSON | any) {
-    Object.assign(this as AddressDto, json)
+    Object.assign(this as VmpGroupPaginatedList, json)
   }
-  objectType?: string
+  totalSize?: number
 
-  addressType?: AddressDto.AddressTypeEnum
+  pageSize?: number
 
-  descr?: string
+  nextKeyPair?: models.PaginatedDocumentKeyIdPair
 
-  street?: string
-
-  houseNumber?: string
-
-  postboxNumber?: string
-
-  postalCode?: string
-
-  city?: string
-
-  country?: string
-
-  encryptedSelf?: string
-
-  note?: string
-
-  telecoms?: Array<models.TelecomDtoEmbed>
-}
-export namespace AddressDto {
-  export enum AddressTypeEnum {
-    Home = <any>"home",
-    Work = <any>"work",
-    Vacation = <any>"vacation",
-    Hospital = <any>"hospital",
-    Clinic = <any>"clinic",
-    Hq = <any>"hq",
-    Other = <any>"other"
-  }
+  rows?: Array<models.VmpGroupDto>
 }

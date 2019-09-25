@@ -28,9 +28,16 @@ import * as models from "../model/models"
 export class iccBeSamv2Api {
   host: string
   headers: Array<XHR.Header>
-  constructor(host: string, headers: any) {
+  fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
+
+  constructor(
+    host: string,
+    headers: any,
+    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
+  ) {
     this.host = host
     this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.fetchImpl = fetchImpl
   }
 
   setHeaders(h: Array<XHR.Header>) {
@@ -62,7 +69,7 @@ export class iccBeSamv2Api {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.AmpPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -86,7 +93,7 @@ export class iccBeSamv2Api {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.AmpPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -113,7 +120,7 @@ export class iccBeSamv2Api {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.AmpPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -137,7 +144,7 @@ export class iccBeSamv2Api {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.AmpPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -161,7 +168,7 @@ export class iccBeSamv2Api {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.AmpPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -171,7 +178,7 @@ export class iccBeSamv2Api {
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<models.AmpPaginatedList | any> {
+  ): Promise<models.VmpGroupPaginatedList | any> {
     let _body = null
 
     const _url =
@@ -188,8 +195,8 @@ export class iccBeSamv2Api {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
-      .then(doc => new models.AmpPaginatedList(doc.body as JSON))
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => new models.VmpGroupPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
   findPaginatedVmpsByGroupCode(
@@ -212,7 +219,7 @@ export class iccBeSamv2Api {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.VmpPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -236,7 +243,7 @@ export class iccBeSamv2Api {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.VmpPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -263,7 +270,7 @@ export class iccBeSamv2Api {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.VmpPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }

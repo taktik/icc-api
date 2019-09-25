@@ -28,9 +28,16 @@ import * as models from "../model/models"
 export class iccBeKmehrApi {
   host: string
   headers: Array<XHR.Header>
-  constructor(host: string, headers: any) {
+  fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
+
+  constructor(
+    host: string,
+    headers: any,
+    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
+  ) {
     this.host = host
     this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.fetchImpl = fetchImpl
   }
 
   setHeaders(h: Array<XHR.Header>) {
@@ -67,8 +74,100 @@ export class iccBeKmehrApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.CheckSMFPatientResult(it)))
+      .catch(err => this.handleError(err))
+  }
+  generateContactreportExport(
+    patientId: string,
+    id: string,
+    date?: number,
+    language?: string,
+    recipientNihii?: string,
+    recipientFirstName?: string,
+    recipientLastName?: string,
+    mimeType?: string,
+    body?: Array<string>
+  ): Promise<ArrayBuffer | any> {
+    let _body = null
+    _body = body
+
+    const _url =
+      this.host +
+      "/be_kmehr/contactreport/{patientId}/export/{id}"
+        .replace("{patientId}", patientId + "")
+        .replace("{id}", id + "") +
+      "?ts=" +
+      new Date().getTime() +
+      (date ? "&date=" + date : "") +
+      (language ? "&language=" + language : "") +
+      (recipientNihii ? "&recipientNihii=" + recipientNihii : "") +
+      (recipientFirstName ? "&recipientFirstName=" + recipientFirstName : "") +
+      (recipientLastName ? "&recipientLastName=" + recipientLastName : "") +
+      (mimeType ? "&mimeType=" + mimeType : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/octet-stream"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => doc.body)
+      .catch(err => this.handleError(err))
+  }
+  generateDiaryNote(
+    patientId: string,
+    language?: string,
+    body?: models.DiaryNoteExportInfoDto
+  ): Promise<ArrayBuffer | any> {
+    let _body = null
+    _body = body
+
+    const _url =
+      this.host +
+      "/be_kmehr/diarynote/{patientId}/export".replace("{patientId}", patientId + "") +
+      "?ts=" +
+      new Date().getTime() +
+      (language ? "&language=" + language : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => doc.body)
+      .catch(err => this.handleError(err))
+  }
+  generateLabresultExport(
+    patientId: string,
+    id: string,
+    date?: number,
+    language?: string,
+    recipientNihii?: string,
+    recipientFirstName?: string,
+    recipientLastName?: string,
+    mimeType?: string,
+    body?: Array<string>
+  ): Promise<ArrayBuffer | any> {
+    let _body = null
+    _body = body
+
+    const _url =
+      this.host +
+      "/be_kmehr/labresult/{patientId}/export/{id}"
+        .replace("{patientId}", patientId + "")
+        .replace("{id}", id + "") +
+      "?ts=" +
+      new Date().getTime() +
+      (date ? "&date=" + date : "") +
+      (language ? "&language=" + language : "") +
+      (recipientNihii ? "&recipientNihii=" + recipientNihii : "") +
+      (recipientFirstName ? "&recipientFirstName=" + recipientFirstName : "") +
+      (recipientLastName ? "&recipientLastName=" + recipientLastName : "") +
+      (mimeType ? "&mimeType=" + mimeType : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/octet-stream"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }
   generateMedicationSchemeExport(
@@ -91,7 +190,182 @@ export class iccBeKmehrApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => doc.body)
+      .catch(err => this.handleError(err))
+  }
+  generateNoteExport(
+    patientId: string,
+    id: string,
+    date?: number,
+    language?: string,
+    recipientNihii?: string,
+    recipientFirstName?: string,
+    recipientLastName?: string,
+    mimeType?: string,
+    body?: Array<string>
+  ): Promise<ArrayBuffer | any> {
+    let _body = null
+    _body = body
+
+    const _url =
+      this.host +
+      "/be_kmehr/note/{patientId}/export/{id}"
+        .replace("{patientId}", patientId + "")
+        .replace("{id}", id + "") +
+      "?ts=" +
+      new Date().getTime() +
+      (date ? "&date=" + date : "") +
+      (language ? "&language=" + language : "") +
+      (recipientNihii ? "&recipientNihii=" + recipientNihii : "") +
+      (recipientFirstName ? "&recipientFirstName=" + recipientFirstName : "") +
+      (recipientLastName ? "&recipientLastName=" + recipientLastName : "") +
+      (mimeType ? "&mimeType=" + mimeType : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/octet-stream"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => doc.body)
+      .catch(err => this.handleError(err))
+  }
+  generatePrescriptionExport(
+    patientId: string,
+    id: string,
+    date?: number,
+    language?: string,
+    recipientNihii?: string,
+    recipientFirstName?: string,
+    recipientLastName?: string,
+    mimeType?: string,
+    body?: Array<string>
+  ): Promise<ArrayBuffer | any> {
+    let _body = null
+    _body = body
+
+    const _url =
+      this.host +
+      "/be_kmehr/prescription/{patientId}/export/{id}"
+        .replace("{patientId}", patientId + "")
+        .replace("{id}", id + "") +
+      "?ts=" +
+      new Date().getTime() +
+      (date ? "&date=" + date : "") +
+      (language ? "&language=" + language : "") +
+      (recipientNihii ? "&recipientNihii=" + recipientNihii : "") +
+      (recipientFirstName ? "&recipientFirstName=" + recipientFirstName : "") +
+      (recipientLastName ? "&recipientLastName=" + recipientLastName : "") +
+      (mimeType ? "&mimeType=" + mimeType : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/octet-stream"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => doc.body)
+      .catch(err => this.handleError(err))
+  }
+  generateReportExport(
+    patientId: string,
+    id: string,
+    date?: number,
+    language?: string,
+    recipientNihii?: string,
+    recipientFirstName?: string,
+    recipientLastName?: string,
+    mimeType?: string,
+    body?: Array<string>
+  ): Promise<ArrayBuffer | any> {
+    let _body = null
+    _body = body
+
+    const _url =
+      this.host +
+      "/be_kmehr/report/{patientId}/export/{id}"
+        .replace("{patientId}", patientId + "")
+        .replace("{id}", id + "") +
+      "?ts=" +
+      new Date().getTime() +
+      (date ? "&date=" + date : "") +
+      (language ? "&language=" + language : "") +
+      (recipientNihii ? "&recipientNihii=" + recipientNihii : "") +
+      (recipientFirstName ? "&recipientFirstName=" + recipientFirstName : "") +
+      (recipientLastName ? "&recipientLastName=" + recipientLastName : "") +
+      (mimeType ? "&mimeType=" + mimeType : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/octet-stream"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => doc.body)
+      .catch(err => this.handleError(err))
+  }
+  generateRequestExport(
+    patientId: string,
+    id: string,
+    date?: number,
+    language?: string,
+    recipientNihii?: string,
+    recipientFirstName?: string,
+    recipientLastName?: string,
+    mimeType?: string,
+    body?: Array<string>
+  ): Promise<ArrayBuffer | any> {
+    let _body = null
+    _body = body
+
+    const _url =
+      this.host +
+      "/be_kmehr/request/{patientId}/export/{id}"
+        .replace("{patientId}", patientId + "")
+        .replace("{id}", id + "") +
+      "?ts=" +
+      new Date().getTime() +
+      (date ? "&date=" + date : "") +
+      (language ? "&language=" + language : "") +
+      (recipientNihii ? "&recipientNihii=" + recipientNihii : "") +
+      (recipientFirstName ? "&recipientFirstName=" + recipientFirstName : "") +
+      (recipientLastName ? "&recipientLastName=" + recipientLastName : "") +
+      (mimeType ? "&mimeType=" + mimeType : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/octet-stream"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => doc.body)
+      .catch(err => this.handleError(err))
+  }
+  generateResultExport(
+    patientId: string,
+    id: string,
+    date?: number,
+    language?: string,
+    recipientNihii?: string,
+    recipientFirstName?: string,
+    recipientLastName?: string,
+    mimeType?: string,
+    body?: Array<string>
+  ): Promise<ArrayBuffer | any> {
+    let _body = null
+    _body = body
+
+    const _url =
+      this.host +
+      "/be_kmehr/result/{patientId}/export/{id}"
+        .replace("{patientId}", patientId + "")
+        .replace("{id}", id + "") +
+      "?ts=" +
+      new Date().getTime() +
+      (date ? "&date=" + date : "") +
+      (language ? "&language=" + language : "") +
+      (recipientNihii ? "&recipientNihii=" + recipientNihii : "") +
+      (recipientFirstName ? "&recipientFirstName=" + recipientFirstName : "") +
+      (recipientLastName ? "&recipientLastName=" + recipientLastName : "") +
+      (mimeType ? "&mimeType=" + mimeType : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/octet-stream"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }
@@ -113,7 +387,7 @@ export class iccBeKmehrApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }
@@ -135,7 +409,7 @@ export class iccBeKmehrApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }
@@ -157,7 +431,7 @@ export class iccBeKmehrApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }
@@ -177,7 +451,7 @@ export class iccBeKmehrApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.SumehrContentDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -197,7 +471,7 @@ export class iccBeKmehrApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.ContentDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -217,7 +491,7 @@ export class iccBeKmehrApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.SumehrContentDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -237,7 +511,7 @@ export class iccBeKmehrApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.ContentDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -263,7 +537,7 @@ export class iccBeKmehrApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.ImportResultDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -289,7 +563,7 @@ export class iccBeKmehrApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.ImportResultDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -315,7 +589,7 @@ export class iccBeKmehrApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.ImportResultDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -343,7 +617,7 @@ export class iccBeKmehrApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.ImportResultDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -363,7 +637,7 @@ export class iccBeKmehrApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.SumehrValidityDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -383,7 +657,7 @@ export class iccBeKmehrApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.SumehrValidityDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -405,7 +679,7 @@ export class iccBeKmehrApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }
@@ -427,7 +701,7 @@ export class iccBeKmehrApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }

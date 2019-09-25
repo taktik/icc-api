@@ -24,42 +24,27 @@
 
 import * as models from "./models"
 
-export class AddressDto {
+export class Property {
   constructor(json: JSON | any) {
-    Object.assign(this as AddressDto, json)
+    Object.assign(this as Property, json)
   }
-  objectType?: string
+  type?: models.PropertyType
 
-  addressType?: AddressDto.AddressTypeEnum
+  typedValue?: models.TypedValue
 
-  descr?: string
+  attachments?: { [key: string]: models.Attachment }
 
-  street?: string
+  deleted?: number
 
-  houseNumber?: string
+  id?: string
 
-  postboxNumber?: string
+  rev?: string
 
-  postalCode?: string
+  revsInfo?: Array<models.RevisionInfo>
 
-  city?: string
+  conflicts?: Array<string>
 
-  country?: string
+  javaType?: string
 
-  encryptedSelf?: string
-
-  note?: string
-
-  telecoms?: Array<models.TelecomDtoEmbed>
-}
-export namespace AddressDto {
-  export enum AddressTypeEnum {
-    Home = <any>"home",
-    Work = <any>"work",
-    Vacation = <any>"vacation",
-    Hospital = <any>"hospital",
-    Clinic = <any>"clinic",
-    Hq = <any>"hq",
-    Other = <any>"other"
-  }
+  revHistory?: { [key: string]: string }
 }

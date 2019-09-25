@@ -24,42 +24,23 @@
 
 import * as models from "./models"
 
-export class AddressDto {
+export class DiaryNoteExportInfoDto {
   constructor(json: JSON | any) {
-    Object.assign(this as AddressDto, json)
+    Object.assign(this as DiaryNoteExportInfoDto, json)
   }
-  objectType?: string
+  secretForeignKeys?: Array<string>
 
-  addressType?: AddressDto.AddressTypeEnum
+  tags?: Array<string>
 
-  descr?: string
+  contexts?: Array<string>
 
-  street?: string
+  documentId?: string
 
-  houseNumber?: string
+  attachmentId?: string
 
-  postboxNumber?: string
-
-  postalCode?: string
-
-  city?: string
-
-  country?: string
-
-  encryptedSelf?: string
+  recipient?: models.HealthcarePartyDto
 
   note?: string
 
-  telecoms?: Array<models.TelecomDtoEmbed>
-}
-export namespace AddressDto {
-  export enum AddressTypeEnum {
-    Home = <any>"home",
-    Work = <any>"work",
-    Vacation = <any>"vacation",
-    Hospital = <any>"hospital",
-    Clinic = <any>"clinic",
-    Hq = <any>"hq",
-    Other = <any>"other"
-  }
+  psy?: boolean
 }
