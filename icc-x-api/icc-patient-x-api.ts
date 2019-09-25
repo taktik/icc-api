@@ -535,76 +535,81 @@ export class IccPatientXApi extends iccPatientApi {
   ): Promise<Array<models.PatientDto>> {
     const hcpId = user.healthcarePartyId || user.patientId
     //First check that we have no dangling delegation
-    const patsWithMissingDelegations = pats.filter(
-      p =>
-        p.delegations &&
-        p.delegations[hcpId!] &&
-        !p.delegations[hcpId!].length &&
-        !Object.values(p.delegations).some(d => d.length > 0)
-    )
-
-    let prom: Promise<{ [key: string]: models.PatientDto }> = Promise.resolve({})
-    fillDelegations &&
-      patsWithMissingDelegations.forEach(p => {
-        prom = prom.then(acc =>
-          this.initDelegations(p, user).then(p =>
-            this.modifyPatientWithUser(user, p).then(mp => {
-              acc[p.id!] = mp || p
-              return acc
-            })
-          )
-        )
-      })
-
-    return prom
-      .then((acc: { [key: string]: models.PatientDto }) =>
-        pats.map(p => {
-          const fixedPatient = acc[p.id!]
-          return fixedPatient || p
-        })
+    return this.hcpartyApi.getHealthcareParty(user.healthcarePartyId!).then(hcp => {
+      const parentId = hcp.parentId
+      const patsWithMissingDelegations = pats.filter(
+        p =>
+          p.delegations &&
+          ((p.delegations[hcpId!] && !p.delegations[hcpId!].length) ||
+            (p.delegations[parentId!] && !p.delegations[parentId!].length)) &&
+          !Object.values(p.delegations).some(d => d.length > 0)
       )
-      .then(pats => {
-        return Promise.all(
+
+      let prom: Promise<{ [key: string]: models.PatientDto }> = Promise.resolve({})
+
+      fillDelegations &&
+        patsWithMissingDelegations.forEach(p => {
+          prom = prom.then(acc =>
+            this.initDelegations(p, user).then(p =>
+              this.modifyPatientWithUser(user, p).then(mp => {
+                acc[p.id!] = mp || p
+                return acc
+              })
+            )
+          )
+        })
+
+      return prom
+        .then((acc: { [key: string]: models.PatientDto }) =>
           pats.map(p => {
-            return p.encryptedSelf
-              ? this.crypto
-                  .extractKeysFromDelegationsForHcpHierarchy(
-                    hcpId!,
-                    p.id!,
-                    _.size(p.encryptionKeys) ? p.encryptionKeys! : p.delegations!
-                  )
-                  .then(({ extractedKeys: sfks }) => {
-                    if (!sfks || !sfks.length) {
-                      //console.log("Cannot decrypt contact", ctc.id)
-                      return Promise.resolve(p)
-                    }
-                    return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(key =>
-                      utils.decrypt(p, ec =>
-                        AES.decrypt(key, ec)
-                          .then(dec => {
-                            const jsonContent = dec && utils.ua2utf8(dec)
-                            try {
-                              return JSON.parse(jsonContent)
-                            } catch (e) {
-                              console.log(
-                                "Cannot parse patient",
-                                p.id,
-                                jsonContent || "Invalid content"
-                              )
-                              return p
-                            }
-                          })
-                          .catch(err => {
-                            console.log("Cannot decrypt patient", p.id, err)
-                            return p
-                          })
-                      )
-                    )
-                  })
-              : Promise.resolve(p)
+            const fixedPatient = acc[p.id!]
+            return fixedPatient || p
           })
         )
-      })
+        .then(pats => {
+          return Promise.all(
+            pats.map(p => {
+              return p.encryptedSelf
+                ? this.crypto
+                    .extractKeysFromDelegationsForHcpHierarchy(
+                      hcpId!,
+                      p.id!,
+                      _.size(p.encryptionKeys) ? p.encryptionKeys! : p.delegations!
+                    )
+                    .then(({ extractedKeys: sfks }) => {
+                      if (!sfks || !sfks.length) {
+                        //console.log("Cannot decrypt contact", ctc.id)
+                        return Promise.resolve(p)
+                      }
+                      return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(
+                        key =>
+                          utils.decrypt(p, ec =>
+                            AES.decrypt(key, ec)
+                              .then(dec => {
+                                const jsonContent = dec && utils.ua2utf8(dec)
+                                try {
+                                  return JSON.parse(jsonContent)
+                                } catch (e) {
+                                  console.log(
+                                    "Cannot parse patient",
+                                    p.id,
+                                    jsonContent || "Invalid content"
+                                  )
+                                  return p
+                                }
+                              })
+                              .catch(err => {
+                                console.log("Cannot decrypt patient", p.id, err)
+                                return p
+                              })
+                          )
+                      )
+                    })
+                : Promise.resolve(p)
+            })
+          )
+        })
+    })
   }
 
   initEncryptionKeys(user: models.UserDto, pat: models.PatientDto) {
