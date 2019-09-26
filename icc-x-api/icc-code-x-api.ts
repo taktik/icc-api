@@ -13,8 +13,12 @@ export class IccCodeXApi extends iccCodeApi {
   icpc2: any = icpc2
   codeLanguages: any = codeLanguages
 
-  constructor(host: string, headers: { [key: string]: string }) {
-    super(host, headers)
+  constructor(
+    host: string,
+    headers: { [key: string]: string },
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = window.fetch
+  ) {
+    super(host, headers, fetchImpl)
   }
 
   // noinspection JSUnusedGlobalSymbols

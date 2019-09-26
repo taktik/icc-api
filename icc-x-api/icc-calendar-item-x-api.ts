@@ -14,8 +14,13 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
   i18n: any = i18n
   crypto: IccCryptoXApi
 
-  constructor(host: string, headers: { [key: string]: string }, crypto: IccCryptoXApi) {
-    super(host, headers)
+  constructor(
+    host: string,
+    headers: { [key: string]: string },
+    crypto: IccCryptoXApi,
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = window.fetch
+  ) {
+    super(host, headers, fetchImpl)
     this.crypto = crypto
   }
 

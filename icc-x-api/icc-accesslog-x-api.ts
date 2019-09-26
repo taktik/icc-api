@@ -12,8 +12,13 @@ export class IccAccesslogXApi extends iccAccesslogApi {
   crypto: IccCryptoXApi
   cryptedKeys = ["detail"]
 
-  constructor(host: string, headers: { [key: string]: string }, crypto: IccCryptoXApi) {
-    super(host, headers)
+  constructor(
+    host: string,
+    headers: { [key: string]: string },
+    crypto: IccCryptoXApi,
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = window.fetch
+  ) {
+    super(host, headers, fetchImpl)
     this.crypto = crypto
   }
 
