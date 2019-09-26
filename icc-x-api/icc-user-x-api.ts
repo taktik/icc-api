@@ -3,8 +3,15 @@ import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
 
 export class IccUserXApi extends iccUserApi {
-  constructor(host: string, headers: { [key: string]: string }) {
-    super(host, headers)
+  fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response>
+
+  constructor(
+    host: string,
+    headers: { [key: string]: string },
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = window.fetch
+  ) {
+    super(host, headers, fetchImpl)
+    this.fetchImpl = fetchImpl
   }
 
   getCurrentSessionWithSession(sessionId: string): Promise<string | any> {
@@ -19,7 +26,7 @@ export class IccUserXApi extends iccUserApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => JSON.parse(JSON.stringify(doc.body)))
       .catch(err => this.handleError(err))
   }
@@ -36,7 +43,7 @@ export class IccUserXApi extends iccUserApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.UserDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }

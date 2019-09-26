@@ -11,6 +11,7 @@ import { AES } from "./crypto/AES"
 // noinspection JSUnusedGlobalSymbols
 export class IccDocumentXApi extends iccDocumentApi {
   crypto: IccCryptoXApi
+  fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
   /** maps invalid UTI values to corresponding MIME type for backward-compatibility (pre-v1.0.117) */
   compatUtiRevDefs: { [key: string]: string } = {
@@ -543,9 +544,15 @@ export class IccDocumentXApi extends iccDocumentApi {
     "x-music/x-midi": "public.midi"
   }
 
-  constructor(host: string, headers: { [key: string]: string }, crypto: IccCryptoXApi) {
-    super(host, headers)
+  constructor(
+    host: string,
+    headers: { [key: string]: string },
+    crypto: IccCryptoXApi,
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = window.fetch
+  ) {
+    super(host, headers, fetchImpl)
     this.crypto = crypto
+    this.fetchImpl = fetchImpl
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -733,7 +740,7 @@ export class IccDocumentXApi extends iccDocumentApi {
       new Date().getTime() +
       (enckeys ? `&enckeys=${enckeys}` : "") +
       (fileName ? `&fileName=${fileName}` : "")
-    return XHR.sendCommand("GET", url, this.headers, null, returnType)
+    return XHR.sendCommand("GET", url, this.headers, null, this.fetchImpl, returnType)
       .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }
