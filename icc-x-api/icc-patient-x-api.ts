@@ -12,7 +12,6 @@ import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
 import { DocumentDto, ListOfIdsDto } from "../icc-api/model/models"
 import { retry } from "./utils/net-utils"
-import { AES } from "./crypto/AES"
 import { utils } from "./crypto/utils"
 
 // noinspection JSUnusedGlobalSymbols
@@ -515,13 +514,13 @@ export class IccPatientXApi extends iccPatientApi {
             )
           )
           .then((sfks: { extractedKeys: Array<string>; hcpartyId: string }) =>
-            AES.importKey("raw", utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
+            this.crypto.AES.importKey("raw", utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
           )
           .then((key: CryptoKey) =>
             utils.crypt(
               p,
               (obj: { [key: string]: string }) =>
-                AES.encrypt(key, utils.utf82ua(JSON.stringify(obj))),
+                this.crypto.AES.encrypt(key, utils.utf82ua(JSON.stringify(obj))),
               this.cryptedKeys
             )
           )
@@ -584,28 +583,30 @@ export class IccPatientXApi extends iccPatientApi {
                         //console.log("Cannot decrypt contact", ctc.id)
                         return Promise.resolve(p)
                       }
-                      return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(
-                        key =>
-                          utils.decrypt(p, ec =>
-                            AES.decrypt(key, ec)
-                              .then(dec => {
-                                const jsonContent = dec && utils.ua2utf8(dec)
-                                try {
-                                  return JSON.parse(jsonContent)
-                                } catch (e) {
-                                  console.log(
-                                    "Cannot parse patient",
-                                    p.id,
-                                    jsonContent || "Invalid content"
-                                  )
-                                  return p
-                                }
-                              })
-                              .catch(err => {
-                                console.log("Cannot decrypt patient", p.id, err)
+                      return this.crypto.AES.importKey(
+                        "raw",
+                        utils.hex2ua(sfks[0].replace(/-/g, ""))
+                      ).then(key =>
+                        utils.decrypt(p, ec =>
+                          this.crypto.AES.decrypt(key, ec)
+                            .then(dec => {
+                              const jsonContent = dec && utils.ua2utf8(dec)
+                              try {
+                                return JSON.parse(jsonContent)
+                              } catch (e) {
+                                console.log(
+                                  "Cannot parse patient",
+                                  p.id,
+                                  jsonContent || "Invalid content"
+                                )
                                 return p
-                              })
-                          )
+                              }
+                            })
+                            .catch(err => {
+                              console.log("Cannot decrypt patient", p.id, err)
+                              return p
+                            })
+                        )
                       )
                     })
                 : Promise.resolve(p)
