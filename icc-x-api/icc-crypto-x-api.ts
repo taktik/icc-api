@@ -138,9 +138,7 @@ export class IccCryptoXApi {
       c =>
         (
           Number(c) ^
-          (((typeof window === "undefined" ? self : window).crypto.getRandomValues(
-            new Uint8Array(1)
-          )! as Uint8Array)[0] &
+          ((this.crypto.getRandomValues(new Uint8Array(1))! as Uint8Array)[0] &
             (15 >> (Number(c) / 4)))
         ).toString(16) //Keep that inlined or you will loose the random
     )
