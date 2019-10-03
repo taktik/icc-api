@@ -935,8 +935,17 @@ export class IccContactXApi extends iccContactApi {
             ? myself.productToString(m && m.substanceProduct)
             : myself.productToString(m && m.medicinalProduct)
       },
+      reimbursementReasonToString: (m: any, lang: string) => {
+        return m &&
+          m.reimbursementReason &&
+          m.reimbursementReason.label &&
+          m.reimbursementReason.label.hasOwnProperty(lang)
+          ? m.reimbursementReason.label[lang]
+          : ""
+      },
       medicationToString: (m: any, lang: string) => {
         let res = `${myself.medicationNameToString(m)}, ${myself.posologyToString(m, lang)}`
+        let reason = myself.reimbursementReasonToString(m, lang)
         res = m.numberOfPackages
           ? `${m.numberOfPackages} ${
               m.numberOfPackages > 1 ? this.i18n[lang].packagesOf : this.i18n[lang].packageOf
@@ -945,6 +954,7 @@ export class IccContactXApi extends iccContactApi {
         res = m.duration
           ? `${res} ${this.i18n[lang].during} ${myself.durationToString(m.duration, lang)}`
           : res
+        res = reason ? `${res} (${reason})` : res
         return res
       },
       productToString: (m: any): string => {
