@@ -211,6 +211,19 @@ export class iccPatientApi {
       .then(doc => new models.PatientPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+  findDuplicates(body?: models.ListOfIdsDto): Promise<Array<any> | any> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + "/patient/duplicates" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
+      .catch(err => this.handleError(err))
+  }
   fuzzySearch(
     firstName?: string,
     lastName?: string,
