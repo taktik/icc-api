@@ -476,30 +476,38 @@ export class IccCryptoXApi {
         Promise.all([
           Promise.all(((modifiedObject.delegations || {})[delegateId] || []).map(
             (d: DelegationDto) =>
-              d.key &&
-              this._AES.decrypt(importedAESHcPartyKey.key, this._utils.hex2ua(d.key)).catch(() => {
-                console.log(
-                  `Cannot decrypt delegation from ${d.owner} to ${
-                    d.delegatedTo
-                  } for object with id ${modifiedObject.id}:`,
-                  modifiedObject
-                )
-                return null
-              })
+              (d.key &&
+                d.owner === ownerId &&
+                this._AES
+                  .decrypt(importedAESHcPartyKey.key, this._utils.hex2ua(d.key))
+                  .catch(() => {
+                    console.log(
+                      `Cannot decrypt delegation from ${d.owner} to ${
+                        d.delegatedTo
+                      } for object with id ${modifiedObject.id}:`,
+                      modifiedObject
+                    )
+                    return null
+                  })) ||
+              Promise.resolve(null)
           ) as Array<Promise<ArrayBuffer>>),
 
           Promise.all(((modifiedObject.cryptedForeignKeys || {})[delegateId] || []).map(
             (d: DelegationDto) =>
-              d.key &&
-              this._AES.decrypt(importedAESHcPartyKey.key, this._utils.hex2ua(d.key)).catch(() => {
-                console.log(
-                  `Cannot decrypt cryptedForeignKeys from ${d.owner} to ${
-                    d.delegatedTo
-                  } for object with id ${modifiedObject.id}:`,
-                  modifiedObject
-                )
-                return null
-              })
+              (d.key &&
+                d.owner === ownerId &&
+                this._AES
+                  .decrypt(importedAESHcPartyKey.key, this._utils.hex2ua(d.key))
+                  .catch(() => {
+                    console.log(
+                      `Cannot decrypt cryptedForeignKeys from ${d.owner} to ${
+                        d.delegatedTo
+                      } for object with id ${modifiedObject.id}:`,
+                      modifiedObject
+                    )
+                    return null
+                  })) ||
+              Promise.resolve(null)
           ) as Array<Promise<ArrayBuffer>>),
 
           this._AES.encrypt(importedAESHcPartyKey.key, utils.text2ua(
@@ -526,24 +534,25 @@ export class IccCryptoXApi {
           // 2. an array of objects { k : decrypted(key)} with one object for the existing delegations and the new key concatenated
           // We merge them to get one array of objects: { d: {owner,delegatedTo,encrypted(key)}, k: decrypted(key)}
           const delegationCryptedDecrypted = _.merge(
-            (modifiedObject.delegations[delegateId] || [])
-              .concat([
-                {
+            ((modifiedObject.delegations || {})[delegateId] || []).map((d: DelegationDto) => ({
+              d
+            })),
+            (previousDecryptedDelegations || [])
+              .map(dd => (dd ? this._utils.ua2text(dd) : null))
+              .map(k => ({ k }))
+          )
+            .filter(({ d, k }: { d: DelegationDto; k: String }) => !!k || d.owner !== ownerId) //Only keep the ones created by us that can still be decrypted
+            .map(({ d, k }: { d: DelegationDto; k: String }) => ({ d, k: k || this.randomUuid() })) // Use some unique id that ensures the delegation not created by us are going to be held
+            .concat([
+              {
+                d: {
                   owner: ownerId,
                   delegatedTo: delegateId,
                   key: this._utils.ua2hex(cryptedDelegation)
-                }
-              ])
-              .map((d: DelegationDto) => ({ d })),
-            (previousDecryptedDelegations || [])
-              .map(
-                d =>
-                  (d && this._utils.ua2text(d)) ||
-                  /* some unique id that ensures the delegation is going to be held */ this.randomUuid()
-              )
-              .concat([modifiedObject.id + ":" + secretIdOfModifiedObject!])
-              .map(k => ({ k }))
-          )
+                },
+                k: modifiedObject.id + ":" + secretIdOfModifiedObject!
+              }
+            ])
 
           const allDelegations = _.cloneDeep(modifiedObject.delegations)
 
@@ -553,28 +562,29 @@ export class IccCryptoXApi {
           )
 
           const cryptedForeignKeysCryptedDecrypted = _.merge(
-            ((modifiedObject.cryptedForeignKeys || {})[delegateId] || [])
-              .concat(
-                cryptedForeignKey
-                  ? [
-                      {
+            ((modifiedObject.cryptedForeignKeys || {})[delegateId] || []).map(
+              (d: DelegationDto) => ({ d })
+            ),
+            (previousDecryptedCryptedForeignKeys || [])
+              .map(dd => (dd ? this._utils.ua2text(dd) : null))
+              .map(k => ({ k }))
+          )
+            .filter(({ d, k }: { d: DelegationDto; k: String }) => !!k || d.owner !== ownerId) //Only keep the ones created by us that can still be decrypted
+            .map(({ d, k }: { d: DelegationDto; k: String }) => ({ d, k: k || this.randomUuid() })) // Use some unique id that ensures the delegation not created by us are going to be held
+            .concat(
+              cryptedForeignKey
+                ? [
+                    {
+                      d: {
                         owner: ownerId,
                         delegatedTo: delegateId,
                         key: this._utils.ua2hex(cryptedForeignKey)
-                      }
-                    ]
-                  : []
-              )
-              .map((d: DelegationDto) => ({ d })),
-            (previousDecryptedCryptedForeignKeys || [])
-              .map(
-                d =>
-                  (d && this._utils.ua2text(d)) ||
-                  /* some unique id that ensures the delegation is going to be held */ this.randomUuid()
-              )
-              .concat(cryptedForeignKey ? [modifiedObject.id + ":" + parentObject.id] : [])
-              .map(k => ({ k }))
-          )
+                      },
+                      k: modifiedObject.id + ":" + secretIdOfModifiedObject!
+                    }
+                  ]
+                : []
+            )
 
           const allCryptedForeignKeys = _.cloneDeep(modifiedObject.cryptedForeignKeys || {})
           if (cryptedForeignKeysCryptedDecrypted.length > 0) {
@@ -648,19 +658,19 @@ export class IccCryptoXApi {
    * @param modifiedObject : the object of which EKs will be cloned, the clone will be used to append the new EK, and then used as return value; will NOT be mutated
    * @param ownerId : delegator HcP id
    * @param delegateId : delegate HcP id
-   * @param secretIdOfModifiedObject : secret Id for the EK (Content Encryption Key)
-   * @returns - **encryptionKeys** existing EKs of the `modifiedObject`, appended with a new EK item (owner: `ownerId`, delegatedTo: `delegateId`, encrypted key with secretId: `secretIdOfModifiedObject` )
-   * - **secretId** which is the given input parameter `secretIdOfModifiedObject`
+   * @param secretEncryptionKeyOfObject : secret Id for the EK (Content Encryption Key)
+   * @returns - **encryptionKeys** existing EKs of the `modifiedObject`, appended with a new EK item (owner: `ownerId`, delegatedTo: `delegateId`, encrypted key with secretId: `secretEncryptionKeyOfObject` )
+   * - **secretId** which is the given input parameter `secretEncryptionKeyOfObject`
    */
   appendEncryptionKeys(
     //TODO: suggested name: getExtendedEKwithDelegationFromDelegatorToDelegate
     modifiedObject: any,
     ownerId: string,
     delegateId: string,
-    secretIdOfModifiedObject: string
+    secretEncryptionKeyOfObject: string
   ): Promise<{
     encryptionKeys: { [key: string]: Array<models.DelegationDto> }
-    secretId: string | null //secretIdOfModifiedObject is returned to avoid the need for a new decryption when chaining calls
+    secretId: string | null //secretEncryptionKeyOfObject is returned to avoid the need for a new decryption when chaining calls
   }> {
     this.throwDetailedExceptionForInvalidParameter(
       "modifiedObject.id",
@@ -670,8 +680,8 @@ export class IccCryptoXApi {
     ) //modifiedObject should never be null
 
     this.throwDetailedExceptionForInvalidParameter(
-      "secretIdOfModifiedObject",
-      secretIdOfModifiedObject,
+      "secretEncryptionKeyOfObject",
+      secretEncryptionKeyOfObject,
       "appendEncryptionKeys",
       arguments
     )
@@ -690,14 +700,24 @@ export class IccCryptoXApi {
       )
       .then(decryptedHcPartyKey =>
         Promise.all([
-          Promise.all((modifiedObject.encryptionKeys[delegateId] || []).map(
-            (EKitem: DelegationDto) =>
-              EKitem.key &&
-              this._AES.decrypt(decryptedHcPartyKey.key, this._utils.hex2ua(EKitem.key))
+          Promise.all(((modifiedObject.encryptionKeys || {})[delegateId] || []).map(
+            (d: DelegationDto) =>
+              (d.key &&
+                d.owner === ownerId &&
+                this._AES.decrypt(decryptedHcPartyKey.key, this._utils.hex2ua(d.key)).catch(() => {
+                  console.log(
+                    `Cannot decrypt encryption key from ${d.owner} to ${
+                      d.delegatedTo
+                    } for object with id ${modifiedObject.id}:`,
+                    modifiedObject
+                  )
+                  return null
+                })) ||
+              Promise.resolve(null)
           ) as Array<Promise<ArrayBuffer>>),
           this._AES.encrypt(
             decryptedHcPartyKey.key,
-            utils.text2ua(modifiedObject.id + ":" + secretIdOfModifiedObject)
+            utils.text2ua(modifiedObject.id + ":" + secretEncryptionKeyOfObject)
           )
         ])
       )
@@ -708,20 +728,25 @@ export class IccCryptoXApi {
         // 2. an array of objects { k : decrypted(key)} with one object for the existing delegations and the new key concatenated
         // We merge them to get one array of objects: { d: {owner,delegatedTo,encrypted(key)}, k: decrypted(key)}
         const encryptionKeysCryptedDecrypted = _.merge(
-          (modifiedObject.encryptionKeys[delegateId] || [])
-            .concat([
-              {
+          ((modifiedObject.encryptionKeys || {})[delegateId] || []).map((d: DelegationDto) => ({
+            d
+          })),
+          (previousDecryptedEncryptionKeys || [])
+            .map(dd => (dd ? this._utils.ua2text(dd) : null))
+            .map(k => ({ k }))
+        )
+          .filter(({ d, k }: { d: DelegationDto; k: String }) => !!k || d.owner !== ownerId) //Only keep the ones created by us that can still be decrypted
+          .map(({ d, k }: { d: DelegationDto; k: String }) => ({ d, k: k || this.randomUuid() }))
+          .concat([
+            {
+              d: {
                 owner: ownerId,
                 delegatedTo: delegateId,
                 key: this._utils.ua2hex(encryptedEncryptionKey)
-              }
-            ])
-            .map((d: DelegationDto) => ({ d })),
-          (previousDecryptedEncryptionKeys || [])
-            .map(d => this._utils.ua2text(d))
-            .concat([modifiedObject.id + ":" + secretIdOfModifiedObject])
-            .map(k => ({ k }))
-        )
+              },
+              k: modifiedObject.id + ":" + secretEncryptionKeyOfObject!
+            }
+          ])
 
         const allEncryptionKeys = _.cloneDeep(modifiedObject.encryptionKeys)
         allEncryptionKeys[delegateId] = _.uniqBy(
@@ -731,7 +756,7 @@ export class IccCryptoXApi {
 
         return {
           encryptionKeys: allEncryptionKeys,
-          secretId: secretIdOfModifiedObject
+          secretId: secretEncryptionKeyOfObject
         }
       })
   }
