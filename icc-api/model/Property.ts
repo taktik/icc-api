@@ -24,17 +24,27 @@
 
 import * as models from "./models"
 
-export class SumehrExportInfoDto {
+export class Property {
   constructor(json: JSON | any) {
-    Object.assign(this as SumehrExportInfoDto, json)
+    Object.assign(this as Property, json)
   }
-  secretForeignKeys?: Array<string>
+  type?: models.PropertyType
 
-  excludedIds?: Array<string>
+  typedValue?: models.TypedValue
 
-  recipient?: models.HealthcarePartyDto
+  attachments?: { [key: string]: models.Attachment }
 
-  comment?: string
+  deleted?: number
 
-  includeIrrelevantInformation?: boolean
+  id?: string
+
+  rev?: string
+
+  revsInfo?: Array<models.RevisionInfo>
+
+  conflicts?: Array<string>
+
+  javaType?: string
+
+  revHistory?: { [key: string]: string }
 }

@@ -24,17 +24,30 @@
 
 import * as models from "./models"
 
-export class SumehrExportInfoDto {
+export class TypedValue {
   constructor(json: JSON | any) {
-    Object.assign(this as SumehrExportInfoDto, json)
+    Object.assign(this as TypedValue, json)
   }
-  secretForeignKeys?: Array<string>
+  type?: TypedValue.TypeEnum
 
-  excludedIds?: Array<string>
+  booleanValue?: boolean
 
-  recipient?: models.HealthcarePartyDto
+  integerValue?: number
 
-  comment?: string
+  doubleValue?: number
 
-  includeIrrelevantInformation?: boolean
+  stringValue?: string
+
+  dateValue?: number
+}
+export namespace TypedValue {
+  export enum TypeEnum {
+    BOOLEAN = <any>"BOOLEAN",
+    INTEGER = <any>"INTEGER",
+    DOUBLE = <any>"DOUBLE",
+    STRING = <any>"STRING",
+    DATE = <any>"DATE",
+    CLOB = <any>"CLOB",
+    JSON = <any>"JSON"
+  }
 }

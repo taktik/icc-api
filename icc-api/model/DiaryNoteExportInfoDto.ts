@@ -24,17 +24,23 @@
 
 import * as models from "./models"
 
-export class SumehrExportInfoDto {
+export class DiaryNoteExportInfoDto {
   constructor(json: JSON | any) {
-    Object.assign(this as SumehrExportInfoDto, json)
+    Object.assign(this as DiaryNoteExportInfoDto, json)
   }
   secretForeignKeys?: Array<string>
 
-  excludedIds?: Array<string>
+  tags?: Array<string>
+
+  contexts?: Array<string>
+
+  documentId?: string
+
+  attachmentId?: string
 
   recipient?: models.HealthcarePartyDto
 
-  comment?: string
+  note?: string
 
-  includeIrrelevantInformation?: boolean
+  isPsy?: boolean
 }

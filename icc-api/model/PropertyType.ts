@@ -24,17 +24,53 @@
 
 import * as models from "./models"
 
-export class SumehrExportInfoDto {
+export class PropertyType {
   constructor(json: JSON | any) {
-    Object.assign(this as SumehrExportInfoDto, json)
+    Object.assign(this as PropertyType, json)
   }
-  secretForeignKeys?: Array<string>
+  identifier?: string
 
-  excludedIds?: Array<string>
+  type?: PropertyType.TypeEnum
 
-  recipient?: models.HealthcarePartyDto
+  scope?: PropertyType.ScopeEnum
 
-  comment?: string
+  unique?: boolean
 
-  includeIrrelevantInformation?: boolean
+  editor?: string
+
+  localized?: boolean
+
+  attachments?: { [key: string]: models.Attachment }
+
+  deleted?: number
+
+  id?: string
+
+  rev?: string
+
+  revsInfo?: Array<models.RevisionInfo>
+
+  conflicts?: Array<string>
+
+  javaType?: string
+
+  revHistory?: { [key: string]: string }
+}
+export namespace PropertyType {
+  export enum TypeEnum {
+    BOOLEAN = <any>"BOOLEAN",
+    INTEGER = <any>"INTEGER",
+    DOUBLE = <any>"DOUBLE",
+    STRING = <any>"STRING",
+    DATE = <any>"DATE",
+    CLOB = <any>"CLOB",
+    JSON = <any>"JSON"
+  }
+  export enum ScopeEnum {
+    SYSTEM = <any>"SYSTEM",
+    NODE = <any>"NODE",
+    ROLE = <any>"ROLE",
+    USER = <any>"USER",
+    EVENT = <any>"EVENT"
+  }
 }

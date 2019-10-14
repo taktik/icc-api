@@ -24,17 +24,22 @@
 
 import * as models from "./models"
 
-export class SumehrExportInfoDto {
+export class CareTeamMembershipDto {
   constructor(json: JSON | any) {
-    Object.assign(this as SumehrExportInfoDto, json)
+    Object.assign(this as CareTeamMembershipDto, json)
   }
-  secretForeignKeys?: Array<string>
+  startDate?: number
 
-  excludedIds?: Array<string>
+  endDate?: number
 
-  recipient?: models.HealthcarePartyDto
+  careTeamMemberId?: string
 
-  comment?: string
-
-  includeIrrelevantInformation?: boolean
+  membershipType?: CareTeamMembershipDto.MembershipTypeEnum
+}
+export namespace CareTeamMembershipDto {
+  export enum MembershipTypeEnum {
+    Doctor = <any>"doctor",
+    Mutuality = <any>"mutuality",
+    Patient = <any>"patient"
+  }
 }

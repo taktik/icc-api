@@ -24,17 +24,40 @@
 
 import * as models from "./models"
 
-export class SumehrExportInfoDto {
+export class Address {
   constructor(json: JSON | any) {
-    Object.assign(this as SumehrExportInfoDto, json)
+    Object.assign(this as Address, json)
   }
-  secretForeignKeys?: Array<string>
+  addressType?: Address.AddressTypeEnum
 
-  excludedIds?: Array<string>
+  descr?: string
 
-  recipient?: models.HealthcarePartyDto
+  street?: string
 
-  comment?: string
+  houseNumber?: string
 
-  includeIrrelevantInformation?: boolean
+  postboxNumber?: string
+
+  postalCode?: string
+
+  city?: string
+
+  country?: string
+
+  encryptedSelf?: string
+
+  note?: string
+
+  telecoms?: Array<models.Telecom>
+}
+export namespace Address {
+  export enum AddressTypeEnum {
+    Home = <any>"home",
+    Work = <any>"work",
+    Vacation = <any>"vacation",
+    Hospital = <any>"hospital",
+    Clinic = <any>"clinic",
+    Hq = <any>"hq",
+    Other = <any>"other"
+  }
 }

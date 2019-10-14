@@ -24,17 +24,15 @@
 
 import * as models from "./models"
 
-export class SumehrExportInfoDto {
+export class SchoolingInfoDto {
   constructor(json: JSON | any) {
-    Object.assign(this as SumehrExportInfoDto, json)
+    Object.assign(this as SchoolingInfoDto, json)
   }
-  secretForeignKeys?: Array<string>
+  startDate?: number
 
-  excludedIds?: Array<string>
+  endDate?: number
 
-  recipient?: models.HealthcarePartyDto
+  school?: string
 
-  comment?: string
-
-  includeIrrelevantInformation?: boolean
+  typeOfEducation?: models.CodeStub
 }
