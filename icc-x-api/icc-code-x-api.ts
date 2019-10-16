@@ -16,7 +16,10 @@ export class IccCodeXApi extends iccCodeApi {
   constructor(
     host: string,
     headers: { [key: string]: string },
-    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = window.fetch
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
+    "undefined"
+      ? window.fetch
+      : (self.fetch as any)
   ) {
     super(host, headers, fetchImpl)
   }
