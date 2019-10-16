@@ -88,7 +88,10 @@ export class IccMessageXApi extends iccMessageApi {
     documentXApi: IccDocumentXApi,
     receiptXApi: IccReceiptXApi,
     patientApi: IccPatientXApi,
-    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = window.fetch
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
+    "undefined"
+      ? window.fetch
+      : (self.fetch as any)
   ) {
     super(host, headers, fetchImpl)
     this.crypto = crypto

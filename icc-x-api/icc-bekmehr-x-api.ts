@@ -15,7 +15,10 @@ export class IccBekmehrXApi extends iccBeKmehrApi {
     headers: { [key: string]: string },
     ctcApi: IccContactXApi,
     helementApi: IccHelementXApi,
-    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = window.fetch
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
+    "undefined"
+      ? window.fetch
+      : (self.fetch as any)
   ) {
     super(host, headers, fetchImpl)
     this.ctcApi = ctcApi
@@ -113,6 +116,30 @@ export class IccBekmehrXApi extends iccBeKmehrApi {
     return new Promise((resolve, reject) => {
       const socket = new WebSocket(
         `${this.wssHost}/be_kmehr/generateSumehr${sessionId ? `;jsessionid=${sessionId}` : ""}`
+      )
+      socket.addEventListener("open", function() {
+        socket.send(
+          JSON.stringify({ parameters: { patientId: patientId, language: language, info: body } })
+        )
+      })
+      // Listen for messages
+      socket.addEventListener(
+        "message",
+        this.socketEventListener(socket, healthcarePartyId, resolve, reject)
+      )
+    })
+  }
+
+  generateSumehrV2ExportWithEncryptionSupport(
+    patientId: string,
+    healthcarePartyId: string,
+    language: string,
+    body: models.SumehrExportInfoDto,
+    sessionId?: string
+  ): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+      const socket = new WebSocket(
+        `${this.wssHost}/be_kmehr/generateSumehrV2${sessionId ? `;jsessionid=${sessionId}` : ""}`
       )
       socket.addEventListener("open", function() {
         socket.send(
