@@ -212,27 +212,6 @@ export class iccContactApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.ContactDto(it)))
       .catch(err => this.handleError(err))
   }
-  findByHCPartyPatientForeignKeys(
-    hcPartyId?: string,
-    body?: models.ListOfIdsDto
-  ): Promise<Array<models.ContactDto> | any> {
-    let _body = null
-    _body = body
-
-    const _url =
-      this.host +
-      "/contact/byHcPartyPatientForeignKeys" +
-      "?ts=" +
-      new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + hcPartyId : "")
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.ContactDto(it)))
-      .catch(err => this.handleError(err))
-  }
   findByHCPartyPatientSecretFKeys(
     hcPartyId?: string,
     secretFKeys?: string,
