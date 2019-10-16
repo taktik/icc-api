@@ -700,7 +700,7 @@ export class IccPatientXApi extends iccPatientApi {
           if (!patient) {
             status.patient = {
               success: false,
-              error: new Error("Cannot initialise encryption keys")
+              error: new Error("Patient does not exist or cannot initialise encryption keys")
             }
             return Promise.resolve({ patient: patient, statuses: status })
           }
