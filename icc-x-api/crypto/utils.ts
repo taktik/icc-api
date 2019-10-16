@@ -4,6 +4,17 @@ import { Moment } from "moment"
 import * as _ from "lodash"
 
 export class UtilsClass {
+  private crypto: Crypto
+
+  constructor(
+    crypto: Crypto = typeof window !== "undefined"
+      ? window.crypto
+      : typeof self !== "undefined"
+        ? self.crypto
+        : ({} as Crypto)
+  ) {
+    this.crypto = crypto
+  }
   /**
    * String to Uint8Array
    *

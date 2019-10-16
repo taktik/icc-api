@@ -12,7 +12,6 @@ import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
 import { DocumentDto, ListOfIdsDto } from "../icc-api/model/models"
 import { retry } from "./utils/net-utils"
-import { AES } from "./crypto/AES"
 import { utils } from "./crypto/utils"
 
 // noinspection JSUnusedGlobalSymbols
@@ -37,9 +36,10 @@ export class IccPatientXApi extends iccPatientApi {
     documentApi: IccDocumentXApi,
     hcpartyApi: IccHcpartyXApi,
     classificationApi: IccClassificationXApi,
-    cryptedKeys: Array<string> = ["note"]
+    cryptedKeys: Array<string> = ["note"],
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = window.fetch
   ) {
-    super(host, headers)
+    super(host, headers, fetchImpl)
     this.crypto = crypto
     this.contactApi = contactApi
     this.helementApi = helementApi
@@ -514,13 +514,13 @@ export class IccPatientXApi extends iccPatientApi {
             )
           )
           .then((sfks: { extractedKeys: Array<string>; hcpartyId: string }) =>
-            AES.importKey("raw", utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
+            this.crypto.AES.importKey("raw", utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
           )
           .then((key: CryptoKey) =>
             utils.crypt(
               p,
               (obj: { [key: string]: string }) =>
-                AES.encrypt(key, utils.utf82ua(JSON.stringify(obj))),
+                this.crypto.AES.encrypt(key, utils.utf82ua(JSON.stringify(obj))),
               this.cryptedKeys
             )
           )
@@ -533,20 +533,22 @@ export class IccPatientXApi extends iccPatientApi {
     pats: Array<models.PatientDto>,
     fillDelegations: boolean = true
   ): Promise<Array<models.PatientDto>> {
-    const hcpId = user.healthcarePartyId || user.patientId
-    //First check that we have no dangling delegation
-    return this.hcpartyApi.getHealthcareParty(user.healthcarePartyId!).then(hcp => {
-      const parentId = hcp.parentId
+    return (user.healthcarePartyId
+      ? this.hcpartyApi
+          .getHealthcareParty(user.healthcarePartyId!)
+          .then(hcp => [hcp.id, hcp.parentId])
+      : Promise.resolve([user.patientId])
+    ).then(ids => {
+      const hcpId = ids[0]
+      //First check that we have no dangling delegation
       const patsWithMissingDelegations = pats.filter(
         p =>
           p.delegations &&
-          ((p.delegations[hcpId!] && !p.delegations[hcpId!].length) ||
-            (p.delegations[parentId!] && !p.delegations[parentId!].length)) &&
+          ids.some(id => p.delegations![id!] && !p.delegations![id!].length) &&
           !Object.values(p.delegations).some(d => d.length > 0)
       )
 
       let prom: Promise<{ [key: string]: models.PatientDto }> = Promise.resolve({})
-
       fillDelegations &&
         patsWithMissingDelegations.forEach(p => {
           prom = prom.then(acc =>
@@ -581,28 +583,30 @@ export class IccPatientXApi extends iccPatientApi {
                         //console.log("Cannot decrypt contact", ctc.id)
                         return Promise.resolve(p)
                       }
-                      return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(
-                        key =>
-                          utils.decrypt(p, ec =>
-                            AES.decrypt(key, ec)
-                              .then(dec => {
-                                const jsonContent = dec && utils.ua2utf8(dec)
-                                try {
-                                  return JSON.parse(jsonContent)
-                                } catch (e) {
-                                  console.log(
-                                    "Cannot parse patient",
-                                    p.id,
-                                    jsonContent || "Invalid content"
-                                  )
-                                  return p
-                                }
-                              })
-                              .catch(err => {
-                                console.log("Cannot decrypt patient", p.id, err)
+                      return this.crypto.AES.importKey(
+                        "raw",
+                        utils.hex2ua(sfks[0].replace(/-/g, ""))
+                      ).then(key =>
+                        utils.decrypt(p, ec =>
+                          this.crypto.AES.decrypt(key, ec)
+                            .then(dec => {
+                              const jsonContent = dec && utils.ua2utf8(dec)
+                              try {
+                                return JSON.parse(jsonContent)
+                              } catch (e) {
+                                console.log(
+                                  "Cannot parse patient",
+                                  p.id,
+                                  jsonContent || "Invalid content"
+                                )
                                 return p
-                              })
-                          )
+                              }
+                            })
+                            .catch(err => {
+                              console.log("Cannot decrypt patient", p.id, err)
+                              return p
+                            })
+                        )
                       )
                     })
                 : Promise.resolve(p)
