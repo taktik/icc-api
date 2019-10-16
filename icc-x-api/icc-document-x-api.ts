@@ -6,7 +6,6 @@ import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
 
 import { utils } from "./crypto/utils"
-import { AES } from "./crypto/AES"
 
 // noinspection JSUnusedGlobalSymbols
 export class IccDocumentXApi extends iccDocumentApi {
@@ -698,13 +697,13 @@ export class IccDocumentXApi extends iccDocumentApi {
                 .then(
                   (key: CryptoKey) =>
                     new Promise((resolve: (value: ArrayBuffer | null) => any) => {
-                      AES.decrypt(key, utils.text2ua(atob(document.encryptedSelf!))).then(
-                        resolve,
-                        () => {
-                          console.log("Cannot decrypt document", document.id)
-                          resolve(null)
-                        }
-                      )
+                      this.crypto.AES.decrypt(
+                        key,
+                        utils.text2ua(atob(document.encryptedSelf!))
+                      ).then(resolve, () => {
+                        console.log("Cannot decrypt document", document.id)
+                        resolve(null)
+                      })
                     })
                 )
                 .then((decrypted: ArrayBuffer | null) => {

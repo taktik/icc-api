@@ -4,9 +4,7 @@ import { IccCryptoXApi } from "./icc-crypto-x-api"
 import * as models from "../icc-api/model/models"
 
 import * as _ from "lodash"
-import * as moment from "moment"
 import { utils } from "./crypto/utils"
-import { AES } from "./crypto/AES"
 
 export class IccAccesslogXApi extends iccAccesslogApi {
   crypto: IccCryptoXApi
@@ -156,9 +154,12 @@ export class IccAccesslogXApi extends iccAccesslogApi {
                   //console.log("Cannot decrypt contact", ctc.id)
                   return Promise.resolve(accessLog)
                 }
-                return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(key =>
+                return this.crypto.AES.importKey(
+                  "raw",
+                  utils.hex2ua(sfks[0].replace(/-/g, ""))
+                ).then(key =>
                   utils.decrypt(accessLog, ec =>
-                    AES.decrypt(key, ec).then(dec => {
+                    this.crypto.AES.decrypt(key, ec).then(dec => {
                       const jsonContent = dec && utils.ua2utf8(dec)
                       try {
                         return JSON.parse(jsonContent)
@@ -224,13 +225,13 @@ export class IccAccesslogXApi extends iccAccesslogApi {
             )
           )
           .then((eks: { extractedKeys: Array<string>; hcpartyId: string }) =>
-            AES.importKey("raw", utils.hex2ua(eks.extractedKeys[0].replace(/-/g, "")))
+            this.crypto.AES.importKey("raw", utils.hex2ua(eks.extractedKeys[0].replace(/-/g, "")))
           )
           .then((key: CryptoKey) =>
             utils.crypt(
               accessLog,
               (obj: { [key: string]: string }) =>
-                AES.encrypt(key, utils.utf82ua(JSON.stringify(obj))),
+                this.crypto.AES.encrypt(key, utils.utf82ua(JSON.stringify(obj))),
               this.cryptedKeys
             )
           )
