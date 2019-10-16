@@ -685,10 +685,26 @@ export class IccPatientXApi extends iccPatientApi {
           success: allTags.includes("medicalInformation") || allTags.includes("all") ? false : null,
           error: null
         },
-        patient: { success: false, error: null }
+        patient: { success: false, error: null } as { success: boolean; error: Error | null }
       }
-      return retry(() => this.getPatientWithUser(user, patId)).then(
-        (patient: models.PatientDto) => {
+      return retry(() => this.getPatientWithUser(user, patId))
+        .then(
+          (patient: models.PatientDto) =>
+            patient.encryptionKeys && Object.keys(patient.encryptionKeys || {}).length
+              ? Promise.resolve(patient)
+              : this.initEncryptionKeys(user, patient).then((patient: models.PatientDto) =>
+                  this.modifyPatientWithUser(user, patient)
+                )
+        )
+        .then((patient: models.PatientDto | null) => {
+          if (!patient) {
+            status.patient = {
+              success: false,
+              error: new Error("Cannot initialise encryption keys")
+            }
+            return Promise.resolve({ patient: patient, statuses: status })
+          }
+
           return this.crypto
             .extractDelegationsSFKsAndEncryptionSKs(patient, ownerId)
             .then(([delSfks, ecKeys]) => {
@@ -1032,8 +1048,7 @@ export class IccPatientXApi extends iccPatientApi {
                       return { patient: patient, statuses: status }
                     })
             })
-        }
-      )
+        })
     })
   }
 
