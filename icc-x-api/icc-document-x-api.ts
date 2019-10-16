@@ -11,6 +11,7 @@ import { AES } from "./crypto/AES"
 // noinspection JSUnusedGlobalSymbols
 export class IccDocumentXApi extends iccDocumentApi {
   crypto: IccCryptoXApi
+  fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
   /** maps invalid UTI values to corresponding MIME type for backward-compatibility (pre-v1.0.117) */
   compatUtiRevDefs: { [key: string]: string } = {
@@ -543,9 +544,18 @@ export class IccDocumentXApi extends iccDocumentApi {
     "x-music/x-midi": "public.midi"
   }
 
-  constructor(host: string, headers: { [key: string]: string }, crypto: IccCryptoXApi) {
-    super(host, headers)
+  constructor(
+    host: string,
+    headers: { [key: string]: string },
+    crypto: IccCryptoXApi,
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
+    "undefined"
+      ? window.fetch
+      : (self.fetch as any)
+  ) {
+    super(host, headers, fetchImpl)
     this.crypto = crypto
+    this.fetchImpl = fetchImpl
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -711,6 +721,31 @@ export class IccDocumentXApi extends iccDocumentApi {
     ).catch(function(e: Error) {
       console.log(e)
     })
+  }
+
+  //prettier-ignore
+  getAttachmentAs(documentId: string, attachmentId: string, returnType: "application/octet-stream", enckeys?: string, fileName?: string): Promise<ArrayBuffer>
+  //prettier-ignore
+  getAttachmentAs(documentId: string, attachmentId: string, returnType: "text/plain", enckeys?: string, fileName?: string): Promise<string>
+  //prettier-ignore
+  getAttachmentAs(documentId: string, attachmentId: string, returnType: "application/json", enckeys?: string, fileName?: string): Promise<any>
+  getAttachmentAs(
+    documentId: string,
+    attachmentId: string,
+    returnType: "application/octet-stream" | "text/plain" | "application/json",
+    enckeys?: string,
+    fileName?: string
+  ): Promise<any> {
+    const url =
+      this.host +
+      `/document/${documentId}/attachment/${attachmentId}` +
+      "?ts=" +
+      new Date().getTime() +
+      (enckeys ? `&enckeys=${enckeys}` : "") +
+      (fileName ? `&fileName=${fileName}` : "")
+    return XHR.sendCommand("GET", url, this.headers, null, this.fetchImpl, returnType)
+      .then(doc => doc.body)
+      .catch(err => this.handleError(err))
   }
 
   // noinspection JSUnusedGlobalSymbols

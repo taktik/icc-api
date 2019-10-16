@@ -11,10 +11,20 @@ import { DocumentTemplateDto } from "../icc-api/model/models"
 // noinspection JSUnusedGlobalSymbols
 export class IccDoctemplateXApi extends iccDoctemplateApi {
   crypto: IccCryptoXApi
+  fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
-  constructor(host: string, headers: { [key: string]: string }, crypto: IccCryptoXApi) {
-    super(host, headers)
+  constructor(
+    host: string,
+    headers: { [key: string]: string },
+    crypto: IccCryptoXApi,
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
+    "undefined"
+      ? window.fetch
+      : (self.fetch as any)
+  ) {
+    super(host, headers, fetchImpl)
     this.crypto = crypto
+    this.fetchImpl = fetchImpl
   }
 
   newInstance(user: models.UserDto, template: string, c: any): Promise<DocumentTemplateDto> {
@@ -76,7 +86,7 @@ export class IccDoctemplateXApi extends iccDoctemplateApi {
       "?ts=" +
       new Date().getTime()
 
-    return XHR.sendCommand("GET", _url, this.headers, _body)
+    return XHR.sendCommand("GET", _url, this.headers, _body, this.fetchImpl)
       .then(doc => {
         if (doc.contentType.startsWith("application/octet-stream")) {
           const enc = new TextDecoder("utf-8")

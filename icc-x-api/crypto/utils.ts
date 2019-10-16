@@ -4,6 +4,17 @@ import { Moment } from "moment"
 import * as _ from "lodash"
 
 export class UtilsClass {
+  private crypto: Crypto
+
+  constructor(
+    crypto: Crypto = typeof window !== "undefined"
+      ? window.crypto
+      : typeof self !== "undefined"
+        ? self.crypto
+        : ({} as Crypto)
+  ) {
+    this.crypto = crypto
+  }
   /**
    * String to Uint8Array
    *
@@ -240,12 +251,12 @@ export class UtilsClass {
   /**
    * Uint8Array/ArrayBuffer to hex String
    *
-   * @param ua {Uint8Array} or ArrayBuffer
+   * @param _ua {Uint8Array} or ArrayBuffer
    * @returns {String} Hex String
    */
-  ua2hex(uaOrAb: Uint8Array | ArrayBuffer): string {
+  ua2hex(_ua: Uint8Array | ArrayBuffer): string {
     var s = ""
-    const ua: Uint8Array = uaOrAb instanceof Uint8Array ? uaOrAb : new Uint8Array(uaOrAb)
+    var ua = new Uint8Array(_ua)
     for (var i = 0; i < ua.length; i++) {
       var hhb = (ua[i] & 0xf0) >> 4
       var lhb = ua[i] & 0x0f

@@ -72,6 +72,8 @@ export class ContactDto {
 
   externalId?: string
 
+  modifiedContactId?: string
+
   encounterType?: models.CodeDto
 
   subContacts?: Array<models.SubContactDto>

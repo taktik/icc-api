@@ -40,6 +40,8 @@ export class PlanOfActionDto {
 
   closingDate?: number
 
+  deadlineDate?: number
+
   idOpeningContact?: string
 
   idClosingContact?: string
@@ -57,6 +59,16 @@ export class PlanOfActionDto {
   codes?: Array<models.CodeDto>
 
   tags?: Array<models.CodeDto>
+
+  documentIds?: Array<string>
+
+  prescriberId?: string
+
+  numberOfCares?: number
+
+  status?: number
+
+  careTeamMemberships?: Array<models.CareTeamMembershipDto>
 
   encryptedSelf?: string
 }

@@ -14,9 +14,13 @@ export class IccBekmehrXApi extends iccBeKmehrApi {
     host: string,
     headers: { [key: string]: string },
     ctcApi: IccContactXApi,
-    helementApi: IccHelementXApi
+    helementApi: IccHelementXApi,
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
+    "undefined"
+      ? window.fetch
+      : (self.fetch as any)
   ) {
-    super(host, headers)
+    super(host, headers, fetchImpl)
     this.ctcApi = ctcApi
     this.helementApi = helementApi
 

@@ -14,8 +14,16 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
   i18n: any = i18n
   crypto: IccCryptoXApi
 
-  constructor(host: string, headers: { [key: string]: string }, crypto: IccCryptoXApi) {
-    super(host, headers)
+  constructor(
+    host: string,
+    headers: { [key: string]: string },
+    crypto: IccCryptoXApi,
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
+    "undefined"
+      ? window.fetch
+      : (self.fetch as any)
+  ) {
+    super(host, headers, fetchImpl)
     this.crypto = crypto
   }
 
@@ -65,7 +73,7 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
     user: models.UserDto,
     patient: models.PatientDto,
     ci: any
-  ): Promise<models.ContactDto> {
+  ): Promise<models.CalendarItemDto> {
     const calendarItem = _.extend(
       {
         id: this.crypto.randomUuid(),
@@ -83,36 +91,36 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
     return this.initDelegationsAndEncryptionKeys(user, patient, calendarItem)
   }
 
-  private initDelegationsAndEncryptionKeys(
+  initDelegationsAndEncryptionKeys(
     user: models.UserDto,
     patient: models.PatientDto,
-    contact: models.ContactDto
-  ): Promise<models.ContactDto> {
+    calendarItem: models.CalendarItemDto
+  ): Promise<models.CalendarItemDto> {
     const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto
       .extractDelegationsSFKs(patient, hcpId!)
       .then(secretForeignKeys =>
         Promise.all([
           this.crypto.initObjectDelegations(
-            contact,
+            calendarItem,
             patient,
             hcpId!,
             secretForeignKeys.extractedKeys[0]
           ),
-          this.crypto.initEncryptionKeys(contact, hcpId!)
+          this.crypto.initEncryptionKeys(calendarItem, hcpId!)
         ])
       )
       .then(initData => {
         const dels = initData[0]
         const eks = initData[1]
-        _.extend(contact, {
+        _.extend(calendarItem, {
           delegations: dels.delegations,
           cryptedForeignKeys: dels.cryptedForeignKeys,
           secretForeignKeys: dels.secretForeignKeys,
           encryptionKeys: eks.encryptionKeys
         })
 
-        let promise = Promise.resolve(contact)
+        let promise = Promise.resolve(calendarItem)
         ;(user.autoDelegations
           ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
           : []
@@ -131,6 +139,22 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
         )
         return promise
       })
+  }
+
+  /**
+   * Remove the following delegation objects from the
+   * CalendarItem instance: cryptedForeignKeys, secretForeignKeys.
+   *
+   * The delegations & encryptionKeys objects are not removed because
+   * in the case the CalendarItem is saved in the DB & then encrypted,
+   * if later we remove the patient from it, it'd reset the delegations
+   * and encryptionKeys thus impossibilitating further access.
+   *
+   * @param calendarItem The Calendar Item object
+   */
+  resetCalendarDelegationObjects(calendarItem: models.CalendarItemDto): models.CalendarItemDto {
+    const { cryptedForeignKeys, secretForeignKeys, ...resetCalendarItem } = calendarItem
+    return resetCalendarItem
   }
 
   modifyCalendarItemWithHcParty(

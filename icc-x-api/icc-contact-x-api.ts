@@ -14,8 +14,16 @@ export class IccContactXApi extends iccContactApi {
   i18n: any = i18n
   crypto: IccCryptoXApi
 
-  constructor(host: string, headers: { [key: string]: string }, crypto: IccCryptoXApi) {
-    super(host, headers)
+  constructor(
+    host: string,
+    headers: { [key: string]: string },
+    crypto: IccCryptoXApi,
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
+    "undefined"
+      ? window.fetch
+      : (self.fetch as any)
+  ) {
+    super(host, headers, fetchImpl)
     this.crypto = crypto
   }
 
@@ -47,6 +55,14 @@ export class IccContactXApi extends iccContactApi {
     return this.initDelegationsAndEncryptionKeys(user, patient, contact)
   }
 
+  /**
+   * 1. Extract(decrypt) the patient's secretForeignKeys from the
+   * "delegations" object.
+   * 2. Initialize & encrypt the Contact's delegations & cryptedForeignKeys.
+   * 3. Initialize & encrypt the Contact's encryptionKeys.
+   * 4. Return the contact with the extended delegations, cryptedForeignKeys
+   * & encryptionKeys.
+   */
   private initDelegationsAndEncryptionKeys(
     user: models.UserDto,
     patient: models.PatientDto,
@@ -160,11 +176,47 @@ export class IccContactXApi extends iccContactApi {
     })
   }
 
+  async findByPatientSFKs(
+    hcpartyId: string,
+    patients: Array<models.PatientDto>
+  ): Promise<Array<models.ContactDto>> {
+    let extractedKeys: string[] = []
+    for (const patient of patients) {
+      const secretForeignKeys = await this.crypto.extractDelegationsSFKs(patient, hcpartyId)
+
+      if (
+        secretForeignKeys &&
+        secretForeignKeys.extractedKeys &&
+        secretForeignKeys.extractedKeys.length > 0
+      ) {
+        extractedKeys = extractedKeys.concat(secretForeignKeys.extractedKeys)
+      }
+    }
+
+    const idList = new models.ListOfIdsDto({
+      ids: extractedKeys
+    })
+
+    return extractedKeys.length > 0 ? this.findByHCPartyPatientForeignKeys(hcpartyId, idList) : []
+  }
+
   filterBy(
     startKey?: string,
     startDocumentId?: string,
     limit?: number,
     body?: models.FilterChain
+  ): never {
+    throw new Error(
+      "Cannot call a method that returns contacts without providing a user for de/encryption"
+    )
+  }
+
+  listContactsByOpeningDate(
+    startKey: number,
+    endKey: number,
+    hcpartyid: string,
+    startDocumentId?: string,
+    limit?: number
   ): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
@@ -233,7 +285,27 @@ export class IccContactXApi extends iccContactApi {
   ): Promise<models.ContactPaginatedList | any> {
     return super
       .filterBy(startKey, startDocumentId, limit, body)
-      .then(ctcs => this.decrypt((user.healthcarePartyId || user.patientId)!, ctcs))
+      .then(ctcs =>
+        this.decrypt(user.healthcarePartyId!, ctcs.rows).then(decryptedRows =>
+          Object.assign(ctcs, { rows: decryptedRows })
+        )
+      )
+  }
+
+  listContactsByOpeningDateWithUser(
+    user: models.UserDto,
+    startKey: number,
+    endKey: number,
+    hcpartyid: string,
+    startDocumentId?: string,
+    limit?: number
+  ): Promise<models.ContactPaginatedList | any> {
+    return super
+      .listContactsByOpeningDate(startKey, endKey, hcpartyid, startDocumentId, limit)
+      .then(ctcs => {
+        ctcs.rows = this.decrypt((user.healthcarePartyId || user.patientId)!, ctcs.rows)
+        return ctcs
+      })
   }
 
   findByHCPartyFormIdWithUser(
@@ -866,8 +938,17 @@ export class IccContactXApi extends iccContactApi {
             ? myself.productToString(m && m.substanceProduct)
             : myself.productToString(m && m.medicinalProduct)
       },
+      reimbursementReasonToString: (m: any, lang: string) => {
+        return m &&
+          m.reimbursementReason &&
+          m.reimbursementReason.label &&
+          m.reimbursementReason.label.hasOwnProperty(lang)
+          ? m.reimbursementReason.label[lang]
+          : ""
+      },
       medicationToString: (m: any, lang: string) => {
         let res = `${myself.medicationNameToString(m)}, ${myself.posologyToString(m, lang)}`
+        let reason = myself.reimbursementReasonToString(m, lang)
         res = m.numberOfPackages
           ? `${m.numberOfPackages} ${
               m.numberOfPackages > 1 ? this.i18n[lang].packagesOf : this.i18n[lang].packageOf
@@ -876,6 +957,7 @@ export class IccContactXApi extends iccContactApi {
         res = m.duration
           ? `${res} ${this.i18n[lang].during} ${myself.durationToString(m.duration, lang)}`
           : res
+        res = reason ? `${res} (${reason})` : res
         return res
       },
       productToString: (m: any): string => {

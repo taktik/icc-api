@@ -31,4 +31,8 @@ export class SumehrContentDto {
   services?: Array<models.ServiceDto>
 
   healthElements?: Array<models.HealthElementDto>
+
+  partnerships?: Array<models.PartnershipDto>
+
+  patientHealthcareParties?: Array<models.PatientHealthCarePartyDto>
 }

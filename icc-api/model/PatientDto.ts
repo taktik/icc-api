@@ -62,6 +62,8 @@ export class PatientDto {
 
   mergedIds?: Array<string>
 
+  nonDuplicateIds?: Array<string>
+
   firstName?: string
 
   lastName?: string
@@ -110,6 +112,10 @@ export class PatientDto {
 
   preferredUserId?: string
 
+  comment?: string
+
+  encryptedAdministrativesDocuments?: Array<string>
+
   picture?: string
 
   userId?: string
@@ -137,6 +143,22 @@ export class PatientDto {
   parameters?: { [key: string]: Array<string> }
 
   patientProfessions?: Array<models.CodeDto>
+
+  fatherBirthCountry?: models.CodeStub
+
+  birthCountry?: models.CodeStub
+
+  nativeCountry?: models.CodeStub
+
+  socialStatus?: models.CodeStub
+
+  mainSourceOfIncome?: models.CodeStub
+
+  schoolingInfos?: Array<models.SchoolingInfoDto>
+
+  employementInfos?: Array<models.EmploymentInfoDto>
+
+  properties?: Array<models.Property>
 
   encryptedSelf?: string
 }

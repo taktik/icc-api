@@ -28,9 +28,16 @@ import * as models from "../model/models"
 export class iccFormApi {
   host: string
   headers: Array<XHR.Header>
-  constructor(host: string, headers: any) {
+  fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
+
+  constructor(
+    host: string,
+    headers: any,
+    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
+  ) {
     this.host = host
     this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.fetchImpl = fetchImpl
   }
 
   setHeaders(h: Array<XHR.Header>) {
@@ -51,7 +58,7 @@ export class iccFormApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/octet-stream"))
-    return XHR.sendCommand("PUT", _url, headers, _body)
+    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.FormLayout(it)))
       .catch(err => this.handleError(err))
   }
@@ -64,7 +71,7 @@ export class iccFormApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.FormDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -77,7 +84,7 @@ export class iccFormApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.FormTemplateDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -93,8 +100,24 @@ export class iccFormApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("DELETE", _url, headers, _body)
+    return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
       .then(doc => JSON.parse(JSON.stringify(doc.body)))
+      .catch(err => this.handleError(err))
+  }
+  deleteForms(formIds: string): Promise<Array<string> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/form/{formIds}".replace("{formIds}", formIds + "") +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
       .catch(err => this.handleError(err))
   }
   findByHCPartyPatientSecretFKeys(
@@ -120,7 +143,7 @@ export class iccFormApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.FormDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -137,7 +160,7 @@ export class iccFormApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.FormTemplateDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -160,7 +183,7 @@ export class iccFormApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.FormTemplateDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -178,7 +201,7 @@ export class iccFormApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.FormDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -191,7 +214,7 @@ export class iccFormApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.FormDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -207,7 +230,7 @@ export class iccFormApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.FormTemplateDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -228,7 +251,7 @@ export class iccFormApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.FormTemplateDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -241,7 +264,7 @@ export class iccFormApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.FormDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -254,7 +277,7 @@ export class iccFormApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("PUT", _url, headers, _body)
+    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.FormDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -267,7 +290,7 @@ export class iccFormApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("PUT", _url, headers, _body)
+    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.FormDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -287,7 +310,7 @@ export class iccFormApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.FormDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -310,7 +333,7 @@ export class iccFormApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "multipart/form-data"))
-    return XHR.sendCommand("PUT", _url, headers, _body)
+    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
       .then(doc => JSON.parse(JSON.stringify(doc.body)))
       .catch(err => this.handleError(err))
   }
@@ -330,7 +353,7 @@ export class iccFormApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("PUT", _url, headers, _body)
+    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.FormTemplateDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }

@@ -48,6 +48,8 @@ export class AddressDto {
 
   encryptedSelf?: string
 
+  note?: string
+
   telecoms?: Array<models.TelecomDtoEmbed>
 }
 export namespace AddressDto {

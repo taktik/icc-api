@@ -38,5 +38,7 @@ export class TimeTableItemDto {
 
   homeVisit?: boolean
 
+  unavailable?: boolean
+
   placeId?: string
 }

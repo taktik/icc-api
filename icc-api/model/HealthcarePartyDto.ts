@@ -92,6 +92,8 @@ export class HealthcarePartyDto {
 
   hcPartyKeys?: { [key: string]: Array<string> }
 
+  privateKeyShamirPartitions?: { [key: string]: string }
+
   financialInstitutionInformation?: Array<models.FinancialInstitutionInformationDto>
 
   options?: { [key: string]: string }
@@ -105,6 +107,8 @@ export class HealthcarePartyDto {
   contactPersonHcpId?: string
 
   flatRateTarifications?: Array<models.FlatRateTarificationDto>
+
+  importedData?: { [key: string]: string }
 }
 export namespace HealthcarePartyDto {
   export enum GenderEnum {

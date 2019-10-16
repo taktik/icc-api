@@ -53,6 +53,17 @@ export class ShamirClass {
     logs: [] as Array<number>,
     exps: [] as Array<number>
   }
+  private crypto: Crypto
+
+  constructor(
+    crypto: Crypto = typeof window !== "undefined"
+      ? window.crypto
+      : typeof self !== "undefined"
+        ? self.crypto
+        : ({} as Crypto)
+  ) {
+    this.crypto = crypto
+  }
 
   init() {
     const primitive = this.config.primitivePolynomials[this.config.bits]!!

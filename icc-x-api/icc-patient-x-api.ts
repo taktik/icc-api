@@ -12,7 +12,6 @@ import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
 import { DocumentDto, ListOfIdsDto } from "../icc-api/model/models"
 import { retry } from "./utils/net-utils"
-import { AES } from "./crypto/AES"
 import { utils } from "./crypto/utils"
 
 // noinspection JSUnusedGlobalSymbols
@@ -37,9 +36,13 @@ export class IccPatientXApi extends iccPatientApi {
     documentApi: IccDocumentXApi,
     hcpartyApi: IccHcpartyXApi,
     classificationApi: IccClassificationXApi,
-    cryptedKeys: Array<string> = ["note"]
+    cryptedKeys: Array<string> = ["note"],
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
+    "undefined"
+      ? window.fetch
+      : (self.fetch as any)
   ) {
-    super(host, headers)
+    super(host, headers, fetchImpl)
     this.crypto = crypto
     this.contactApi = contactApi
     this.helementApi = helementApi
@@ -514,13 +517,13 @@ export class IccPatientXApi extends iccPatientApi {
             )
           )
           .then((sfks: { extractedKeys: Array<string>; hcpartyId: string }) =>
-            AES.importKey("raw", utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
+            this.crypto.AES.importKey("raw", utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
           )
           .then((key: CryptoKey) =>
             utils.crypt(
               p,
               (obj: { [key: string]: string }) =>
-                AES.encrypt(key, utils.utf82ua(JSON.stringify(obj))),
+                this.crypto.AES.encrypt(key, utils.utf82ua(JSON.stringify(obj))),
               this.cryptedKeys
             )
           )
@@ -533,78 +536,87 @@ export class IccPatientXApi extends iccPatientApi {
     pats: Array<models.PatientDto>,
     fillDelegations: boolean = true
   ): Promise<Array<models.PatientDto>> {
-    const hcpId = user.healthcarePartyId || user.patientId
-    //First check that we have no dangling delegation
-    const patsWithMissingDelegations = pats.filter(
-      p =>
-        p.delegations &&
-        p.delegations[hcpId!] &&
-        !p.delegations[hcpId!].length &&
-        !Object.values(p.delegations).some(d => d.length > 0)
-    )
-
-    let prom: Promise<{ [key: string]: models.PatientDto }> = Promise.resolve({})
-    fillDelegations &&
-      patsWithMissingDelegations.forEach(p => {
-        prom = prom.then(acc =>
-          this.initDelegations(p, user).then(p =>
-            this.modifyPatientWithUser(user, p).then(mp => {
-              acc[p.id!] = mp || p
-              return acc
-            })
-          )
-        )
-      })
-
-    return prom
-      .then((acc: { [key: string]: models.PatientDto }) =>
-        pats.map(p => {
-          const fixedPatient = acc[p.id!]
-          return fixedPatient || p
-        })
+    return (user.healthcarePartyId
+      ? this.hcpartyApi
+          .getHealthcareParty(user.healthcarePartyId!)
+          .then(hcp => [hcp.id, hcp.parentId])
+      : Promise.resolve([user.patientId])
+    ).then(ids => {
+      const hcpId = ids[0]
+      //First check that we have no dangling delegation
+      const patsWithMissingDelegations = pats.filter(
+        p =>
+          p.delegations &&
+          ids.some(id => p.delegations![id!] && !p.delegations![id!].length) &&
+          !Object.values(p.delegations).some(d => d.length > 0)
       )
-      .then(pats => {
-        return Promise.all(
+
+      let prom: Promise<{ [key: string]: models.PatientDto }> = Promise.resolve({})
+      fillDelegations &&
+        patsWithMissingDelegations.forEach(p => {
+          prom = prom.then(acc =>
+            this.initDelegations(p, user).then(p =>
+              this.modifyPatientWithUser(user, p).then(mp => {
+                acc[p.id!] = mp || p
+                return acc
+              })
+            )
+          )
+        })
+
+      return prom
+        .then((acc: { [key: string]: models.PatientDto }) =>
           pats.map(p => {
-            return p.encryptedSelf
-              ? this.crypto
-                  .extractKeysFromDelegationsForHcpHierarchy(
-                    hcpId!,
-                    p.id!,
-                    _.size(p.encryptionKeys) ? p.encryptionKeys! : p.delegations!
-                  )
-                  .then(({ extractedKeys: sfks }) => {
-                    if (!sfks || !sfks.length) {
-                      //console.log("Cannot decrypt contact", ctc.id)
-                      return Promise.resolve(p)
-                    }
-                    return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(key =>
-                      utils.decrypt(p, ec =>
-                        AES.decrypt(key, ec)
-                          .then(dec => {
-                            const jsonContent = dec && utils.ua2utf8(dec)
-                            try {
-                              return JSON.parse(jsonContent)
-                            } catch (e) {
-                              console.log(
-                                "Cannot parse patient",
-                                p.id,
-                                jsonContent || "Invalid content"
-                              )
-                              return p
-                            }
-                          })
-                          .catch(err => {
-                            console.log("Cannot decrypt patient", p.id, err)
-                            return p
-                          })
-                      )
-                    )
-                  })
-              : Promise.resolve(p)
+            const fixedPatient = acc[p.id!]
+            return fixedPatient || p
           })
         )
-      })
+        .then(pats => {
+          return Promise.all(
+            pats.map(p => {
+              return p.encryptedSelf
+                ? this.crypto
+                    .extractKeysFromDelegationsForHcpHierarchy(
+                      hcpId!,
+                      p.id!,
+                      _.size(p.encryptionKeys) ? p.encryptionKeys! : p.delegations!
+                    )
+                    .then(({ extractedKeys: sfks }) => {
+                      if (!sfks || !sfks.length) {
+                        //console.log("Cannot decrypt contact", ctc.id)
+                        return Promise.resolve(p)
+                      }
+                      return this.crypto.AES.importKey(
+                        "raw",
+                        utils.hex2ua(sfks[0].replace(/-/g, ""))
+                      ).then(key =>
+                        utils.decrypt(p, ec =>
+                          this.crypto.AES.decrypt(key, ec)
+                            .then(dec => {
+                              const jsonContent = dec && utils.ua2utf8(dec)
+                              try {
+                                return JSON.parse(jsonContent)
+                              } catch (e) {
+                                console.log(
+                                  "Cannot parse patient",
+                                  p.id,
+                                  jsonContent || "Invalid content"
+                                )
+                                return p
+                              }
+                            })
+                            .catch(err => {
+                              console.log("Cannot decrypt patient", p.id, err)
+                              return p
+                            })
+                        )
+                      )
+                    })
+                : Promise.resolve(p)
+            })
+          )
+        })
+    })
   }
 
   initEncryptionKeys(user: models.UserDto, pat: models.PatientDto) {
@@ -1066,5 +1078,48 @@ export class IccPatientXApi extends iccPatientApi {
     }
 
     return isValidNiss
+  }
+
+  async getPatientIdOfChildDocumentForHcpAndHcpParents(
+    childDocument: models.InvoiceDto | models.CalendarItemDto | models.ContactDto,
+    hcpId: string
+  ): Promise<string> {
+    const parentIdsArray = (await this.crypto.extractCryptedFKs(childDocument, hcpId)).extractedKeys
+
+    const multipleParentIds = _.uniq(parentIdsArray).length > 1
+
+    if (multipleParentIds) {
+      throw "Child document with id " +
+        childDocument.id +
+        " contains multiple parent ids in its CFKs for hcpId: " +
+        hcpId
+    }
+
+    const parentId = _.first(parentIdsArray)
+
+    if (!parentId) {
+      throw "Parent id is empty in CFK of child document with id " +
+        childDocument.id +
+        " for hcpId: " +
+        hcpId
+    }
+
+    let patient: models.PatientDto = await super.getPatient(parentId!)
+
+    let mergeLevel = 0
+    const maxMergeLevel = 10
+    while (patient.mergeToPatientId) {
+      mergeLevel++
+      if (mergeLevel === maxMergeLevel) {
+        throw "Too many merged levels for parent (Patient) of child document " +
+          childDocument.id +
+          " ; hcpId: " +
+          hcpId
+      }
+
+      patient = await super.getPatient(patient.mergeToPatientId!)
+    }
+
+    return patient.id!
   }
 }

@@ -7,8 +7,15 @@ import * as models from "../icc-api/model/models"
 export class IccBedrugsXApi extends iccBeDrugsApi {
   atcCache: { [key: string]: Promise<Array<models.MppPreview>> } = {}
 
-  constructor(host: string, headers: { [key: string]: string }) {
-    super(host, headers)
+  constructor(
+    host: string,
+    headers: { [key: string]: string },
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
+    "undefined"
+      ? window.fetch
+      : (self.fetch as any)
+  ) {
+    super(host, headers, fetchImpl)
   }
 
   getCachedCheapAlternativesBasedOnAtc(
