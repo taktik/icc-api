@@ -24,9 +24,9 @@
 
 import * as models from "./models"
 
-export class Employer {
+export class EmployerDto {
   constructor(json: JSON | any) {
-    Object.assign(this as Employer, json)
+    Object.assign(this as EmployerDto, json)
   }
   name?: string
 

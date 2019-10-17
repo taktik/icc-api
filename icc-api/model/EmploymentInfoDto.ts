@@ -34,5 +34,5 @@ export class EmploymentInfoDto {
 
   professionType?: models.CodeStub
 
-  employer?: models.Employer
+  employer?: models.EmployerDto
 }
