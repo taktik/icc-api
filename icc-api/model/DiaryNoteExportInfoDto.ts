@@ -42,5 +42,5 @@ export class DiaryNoteExportInfoDto {
 
   note?: string
 
-  psy?: boolean
+  isPsy?: boolean
 }
