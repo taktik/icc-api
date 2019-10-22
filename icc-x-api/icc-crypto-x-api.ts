@@ -818,12 +818,13 @@ export class IccCryptoXApi {
       arguments
     )
 
+    /* This can happen if the document is not encrypted
     this.throwDetailedExceptionForInvalidParameter(
       "secretEncryptionKey",
       secretEncryptionKey,
       "addDelegationsAndEncryptionKeys",
       arguments
-    )
+    ) */
     return this.extendedDelegationsAndCryptedForeignKeys(
       child,
       parent,
@@ -831,14 +832,20 @@ export class IccCryptoXApi {
       delegateId,
       secretDelegationKey
     )
-      .then(extendedChildObjectSPKsAndCFKs =>
-        this.appendEncryptionKeys(child, ownerId, delegateId, secretEncryptionKey).then(
-          //TODO: extendedDelegationsAndCryptedForeignKeys and appendEncryptionKeys can be done in parallel
-          extendedChildObjectEKs => ({
-            extendedSPKsAndCFKs: extendedChildObjectSPKsAndCFKs,
-            extendedEKs: extendedChildObjectEKs
-          })
-        )
+      .then(
+        extendedChildObjectSPKsAndCFKs =>
+          secretEncryptionKey
+            ? this.appendEncryptionKeys(child, ownerId, delegateId, secretEncryptionKey).then(
+                //TODO: extendedDelegationsAndCryptedForeignKeys and appendEncryptionKeys can be done in parallel
+                extendedChildObjectEKs => ({
+                  extendedSPKsAndCFKs: extendedChildObjectSPKsAndCFKs,
+                  extendedEKs: extendedChildObjectEKs
+                })
+              )
+            : Promise.resolve({
+                extendedSPKsAndCFKs: extendedChildObjectSPKsAndCFKs,
+                extendedEKs: { encryptionKeys: {} }
+              })
       )
       .then(
         ({
