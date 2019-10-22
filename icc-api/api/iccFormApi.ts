@@ -147,6 +147,27 @@ export class iccFormApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.FormDto(it)))
       .catch(err => this.handleError(err))
   }
+  findDelegationsStubsByHCPartyPatientSecretFKeys(
+    hcPartyId?: string,
+    secretFKeys?: string
+  ): Promise<Array<models.IcureStubDto> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/form/byHcPartySecretForeignKeys/delegations" +
+      "?ts=" +
+      new Date().getTime() +
+      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
+      (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.IcureStubDto(it)))
+      .catch(err => this.handleError(err))
+  }
   findFormTemplates(loadLayout?: boolean): Promise<Array<models.FormTemplateDto> | any> {
     let _body = null
 
@@ -335,6 +356,19 @@ export class iccFormApi {
       .concat(new XHR.Header("Content-Type", "multipart/form-data"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
       .then(doc => JSON.parse(JSON.stringify(doc.body)))
+      .catch(err => this.handleError(err))
+  }
+  setHealthElementsDelegations(body?: Array<models.IcureStubDto>): Promise<any | Boolean> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + "/form/delegations" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => true)
       .catch(err => this.handleError(err))
   }
   updateFormTemplate(

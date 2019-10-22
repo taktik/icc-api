@@ -518,6 +518,7 @@ export class iccBeKmehrApi {
   importMedicationScheme(
     documentId: string,
     documentKey?: string,
+    dryRun?: boolean,
     patientId?: string,
     language?: string,
     body?: any
@@ -531,6 +532,7 @@ export class iccBeKmehrApi {
       "?ts=" +
       new Date().getTime() +
       (documentKey ? "&documentKey=" + documentKey : "") +
+      (dryRun ? "&dryRun=" + dryRun : "") +
       (patientId ? "&patientId=" + patientId : "") +
       (language ? "&language=" + language : "")
     let headers = this.headers
@@ -570,6 +572,7 @@ export class iccBeKmehrApi {
   importSumehr(
     documentId: string,
     documentKey?: string,
+    dryRun?: boolean,
     patientId?: string,
     language?: string,
     body?: any
@@ -583,6 +586,7 @@ export class iccBeKmehrApi {
       "?ts=" +
       new Date().getTime() +
       (documentKey ? "&documentKey=" + documentKey : "") +
+      (dryRun ? "&dryRun=" + dryRun : "") +
       (patientId ? "&patientId=" + patientId : "") +
       (language ? "&language=" + language : "")
     let headers = this.headers
@@ -596,6 +600,7 @@ export class iccBeKmehrApi {
   importSumehrByItemId(
     documentId: string,
     documentKey?: string,
+    dryRun?: boolean,
     itemId?: string,
     patientId?: string,
     language?: string,
@@ -610,6 +615,7 @@ export class iccBeKmehrApi {
       "?ts=" +
       new Date().getTime() +
       (documentKey ? "&documentKey=" + documentKey : "") +
+      (dryRun ? "&dryRun=" + dryRun : "") +
       (itemId ? "&itemId=" + itemId : "") +
       (patientId ? "&patientId=" + patientId : "") +
       (language ? "&language=" + language : "")

@@ -1,6 +1,7 @@
 import { iccPatientApi } from "../icc-api/iccApi"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 import { IccContactXApi } from "./icc-contact-x-api"
+import { IccFormXApi } from "./icc-form-x-api"
 import { IccHcpartyXApi } from "./icc-hcparty-x-api"
 import { IccInvoiceXApi } from "./icc-invoice-x-api"
 import { IccDocumentXApi } from "./icc-document-x-api"
@@ -18,6 +19,7 @@ import { utils } from "./crypto/utils"
 export class IccPatientXApi extends iccPatientApi {
   crypto: IccCryptoXApi
   contactApi: IccContactXApi
+  formApi: IccFormXApi
   helementApi: IccHelementXApi
   invoiceApi: IccInvoiceXApi
   hcpartyApi: IccHcpartyXApi
@@ -31,6 +33,7 @@ export class IccPatientXApi extends iccPatientApi {
     headers: { [key: string]: string },
     crypto: IccCryptoXApi,
     contactApi: IccContactXApi,
+    formApi: IccFormXApi,
     helementApi: IccHelementXApi,
     invoiceApi: IccInvoiceXApi,
     documentApi: IccDocumentXApi,
@@ -45,6 +48,7 @@ export class IccPatientXApi extends iccPatientApi {
     super(host, headers, fetchImpl)
     this.crypto = crypto
     this.contactApi = contactApi
+    this.formApi = formApi
     this.helementApi = helementApi
     this.invoiceApi = invoiceApi
     this.hcpartyApi = hcpartyApi
@@ -668,6 +672,10 @@ export class IccPatientXApi extends iccPatientApi {
           success: allTags.includes("medicalInformation") || allTags.includes("all") ? false : null,
           error: null
         },
+        forms: {
+          success: allTags.includes("medicalInformation") || allTags.includes("all") ? false : null,
+          error: null
+        },
         healthElements: {
           success: allTags.includes("medicalInformation") || allTags.includes("all") ? false : null,
           error: null
@@ -726,6 +734,21 @@ export class IccPatientXApi extends iccPatientApi {
                         )
                     ) as Promise<Array<models.IcureStubDto>>,
                     retry(() =>
+                      this.formApi
+                        .findDelegationsStubsByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
+                        .then(
+                          frms =>
+                            parentId
+                              ? this.formApi
+                                  .findDelegationsStubsByHCPartyPatientSecretFKeys(
+                                    parentId,
+                                    delSfks.join(",")
+                                  )
+                                  .then(moreFrms => _.uniqBy(frms.concat(moreFrms), "id"))
+                              : frms
+                        )
+                    ) as Promise<Array<models.FormDto>>,
+                    retry(() =>
                       this.contactApi
                         .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
                         .then(
@@ -764,7 +787,7 @@ export class IccPatientXApi extends iccPatientApi {
                               : cls
                         )
                     ) as Promise<Array<models.ClassificationDto>>
-                  ]).then(([hes, ctcs, ivs, cls]) => {
+                  ]).then(([hes, frms, ctcs, ivs, cls]) => {
                     const ctcsStubs = ctcs.map(c => ({
                       id: c.id,
                       rev: c.rev,
@@ -773,6 +796,13 @@ export class IccPatientXApi extends iccPatientApi {
                       encryptionKeys: _.clone(c.encryptionKeys)
                     }))
                     const oHes = hes.map(x =>
+                      _.assign({}, x, {
+                        delegations: _.clone(x.delegations),
+                        cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
+                        encryptionKeys: _.clone(x.encryptionKeys)
+                      })
+                    )
+                    const oFrms = frms.map(x =>
                       _.assign({}, x, {
                         delegations: _.clone(x.delegations),
                         cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
@@ -848,6 +878,32 @@ export class IccPatientXApi extends iccPatientApi {
                         tags.includes("medicalInformation") ||
                           (tags.includes("all") &&
                             hes.forEach(
+                              x =>
+                                (markerPromise = markerPromise.then(() =>
+                                  Promise.all([
+                                    this.crypto.extractDelegationsSFKs(x, ownerId),
+                                    this.crypto.extractEncryptionsSKs(x, ownerId)
+                                  ]).then(([sfks, eks]) => {
+                                    console.log(`share ${x.id} to ${delegateId}`)
+                                    return this.crypto
+                                      .addDelegationsAndEncryptionKeys(
+                                        patient,
+                                        x,
+                                        ownerId,
+                                        delegateId,
+                                        sfks.extractedKeys[0],
+                                        eks.extractedKeys[0]
+                                      )
+                                      .catch(e => {
+                                        console.log(e)
+                                        return x
+                                      })
+                                  })
+                                ))
+                            ))
+                        tags.includes("medicalInformation") ||
+                          (tags.includes("all") &&
+                            frms.forEach(
                               x =>
                                 (markerPromise = markerPromise.then(() =>
                                   Promise.all([
@@ -975,6 +1031,18 @@ export class IccPatientXApi extends iccPatientApi {
                                 .then(() => (status.healthElements.success = true))
                                 .catch(e => (status.healthElements.error = e))) ||
                             Promise.resolve((status.healthElements.success = true))
+                          )
+                        })
+                        .then(() => {
+                          console.log("sfd")
+                          return (
+                            ((allTags.includes("medicalInformation") || allTags.includes("all")) &&
+                              (frms && frms.length && !_.isEqual(oFrms, frms)) &&
+                              this.helementApi
+                                .setHealthElementsDelegations(frms)
+                                .then(() => (status.forms.success = true))
+                                .catch(e => (status.forms.error = e))) ||
+                            Promise.resolve((status.forms.success = true))
                           )
                         })
                         .then(() => {
