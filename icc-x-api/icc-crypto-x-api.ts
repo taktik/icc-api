@@ -811,12 +811,13 @@ export class IccCryptoXApi {
       arguments
     )
 
+    /* This can happen if the document is not linked to a parent but we still want to share the encryption keys (example: a document referenced by its id from a service)
     this.throwDetailedExceptionForInvalidParameter(
       "secretDelegationKey",
       secretDelegationKey,
       "addDelegationsAndEncryptionKeys",
       arguments
-    )
+    ) */
 
     /* This can happen if the document is not encrypted
     this.throwDetailedExceptionForInvalidParameter(
@@ -825,12 +826,15 @@ export class IccCryptoXApi {
       "addDelegationsAndEncryptionKeys",
       arguments
     ) */
-    return this.extendedDelegationsAndCryptedForeignKeys(
-      child,
-      parent,
-      ownerId,
-      delegateId,
-      secretDelegationKey
+    return (secretDelegationKey
+      ? this.extendedDelegationsAndCryptedForeignKeys(
+          child,
+          parent,
+          ownerId,
+          delegateId,
+          secretDelegationKey
+        )
+      : Promise.resolve({ delegations: {}, cryptedForeignKeys: {} })
     )
       .then(
         extendedChildObjectSPKsAndCFKs =>
