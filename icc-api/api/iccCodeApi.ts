@@ -189,6 +189,32 @@ export class iccCodeApi {
       .then(doc => new models.CodePaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+  findPaginatedCodesWithLink(
+    linkType: string,
+    linkedId?: string,
+    startKey?: string,
+    startDocumentId?: string,
+    limit?: number
+  ): Promise<models.CodePaginatedList | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/code/link/{linkType}".replace("{linkType}", linkType + "") +
+      "?ts=" +
+      new Date().getTime() +
+      (linkedId ? "&linkedId=" + linkedId : "") +
+      (startKey ? "&startKey=" + startKey : "") +
+      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
+      (limit ? "&limit=" + limit : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body)
+      .then(doc => new models.CodePaginatedList(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
   findTagTypes(region?: string, type?: string): Promise<Array<string> | any> {
     let _body = null
 

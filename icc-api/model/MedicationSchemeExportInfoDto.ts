@@ -30,6 +30,8 @@ export class MedicationSchemeExportInfoDto {
   }
   secretForeignKeys?: Array<string>
 
+  services?: Array<models.ServiceDto>
+
   recipient?: models.HealthcarePartyDto
 
   comment?: string

@@ -54,8 +54,6 @@ export class Code {
 
   data?: string
 
-  parent?: string
-
   appendices?: { [key: string]: string }
 
   disabled?: boolean
