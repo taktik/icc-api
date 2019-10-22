@@ -733,7 +733,7 @@ export class IccDocumentXApi extends iccDocumentApi {
       new Date().getTime() +
       (enckeys ? `&enckeys=${enckeys}` : "") +
       (fileName ? `&fileName=${fileName}` : "")
-    return XHR.sendCommand("GET", url, this.headers, null)
+    return XHR.sendCommand("GET", url, this.headers, null, returnType)
       .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }
