@@ -24,15 +24,31 @@
 
 import * as models from "./models"
 
-export class MedicationSchemeExportInfoDto {
+export class Telecom {
   constructor(json: JSON | any) {
-    Object.assign(this as MedicationSchemeExportInfoDto, json)
+    Object.assign(this as Telecom, json)
   }
-  secretForeignKeys?: Array<string>
+  telecomType?: Telecom.TelecomTypeEnum
 
-  services?: Array<models.ServiceDto>
+  telecomNumber?: string
 
-  recipient?: models.HealthcarePartyDto
+  telecomDescription?: string
 
-  comment?: string
+  encryptedSelf?: string
+}
+export namespace Telecom {
+  export enum TelecomTypeEnum {
+    Mobile = <any>"mobile",
+    Phone = <any>"phone",
+    Email = <any>"email",
+    Fax = <any>"fax",
+    Skype = <any>"skype",
+    Im = <any>"im",
+    Medibridge = <any>"medibridge",
+    Ehealthbox = <any>"ehealthbox",
+    Apicrypt = <any>"apicrypt",
+    Web = <any>"web",
+    Print = <any>"print",
+    Disk = <any>"disk"
+  }
 }

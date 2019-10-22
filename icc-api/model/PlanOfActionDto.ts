@@ -68,5 +68,7 @@ export class PlanOfActionDto {
 
   status?: number
 
+  careTeamMemberships?: Array<models.CareTeamMembershipDto>
+
   encryptedSelf?: string
 }

@@ -104,6 +104,19 @@ export class iccInvoiceApi {
       .then(doc => true)
       .catch(err => this.handleError(err))
   }
+  filterBy(body?: models.FilterChain): Promise<Array<any> | any> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + "/invoice/filter" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body)
+      .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
+      .catch(err => this.handleError(err))
+  }
   findByAuthor(
     hcPartyId: string,
     fromDate?: number,

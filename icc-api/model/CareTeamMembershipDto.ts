@@ -24,15 +24,22 @@
 
 import * as models from "./models"
 
-export class MedicationSchemeExportInfoDto {
+export class CareTeamMembershipDto {
   constructor(json: JSON | any) {
-    Object.assign(this as MedicationSchemeExportInfoDto, json)
+    Object.assign(this as CareTeamMembershipDto, json)
   }
-  secretForeignKeys?: Array<string>
+  startDate?: number
 
-  services?: Array<models.ServiceDto>
+  endDate?: number
 
-  recipient?: models.HealthcarePartyDto
+  careTeamMemberId?: string
 
-  comment?: string
+  membershipType?: CareTeamMembershipDto.MembershipTypeEnum
+}
+export namespace CareTeamMembershipDto {
+  export enum MembershipTypeEnum {
+    Doctor = <any>"doctor",
+    Mutuality = <any>"mutuality",
+    Patient = <any>"patient"
+  }
 }

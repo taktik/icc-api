@@ -44,7 +44,7 @@ export class iccBeEfactApi {
 
   createBatchAndMessage(
     insuranceId: string,
-    batchRef: string,
+    newMessageId: string,
     numericalRef: number,
     body?: models.MapOfIdsDto
   ): Promise<models.MessageWithBatch | any> {
@@ -53,9 +53,9 @@ export class iccBeEfactApi {
 
     const _url =
       this.host +
-      "/be_efact/{insuranceId}/{batchRef}/{numericalRef}"
+      "/be_efact/{insuranceId}/{newMessageId}/{numericalRef}"
         .replace("{insuranceId}", insuranceId + "")
-        .replace("{batchRef}", batchRef + "")
+        .replace("{newMessageId}", newMessageId + "")
         .replace("{numericalRef}", numericalRef + "") +
       "?ts=" +
       new Date().getTime()

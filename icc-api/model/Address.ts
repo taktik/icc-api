@@ -24,15 +24,40 @@
 
 import * as models from "./models"
 
-export class MedicationSchemeExportInfoDto {
+export class Address {
   constructor(json: JSON | any) {
-    Object.assign(this as MedicationSchemeExportInfoDto, json)
+    Object.assign(this as Address, json)
   }
-  secretForeignKeys?: Array<string>
+  addressType?: Address.AddressTypeEnum
 
-  services?: Array<models.ServiceDto>
+  descr?: string
 
-  recipient?: models.HealthcarePartyDto
+  street?: string
 
-  comment?: string
+  houseNumber?: string
+
+  postboxNumber?: string
+
+  postalCode?: string
+
+  city?: string
+
+  country?: string
+
+  encryptedSelf?: string
+
+  note?: string
+
+  telecoms?: Array<models.Telecom>
+}
+export namespace Address {
+  export enum AddressTypeEnum {
+    Home = <any>"home",
+    Work = <any>"work",
+    Vacation = <any>"vacation",
+    Hospital = <any>"hospital",
+    Clinic = <any>"clinic",
+    Hq = <any>"hq",
+    Other = <any>"other"
+  }
 }

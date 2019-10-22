@@ -24,15 +24,30 @@
 
 import * as models from "./models"
 
-export class MedicationSchemeExportInfoDto {
+export class TypedValue {
   constructor(json: JSON | any) {
-    Object.assign(this as MedicationSchemeExportInfoDto, json)
+    Object.assign(this as TypedValue, json)
   }
-  secretForeignKeys?: Array<string>
+  type?: TypedValue.TypeEnum
 
-  services?: Array<models.ServiceDto>
+  booleanValue?: boolean
 
-  recipient?: models.HealthcarePartyDto
+  integerValue?: number
 
-  comment?: string
+  doubleValue?: number
+
+  stringValue?: string
+
+  dateValue?: number
+}
+export namespace TypedValue {
+  export enum TypeEnum {
+    BOOLEAN = <any>"BOOLEAN",
+    INTEGER = <any>"INTEGER",
+    DOUBLE = <any>"DOUBLE",
+    STRING = <any>"STRING",
+    DATE = <any>"DATE",
+    CLOB = <any>"CLOB",
+    JSON = <any>"JSON"
+  }
 }
