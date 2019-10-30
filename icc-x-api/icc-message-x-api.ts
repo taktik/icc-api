@@ -87,9 +87,13 @@ export class IccMessageXApi extends iccMessageApi {
     invoiceXApi: IccInvoiceXApi,
     documentXApi: IccDocumentXApi,
     receiptXApi: IccReceiptXApi,
-    patientApi: IccPatientXApi
+    patientApi: IccPatientXApi,
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
+    "undefined"
+      ? window.fetch
+      : (self.fetch as any)
   ) {
-    super(host, headers)
+    super(host, headers, fetchImpl)
     this.crypto = crypto
     this.insuranceApi = insuranceApi
     this.entityReferenceApi = entityReferenceApi

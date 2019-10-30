@@ -6,13 +6,20 @@ import * as models from "../icc-api/model/models"
 import * as _ from "lodash"
 import * as moment from "moment"
 import { utils } from "./crypto/utils"
-import { AES } from "./crypto/AES"
 
 export class IccHelementXApi extends iccHelementApi {
   crypto: IccCryptoXApi
 
-  constructor(host: string, headers: { [key: string]: string }, crypto: IccCryptoXApi) {
-    super(host, headers)
+  constructor(
+    host: string,
+    headers: { [key: string]: string },
+    crypto: IccCryptoXApi,
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
+    "undefined"
+      ? window.fetch
+      : (self.fetch as any)
+  ) {
+    super(host, headers, fetchImpl)
     this.crypto = crypto
   }
 
@@ -160,10 +167,10 @@ export class IccHelementXApi extends iccHelementApi {
               return Promise.resolve(he)
             }
             if (he.encryptedSelf) {
-              return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(
+              return this.crypto.AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(
                 key =>
                   new Promise((resolve: (value: any) => any) =>
-                    AES.decrypt(key, utils.text2ua(atob(he.encryptedSelf!))).then(
+                    this.crypto.AES.decrypt(key, utils.text2ua(atob(he.encryptedSelf!))).then(
                       dec => {
                         let jsonContent
                         try {

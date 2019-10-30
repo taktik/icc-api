@@ -3,7 +3,6 @@ import { IccCryptoXApi } from "../icc-x-api/icc-crypto-x-api"
 
 import i18n from "./rsrc/contact.i18n"
 import { utils } from "./crypto/utils"
-import { AES } from "./crypto/AES"
 
 import * as moment from "moment"
 import * as _ from "lodash"
@@ -14,8 +13,16 @@ export class IccContactXApi extends iccContactApi {
   i18n: any = i18n
   crypto: IccCryptoXApi
 
-  constructor(host: string, headers: { [key: string]: string }, crypto: IccCryptoXApi) {
-    super(host, headers)
+  constructor(
+    host: string,
+    headers: { [key: string]: string },
+    crypto: IccCryptoXApi,
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
+    "undefined"
+      ? window.fetch
+      : (self.fetch as any)
+  ) {
+    super(host, headers, fetchImpl)
     this.crypto = crypto
   }
 
@@ -392,12 +399,18 @@ export class IccContactXApi extends iccContactApi {
                   )
                 )
                 .then((sfks: { extractedKeys: Array<string>; hcpartyId: string }) =>
-                  AES.importKey("raw", utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
+                  this.crypto.AES.importKey(
+                    "raw",
+                    utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, ""))
+                  )
                 )
                 .then((key: CryptoKey) =>
                   Promise.all(
                     ctc.services!.map(svc =>
-                      AES.encrypt(key, utils.utf82ua(JSON.stringify({ content: svc.content })))
+                      this.crypto.AES.encrypt(
+                        key,
+                        utils.utf82ua(JSON.stringify({ content: svc.content }))
+                      )
                     )
                   )
                     .then(eSvcs => {
@@ -408,7 +421,10 @@ export class IccContactXApi extends iccContactApi {
                       })
                     })
                     .then(() =>
-                      AES.encrypt(key, utils.utf82ua(JSON.stringify({ descr: ctc.descr })))
+                      this.crypto.AES.encrypt(
+                        key,
+                        utils.utf82ua(JSON.stringify({ descr: ctc.descr }))
+                      )
                     )
                     .then(es => {
                       ctc.encryptedSelf = btoa(utils.ua2text(es))
@@ -437,12 +453,15 @@ export class IccContactXApi extends iccContactApi {
             return Promise.all(
               ctc.services!.map(svc => {
                 if (svc.encryptedContent || svc.encryptedSelf) {
-                  return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
+                  return this.crypto.AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
                     .then(
                       (key: CryptoKey) =>
                         new Promise((resolve: (value: any) => any) => {
                           svc.encryptedContent
-                            ? AES.decrypt(key, utils.text2ua(atob(svc.encryptedContent!))).then(
+                            ? this.crypto.AES.decrypt(
+                                key,
+                                utils.text2ua(atob(svc.encryptedContent!))
+                              ).then(
                                 c => {
                                   let jsonContent
                                   try {
@@ -463,7 +482,10 @@ export class IccContactXApi extends iccContactApi {
                                 }
                               )
                             : svc.encryptedSelf
-                              ? AES.decrypt(key, utils.text2ua(atob(svc.encryptedSelf!))).then(
+                              ? this.crypto.AES.decrypt(
+                                  key,
+                                  utils.text2ua(atob(svc.encryptedSelf!))
+                                ).then(
                                   s => {
                                     let jsonContent
                                     try {
@@ -498,11 +520,14 @@ export class IccContactXApi extends iccContactApi {
               ctc.services = svcs
               //console.log('ES:'+ctc.encryptedSelf)
               return ctc.encryptedSelf
-                ? AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(
+                ? this.crypto.AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(
                     key =>
                       new Promise<models.ContactDto>(
                         (resolve: (value: models.ContactDto) => any) => {
-                          AES.decrypt(key, utils.text2ua(atob(ctc.encryptedSelf!))).then(
+                          this.crypto.AES.decrypt(
+                            key,
+                            utils.text2ua(atob(ctc.encryptedSelf!))
+                          ).then(
                             dec => {
                               let jsonContent
                               try {
@@ -547,12 +572,15 @@ export class IccContactXApi extends iccContactApi {
           .then(
             ({ extractedKeys: sfks }) =>
               svc.encryptedContent || svc.encryptedSelf
-                ? AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
+                ? this.crypto.AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
                     .then(
                       (key: CryptoKey) =>
                         new Promise((resolve: (value: any) => any) => {
                           svc.encryptedContent
-                            ? AES.decrypt(key, utils.text2ua(atob(svc.encryptedContent!))).then(
+                            ? this.crypto.AES.decrypt(
+                                key,
+                                utils.text2ua(atob(svc.encryptedContent!))
+                              ).then(
                                 c => {
                                   let jsonContent
                                   try {
@@ -573,7 +601,10 @@ export class IccContactXApi extends iccContactApi {
                                 }
                               )
                             : svc.encryptedSelf
-                              ? AES.decrypt(key, utils.text2ua(atob(svc.encryptedSelf!))).then(
+                              ? this.crypto.AES.decrypt(
+                                  key,
+                                  utils.text2ua(atob(svc.encryptedSelf!))
+                                ).then(
                                   s => {
                                     let jsonContent
                                     try {
@@ -930,8 +961,17 @@ export class IccContactXApi extends iccContactApi {
             ? myself.productToString(m && m.substanceProduct)
             : myself.productToString(m && m.medicinalProduct)
       },
+      reimbursementReasonToString: (m: any, lang: string) => {
+        return m &&
+          m.reimbursementReason &&
+          m.reimbursementReason.label &&
+          m.reimbursementReason.label.hasOwnProperty(lang)
+          ? m.reimbursementReason.label[lang]
+          : ""
+      },
       medicationToString: (m: any, lang: string) => {
         let res = `${myself.medicationNameToString(m)}, ${myself.posologyToString(m, lang)}`
+        let reason = myself.reimbursementReasonToString(m, lang)
         res = m.numberOfPackages
           ? `${m.numberOfPackages} ${
               m.numberOfPackages > 1 ? this.i18n[lang].packagesOf : this.i18n[lang].packageOf
@@ -940,6 +980,7 @@ export class IccContactXApi extends iccContactApi {
         res = m.duration
           ? `${res} ${this.i18n[lang].during} ${myself.durationToString(m.duration, lang)}`
           : res
+        res = reason ? `${res} (${reason})` : res
         return res
       },
       productToString: (m: any): string => {

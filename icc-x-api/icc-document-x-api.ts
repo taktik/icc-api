@@ -6,11 +6,11 @@ import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
 
 import { utils } from "./crypto/utils"
-import { AES } from "./crypto/AES"
 
 // noinspection JSUnusedGlobalSymbols
 export class IccDocumentXApi extends iccDocumentApi {
   crypto: IccCryptoXApi
+  fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
   /** maps invalid UTI values to corresponding MIME type for backward-compatibility (pre-v1.0.117) */
   compatUtiRevDefs: { [key: string]: string } = {
@@ -543,9 +543,18 @@ export class IccDocumentXApi extends iccDocumentApi {
     "x-music/x-midi": "public.midi"
   }
 
-  constructor(host: string, headers: { [key: string]: string }, crypto: IccCryptoXApi) {
-    super(host, headers)
+  constructor(
+    host: string,
+    headers: { [key: string]: string },
+    crypto: IccCryptoXApi,
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
+    "undefined"
+      ? window.fetch
+      : (self.fetch as any)
+  ) {
+    super(host, headers, fetchImpl)
     this.crypto = crypto
+    this.fetchImpl = fetchImpl
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -688,13 +697,13 @@ export class IccDocumentXApi extends iccDocumentApi {
                 .then(
                   (key: CryptoKey) =>
                     new Promise((resolve: (value: ArrayBuffer | null) => any) => {
-                      AES.decrypt(key, utils.text2ua(atob(document.encryptedSelf!))).then(
-                        resolve,
-                        () => {
-                          console.log("Cannot decrypt document", document.id)
-                          resolve(null)
-                        }
-                      )
+                      this.crypto.AES.decrypt(
+                        key,
+                        utils.text2ua(atob(document.encryptedSelf!))
+                      ).then(resolve, () => {
+                        console.log("Cannot decrypt document", document.id)
+                        resolve(null)
+                      })
                     })
                 )
                 .then((decrypted: ArrayBuffer | null) => {
@@ -733,7 +742,7 @@ export class IccDocumentXApi extends iccDocumentApi {
       new Date().getTime() +
       (enckeys ? `&enckeys=${enckeys}` : "") +
       (fileName ? `&fileName=${fileName}` : "")
-    return XHR.sendCommand("GET", url, this.headers, null, returnType)
+    return XHR.sendCommand("GET", url, this.headers, null, this.fetchImpl, returnType)
       .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }

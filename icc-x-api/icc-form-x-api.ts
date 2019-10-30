@@ -2,18 +2,24 @@ import { iccFormApi } from "../icc-api/iccApi"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 
 import * as _ from "lodash"
-import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
 
 import { utils } from "./crypto/utils"
-import { AES } from "./crypto/AES"
 
 // noinspection JSUnusedGlobalSymbols
 export class IccFormXApi extends iccFormApi {
   crypto: IccCryptoXApi
 
-  constructor(host: string, headers: { [key: string]: string }, crypto: IccCryptoXApi) {
-    super(host, headers)
+  constructor(
+    host: string,
+    headers: { [key: string]: string },
+    crypto: IccCryptoXApi,
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
+    "undefined"
+      ? window.fetch
+      : (self.fetch as any)
+  ) {
+    super(host, headers, fetchImpl)
     this.crypto = crypto
   }
 
@@ -160,11 +166,11 @@ export class IccFormXApi extends iccFormApi {
           )
           .then(({ extractedKeys: sfks }) => {
             if (form.encryptedSelf) {
-              return AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
+              return this.crypto.AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
                 .then(
                   key =>
                     new Promise((resolve: (value: any) => any) => {
-                      AES.decrypt(key, utils.text2ua(atob(form.encryptedSelf!))).then(
+                      this.crypto.AES.decrypt(key, utils.text2ua(atob(form.encryptedSelf!))).then(
                         resolve,
                         () => {
                           console.log("Cannot decrypt form", form.id)

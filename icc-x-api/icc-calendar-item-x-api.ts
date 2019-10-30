@@ -3,19 +3,25 @@ import * as i18n from "./rsrc/contact.i18n"
 import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
 import { utils } from "./crypto/utils"
-import { AES } from "./crypto/AES"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 import { iccCalendarItemApi } from "../icc-api/iccApi"
 import { XHR } from "../icc-api/api/XHR"
-import Header = XHR.Header
 import { CalendarItemDto, UserDto } from "../icc-api/model/models"
 
 export class IccCalendarItemXApi extends iccCalendarItemApi {
   i18n: any = i18n
   crypto: IccCryptoXApi
 
-  constructor(host: string, headers: { [key: string]: string }, crypto: IccCryptoXApi) {
-    super(host, headers)
+  constructor(
+    host: string,
+    headers: { [key: string]: string },
+    crypto: IccCryptoXApi,
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
+    "undefined"
+      ? window.fetch
+      : (self.fetch as any)
+  ) {
+    super(host, headers, fetchImpl)
     this.crypto = crypto
   }
 
@@ -211,10 +217,10 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
             )
           )
           .then((sfks: { extractedKeys: Array<string>; hcpartyId: string }) =>
-            AES.importKey("raw", utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
+            this.crypto.AES.importKey("raw", utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
           )
           .then((key: CryptoKey) => {
-            AES.encrypt(
+            this.crypto.AES.encrypt(
               key,
               utils.utf82ua(JSON.stringify({ details: item.details, title: item.title }))
             )

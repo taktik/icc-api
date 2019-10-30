@@ -28,9 +28,16 @@ import * as models from "../model/models"
 export class iccCodeApi {
   host: string
   headers: Array<XHR.Header>
-  constructor(host: string, headers: any) {
+  fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
+
+  constructor(
+    host: string,
+    headers: any,
+    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
+  ) {
     this.host = host
     this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.fetchImpl = fetchImpl
   }
 
   setHeaders(h: Array<XHR.Header>) {
@@ -51,7 +58,7 @@ export class iccCodeApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.CodeDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -82,7 +89,7 @@ export class iccCodeApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.CodePaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -100,7 +107,7 @@ export class iccCodeApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
       .catch(err => this.handleError(err))
   }
@@ -125,7 +132,7 @@ export class iccCodeApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.CodeDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -154,7 +161,7 @@ export class iccCodeApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.CodePaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -185,7 +192,33 @@ export class iccCodeApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => new models.CodePaginatedList(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+  findPaginatedCodesWithLink(
+    linkType: string,
+    linkedId?: string,
+    startKey?: string,
+    startDocumentId?: string,
+    limit?: number
+  ): Promise<models.CodePaginatedList | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/code/link/{linkType}".replace("{linkType}", linkType + "") +
+      "?ts=" +
+      new Date().getTime() +
+      (linkedId ? "&linkedId=" + linkedId : "") +
+      (startKey ? "&startKey=" + startKey : "") +
+      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
+      (limit ? "&limit=" + limit : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.CodePaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -229,7 +262,7 @@ export class iccCodeApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
       .catch(err => this.handleError(err))
   }
@@ -242,7 +275,7 @@ export class iccCodeApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.CodeDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -261,7 +294,7 @@ export class iccCodeApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.CodeDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
@@ -277,7 +310,7 @@ export class iccCodeApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body)
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.CodeDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -290,7 +323,7 @@ export class iccCodeApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("PUT", _url, headers, _body)
+    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.CodeDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
