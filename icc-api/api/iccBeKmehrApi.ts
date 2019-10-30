@@ -135,28 +135,6 @@ export class iccBeKmehrApi {
       .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }
-  generateDiaryNote(
-    patientId: string,
-    language?: string,
-    body?: models.DiaryNoteExportInfoDto
-  ): Promise<ArrayBuffer | any> {
-    let _body = null
-    _body = body
-
-    const _url =
-      this.host +
-      "/be_kmehr/diarynote/{patientId}/export".replace("{patientId}", patientId + "") +
-      "?ts=" +
-      new Date().getTime() +
-      (language ? "&language=" + language : "")
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body)
-      .then(doc => doc.body)
-      .catch(err => this.handleError(err))
-  }
   generateLabresultExport(
     patientId: string,
     id: string,

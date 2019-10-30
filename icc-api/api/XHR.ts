@@ -38,12 +38,7 @@ export namespace XHR {
     url: string,
     init: RequestInit,
     timeout = 10000,
-    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    "undefined"
-      ? window.fetch
-      : typeof self !== "undefined"
-        ? self.fetch
-        : fetch
+    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ): Promise<Response> {
     return new Promise((resolve, reject) => {
       // Set timeout timer
@@ -51,7 +46,7 @@ export namespace XHR {
         () => reject({ message: "Request timed out", status: "Request timed out" }),
         timeout
       )
-      fetchImpl(url, init)
+      ;(fetchImpl || window.fetch)(url, init)
         .then(response => {
           clearTimeout(timer)
           resolve(response)
@@ -68,12 +63,7 @@ export namespace XHR {
     url: string,
     headers: Array<Header> | null,
     data: string | any = "",
-    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    "undefined"
-      ? window.fetch
-      : typeof self !== "undefined"
-        ? self.fetch
-        : fetch,
+    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>,
     contentTypeOverride?: "application/json" | "text/plain" | "application/octet-stream"
   ): Promise<Data> {
     const contentType =
@@ -113,13 +103,12 @@ export namespace XHR {
             }
           : {}
       ),
-      timeout,
-      fetchImpl
+      timeout
     ).then(function(response) {
       if (response.status >= 400) {
         throw new XHRError(response.statusText, response.status, response.status, response.headers)
       }
-      const ct = contentTypeOverride || response.headers.get("content-type") || "text/plain"
+      const ct = response.headers.get("content-type") || "text/plain"
       return (ct.startsWith("application/json")
         ? response.json()
         : ct.startsWith("application/xml") || ct.startsWith("text/")
