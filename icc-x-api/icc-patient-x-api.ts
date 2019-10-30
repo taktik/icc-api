@@ -1158,7 +1158,11 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   async getPatientIdOfChildDocumentForHcpAndHcpParents(
-    childDocument: models.InvoiceDto | models.CalendarItemDto | models.ContactDto,
+    childDocument:
+      | models.InvoiceDto
+      | models.CalendarItemDto
+      | models.ContactDto
+      | models.AccessLogDto,
     hcpId: string
   ): Promise<string> {
     const parentIdsArray = (await this.crypto.extractCryptedFKs(childDocument, hcpId)).extractedKeys
