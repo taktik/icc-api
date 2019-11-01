@@ -110,22 +110,23 @@ export class IccAccesslogXApi extends iccAccesslogApi {
   findBy(hcpartyId: string, patient: models.PatientDto) {
     return this.crypto
       .extractDelegationsSFKs(patient, hcpartyId)
-      .then(secretForeignKeys =>
-        secretForeignKeys &&
-        secretForeignKeys.extractedKeys &&
-        secretForeignKeys.extractedKeys.length > 0
-          ? this.findByHCPartyPatientSecretFKeys(
-              secretForeignKeys.hcpartyId!,
-              secretForeignKeys.extractedKeys.join(",")
-            )
-          : Promise.resolve([])
+      .then(
+        secretForeignKeys =>
+          secretForeignKeys &&
+          secretForeignKeys.extractedKeys &&
+          secretForeignKeys.extractedKeys.length > 0
+            ? this.findByHCPartyPatientSecretFKeys(
+                secretForeignKeys.hcpartyId!,
+                secretForeignKeys.extractedKeys.join(",")
+              )
+            : Promise.resolve([])
       )
   }
 
   findByHCPartyPatientSecretFKeys(
     hcPartyId: string,
     secretFKeys?: string
-  ): Promise<Array<models.ContactDto> | any> {
+  ): Promise<Array<models.AccessLogDto | any>> {
     return super
       .findByHCPartyPatientSecretFKeys(hcPartyId, secretFKeys)
       .then(accesslogs => this.decrypt(hcPartyId, accesslogs))
