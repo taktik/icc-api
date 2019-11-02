@@ -211,6 +211,52 @@ export class iccPatientApi {
       .then(doc => new models.PatientPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+  findDuplicatesByName(
+    hcPartyId?: string,
+    startKey?: string,
+    limit?: number
+  ): Promise<models.PatientPaginatedList | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/patient/duplicates/name" +
+      "?ts=" +
+      new Date().getTime() +
+      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
+      (startKey ? "&startKey=" + startKey : "") +
+      (limit ? "&limit=" + limit : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => new models.PatientPaginatedList(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+  findDuplicatesBySsin(
+    hcPartyId?: string,
+    startKey?: string,
+    limit?: number
+  ): Promise<models.PatientPaginatedList | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/patient/duplicates/ssin" +
+      "?ts=" +
+      new Date().getTime() +
+      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
+      (startKey ? "&startKey=" + startKey : "") +
+      (limit ? "&limit=" + limit : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => new models.PatientPaginatedList(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
   fuzzySearch(
     firstName?: string,
     lastName?: string,
