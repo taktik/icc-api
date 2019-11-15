@@ -49,6 +49,22 @@ export class iccBeSamv2Api {
     else throw Error("api-error" + e.status)
   }
 
+  findAmpsByDmppCode(dmppCode: string): Promise<Array<models.AmpDto> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/be_samv2/amp/byDmppCode/{dmppCode}".replace("{dmppCode}", dmppCode + "") +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.AmpDto(it)))
+      .catch(err => this.handleError(err))
+  }
   findPaginatedAmpsByGroupCode(
     vmpgCode: string,
     startKey?: string,
