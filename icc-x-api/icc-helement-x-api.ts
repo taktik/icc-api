@@ -23,7 +23,12 @@ export class IccHelementXApi extends iccHelementApi {
     this.crypto = crypto
   }
 
-  newInstance(user: models.UserDto, patient: models.PatientDto, h: any) {
+  newInstance(
+    user: models.UserDto,
+    patient: models.PatientDto,
+    h: any,
+    confidential: boolean = false
+  ) {
     const hcpId = user.healthcarePartyId || user.patientId
     const helement = _.assign(
       {
@@ -42,15 +47,18 @@ export class IccHelementXApi extends iccHelementApi {
     )
 
     return this.crypto
-      .extractDelegationsSFKs(patient, hcpId)
-      .then(secretForeignKeys =>
-        this.crypto.initObjectDelegations(
-          helement,
-          patient,
-          hcpId!,
-          secretForeignKeys.extractedKeys[0]
-        )
-      )
+      .extractPreferredSfk(patient, hcpId!!, confidential)
+      .then(key => {
+        if (!key) {
+          console.error(
+            `SFK cannot be found for HealthElement ${
+              helement.id
+            }. The health element will not be reachable from the patient side`
+          )
+        }
+
+        return this.crypto.initObjectDelegations(helement, patient, hcpId!, key)
+      })
       .then(initData => {
         _.extend(helement, {
           delegations: initData.delegations,
@@ -109,16 +117,31 @@ export class IccHelementXApi extends iccHelementApi {
 
   findBy(hcpartyId: string, patient: models.PatientDto, keepObsoleteVersions: boolean = false) {
     return this.crypto
-      .extractDelegationsSFKs(patient, hcpartyId)
+      .extractSFKsHierarchyFromDelegations(patient, hcpartyId)
       .then(
         secretForeignKeys =>
-          secretForeignKeys &&
-          secretForeignKeys.extractedKeys &&
-          secretForeignKeys.extractedKeys.length > 0
-            ? this.findByHCPartyPatientSecretFKeys(
-                secretForeignKeys.hcpartyId!,
-                secretForeignKeys.extractedKeys.join(",")
-              )
+          secretForeignKeys && secretForeignKeys.length > 0
+            ? Promise.all(
+                secretForeignKeys
+                  .reduce(
+                    (acc, level) => {
+                      return acc.concat([
+                        {
+                          hcpartyId: level.hcpartyId,
+                          extractedKeys: level.extractedKeys.filter(
+                            key =>
+                              !acc.some(previousLevel => previousLevel.extractedKeys.includes(key))
+                          )
+                        }
+                      ])
+                    },
+                    [] as Array<{ hcpartyId: string; extractedKeys: Array<string> }>
+                  )
+                  .filter(l => l.extractedKeys.length > 0)
+                  .map(({ hcpartyId, extractedKeys }) =>
+                    this.findByHCPartyPatientSecretFKeys(hcpartyId, extractedKeys.join(","))
+                  )
+              ).then(results => _.uniqBy(_.flatMap(results), x => x.id))
             : Promise.resolve([])
       )
       .then((decryptedHelements: Array<models.HealthElementDto>) => {

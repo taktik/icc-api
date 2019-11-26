@@ -14,6 +14,7 @@ import * as models from "../icc-api/model/models"
 import { DocumentDto, ListOfIdsDto } from "../icc-api/model/models"
 import { retry } from "./utils/net-utils"
 import { utils } from "./crypto/utils"
+import { DelegationDto } from "../icc-api/model/models"
 
 // noinspection JSUnusedGlobalSymbols
 export class IccPatientXApi extends iccPatientApi {
@@ -115,6 +116,38 @@ export class IccPatientXApi extends iccPatientApi {
         )
         return promise
       })
+  }
+
+  initConfidentialDelegation(
+    patient: models.PatientDto,
+    user: models.UserDto
+  ): Promise<models.PatientDto | null> {
+    const ownerId = user.healthcarePartyId || user.patientId
+    return this.crypto.extractPreferredSfk(patient, ownerId!!, true).then(k => {
+      if (!k) {
+        const secretId = this.crypto.randomUuid()
+        return this.crypto
+          .decryptAndImportAesHcPartyKeysForDelegators([ownerId!!], ownerId!!)
+          .then(hcPartyKeys => {
+            return this.crypto.AES.encrypt(hcPartyKeys[0].key, utils.text2ua(
+              patient.id + ":" + secretId
+            ).buffer as ArrayBuffer)
+          })
+          .then(newDelegation => {
+            ;(patient.delegations!![ownerId!!] || (patient.delegations!![ownerId!!] = [])).push(
+              new DelegationDto({
+                owner: ownerId,
+                delegatedTo: ownerId,
+                tag: "confidential",
+                key: newDelegation
+              })
+            )
+            return this.modifyPatientWithUser(user, patient)
+          })
+      } else {
+        return patient
+      }
+    })
   }
 
   createPatient(body?: models.PatientDto): never {
