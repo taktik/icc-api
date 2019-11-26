@@ -261,8 +261,8 @@ export class IccCryptoXApi {
             ? keys.extractedKeys.find(
                 k =>
                   !secretForeignKeys.some(
-                    ({ extractedKeys, hcpartyId }) =>
-                      hcpartyId !== hcpartyId && extractedKeys.includes(k)
+                    ({ extractedKeys, hcpartyId: parentHcpId }) =>
+                      hcpartyId !== parentHcpId && extractedKeys.includes(k)
                   )
               )
             : keys.extractedKeys[0])) ||

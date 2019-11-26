@@ -2,19 +2,24 @@
   "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
+    // Use esnext to enable lazy loading
     "moduleResolution": "node",
     "experimentalDecorators": true,
+    //
     "emitDecoratorMetadata": true,
+    /* Strict Type-Checking Options */
+    "strict": true,
+    /* Enable all strict type-checking options. */
     "strictNullChecks": true,
     "noImplicitThis": true,
-    "noImplicitAny": true,
+    // "noImplicitAny": true,
     "allowSyntheticDefaultImports": true,
     "lib": ["es2017", "es6", "es5", "dom"],
+    "sourceMap": true,
     "declaration": true,
+    /* Generates corresponding '.d.ts' file. */
     "outDir": "./dist",
-    "strict": true,
-    "baseUrl": "./",
-    "types": ["base64-js", "lodash"]
+    "baseUrl": "./"
   },
   "include": ["index.ts", "icc-api/*", "icc-x-api/*", "icc-api/**/*", "icc-x-api/**/*"]
 }

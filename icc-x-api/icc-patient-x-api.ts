@@ -139,10 +139,12 @@ export class IccPatientXApi extends iccPatientApi {
                 owner: ownerId,
                 delegatedTo: ownerId,
                 tag: "confidential",
-                key: newDelegation
+                key: this.crypto.utils.ua2hex(newDelegation)
               })
             )
-            return this.modifyPatientWithUser(user, patient)
+            return patient.rev
+              ? this.modifyPatientWithUser(user, patient)
+              : this.createPatientWithUser(user, patient)
           })
       } else {
         return patient
