@@ -1032,8 +1032,8 @@ export class IccPatientXApi extends iccPatientApi {
                           return (
                             ((allTags.includes("medicalInformation") || allTags.includes("all")) &&
                               (frms && frms.length && !_.isEqual(oFrms, frms)) &&
-                              this.helementApi
-                                .setHealthElementsDelegations(frms)
+                              this.formApi
+                                .setFormsDelegations(frms)
                                 .then(() => (status.forms.success = true))
                                 .catch(e => (status.forms.error = e))) ||
                             Promise.resolve((status.forms.success = true))

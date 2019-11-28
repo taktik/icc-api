@@ -154,6 +154,30 @@ export class IccBekmehrXApi extends iccBeKmehrApi {
     })
   }
 
+  generateDiaryNoteExportWithEncryptionSupport(
+    patientId: string,
+    healthcarePartyId: string,
+    language: string,
+    body: models.SumehrExportInfoDto,
+    sessionId?: string
+  ): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+      const socket = new WebSocket(
+        `${this.wssHost}/be_kmehr/generateDiaryNote${sessionId ? `;jsessionid=${sessionId}` : ""}`
+      )
+      socket.addEventListener("open", function() {
+        socket.send(
+          JSON.stringify({ parameters: { patientId: patientId, language: language, info: body } })
+        )
+      })
+      // Listen for messages
+      socket.addEventListener(
+        "message",
+        this.socketEventListener(socket, healthcarePartyId, resolve, reject)
+      )
+    })
+  }
+
   generateMedicationSchemeWithEncryptionSupport(
     patientId: string,
     healthcarePartyId: string,

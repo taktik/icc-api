@@ -285,7 +285,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
     startDocumentId?: string,
     limit?: string,
     descending?: boolean
-  ): Promise<models.PatientPaginatedList | any> {
+  ): Promise<models.AccessLogPaginatedList | any> {
     return super
       .listAccessLogs(startKey, startDocumentId, limit, descending)
       .then(accessLog =>
