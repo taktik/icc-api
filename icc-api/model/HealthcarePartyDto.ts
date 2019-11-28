@@ -70,6 +70,8 @@ export class HealthcarePartyDto {
 
   cbe?: string
 
+  ehp?: string
+
   convention?: number
 
   userId?: string

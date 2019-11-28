@@ -173,7 +173,8 @@ export class iccBeKmehrApi {
   generateMedicationSchemeExport(
     patientId: string,
     language?: string,
-    version?: number,
+    version?: string,
+    version2?: number,
     body?: models.MedicationSchemeExportInfoDto
   ): Promise<ArrayBuffer | any> {
     let _body = null
@@ -185,7 +186,8 @@ export class iccBeKmehrApi {
       "?ts=" +
       new Date().getTime() +
       (language ? "&language=" + language : "") +
-      (version ? "&version=" + version : "")
+      (version ? "&version=" + version : "") +
+      (version2 ? "&version2=" + version2 : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -546,6 +548,7 @@ export class iccBeKmehrApi {
   importSmf(
     documentId: string,
     documentKey?: string,
+    dryRun?: boolean,
     patientId?: string,
     language?: string,
     body?: any
@@ -559,6 +562,7 @@ export class iccBeKmehrApi {
       "?ts=" +
       new Date().getTime() +
       (documentKey ? "&documentKey=" + documentKey : "") +
+      (dryRun ? "&dryRun=" + dryRun : "") +
       (patientId ? "&patientId=" + patientId : "") +
       (language ? "&language=" + language : "")
     let headers = this.headers

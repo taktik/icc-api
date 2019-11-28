@@ -82,6 +82,8 @@ export class CalendarItemDto {
 
   endTime?: number
 
+  confirmTime?: number
+
   duration?: number
 
   allDay?: boolean

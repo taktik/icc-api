@@ -101,4 +101,6 @@ export class MedicationDto {
   posologyChanged?: boolean
 
   prescriptionRID?: string
+
+  status?: number
 }

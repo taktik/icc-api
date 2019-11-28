@@ -358,7 +358,7 @@ export class iccFormApi {
       .then(doc => JSON.parse(JSON.stringify(doc.body)))
       .catch(err => this.handleError(err))
   }
-  setHealthElementsDelegations(body?: Array<models.IcureStubDto>): Promise<any | Boolean> {
+  setFormsDelegations(body?: Array<models.IcureStubDto>): Promise<any | Boolean> {
     let _body = null
     _body = body
 
