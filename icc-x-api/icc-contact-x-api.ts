@@ -928,12 +928,14 @@ export class IccContactXApi extends iccContactApi {
 
   medication() {
     const regimenScores: any = {
+      afterwakingup: 63000,
       beforebreakfast: 70000,
       duringbreakfast: 80000,
       afterbreakfast: 90000,
       morning: 100000,
       betweenbreakfastandlunch: 103000,
       beforelunch: 113000,
+      midday: 120000,
       duringlunch: 123000,
       afterlunch: 130000,
       afternoon: 140000,
