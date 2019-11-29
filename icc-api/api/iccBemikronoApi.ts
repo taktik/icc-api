@@ -87,6 +87,21 @@ export class iccBeMikronoApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.AppointmentDto(it)))
       .catch(err => this.handleError(err))
   }
+  createAppointmentTypes(
+    body?: Array<models.MikronoAppointmentTypeRestDto>
+  ): Promise<any | Boolean> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + "/be_mikrono/appointmentTypes" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => true)
+      .catch(err => this.handleError(err))
+  }
   createAppointments(
     body?: Array<models.AppointmentImportDto>
   ): Promise<Array<models.AppointmentImportDto> | any> {

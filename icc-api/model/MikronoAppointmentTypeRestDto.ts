@@ -24,13 +24,8 @@
 
 import * as models from "./models"
 
-export class SoftwareMedicalFileExportDto {
+export class MikronoAppointmentTypeRestDto {
   constructor(json: JSON | any) {
-    Object.assign(this as SoftwareMedicalFileExportDto, json)
+    Object.assign(this as MikronoAppointmentTypeRestDto, json)
   }
-  secretForeignKeys?: Array<string>
-
-  comment?: string
-
-  exportAsPMF?: boolean
 }
