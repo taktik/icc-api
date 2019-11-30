@@ -112,8 +112,8 @@ export namespace XHR {
       return (ct.startsWith("application/json")
         ? response.json()
         : ct.startsWith("application/xml") || ct.startsWith("text/")
-          ? response.text()
-          : response.arrayBuffer()
+        ? response.text()
+        : response.arrayBuffer()
       ).then(d => new Data(response.status, ct, d))
     })
   }
