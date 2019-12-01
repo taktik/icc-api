@@ -120,6 +120,8 @@ export class InvoicingCodeDto {
 
   locationCdHcParty?: string
 
+  locationService?: number
+
   prescriptionDate?: number
 
   status?: number
