@@ -30,6 +30,14 @@ export class DiaryNoteExportInfoDto {
   }
   secretForeignKeys?: Array<string>
 
+  excludedIds?: Array<string>
+
+  recipient?: models.HealthcarePartyDto
+
+  softwareName?: string
+
+  softwareVersion?: string
+
   tags?: Array<string>
 
   contexts?: Array<string>
@@ -37,8 +45,6 @@ export class DiaryNoteExportInfoDto {
   documentId?: string
 
   attachmentId?: string
-
-  recipient?: models.HealthcarePartyDto
 
   note?: string
 

@@ -96,6 +96,8 @@ export class InvoiceDto {
 
   thirdPartyPaymentReason?: string
 
+  reason?: string
+
   gnotionNihii?: string
 
   gnotionSsin?: string
@@ -147,6 +149,10 @@ export class InvoiceDto {
   encounterLocationNihii?: string
 
   encounterLocationNorm?: number
+
+  cancelReason?: string
+
+  cancelDate?: number
 
   receipts?: { [key: string]: string }
 

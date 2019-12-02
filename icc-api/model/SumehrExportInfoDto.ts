@@ -34,6 +34,10 @@ export class SumehrExportInfoDto {
 
   recipient?: models.HealthcarePartyDto
 
+  softwareName?: string
+
+  softwareVersion?: string
+
   comment?: string
 
   includeIrrelevantInformation?: boolean

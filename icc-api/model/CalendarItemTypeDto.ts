@@ -41,4 +41,14 @@ export class CalendarItemTypeDto {
   duration?: number
 
   visit?: boolean
+
+  externalRef?: string
+
+  mikronoId?: string
+
+  docIds?: Array<string>
+
+  otherInfos?: { [key: string]: string }
+
+  subjectByLanguage?: { [key: string]: string }
 }

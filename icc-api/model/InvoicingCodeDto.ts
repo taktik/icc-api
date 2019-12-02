@@ -58,6 +58,8 @@ export class InvoicingCodeDto {
 
   vat?: number
 
+  transplantationCode?: number
+
   code?: string
 
   error?: string

@@ -546,6 +546,7 @@ export class iccBeKmehrApi {
   importSmf(
     documentId: string,
     documentKey?: string,
+    dryRun?: boolean,
     patientId?: string,
     language?: string,
     body?: any
@@ -559,6 +560,7 @@ export class iccBeKmehrApi {
       "?ts=" +
       new Date().getTime() +
       (documentKey ? "&documentKey=" + documentKey : "") +
+      (dryRun ? "&dryRun=" + dryRun : "") +
       (patientId ? "&patientId=" + patientId : "") +
       (language ? "&language=" + language : "")
     let headers = this.headers
