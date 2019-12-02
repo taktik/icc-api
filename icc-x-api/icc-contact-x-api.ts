@@ -162,41 +162,75 @@ export class IccContactXApi extends iccContactApi {
    * @param patient (Promise)
    */
   findBy(hcpartyId: string, patient: models.PatientDto) {
-    return this.crypto.extractDelegationsSFKs(patient, hcpartyId).then(secretForeignKeys => {
-      return secretForeignKeys &&
-        secretForeignKeys.extractedKeys &&
-        secretForeignKeys.hcpartyId &&
-        secretForeignKeys.extractedKeys.length > 0
-        ? this.findByHCPartyPatientSecretFKeys(
-            secretForeignKeys.hcpartyId,
-            secretForeignKeys.extractedKeys.join(",")
-          )
-        : Promise.resolve([])
-    })
+    return this.crypto.extractSFKsHierarchyFromDelegations(patient, hcpartyId).then(
+      secretForeignKeys =>
+        secretForeignKeys && secretForeignKeys.length > 0
+          ? Promise.all(
+              secretForeignKeys
+                .reduce(
+                  (acc, level) => {
+                    return acc.concat([
+                      {
+                        hcpartyId: level.hcpartyId,
+                        extractedKeys: level.extractedKeys.filter(
+                          key =>
+                            !acc.some(previousLevel => previousLevel.extractedKeys.includes(key))
+                        )
+                      }
+                    ])
+                  },
+                  [] as Array<{ hcpartyId: string; extractedKeys: Array<string> }>
+                )
+                .filter(l => l.extractedKeys.length > 0)
+                .map(({ hcpartyId, extractedKeys }) =>
+                  this.findByHCPartyPatientSecretFKeys(hcpartyId, extractedKeys.join(","))
+                )
+            ).then(results => _.uniqBy(_.flatMap(results), x => x.id))
+          : Promise.resolve([])
+    )
   }
 
   async findByPatientSFKs(
     hcpartyId: string,
     patients: Array<models.PatientDto>
   ): Promise<Array<models.ContactDto>> {
-    let extractedKeys: string[] = []
+    const perHcpId: { [key: string]: string[] } = {}
     for (const patient of patients) {
-      const secretForeignKeys = await this.crypto.extractDelegationsSFKs(patient, hcpartyId)
-
-      if (
-        secretForeignKeys &&
-        secretForeignKeys.extractedKeys &&
-        secretForeignKeys.extractedKeys.length > 0
-      ) {
-        extractedKeys = extractedKeys.concat(secretForeignKeys.extractedKeys)
-      }
+      ;(await this.crypto.extractSFKsHierarchyFromDelegations(patient, hcpartyId))
+        .reduce(
+          (acc, level) => {
+            return acc.concat([
+              {
+                hcpartyId: level.hcpartyId,
+                extractedKeys: level.extractedKeys.filter(
+                  key => !acc.some(previousLevel => previousLevel.extractedKeys.includes(key))
+                )
+              }
+            ])
+          },
+          [] as Array<{ hcpartyId: string; extractedKeys: Array<string> }>
+        )
+        .filter(l => l.extractedKeys.length > 0)
+        .forEach(({ hcpartyId, extractedKeys }) => {
+          ;(perHcpId[hcpartyId] || (perHcpId[hcpartyId] = [])).push(...extractedKeys)
+        })
     }
 
-    const idList = new models.ListOfIdsDto({
-      ids: extractedKeys
-    })
-
-    return extractedKeys.length > 0 ? this.findByHCPartyPatientForeignKeys(hcpartyId, idList) : []
+    return _.uniqBy(
+      _.flatMap(
+        await Promise.all(
+          Object.keys(perHcpId).map(hcpId =>
+            this.findByHCPartyPatientForeignKeys(
+              hcpartyId,
+              new models.ListOfIdsDto({
+                ids: perHcpId[hcpId]
+              })
+            )
+          )
+        )
+      ),
+      x => x.id
+    )
   }
 
   filterBy(
