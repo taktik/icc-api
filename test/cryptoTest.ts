@@ -80,7 +80,7 @@ describe("Init confidential delegation in patient", () => {
   })
 })
 
-describe("test that confidential information cannot be retrieved at MH level", () => {
+describe("test that confidential helement information cannot be retrieved at MH level", () => {
   it("should find the confidential data only when logged as the user", async () => {
     try {
       const user = await api.usericc.getCurrentUser()
@@ -111,6 +111,56 @@ describe("test that confidential information cannot be retrieved at MH level", (
 
       expect(retrievedHesAsUser.length).to.equal(1, "User should see its confidential data")
       expect(retrievedHesAsMh.length).to.equal(0, "MH should not see confidential data")
+    } catch (e) {
+      console.log(e)
+    }
+  })
+})
+
+describe("test that confidential contact information cannot be retrieved at MH level", () => {
+  it("should find the confidential data only when logged as the user", async () => {
+    try {
+      const user = await api.usericc.getCurrentUser()
+      const mhUser = await mhapi.usericc.getCurrentUser()
+      await initKeys(api, user)
+      await initKeys(mhapi, mhUser)
+
+      const pat = await api.patienticc.newInstance(user, { firstName: "John", lastName: "Doe" })
+      const modifiedPatient = (await api.patienticc.initConfidentialDelegation(pat, user))!!
+
+      await api.contacticc.createContactWithUser(
+        user,
+        await api.helementicc.newInstance(
+          user,
+          modifiedPatient,
+
+          { descr: "Confidential info", services: [], subContacts: [] },
+          true
+        )
+      )
+
+      await api.contacticc.createContactWithUser(
+        user,
+        await api.helementicc.newInstance(
+          user,
+          modifiedPatient,
+
+          { descr: "Non confidential info", services: [], subContacts: [] },
+          false
+        )
+      )
+
+      const retrievedCtcsAsUser = await api.contacticc.findBy(
+        user.healthcarePartyId,
+        modifiedPatient
+      )
+      const retrievedCtcsAsMh = await mhapi.contacticc.findBy(
+        mhUser.healthcarePartyId,
+        modifiedPatient
+      )
+
+      expect(retrievedCtcsAsUser.length).to.equal(2, "User should see its confidential data")
+      expect(retrievedCtcsAsMh.length).to.equal(1, "MH should not see confidential data")
     } catch (e) {
       console.log(e)
     }

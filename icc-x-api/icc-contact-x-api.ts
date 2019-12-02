@@ -29,7 +29,8 @@ export class IccContactXApi extends iccContactApi {
   newInstance(
     user: models.UserDto,
     patient: models.PatientDto,
-    c: any
+    c: any,
+    confidential: boolean = false
   ): Promise<models.ContactDto> {
     const contact = new models.ContactDto(
       _.extend(
@@ -51,7 +52,7 @@ export class IccContactXApi extends iccContactApi {
       )
     )
 
-    return this.initDelegationsAndEncryptionKeys(user, patient, contact)
+    return this.initDelegationsAndEncryptionKeys(user, patient, contact, confidential)
   }
 
   /**
@@ -65,22 +66,23 @@ export class IccContactXApi extends iccContactApi {
   private initDelegationsAndEncryptionKeys(
     user: models.UserDto,
     patient: models.PatientDto,
-    contact: models.ContactDto
+    contact: models.ContactDto,
+    confidential: boolean = false
   ): Promise<models.ContactDto> {
     const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto
-      .extractDelegationsSFKs(patient, hcpId!)
-      .then(secretForeignKeys =>
-        Promise.all([
-          this.crypto.initObjectDelegations(
-            contact,
-            patient,
-            hcpId!,
-            secretForeignKeys.extractedKeys[0]
-          ),
+      .extractPreferredSfk(patient, hcpId!!, confidential)
+      .then(key => {
+        if (!key) {
+          console.error(
+            `SFK cannot be found for HealthElement ${key}. The health element will not be reachable from the patient side`
+          )
+        }
+        return Promise.all([
+          this.crypto.initObjectDelegations(contact, patient, hcpId!, key),
           this.crypto.initEncryptionKeys(contact, hcpId!)
         ])
-      )
+      })
       .then(([dels, eks]) => {
         _.extend(contact, {
           delegations: dels.delegations,
