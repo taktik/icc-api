@@ -46,6 +46,8 @@ export class FormDto {
 
   medicalLocationId?: string
 
+  encryptedSelf?: string
+
   codes?: Array<models.CodeDto>
 
   tags?: Array<models.CodeDto>
@@ -77,6 +79,4 @@ export class FormDto {
   children?: Array<models.FormDto>
 
   hasBeenInitialized?: boolean
-
-  encryptedSelf?: string
 }

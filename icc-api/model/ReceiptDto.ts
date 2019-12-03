@@ -46,6 +46,8 @@ export class ReceiptDto {
 
   medicalLocationId?: string
 
+  encryptedSelf?: string
+
   codes?: Array<models.CodeDto>
 
   tags?: Array<models.CodeDto>
@@ -67,6 +69,4 @@ export class ReceiptDto {
   category?: string
 
   subCategory?: string
-
-  encryptedSelf?: string
 }

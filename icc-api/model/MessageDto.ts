@@ -46,6 +46,8 @@ export class MessageDto {
 
   medicalLocationId?: string
 
+  encryptedSelf?: string
+
   codes?: Array<models.CodeDto>
 
   tags?: Array<models.CodeDto>
@@ -99,6 +101,4 @@ export class MessageDto {
   unassignedResults?: Array<string>
 
   assignedResults?: { [key: string]: string }
-
-  encryptedSelf?: string
 }

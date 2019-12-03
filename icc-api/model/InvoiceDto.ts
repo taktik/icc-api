@@ -46,6 +46,8 @@ export class InvoiceDto {
 
   medicalLocationId?: string
 
+  encryptedSelf?: string
+
   codes?: Array<models.CodeDto>
 
   tags?: Array<models.CodeDto>
@@ -157,8 +159,6 @@ export class InvoiceDto {
   receipts?: { [key: string]: string }
 
   idDocument?: models.IdentityDocumentReader
-
-  encryptedSelf?: string
 }
 export namespace InvoiceDto {
   export enum PaymentTypeEnum {
