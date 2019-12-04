@@ -141,25 +141,22 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
   }
 
   findBy(hcpartyId: string, patient: models.PatientDto) {
-    return this.crypto
-      .extractDelegationsSFKs(patient, hcpartyId)
-      .then(
-        secretForeignKeys =>
-          secretForeignKeys &&
-          secretForeignKeys.extractedKeys &&
-          secretForeignKeys.extractedKeys.length > 0
-            ? this.findByHCPartyPatientSecretFKeys(
-                secretForeignKeys.hcpartyId!,
-                secretForeignKeys.extractedKeys.join(",")
-              )
-            : Promise.resolve([])
-      )
+    return this.crypto.extractDelegationsSFKs(patient, hcpartyId).then(secretForeignKeys => {
+      return secretForeignKeys &&
+        secretForeignKeys.extractedKeys &&
+        secretForeignKeys.extractedKeys.length > 0
+        ? this.findByHCPartyPatientSecretFKeys(
+            secretForeignKeys.hcpartyId!,
+            secretForeignKeys.extractedKeys.join(",")
+          )
+        : Promise.resolve([])
+    })
   }
 
   findByHCPartyPatientSecretFKeys(
     hcPartyId: string,
     secretFKeys?: string
-  ): Promise<Array<models.ContactDto> | any> {
+  ): Promise<Array<models.CalendarItemDto> | any> {
     return super
       .findByHCPartyPatientSecretFKeys(hcPartyId, secretFKeys)
       .then(calendarItems => this.decrypt(hcPartyId, calendarItems))
