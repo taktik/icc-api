@@ -704,14 +704,14 @@ export class IccPatientXApi extends iccPatientApi {
     statuses: { [key: string]: { success: boolean | null; error: Error | null } }
   } | null> {
     const addDelegationsAndKeys = (
-      frms: Array<models.FormDto>,
+      dtos: Array<models.FormDto>,
       markerPromise: Promise<any>,
       delegateId: string,
       patient: models.PatientDto | null
     ) => {
-      frms.forEach(
-        x =>
-          (markerPromise = markerPromise.then(() =>
+      return dtos.reduce(
+        (p, x) =>
+          p.then(() =>
             Promise.all([
               this.crypto.extractDelegationsSFKs(x, ownerId),
               this.crypto.extractEncryptionsSKs(x, ownerId)
@@ -731,7 +731,8 @@ export class IccPatientXApi extends iccPatientApi {
                   return x
                 })
             })
-          ))
+          ),
+        markerPromise
       )
     }
 
@@ -970,19 +971,54 @@ export class IccPatientXApi extends iccPatientApi {
                             })
                         })
                         ;(tags.includes("medicalInformation") || tags.includes("all")) &&
-                          addDelegationsAndKeys(hes, markerPromise, delegateId, patient)
+                          (markerPromise = addDelegationsAndKeys(
+                            hes,
+                            markerPromise,
+                            delegateId,
+                            patient
+                          ))
                         ;(tags.includes("medicalInformation") || tags.includes("all")) &&
-                          addDelegationsAndKeys(frms, markerPromise, delegateId, patient)
+                          (markerPromise = addDelegationsAndKeys(
+                            frms,
+                            markerPromise,
+                            delegateId,
+                            patient
+                          ))
                         ;(tags.includes("medicalInformation") || tags.includes("all")) &&
-                          addDelegationsAndKeys(ctcsStubs, markerPromise, delegateId, patient)
+                          (markerPromise = addDelegationsAndKeys(
+                            ctcsStubs,
+                            markerPromise,
+                            delegateId,
+                            patient
+                          ))
                         ;(tags.includes("medicalInformation") || tags.includes("all")) &&
-                          addDelegationsAndKeys(cls, markerPromise, delegateId, patient)
+                          (markerPromise = addDelegationsAndKeys(
+                            cls,
+                            markerPromise,
+                            delegateId,
+                            patient
+                          ))
                         ;(tags.includes("medicalInformation") || tags.includes("all")) &&
-                          addDelegationsAndKeys(cis, markerPromise, delegateId, patient)
+                          (markerPromise = addDelegationsAndKeys(
+                            cis,
+                            markerPromise,
+                            delegateId,
+                            patient
+                          ))
                         ;(tags.includes("financialInformation") || tags.includes("all")) &&
-                          addDelegationsAndKeys(ivs, markerPromise, delegateId, patient)
+                          (markerPromise = addDelegationsAndKeys(
+                            ivs,
+                            markerPromise,
+                            delegateId,
+                            patient
+                          ))
                         ;(tags.includes("medicalInformation") || tags.includes("all")) &&
-                          addDelegationsAndKeys(docs, markerPromise, delegateId, null)
+                          (markerPromise = addDelegationsAndKeys(
+                            docs,
+                            markerPromise,
+                            delegateId,
+                            null
+                          ))
                       })
 
                       return markerPromise
