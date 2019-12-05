@@ -1103,7 +1103,7 @@ export class IccPatientXApi extends iccPatientApi {
                             ((allTags.includes("medicalInformation") || allTags.includes("all")) &&
                               (cis && cis.length && !_.isEqual(oCis, cis)) &&
                               this.calendarItemApi
-                                .setCalendarItemsDelegations(cls)
+                                .setCalendarItemsDelegations(cis)
                                 .then(() => (status.calendarItems.success = true))
                                 .catch(e => (status.calendarItems.error = e))) ||
                             Promise.resolve((status.calendarItems.success = true))
