@@ -965,6 +965,35 @@ export class IccPatientXApi extends iccPatientApi {
                               delSfks[0],
                               ecKeys[0]
                             )
+                            .then(async patient => {
+                              if (delSfks.length > 1) {
+                                return delSfks
+                                  .slice(1)
+                                  .reduce(
+                                    async (
+                                      patientPromise: Promise<models.PatientDto>,
+                                      delSfk: string
+                                    ) => {
+                                      const patient = await patientPromise
+                                      return this.crypto
+                                        .addDelegationsAndEncryptionKeys(
+                                          null,
+                                          patient,
+                                          ownerId,
+                                          delegateId,
+                                          delSfk,
+                                          null
+                                        )
+                                        .catch((e: any) => {
+                                          console.log(e)
+                                          return patient
+                                        })
+                                    },
+                                    Promise.resolve(patient)
+                                  )
+                              }
+                              return patient
+                            })
                             .catch(e => {
                               console.log(e)
                               return patient

@@ -820,7 +820,7 @@ export class IccCryptoXApi {
     ownerId: string,
     delegateId: string,
     secretDelegationKey: string,
-    secretEncryptionKey: string
+    secretEncryptionKey: string | null
   ): Promise<
     | models.PatientDto
     | models.ContactDto
