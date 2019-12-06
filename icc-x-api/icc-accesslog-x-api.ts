@@ -8,7 +8,7 @@ import { utils } from "./crypto/utils"
 
 export class IccAccesslogXApi extends iccAccesslogApi {
   crypto: IccCryptoXApi
-  cryptedKeys = ["detail"]
+  cryptedKeys = ["detail", "objectId"]
 
   constructor(
     host: string,
