@@ -273,7 +273,13 @@ export class IccAccesslogXApi extends iccAccesslogApi {
       .then(als => als[0])
   }
 
-  listAccessLogs(startKey?: string, startDocumentId?: string, limit?: string): never {
+  listAccessLogs(
+    fromEpoch?: number,
+    toEpoch?: number,
+    startKey?: string,
+    startDocumentId?: string,
+    limit?: string
+  ): never {
     throw new Error(
       "Cannot call a method that returns access logs without providing a user for de/encryption"
     )
@@ -281,13 +287,15 @@ export class IccAccesslogXApi extends iccAccesslogApi {
 
   listAccessLogsWithUser(
     user: models.UserDto,
+    fromEpoch?: number,
+    toEpoch?: number,
     startKey?: string,
     startDocumentId?: string,
     limit?: string,
     descending?: boolean
   ): Promise<models.AccessLogPaginatedList | any> {
     return super
-      .listAccessLogs(startKey, startDocumentId, limit, descending)
+      .listAccessLogs(fromEpoch, toEpoch, startKey, startDocumentId, limit, descending)
       .then(accessLog =>
         this.decrypt((user.healthcarePartyId || user.patientId)!, accessLog.rows).then(dr =>
           Object.assign(accessLog, { rows: dr })
