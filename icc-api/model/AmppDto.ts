@@ -96,9 +96,9 @@ export class AmppDto {
 
   dmpps?: Array<models.DmppDto>
 
-  singleUse?: boolean
-
   orphan?: boolean
+
+  singleUse?: boolean
 }
 export namespace AmppDto {
   export enum StatusEnum {
