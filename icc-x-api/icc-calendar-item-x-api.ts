@@ -209,15 +209,18 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
     )
   }
 
-  getCalendarItemsWithIdsWithUser(user: models.UserDto): Promise<Array<CalendarItemDto> | any> {
+  getCalendarItemsWithIdsWithUser(
+    user: models.UserDto,
+    body?: models.ListOfIdsDto
+  ): Promise<Array<CalendarItemDto> | any> {
     return super
-      .getCalendarItemsWithIds()
+      .getCalendarItemsWithIds(body)
       .then(calendarItems =>
         this.decrypt((user.healthcarePartyId || user.patientId)!, calendarItems)
       )
   }
 
-  getCalendarItemsWithIds(): never {
+  getCalendarItemsWithIds(body?: models.ListOfIdsDto): never {
     throw new Error(
       "Cannot call a method that must en/decrypt a calendar item without providing a user for de/encryption"
     )
