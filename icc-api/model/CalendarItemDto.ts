@@ -84,7 +84,9 @@ export class CalendarItemDto {
 
   endTime?: number
 
-  confirmTime?: number
+  confirmationTime?: number
+
+  confirmationId?: string
 
   duration?: number
 
