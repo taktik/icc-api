@@ -188,7 +188,9 @@ export class IccBekmehrXApi extends iccBeKmehrApi {
   ): Promise<Blob> {
     return new Promise((resolve, reject) => {
       const socket = new WebSocket(
-        `${this.wssHost}/be_kmehr/generateSmf${sessionId ? `;jsessionid=${sessionId}` : ""}`
+        `${this.wssHost}/be_kmehr/generateMedicationScheme${
+          sessionId ? `;jsessionid=${sessionId}` : ""
+        }`
       )
       socket.addEventListener("open", function() {
         socket.send(
