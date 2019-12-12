@@ -5,6 +5,7 @@ import * as models from "../icc-api/model/models"
 
 import * as _ from "lodash"
 import { utils } from "./crypto/utils"
+import { AccessLogDto } from "../icc-api/model/models"
 
 export class IccAccesslogXApi extends iccAccesslogApi {
   crypto: IccCryptoXApi
@@ -110,16 +111,15 @@ export class IccAccesslogXApi extends iccAccesslogApi {
   findBy(hcpartyId: string, patient: models.PatientDto) {
     return this.crypto
       .extractDelegationsSFKs(patient, hcpartyId)
-      .then(
-        secretForeignKeys =>
-          secretForeignKeys &&
-          secretForeignKeys.extractedKeys &&
-          secretForeignKeys.extractedKeys.length > 0
-            ? this.findByHCPartyPatientSecretFKeys(
-                secretForeignKeys.hcpartyId!,
-                secretForeignKeys.extractedKeys.join(",")
-              )
-            : Promise.resolve([])
+      .then(secretForeignKeys =>
+        secretForeignKeys &&
+        secretForeignKeys.extractedKeys &&
+        secretForeignKeys.extractedKeys.length > 0
+          ? this.findByHCPartyPatientSecretFKeys(
+              secretForeignKeys.hcpartyId!,
+              secretForeignKeys.extractedKeys.join(",")
+            )
+          : Promise.resolve([])
       )
   }
 
@@ -352,5 +352,47 @@ export class IccAccesslogXApi extends iccAccesslogApi {
           Object.assign(accessLog, { rows: dr })
         )
       )
+  }
+
+  findLatestAccessLogsOfPatientsWithUser(
+    user: models.UserDto,
+    userId: string,
+    limit?: number,
+    startDate?: number
+  ): Promise<models.AccessLogDto[]> {
+    return this.findLatestAccessLogsOfPatients(userId, limit, startDate).then(logs => {
+      return this.decrypt((user.healthcarePartyId || user.patientId)!, logs).then()
+    })
+  }
+
+  findLatestAccessLogsOfPatients(
+    userId: string,
+    limit?: number,
+    startDate?: number,
+    startKey?: string,
+    startDocumentId?: string,
+    foundIds: string[] = []
+  ): Promise<models.AccessLogDto[]> {
+    return super
+      .findByUserAfterDate(userId, "USER_ACCESS", startDate, startKey, startDocumentId, 50, true)
+      .then(({ rows: logs, nextKeyPair }: models.AccessLogPaginatedList) => {
+        const uniqueLogs: models.AccessLogDto[] = _.chain(logs)
+          .reject(log => foundIds.includes(log.id))
+          .uniqBy((log: AccessLogDto) => _.head(log.secretForeignKeys))
+          .value()
+          .slice(0, limit)
+
+        if (uniqueLogs.length < limit && logs.length === 50) {
+          return this.findLatestAccessLogsOfPatients(
+            userId,
+            limit - uniqueLogs.length,
+            startDate,
+            null,
+            nextKeyPair.startKeyDocId,
+            [...foundIds, ..._.map(uniqueLogs, "id")]
+          ).then(logs => [...logs, ...uniqueLogs])
+        }
+        return uniqueLogs
+      })
   }
 }
