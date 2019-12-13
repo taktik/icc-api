@@ -354,45 +354,65 @@ export class IccAccesslogXApi extends iccAccesslogApi {
       )
   }
 
-  findLatestAccessLogsOfPatientsWithUser(
+  async findLatestAccessLogsOfPatientsWithUser(
     user: models.UserDto,
     userId: string,
     limit?: number,
     startDate?: number
   ): Promise<models.AccessLogDto[]> {
-    return this.findLatestAccessLogsOfPatients(userId, limit, startDate).then(logs => {
-      return this.decrypt((user.healthcarePartyId || user.patientId)!, logs).then()
-    })
-  }
+    let foundAccessLogs: models.AccessLogDto[] = [],
+      callCount = 0,
+      startDocumentId
+    const CALL_SIZE = 100
+    const MAX_CALL_COUNT = 100
 
-  findLatestAccessLogsOfPatients(
-    userId: string,
-    limit?: number,
-    startDate?: number,
-    startKey?: string,
-    startDocumentId?: string,
-    foundIds: string[] = []
-  ): Promise<models.AccessLogDto[]> {
-    return super
-      .findByUserAfterDate(userId, "USER_ACCESS", startDate, startKey, startDocumentId, 50, true)
-      .then(({ rows: logs, nextKeyPair }: models.AccessLogPaginatedList) => {
-        const uniqueLogs: models.AccessLogDto[] = _.chain(logs)
-          .reject(log => foundIds.includes(log.id))
-          .uniqBy((log: AccessLogDto) => _.head(log.secretForeignKeys))
-          .value()
-          .slice(0, limit)
+    while (foundAccessLogs.length < limit && callCount < MAX_CALL_COUNT) {
+      const currentLimit = limit - foundAccessLogs.length
+      const {
+        rows: logs,
+        nextKeyPair
+      }: models.AccessLogPaginatedList = await super.findByUserAfterDate(
+        userId,
+        "USER_ACCESS",
+        startDate,
+        null,
+        startDocumentId,
+        CALL_SIZE,
+        true
+      )
+      const logsWithPatientId = await this.decrypt(
+        (user.healthcarePartyId || user.patientId)!,
+        logs
+      ).then(decryptedLogs =>
+        Promise.all(
+          _.map(decryptedLogs, decryptedLog => {
+            return this.crypto
+              .extractCryptedFKs(decryptedLog, user.healthcarePartyId)
+              .then(keys => ({
+                ...decryptedLog,
+                patientId: _.head(keys.extractedKeys)
+              }))
+          })
+        )
+      )
 
-        if (uniqueLogs.length < limit && logs.length === 50) {
-          return this.findLatestAccessLogsOfPatients(
-            userId,
-            limit - uniqueLogs.length,
-            startDate,
-            null,
-            nextKeyPair.startKeyDocId,
-            [...foundIds, ..._.map(uniqueLogs, "id")]
-          ).then(logs => [...logs, ...uniqueLogs])
-        }
-        return uniqueLogs
-      })
+      const uniqueLogs: models.AccessLogDto[] = _.chain(logsWithPatientId)
+        .reject(log => _.some(foundAccessLogs, ({ patientId }) => patientId === log.patientId))
+        .uniqBy((log: AccessLogDto) => log.patientId)
+        .value()
+        .slice(0, currentLimit)
+
+      foundAccessLogs = [...foundAccessLogs, ...uniqueLogs]
+
+      if (logs.length < CALL_SIZE) {
+        break
+      } else {
+        startDocumentId = nextKeyPair.startKeyDocId
+      }
+
+      callCount++
+    }
+
+    return foundAccessLogs
   }
 }
