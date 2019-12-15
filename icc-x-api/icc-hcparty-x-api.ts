@@ -50,7 +50,7 @@ export class IccHcpartyXApi extends iccHcpartyApi {
       const c = this.cache[x]
       return c && c[0] > Date.now() ? c : null
     })
-    const toFetch = _.compact(ids.map((id, idx) => !cached[idx] || null))
+    const toFetch = _.compact(ids.map((id, idx) => (!cached[idx] ? id : null)))
 
     if (!toFetch.length) {
       return Promise.all(cached.map(c => c![1]))
