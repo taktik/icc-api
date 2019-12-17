@@ -24,6 +24,7 @@
 import * as models from "./models"
 export declare class PharmaceuticalFormDto {
   constructor(json: JSON | any)
+  code?: string
   name?: models.SamTextDto
   standardForms?: Array<models.Code>
 }
