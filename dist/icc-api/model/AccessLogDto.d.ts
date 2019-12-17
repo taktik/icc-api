@@ -48,7 +48,6 @@ export declare class AccessLogDto {
   }
   accessType?: string
   date?: number
-  patientId?: string
   objectId?: string
   user?: string
   detail?: string

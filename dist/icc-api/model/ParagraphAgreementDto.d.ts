@@ -49,6 +49,6 @@ export declare class ParagraphAgreementDto {
   agreementAppendices?: Array<models.AgreementAppendixDto>
   documentId?: string
   inTreatment?: boolean
-  accepted?: boolean
   canceled?: boolean
+  accepted?: boolean
 }
