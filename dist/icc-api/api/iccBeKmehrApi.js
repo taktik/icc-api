@@ -145,7 +145,7 @@ class iccBeKmehrApi {
       .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }
-  generateMedicationSchemeExport(patientId, language, version, body) {
+  generateMedicationSchemeExport(patientId, language, version, version2, body) {
     let _body = null
     _body = body
     const _url =
@@ -154,7 +154,8 @@ class iccBeKmehrApi {
       "?ts=" +
       new Date().getTime() +
       (language ? "&language=" + language : "") +
-      (version ? "&version=" + version : "")
+      (version ? "&version=" + version : "") +
+      (version2 ? "&version2=" + version2 : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")

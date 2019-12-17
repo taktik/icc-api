@@ -54,7 +54,7 @@ class IccHcpartyXApi extends iccApi_1.iccHcpartyApi {
         ]
       }
     })
-    return Promise.all(ids.map(id => this.cache[id])).then(hcps => hcps.filter(x => !!x))
+    return Promise.all(ids.map(id => this.cache[id][1])).then(hcps => hcps.filter(x => !!x))
   }
   getCurrentHealthcareParty() {
     return super.getCurrentHealthcareParty().then(hcp => {

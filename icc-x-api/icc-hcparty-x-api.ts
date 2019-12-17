@@ -67,7 +67,7 @@ export class IccHcpartyXApi extends iccHcpartyApi {
       }
     })
 
-    return Promise.all(ids.map(id => this.cache[id])).then(hcps => hcps.filter(x => !!x))
+    return Promise.all(ids.map(id => this.cache[id][1])).then(hcps => hcps.filter(x => !!x))
   }
 
   getCurrentHealthcareParty(): Promise<HealthcarePartyDto | any> {

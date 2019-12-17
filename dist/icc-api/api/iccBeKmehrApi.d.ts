@@ -71,7 +71,8 @@ export declare class iccBeKmehrApi {
   generateMedicationSchemeExport(
     patientId: string,
     language?: string,
-    version?: number,
+    version?: string,
+    version2?: number,
     body?: models.MedicationSchemeExportInfoDto
   ): Promise<ArrayBuffer | any>
   generateNoteExport(
