@@ -72,9 +72,9 @@ export class ParagraphAgreementDto {
 
   documentId?: string
 
-  inTreatment?: boolean
-
   canceled?: boolean
+
+  inTreatment?: boolean
 
   accepted?: boolean
 }
