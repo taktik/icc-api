@@ -64,8 +64,6 @@ export class AccessLogDto {
 
   date?: number
 
-  patientId?: string
-
   objectId?: string
 
   user?: string
