@@ -5,6 +5,7 @@ import * as models from "../icc-api/model/models"
 
 import * as _ from "lodash"
 import { utils } from "./crypto/utils"
+import { AccessLogDto } from "../icc-api/model/models"
 
 export class IccAccesslogXApi extends iccAccesslogApi {
   crypto: IccCryptoXApi
@@ -110,16 +111,15 @@ export class IccAccesslogXApi extends iccAccesslogApi {
   findBy(hcpartyId: string, patient: models.PatientDto) {
     return this.crypto
       .extractDelegationsSFKs(patient, hcpartyId)
-      .then(
-        secretForeignKeys =>
-          secretForeignKeys &&
-          secretForeignKeys.extractedKeys &&
-          secretForeignKeys.extractedKeys.length > 0
-            ? this.findByHCPartyPatientSecretFKeys(
-                secretForeignKeys.hcpartyId!,
-                secretForeignKeys.extractedKeys.join(",")
-              )
-            : Promise.resolve([])
+      .then(secretForeignKeys =>
+        secretForeignKeys &&
+        secretForeignKeys.extractedKeys &&
+        secretForeignKeys.extractedKeys.length > 0
+          ? this.findByHCPartyPatientSecretFKeys(
+              secretForeignKeys.hcpartyId!,
+              secretForeignKeys.extractedKeys.join(",")
+            )
+          : Promise.resolve([])
       )
   }
 
@@ -352,5 +352,67 @@ export class IccAccesslogXApi extends iccAccesslogApi {
           Object.assign(accessLog, { rows: dr })
         )
       )
+  }
+
+  async findLatestAccessLogsOfPatientsWithUser(
+    user: models.UserDto,
+    userId: string,
+    limit?: number,
+    startDate?: number
+  ): Promise<models.AccessLogDto[]> {
+    let foundAccessLogs: models.AccessLogDto[] = [],
+      callCount = 0,
+      startDocumentId
+    const CALL_SIZE = 100
+    const MAX_CALL_COUNT = 100
+
+    while (foundAccessLogs.length < limit && callCount < MAX_CALL_COUNT) {
+      const currentLimit = limit - foundAccessLogs.length
+      const {
+        rows: logs,
+        nextKeyPair
+      }: models.AccessLogPaginatedList = await super.findByUserAfterDate(
+        userId,
+        "USER_ACCESS",
+        startDate,
+        null,
+        startDocumentId,
+        CALL_SIZE,
+        true
+      )
+      const logsWithPatientId = await this.decrypt(
+        (user.healthcarePartyId || user.patientId)!,
+        logs
+      ).then(decryptedLogs =>
+        Promise.all(
+          _.map(decryptedLogs, decryptedLog => {
+            return this.crypto
+              .extractCryptedFKs(decryptedLog, user.healthcarePartyId)
+              .then(keys => ({
+                ...decryptedLog,
+                patientId: _.head(keys.extractedKeys)
+              }))
+          })
+        )
+      )
+
+      const uniqueLogs: models.AccessLogDto[] = _.chain(logsWithPatientId)
+        .reject(log => _.some(foundAccessLogs, ({ patientId }) => patientId === log.patientId))
+        .uniqBy((log: AccessLogDto) => log.patientId)
+        .value()
+        .slice(0, currentLimit)
+
+      foundAccessLogs = [...foundAccessLogs, ...uniqueLogs]
+
+      if (logs.length < CALL_SIZE) {
+        break
+      } else {
+        startDocumentId = nextKeyPair.startKeyDocId
+      }
+
+      callCount++
+    }
+
+    return foundAccessLogs
   }
 }
