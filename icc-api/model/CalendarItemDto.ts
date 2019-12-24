@@ -46,6 +46,8 @@ export class CalendarItemDto {
 
   medicalLocationId?: string
 
+  encryptedSelf?: string
+
   codes?: Array<models.CodeDto>
 
   tags?: Array<models.CodeDto>
@@ -82,7 +84,9 @@ export class CalendarItemDto {
 
   endTime?: number
 
-  confirmTime?: number
+  confirmationTime?: number
+
+  confirmationId?: string
 
   duration?: number
 

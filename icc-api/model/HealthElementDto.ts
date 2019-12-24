@@ -46,6 +46,8 @@ export class HealthElementDto {
 
   medicalLocationId?: string
 
+  encryptedSelf?: string
+
   codes?: Array<models.CodeDto>
 
   tags?: Array<models.CodeDto>
@@ -85,6 +87,4 @@ export class HealthElementDto {
   episodes?: Array<models.EpisodeDto>
 
   careTeam?: Array<models.CareTeamMemberDto>
-
-  encryptedSelf?: string
 }

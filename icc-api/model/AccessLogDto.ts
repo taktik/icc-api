@@ -46,6 +46,8 @@ export class AccessLogDto {
 
   medicalLocationId?: string
 
+  encryptedSelf?: string
+
   codes?: Array<models.CodeDto>
 
   tags?: Array<models.CodeDto>
@@ -64,9 +66,9 @@ export class AccessLogDto {
 
   patientId?: string
 
+  objectId?: string
+
   user?: string
 
   detail?: string
-
-  encryptedSelf?: string
 }

@@ -11,6 +11,7 @@ import { CalendarItemDto, UserDto } from "../icc-api/model/models"
 export class IccCalendarItemXApi extends iccCalendarItemApi {
   i18n: any = i18n
   crypto: IccCryptoXApi
+  cryptedKeys = ["detail", "title"]
 
   constructor(
     host: string,
@@ -139,6 +140,140 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
       })
   }
 
+  findBy(hcpartyId: string, patient: models.PatientDto) {
+    return this.crypto.extractDelegationsSFKs(patient, hcpartyId).then(secretForeignKeys => {
+      return secretForeignKeys &&
+        secretForeignKeys.extractedKeys &&
+        secretForeignKeys.extractedKeys.length > 0
+        ? this.findByHCPartyPatientSecretFKeys(
+            secretForeignKeys.hcpartyId!,
+            secretForeignKeys.extractedKeys.join(",")
+          )
+        : Promise.resolve([])
+    })
+  }
+
+  findByHCPartyPatientSecretFKeys(
+    hcPartyId: string,
+    secretFKeys?: string
+  ): Promise<Array<models.CalendarItemDto> | any> {
+    return super
+      .findByHCPartyPatientSecretFKeys(hcPartyId, secretFKeys)
+      .then(calendarItems => this.decrypt(hcPartyId, calendarItems))
+  }
+
+  createCalendarItem(body?: CalendarItemDto): never {
+    throw new Error(
+      "Cannot call a method that must encrypt a calendar item without providing a user for de/encryption"
+    )
+  }
+
+  createCalendarItemWithHcParty(
+    user: models.UserDto,
+    body?: models.CalendarItemDto
+  ): Promise<models.CalendarItemDto | any> {
+    return body
+      ? this.encrypt(user, [_.cloneDeep(body)]).then(items => super.createCalendarItem(items[0]))
+      : Promise.resolve(null)
+  }
+
+  getCalendarItemWithUser(
+    user: models.UserDto,
+    calendarItemId: string
+  ): Promise<CalendarItemDto | any> {
+    return super
+      .getCalendarItem(calendarItemId)
+      .then(calendarItem =>
+        this.decrypt((user.healthcarePartyId || user.patientId)!, [calendarItem])
+      )
+      .then(cis => cis[0])
+  }
+
+  getCalendarItem(calendarItemId: string): never {
+    throw new Error(
+      "Cannot call a method that must en/decrypt a calendar item without providing a user for de/encryption"
+    )
+  }
+
+  getCalendarItemsWithUser(user: models.UserDto): Promise<Array<CalendarItemDto> | any> {
+    return super
+      .getCalendarItems()
+      .then(calendarItems =>
+        this.decrypt((user.healthcarePartyId || user.patientId)!, calendarItems)
+      )
+  }
+
+  getCalendarItems(): never {
+    throw new Error(
+      "Cannot call a method that must en/decrypt a calendar item without providing a user for de/encryption"
+    )
+  }
+
+  getCalendarItemsWithIdsWithUser(
+    user: models.UserDto,
+    body?: models.ListOfIdsDto
+  ): Promise<Array<CalendarItemDto> | any> {
+    return super
+      .getCalendarItemsWithIds(body)
+      .then(calendarItems =>
+        this.decrypt((user.healthcarePartyId || user.patientId)!, calendarItems)
+      )
+  }
+
+  getCalendarItemsWithIds(body?: models.ListOfIdsDto): never {
+    throw new Error(
+      "Cannot call a method that must en/decrypt a calendar item without providing a user for de/encryption"
+    )
+  }
+
+  getCalendarItemsByPeriodAndHcPartyIdWithUser(
+    user: models.UserDto,
+    startDate?: number,
+    endDate?: number,
+    hcPartyId?: string
+  ): Promise<Array<CalendarItemDto> | any> {
+    return super
+      .getCalendarItemsByPeriodAndHcPartyId(startDate, endDate, hcPartyId)
+      .then(calendarItems =>
+        this.decrypt((user.healthcarePartyId || user.patientId)!, calendarItems)
+      )
+  }
+
+  getCalendarItemsByPeriodAndHcPartyId(
+    startDate?: number,
+    endDate?: number,
+    hcPartyId?: string
+  ): never {
+    throw new Error(
+      "Cannot call a method that must en/decrypt a calendar item without providing a user for de/encryption"
+    )
+  }
+
+  getCalendarsByPeriodAndAgendaIdWithUser(
+    user: models.UserDto,
+    startDate?: number,
+    endDate?: number,
+    agendaId?: string
+  ): Promise<Array<CalendarItemDto> | any> {
+    return super
+      .getCalendarsByPeriodAndAgendaId(startDate, endDate, agendaId)
+      .then(calendarItems =>
+        this.decrypt((user.healthcarePartyId || user.patientId)!, calendarItems)
+      )
+  }
+
+  getCalendarsByPeriodAndAgendaId(startDate?: number, endDate?: number, agendaId?: string): never {
+    throw new Error(
+      "Cannot call a method that must en/decrypt a calendar item without providing a user for de/encryption"
+    )
+  }
+
+  modifyCalendarItem(body?: CalendarItemDto): never {
+    throw new Error(
+      "Cannot call a method that must encrypt a calendar item without providing a user for de/encryption"
+    )
+  }
+
   /**
    * Remove the following delegation objects from the
    * CalendarItem instance: cryptedForeignKeys, secretForeignKeys.
@@ -160,16 +295,7 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
     body?: models.CalendarItemDto
   ): Promise<models.CalendarItemDto | any> {
     return body
-      ? this.encrypt(user, [_.cloneDeep(body)]).then(items => this.modifyCalendarItem(items[0]))
-      : Promise.resolve(null)
-  }
-
-  createCalendarItemWithHcParty(
-    user: models.UserDto,
-    body?: models.CalendarItemDto
-  ): Promise<models.CalendarItemDto | any> {
-    return body
-      ? this.encrypt(user, [_.cloneDeep(body)]).then(items => this.createCalendarItem(items[0]))
+      ? this.encrypt(user, [_.cloneDeep(body)]).then(items => super.modifyCalendarItem(items[0]))
       : Promise.resolve(null)
   }
 
@@ -200,35 +326,82 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
     })
   }
 
-  encrypt(user: models.UserDto, calendarItems: Array<models.CalendarItemDto>) {
-    const hcpId = user.healthcarePartyId || user.patientId
-    const hcpartyId = hcpId!
+  encrypt(
+    user: models.UserDto,
+    calendarItems: Array<models.CalendarItemDto>
+  ): Promise<Array<models.CalendarItemDto>> {
     return Promise.all(
-      calendarItems.map(item =>
-        (item.encryptionKeys && Object.keys(item.encryptionKeys).length
-          ? Promise.resolve(item)
-          : this.initEncryptionKeys(user, item)
+      calendarItems.map(calendarItem =>
+        (calendarItem.encryptionKeys && Object.keys(calendarItem.encryptionKeys).length
+          ? Promise.resolve(calendarItem)
+          : this.initEncryptionKeys(user, calendarItem)
         )
-          .then(ci =>
+          .then(calendarItem =>
             this.crypto.extractKeysFromDelegationsForHcpHierarchy(
-              hcpartyId,
-              ci.id!,
-              ci.encryptionKeys!
+              (user.healthcarePartyId || user.patientId)!,
+              calendarItem.id!,
+              calendarItem.encryptionKeys!
             )
           )
-          .then((sfks: { extractedKeys: Array<string>; hcpartyId: string }) =>
-            this.crypto.AES.importKey("raw", utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
+          .then((eks: { extractedKeys: Array<string>; hcpartyId: string }) =>
+            this.crypto.AES.importKey("raw", utils.hex2ua(eks.extractedKeys[0].replace(/-/g, "")))
           )
-          .then((key: CryptoKey) => {
-            this.crypto.AES.encrypt(
-              key,
-              utils.utf82ua(JSON.stringify({ details: item.details, title: item.title }))
+          .then((key: CryptoKey) =>
+            utils.crypt(
+              calendarItem,
+              (obj: { [key: string]: string }) =>
+                this.crypto.AES.encrypt(key, utils.utf82ua(JSON.stringify(obj))),
+              this.cryptedKeys
             )
-          })
-          .then(() => {
-            return item
-          })
+          )
       )
+    )
+  }
+
+  decrypt(
+    hcpId: string,
+    calendarItems: Array<models.CalendarItemDto>
+  ): Promise<Array<models.CalendarItemDto>> {
+    //First check that we have no dangling delegation
+
+    return Promise.all(
+      calendarItems.map(calendarItem => {
+        return calendarItem.encryptedSelf
+          ? this.crypto
+              .extractKeysFromDelegationsForHcpHierarchy(
+                hcpId!,
+                calendarItem.id!,
+                _.size(calendarItem.encryptionKeys)
+                  ? calendarItem.encryptionKeys!
+                  : calendarItem.delegations!
+              )
+              .then(({ extractedKeys: sfks }) => {
+                if (!sfks || !sfks.length) {
+                  return Promise.resolve(calendarItem)
+                }
+                return this.crypto.AES.importKey(
+                  "raw",
+                  utils.hex2ua(sfks[0].replace(/-/g, ""))
+                ).then(key =>
+                  utils.decrypt(calendarItem, ec =>
+                    this.crypto.AES.decrypt(key, ec).then(dec => {
+                      const jsonContent = dec && utils.ua2utf8(dec)
+                      try {
+                        return JSON.parse(jsonContent)
+                      } catch (e) {
+                        console.log(
+                          "Cannot parse calendar item",
+                          calendarItem.id,
+                          jsonContent || "Invalid content"
+                        )
+                        return {}
+                      }
+                    })
+                  )
+                )
+              })
+          : Promise.resolve(calendarItem)
+      })
     )
   }
 }

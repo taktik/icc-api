@@ -3,6 +3,7 @@ import { iccHcpartyApi } from "../icc-api/iccApi"
 import { XHR } from "../icc-api/api/XHR"
 import { HealthcarePartyDto } from "../icc-api/model/HealthcarePartyDto"
 import * as _ from "lodash"
+import { HcPartyDto } from "fhc-api"
 
 // noinspection JSUnusedGlobalSymbols
 export class IccHcpartyXApi extends iccHcpartyApi {
@@ -44,30 +45,29 @@ export class IccHcpartyXApi extends iccHcpartyApi {
   }
 
   getHealthcareParties(healthcarePartyIds: string): Promise<Array<HealthcarePartyDto> | any> {
-    const ids = healthcarePartyIds.split(",")
+    const ids = healthcarePartyIds.split(",").filter(x => !!x)
     const cached = ids.map(x => {
       const c = this.cache[x]
       return c && c[0] > Date.now() ? c : null
     })
-    const toFetch = _.compact(ids.map((id, idx) => (!cached[idx] && id) || null))
+    const toFetch = _.compact(ids.map((id, idx) => (!cached[idx] ? id : null)))
 
-    return toFetch.length
-      ? super
-          .getHealthcareParties(toFetch.join(","))
-          .then((hcps: Array<HealthcarePartyDto>) =>
-            Promise.all(
-              ids.map(
-                (id, idx) =>
-                  cached[idx]
-                    ? cached[idx]![1]
-                    : (this.cache[id] = [
-                        Date.now() + this.CACHE_RETENTION_IN_MS,
-                        Promise.resolve(hcps.find(h => h.id === id)!)
-                      ])[1]
-              )
-            )
-          )
-      : Promise.all(cached.map(c => c![1]))
+    if (!toFetch.length) {
+      return Promise.all(cached.map(c => c![1]))
+    }
+
+    const prom: Promise<HealthcarePartyDto[]> = super.getHealthcareParties(toFetch.join(","))
+
+    ids.forEach((id, idx) => {
+      if (!cached[idx]) {
+        this.cache[id] = [
+          Date.now() + this.CACHE_RETENTION_IN_MS,
+          prom.then(hcps => hcps.find(h => h.id === id)!)
+        ]
+      }
+    })
+
+    return Promise.all(ids.map(id => this.cache[id][1])).then(hcps => hcps.filter(x => !!x))
   }
 
   getCurrentHealthcareParty(): Promise<HealthcarePartyDto | any> {

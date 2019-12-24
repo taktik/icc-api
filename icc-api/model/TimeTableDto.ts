@@ -46,6 +46,8 @@ export class TimeTableDto {
 
   medicalLocationId?: string
 
+  encryptedSelf?: string
+
   codes?: Array<models.CodeDto>
 
   tags?: Array<models.CodeDto>

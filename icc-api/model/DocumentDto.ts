@@ -46,6 +46,8 @@ export class DocumentDto {
 
   medicalLocationId?: string
 
+  encryptedSelf?: string
+
   codes?: Array<models.CodeDto>
 
   tags?: Array<models.CodeDto>
@@ -75,8 +77,6 @@ export class DocumentDto {
   externalUri?: string
 
   storedICureDocumentId?: string
-
-  encryptedSelf?: string
 }
 export namespace DocumentDto {
   export enum DocumentLocationEnum {

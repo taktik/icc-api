@@ -46,6 +46,8 @@ export class ContactDto {
 
   medicalLocationId?: string
 
+  encryptedSelf?: string
+
   codes?: Array<models.CodeDto>
 
   tags?: Array<models.CodeDto>
@@ -79,6 +81,4 @@ export class ContactDto {
   subContacts?: Array<models.SubContactDto>
 
   services?: Array<models.ServiceDto>
-
-  encryptedSelf?: string
 }

@@ -46,6 +46,8 @@ export class PatientDto {
 
   medicalLocationId?: string
 
+  encryptedSelf?: string
+
   codes?: Array<models.CodeDto>
 
   tags?: Array<models.CodeDto>
@@ -159,8 +161,6 @@ export class PatientDto {
   employementInfos?: Array<models.EmploymentInfoDto>
 
   properties?: Array<models.Property>
-
-  encryptedSelf?: string
 }
 export namespace PatientDto {
   export enum DeactivationReasonEnum {
