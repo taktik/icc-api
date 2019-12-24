@@ -7,6 +7,10 @@ import * as _ from "lodash"
 import { utils } from "./crypto/utils"
 import { AccessLogDto } from "../icc-api/model/models"
 
+export interface AccessLogWithPatientId extends AccessLogDto {
+  patientId: string
+}
+
 export class IccAccesslogXApi extends iccAccesslogApi {
   crypto: IccCryptoXApi
   cryptedKeys = ["detail", "objectId"]
@@ -365,10 +369,10 @@ export class IccAccesslogXApi extends iccAccesslogApi {
   async findLatestAccessLogsOfPatientsWithUser(
     user: models.UserDto,
     userId: string,
-    limit?: number,
+    limit: number = 100,
     startDate?: number
   ): Promise<models.AccessLogDto[]> {
-    let foundAccessLogs: models.AccessLogDto[] = [],
+    let foundAccessLogs: AccessLogWithPatientId[] = [],
       callCount = 0,
       startDocumentId
     const CALL_SIZE = 100
@@ -383,39 +387,44 @@ export class IccAccesslogXApi extends iccAccesslogApi {
         userId,
         "USER_ACCESS",
         startDate,
-        null,
+        undefined,
         startDocumentId,
         CALL_SIZE,
         true
       )
-      const logsWithPatientId = await this.decrypt(
+      const logsWithPatientId: AccessLogWithPatientId[] = await this.decrypt(
         (user.healthcarePartyId || user.patientId)!,
-        logs
+        logs as AccessLogDto[]
       ).then(decryptedLogs =>
         Promise.all(
           _.map(decryptedLogs, decryptedLog => {
             return this.crypto
-              .extractCryptedFKs(decryptedLog, user.healthcarePartyId)
-              .then(keys => ({
-                ...decryptedLog,
-                patientId: _.head(keys.extractedKeys)
-              }))
+              .extractCryptedFKs(decryptedLog, user.healthcarePartyId as string)
+              .then(
+                keys =>
+                  ({
+                    ...decryptedLog,
+                    patientId: _.head(keys.extractedKeys)
+                  } as AccessLogWithPatientId)
+              )
           })
         )
       )
 
-      const uniqueLogs: models.AccessLogDto[] = _.chain(logsWithPatientId)
+      const uniqueLogs: AccessLogWithPatientId[] = _.chain(logsWithPatientId)
         .reject(log => _.some(foundAccessLogs, ({ patientId }) => patientId === log.patientId))
-        .uniqBy((log: AccessLogDto) => log.patientId)
+        .uniqBy((log: AccessLogWithPatientId) => log.patientId)
         .value()
         .slice(0, currentLimit)
 
       foundAccessLogs = [...foundAccessLogs, ...uniqueLogs]
 
-      if (logs.length < CALL_SIZE) {
+      if ((logs || []).length < CALL_SIZE) {
         break
-      } else {
+      } else if (nextKeyPair) {
         startDocumentId = nextKeyPair.startKeyDocId
+      } else {
+        break
       }
 
       callCount++
