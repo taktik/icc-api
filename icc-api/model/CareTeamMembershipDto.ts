@@ -40,6 +40,8 @@ export namespace CareTeamMembershipDto {
   export enum MembershipTypeEnum {
     Doctor = <any>"doctor",
     Mutuality = <any>"mutuality",
-    Patient = <any>"patient"
+    Patient = <any>"patient",
+    Specialist = <any>"specialist",
+    Other = <any>"other"
   }
 }

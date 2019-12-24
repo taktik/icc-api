@@ -54,6 +54,10 @@ export class MedicationDto {
 
   endMoment?: number
 
+  deliveryMoment?: number
+
+  endExecutionMoment?: number
+
   knownUsage?: boolean
 
   frequency?: models.CodeDto

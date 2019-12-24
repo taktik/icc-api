@@ -147,6 +147,8 @@ export class iccAccesslogApi {
       .catch(err => this.handleError(err))
   }
   listAccessLogs(
+    fromEpoch?: number,
+    toEpoch?: number,
     startKey?: string,
     startDocumentId?: string,
     limit?: string,
@@ -159,6 +161,8 @@ export class iccAccesslogApi {
       "/accesslog" +
       "?ts=" +
       new Date().getTime() +
+      (fromEpoch ? "&fromEpoch=" + fromEpoch : "") +
+      (toEpoch ? "&toEpoch=" + toEpoch : "") +
       (startKey ? "&startKey=" + startKey : "") +
       (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
       (limit ? "&limit=" + limit : "") +

@@ -28,6 +28,8 @@ export class PharmaceuticalFormDto {
   constructor(json: JSON | any) {
     Object.assign(this as PharmaceuticalFormDto, json)
   }
+  code?: string
+
   name?: models.SamTextDto
 
   standardForms?: Array<models.Code>

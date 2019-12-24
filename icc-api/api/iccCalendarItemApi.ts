@@ -78,6 +78,27 @@ export class iccCalendarItemApi {
       .then(doc => true)
       .catch(err => this.handleError(err))
   }
+  findByHCPartyPatientSecretFKeys(
+    hcPartyId?: string,
+    secretFKeys?: string
+  ): Promise<Array<models.CalendarItemDto> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/calendarItem/byHcPartySecretForeignKeys" +
+      "?ts=" +
+      new Date().getTime() +
+      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
+      (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.CalendarItemDto(it)))
+      .catch(err => this.handleError(err))
+  }
   getCalendarItem(calendarItemId: string): Promise<models.CalendarItemDto | any> {
     let _body = null
 
@@ -129,6 +150,21 @@ export class iccCalendarItemApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.CalendarItemDto(it)))
       .catch(err => this.handleError(err))
   }
+  getCalendarItemsWithIds(
+    body?: models.ListOfIdsDto
+  ): Promise<Array<models.CalendarItemDto> | any> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + "/calendarItem/byIds" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.CalendarItemDto(it)))
+      .catch(err => this.handleError(err))
+  }
   getCalendarsByPeriodAndAgendaId(
     startDate?: number,
     endDate?: number,
@@ -163,6 +199,19 @@ export class iccCalendarItemApi {
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.CalendarItemDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+  setCalendarItemsDelegations(body?: Array<models.IcureStubDto>): Promise<any | Boolean> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + "/calendarItem/delegations" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => true)
       .catch(err => this.handleError(err))
   }
 }
