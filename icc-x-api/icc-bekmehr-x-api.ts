@@ -71,10 +71,14 @@ export class IccBekmehrXApi extends iccBeKmehrApi {
                 )
               )
           }
-        } else if ((msg.command = "progress")) {
+        } else if (msg.command === "progress") {
           if (progressCallback && msg.body && msg.body[0]) {
             progressCallback(msg.body[0].progress)
           }
+        } else {
+          console.error("error received from backend:" + event.data)
+          reject("websocket error: " + event.data)
+          socket.close(4000, "backend error")
         }
       } else {
         resolve(event.data)
