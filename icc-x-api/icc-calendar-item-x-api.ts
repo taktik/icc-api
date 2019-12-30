@@ -71,7 +71,8 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
   newInstancePatient(
     user: models.UserDto,
     patient: models.PatientDto,
-    ci: any
+    ci: any,
+    delegates: string[] = []
   ): Promise<models.CalendarItemDto> {
     const calendarItem = _.extend(
       {
@@ -87,13 +88,14 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
       ci || {}
     )
 
-    return this.initDelegationsAndEncryptionKeys(user, patient, calendarItem)
+    return this.initDelegationsAndEncryptionKeys(user, patient, calendarItem, delegates)
   }
 
   initDelegationsAndEncryptionKeys(
     user: models.UserDto,
     patient: models.PatientDto,
-    calendarItem: models.CalendarItemDto
+    calendarItem: models.CalendarItemDto,
+    delegates: string[] = []
   ): Promise<models.CalendarItemDto> {
     const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto
@@ -120,9 +122,14 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
         })
 
         let promise = Promise.resolve(calendarItem)
-        ;(user.autoDelegations
-          ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
-          : []
+        _.uniq(
+          delegates.concat(
+            user.autoDelegations
+              ? (user.autoDelegations.all || []).concat(
+                  user.autoDelegations.medicalInformation || []
+                )
+              : []
+          )
         ).forEach(
           delegateId =>
             (promise = promise.then(contact =>
