@@ -11,7 +11,7 @@ import { CalendarItemDto, UserDto } from "../icc-api/model/models"
 export class IccCalendarItemXApi extends iccCalendarItemApi {
   i18n: any = i18n
   crypto: IccCryptoXApi
-  cryptedKeys = ["detail", "title"]
+  cryptedKeys = ["details", "title"]
 
   constructor(
     host: string,
