@@ -1169,6 +1169,147 @@ export class IccPatientXApi extends iccPatientApi {
     })
   }
 
+  export(user: models.UserDto, patId: string, ownerId: string): Promise<{ id: string }> {
+    return this.hcpartyApi.getHealthcareParty(ownerId).then(hcp => {
+      const parentId = hcp.parentId
+
+      return retry(() => this.getPatientWithUser(user, patId))
+        .then(
+          (patient: models.PatientDto) =>
+            patient.encryptionKeys && Object.keys(patient.encryptionKeys || {}).length
+              ? Promise.resolve(patient)
+              : this.initEncryptionKeys(user, patient).then((patient: models.PatientDto) =>
+                  this.modifyPatientWithUser(user, patient)
+                )
+        )
+        .then((patient: models.PatientDto | null) => {
+          if (!patient) {
+            return Promise.resolve({ id: patId })
+          }
+
+          return this.crypto
+            .extractDelegationsSFKsAndEncryptionSKs(patient, ownerId)
+            .then(([delSfks, ecKeys]) => {
+              return delSfks.length
+                ? Promise.all([
+                    retry(() =>
+                      this.helementApi
+                        .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
+                        .then(
+                          hes =>
+                            parentId
+                              ? this.helementApi
+                                  .findByHCPartyPatientSecretFKeys(parentId, delSfks.join(","))
+                                  .then(moreHes => _.uniqBy(hes.concat(moreHes), "id"))
+                              : hes
+                        )
+                    ) as Promise<Array<models.IcureStubDto>>,
+                    retry(() =>
+                      this.formApi
+                        .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
+                        .then(
+                          frms =>
+                            parentId
+                              ? this.formApi
+                                  .findByHCPartyPatientSecretFKeys(parentId, delSfks.join(","))
+                                  .then(moreFrms => _.uniqBy(frms.concat(moreFrms), "id"))
+                              : frms
+                        )
+                    ) as Promise<Array<models.FormDto>>,
+                    retry(() =>
+                      this.contactApi
+                        .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
+                        .then(
+                          ctcs =>
+                            parentId
+                              ? this.contactApi
+                                  .findByHCPartyPatientSecretFKeys(parentId, delSfks.join(","))
+                                  .then(moreCtcs => _.uniqBy(ctcs.concat(moreCtcs), "id"))
+                              : ctcs
+                        )
+                    ) as Promise<Array<models.ContactDto>>,
+                    retry(() =>
+                      this.invoiceApi
+                        .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
+                        .then(
+                          ivs =>
+                            parentId
+                              ? this.invoiceApi
+                                  .findByHCPartyPatientSecretFKeys(parentId, delSfks.join(","))
+                                  .then(moreIvs => _.uniqBy(ivs.concat(moreIvs), "id"))
+                              : ivs
+                        )
+                    ) as Promise<Array<models.IcureStubDto>>,
+                    retry(() =>
+                      this.classificationApi
+                        .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
+                        .then(
+                          cls =>
+                            parentId
+                              ? this.classificationApi
+                                  .findByHCPartyPatientSecretFKeys(parentId, delSfks.join(","))
+                                  .then(moreCls => _.uniqBy(cls.concat(moreCls), "id"))
+                              : cls
+                        )
+                    ) as Promise<Array<models.ClassificationDto>>,
+                    retry(() =>
+                      this.calendarItemApi
+                        .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
+                        .then(
+                          cls =>
+                            parentId
+                              ? this.calendarItemApi
+                                  .findByHCPartyPatientSecretFKeys(parentId, delSfks.join(","))
+                                  .then(moreCls => _.uniqBy(cls.concat(moreCls), "id"))
+                              : cls
+                        )
+                    ) as Promise<Array<models.CalendarItemDto>>
+                  ]).then(([hes, frms, ctcs, ivs, cls, cis]) => {
+                    const docIds: { [key: string]: number } = {}
+                    ctcs.forEach(
+                      (c: models.ContactDto) =>
+                        c.services &&
+                        c.services.forEach(
+                          s =>
+                            s.content &&
+                            Object.values(s.content).forEach(
+                              c => c.documentId && (docIds[c.documentId] = 1)
+                            )
+                        )
+                    )
+
+                    return retry(() =>
+                      this.documentApi.getDocuments(new ListOfIdsDto({ ids: Object.keys(docIds) }))
+                    ).then((docs: Array<DocumentDto>) => {
+                      return {
+                        id: patId,
+                        patient: patient,
+                        contacts: ctcs,
+                        forms: frms,
+                        healthElements: hes,
+                        invoices: ivs,
+                        classifications: cls,
+                        calItems: cis,
+                        documents: docs
+                      }
+                    })
+                  })
+                : Promise.resolve({
+                    id: patId,
+                    patient: patient,
+                    contacts: [],
+                    forms: [],
+                    healthElements: [],
+                    invoices: [],
+                    classifications: [],
+                    calItems: [],
+                    documents: []
+                  })
+            })
+        })
+    })
+  }
+
   checkInami(inami: String): Boolean {
     const num_inami = inami.replace(new RegExp("[^(0-9)]", "g"), "")
 
