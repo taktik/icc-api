@@ -1263,10 +1263,12 @@ export class IccPatientXApi extends iccPatientApi {
                           calendarItems = _.uniqBy(calendarItems.concat(moreCalendarItems), "id")
                         }
 
-                        console.log("#### calendar item export worked ####")
                         return calendarItems
                       } catch (ex) {
-                        console.log(`ownerId: ${ownerId} ${ex}`)
+                        console.log(
+                          `exception occured exporting calendarItem for ownerId: ${ownerId} - ${ex}`
+                        )
+                        throw ex
                       }
                     }) as Promise<Array<models.CalendarItemDto>>
                   ]).then(([hes, frms, ctcs, ivs, cls, cis]) => {
