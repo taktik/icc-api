@@ -1072,7 +1072,7 @@ export class IccPatientXApi extends iccPatientApi {
                                 .setContactsDelegations(ctcsStubs)
                                 .then(() => {
                                   status.contacts.success = true
-                                  status.contacts.modified += 1
+                                  status.contacts.modified += ctcsStubs.length
                                 })
                                 .catch(e => (status.contacts.error = e))) ||
                             Promise.resolve((status.contacts.success = true))
@@ -1087,7 +1087,7 @@ export class IccPatientXApi extends iccPatientApi {
                                 .setHealthElementsDelegations(hes)
                                 .then(() => {
                                   status.healthElements.success = true
-                                  status.healthElements.modified += 1
+                                  status.healthElements.modified += hes.length
                                 })
                                 .catch(e => (status.healthElements.error = e))) ||
                             Promise.resolve((status.healthElements.success = true))
@@ -1102,7 +1102,7 @@ export class IccPatientXApi extends iccPatientApi {
                                 .setFormsDelegations(frms)
                                 .then(() => {
                                   status.forms.success = true
-                                  status.forms.modified += 1
+                                  status.forms.modified += frms.length
                                 })
                                 .catch(e => (status.forms.error = e))) ||
                             Promise.resolve((status.forms.success = true))
@@ -1118,7 +1118,7 @@ export class IccPatientXApi extends iccPatientApi {
                                 .setInvoicesDelegations(ivs)
                                 .then(() => {
                                   status.invoices.success = true
-                                  status.invoices.modified += 1
+                                  status.invoices.modified += ivs.length
                                 })
                                 .catch(e => (status.invoices.error = e))) ||
                             Promise.resolve((status.invoices.success = true))
@@ -1133,7 +1133,7 @@ export class IccPatientXApi extends iccPatientApi {
                                 .setDocumentsDelegations(docs)
                                 .then(() => {
                                   status.documents.success = true
-                                  status.documents.modified += 1
+                                  status.documents.modified += docs.length
                                 })
                                 .catch(e => (status.documents.error = e))) ||
                             Promise.resolve((status.documents.success = true))
@@ -1148,7 +1148,7 @@ export class IccPatientXApi extends iccPatientApi {
                                 .setClassificationsDelegations(cls)
                                 .then(() => {
                                   status.classifications.success = true
-                                  status.classifications.modified += 1
+                                  status.classifications.modified += cls.length
                                 })
                                 .catch(e => (status.classifications.error = e))) ||
                             Promise.resolve((status.classifications.success = true))
@@ -1163,7 +1163,7 @@ export class IccPatientXApi extends iccPatientApi {
                                 .setCalendarItemsDelegations(cis)
                                 .then(() => {
                                   status.calendarItems.success = true
-                                  status.calendarItems.modified += 1
+                                  status.calendarItems.modified += cis.length
                                 })
                                 .catch(e => (status.calendarItems.error = e))) ||
                             Promise.resolve((status.calendarItems.success = true))
