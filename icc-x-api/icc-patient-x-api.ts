@@ -11,7 +11,14 @@ import { IccClassificationXApi } from "./icc-classification-x-api"
 import * as _ from "lodash"
 import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
-import { DocumentDto, ListOfIdsDto } from "../icc-api/model/models"
+import {
+  CalendarItemDto,
+  ClassificationDto,
+  DocumentDto,
+  IcureStubDto,
+  InvoiceDto,
+  ListOfIdsDto
+} from "../icc-api/model/models"
 import { retry } from "./utils/net-utils"
 import { utils } from "./crypto/utils"
 import { DelegationDto } from "../icc-api/model/models"
@@ -894,14 +901,14 @@ export class IccPatientXApi extends iccPatientApi {
                       encryptionKeys: _.clone(c.encryptionKeys)
                     }))
                     const oHes = hes.map(x =>
-                      _.assign({}, x, {
+                      _.assign(new IcureStubDto({}), x, {
                         delegations: _.clone(x.delegations),
                         cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
                         encryptionKeys: _.clone(x.encryptionKeys)
                       })
                     )
                     const oFrms = frms.map(x =>
-                      _.assign({}, x, {
+                      _.assign(new IcureStubDto({}), x, {
                         delegations: _.clone(x.delegations),
                         cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
                         encryptionKeys: _.clone(x.encryptionKeys)
@@ -915,21 +922,21 @@ export class IccPatientXApi extends iccPatientApi {
                       })
                     )
                     const oIvs = ivs.map(x =>
-                      _.assign({}, x, {
+                      _.assign(new InvoiceDto({}), x, {
                         delegations: _.clone(x.delegations),
                         cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
                         encryptionKeys: _.clone(x.encryptionKeys)
                       })
                     )
                     const oCls = cls.map(x =>
-                      _.assign({}, x, {
+                      _.assign(new ClassificationDto({}), x, {
                         delegations: _.clone(x.delegations),
                         cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
                         encryptionKeys: _.clone(x.encryptionKeys)
                       })
                     )
                     const oCis = cis.map(x =>
-                      _.assign({}, x, {
+                      _.assign(new CalendarItemDto({}), x, {
                         delegations: _.clone(x.delegations),
                         cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
                         encryptionKeys: _.clone(x.encryptionKeys)
@@ -1175,7 +1182,11 @@ export class IccPatientXApi extends iccPatientApi {
                           console.log(
                             `c: ${status.contacts.modified}, he: ${
                               status.healthElements.modified
-                            }, frms: ${status.forms.modified}, ivs: ${status.invoices.modified}`
+                            }, docs: ${status.documents.modified}, frms: ${
+                              status.forms.modified
+                            }, ivs: ${status.invoices.modified}, cis: ${
+                              status.calendarItems.modified
+                            }, cls: ${status.classifications.modified}`
                           )
                           return { patient: p, statuses: status }
                         })
