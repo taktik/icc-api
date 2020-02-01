@@ -613,7 +613,7 @@ export class IccCryptoXApi {
                         delegatedTo: delegateId,
                         key: this._utils.ua2hex(cryptedForeignKey)
                       },
-                      k: modifiedObject.id + ":" + secretIdOfModifiedObject!
+                      k: modifiedObject.id + ":" + parentObject.id!
                     }
                   ]
                 : []
