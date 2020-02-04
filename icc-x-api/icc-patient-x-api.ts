@@ -716,7 +716,7 @@ export class IccPatientXApi extends iccPatientApi {
               this.crypto.extractDelegationsSFKs(x, ownerId),
               this.crypto.extractEncryptionsSKs(x, ownerId)
             ]).then(([sfks, eks]) => {
-              console.log(`share ${x.id} to ${delegateId}`)
+              //console.log(`share ${x.id} to ${delegateId}`)
               return this.crypto
                 .addDelegationsAndEncryptionKeys(
                   patient,
@@ -742,34 +742,44 @@ export class IccPatientXApi extends iccPatientApi {
       const status = {
         contacts: {
           success: allTags.includes("medicalInformation") || allTags.includes("all") ? false : null,
-          error: null
+          error: null,
+          modified: 0
         },
         forms: {
           success: allTags.includes("medicalInformation") || allTags.includes("all") ? false : null,
-          error: null
+          error: null,
+          modified: 0
         },
         healthElements: {
           success: allTags.includes("medicalInformation") || allTags.includes("all") ? false : null,
-          error: null
+          error: null,
+          modified: 0
         },
         invoices: {
           success:
             allTags.includes("financialInformation") || allTags.includes("all") ? false : null,
-          error: null
+          error: null,
+          modified: 0
         },
         documents: {
           success: allTags.includes("medicalInformation") || allTags.includes("all") ? false : null,
-          error: null
+          error: null,
+          modified: 0
         },
         classifications: {
           success: allTags.includes("medicalInformation") || allTags.includes("all") ? false : null,
-          error: null
+          error: null,
+          modified: 0
         },
         calendarItems: {
           success: allTags.includes("medicalInformation") || allTags.includes("all") ? false : null,
-          error: null
+          error: null,
+          modified: 0
         },
-        patient: { success: false, error: null } as { success: boolean; error: Error | null }
+        patient: { success: false, error: null, modified: 0 } as {
+          success: boolean
+          error: Error | null
+        }
       }
       return retry(() => this.getPatientWithUser(user, patId))
         .then((patient: models.PatientDto) =>
@@ -948,7 +958,7 @@ export class IccPatientXApi extends iccPatientApi {
                         const tags = delegationTags[delegateId]
                         markerPromise = markerPromise.then(() => {
                           //Share patient
-                          console.log(`share ${patient.id} to ${delegateId}`)
+                          //console.log(`share ${patient.id} to ${delegateId}`)
                           return this.crypto
                             .addDelegationsAndEncryptionKeys(
                               null,
@@ -1045,7 +1055,7 @@ export class IccPatientXApi extends iccPatientApi {
 
                       return markerPromise
                         .then(() => {
-                          console.log("scd")
+                          //console.log("scd")
                           return (
                             ((allTags.includes("medicalInformation") || allTags.includes("all")) &&
                               (ctcsStubs &&
@@ -1053,80 +1063,101 @@ export class IccPatientXApi extends iccPatientApi {
                                 !_.isEqual(oCtcsStubs, ctcsStubs)) &&
                               this.contactApi
                                 .setContactsDelegations(ctcsStubs)
-                                .then(() => (status.contacts.success = true))
+                                .then(() => {
+                                  status.contacts.success = true
+                                  status.contacts.modified += ctcsStubs.length
+                                })
                                 .catch(e => (status.contacts.error = e))) ||
                             Promise.resolve((status.contacts.success = true))
                           )
                         })
                         .then(() => {
-                          console.log("shed")
+                          //console.log("shed")
                           return (
                             ((allTags.includes("medicalInformation") || allTags.includes("all")) &&
                               (hes && hes.length && !_.isEqual(oHes, hes)) &&
                               this.helementApi
                                 .setHealthElementsDelegations(hes)
-                                .then(() => (status.healthElements.success = true))
+                                .then(() => {
+                                  status.healthElements.success = true
+                                  status.healthElements.modified += hes.length
+                                })
                                 .catch(e => (status.healthElements.error = e))) ||
                             Promise.resolve((status.healthElements.success = true))
                           )
                         })
                         .then(() => {
-                          console.log("sfd")
+                          //console.log("sfd")
                           return (
                             ((allTags.includes("medicalInformation") || allTags.includes("all")) &&
                               (frms && frms.length && !_.isEqual(oFrms, frms)) &&
                               this.formApi
                                 .setFormsDelegations(frms)
-                                .then(() => (status.forms.success = true))
+                                .then(() => {
+                                  status.forms.success = true
+                                  status.forms.modified += frms.length
+                                })
                                 .catch(e => (status.forms.error = e))) ||
                             Promise.resolve((status.forms.success = true))
                           )
                         })
                         .then(() => {
-                          console.log("sid")
+                          //console.log("sid")
                           return (
                             ((allTags.includes("financialInformation") ||
                               allTags.includes("all")) &&
                               (ivs && ivs.length && !_.isEqual(oIvs, ivs)) &&
                               this.invoiceApi
                                 .setInvoicesDelegations(ivs)
-                                .then(() => (status.invoices.success = true))
+                                .then(() => {
+                                  status.invoices.success = true
+                                  status.invoices.modified += ivs.length
+                                })
                                 .catch(e => (status.invoices.error = e))) ||
                             Promise.resolve((status.invoices.success = true))
                           )
                         })
                         .then(() => {
-                          console.log("sdd")
+                          //console.log("sdd")
                           return (
                             ((allTags.includes("medicalInformation") || allTags.includes("all")) &&
                               (docs && docs.length && !_.isEqual(oDocs, docs)) &&
                               this.documentApi
                                 .setDocumentsDelegations(docs)
-                                .then(() => (status.documents.success = true))
+                                .then(() => {
+                                  status.documents.success = true
+                                  status.documents.modified += docs.length
+                                })
                                 .catch(e => (status.documents.error = e))) ||
                             Promise.resolve((status.documents.success = true))
                           )
                         })
                         .then(() => {
-                          console.log("scld")
+                          //console.log("scld")
                           return (
                             ((allTags.includes("medicalInformation") || allTags.includes("all")) &&
                               (cls && cls.length && !_.isEqual(oCls, cls)) &&
                               this.classificationApi
                                 .setClassificationsDelegations(cls)
-                                .then(() => (status.classifications.success = true))
+                                .then(() => {
+                                  status.classifications.success = true
+                                  status.classifications.modified += cls.length
+                                })
                                 .catch(e => (status.classifications.error = e))) ||
                             Promise.resolve((status.classifications.success = true))
                           )
                         })
                         .then(() => {
-                          console.log("scid")
+                          //console.log("scid")
                           return (
                             ((allTags.includes("medicalInformation") || allTags.includes("all")) &&
                               (cis && cis.length && !_.isEqual(oCis, cis)) &&
                               this.calendarItemApi
                                 .setCalendarItemsDelegations(cis)
-                                .then(() => (status.calendarItems.success = true))
+                                .then(() => {
+                                  status.calendarItems.success = true
+                                  status.calendarItems.modified += cis.length
+                                })
                                 .catch(e => (status.calendarItems.error = e))) ||
                             Promise.resolve((status.calendarItems.success = true))
                           )
@@ -1134,6 +1165,11 @@ export class IccPatientXApi extends iccPatientApi {
                         .then(() => this.modifyPatientWithUser(user, patient))
                         .then(p => {
                           status.patient.success = true
+                          console.log(
+                            `c: ${status.contacts.modified}, he: ${
+                              status.healthElements.modified
+                            }, frms: ${status.forms.modified}, ivs: ${status.invoices.modified}`
+                          )
                           return { patient: p, statuses: status }
                         })
                         .catch(e => {
@@ -1263,10 +1299,12 @@ export class IccPatientXApi extends iccPatientApi {
                           calendarItems = _.uniqBy(calendarItems.concat(moreCalendarItems), "id")
                         }
 
-                        console.log("#### calendar item export worked ####")
                         return calendarItems
                       } catch (ex) {
-                        console.log(`ownerId: ${ownerId} ${ex}`)
+                        console.log(
+                          `exception occured exporting calendarItem for ownerId: ${ownerId} - ${ex}`
+                        )
+                        throw ex
                       }
                     }) as Promise<Array<models.CalendarItemDto>>
                   ]).then(([hes, frms, ctcs, ivs, cls, cis]) => {

@@ -103,7 +103,8 @@ export namespace XHR {
             }
           : {}
       ),
-      timeout
+      timeout,
+      fetchImpl
     ).then(function(response) {
       if (response.status >= 400) {
         throw new XHRError(response.statusText, response.status, response.status, response.headers)
