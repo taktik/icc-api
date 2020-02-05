@@ -6,6 +6,9 @@ import * as _ from "lodash"
 export class UtilsClass {
   private crypto: Crypto
 
+  private textDecoder = TextDecoder ? new TextDecoder() : null
+  private textEncoder = TextEncoder ? new TextEncoder() : null
+
   constructor(
     crypto: Crypto = typeof window !== "undefined"
       ? window.crypto
@@ -168,6 +171,10 @@ export class UtilsClass {
   }
 
   utf82ua(str: string): Uint8Array {
+    if (this.textEncoder) {
+      return this.textEncoder.encode(str)
+    }
+
     const utf8 = new Uint8Array(4 * str.length)
     let j = 0
     for (var i = 0; i < str.length; i++) {
@@ -205,6 +212,10 @@ export class UtilsClass {
   }
 
   ua2utf8(arrBuf: Uint8Array | ArrayBuffer): string {
+    if (this.textDecoder) {
+      return this.textDecoder.decode(arrBuf)
+    }
+
     var out, i, len, c, u
     var char2, char3, char4
 
