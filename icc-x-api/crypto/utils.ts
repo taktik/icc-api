@@ -204,7 +204,8 @@ export class UtilsClass {
 
   ua2utf8(arrBuf: Uint8Array | ArrayBuffer): string {
     if (this.textDecoder) {
-      return this.textDecoder.decode(arrBuf)
+      // if arrBuf is undefined, imitate the JS implementation below which returns an empty string
+      return arrBuf ? this.textDecoder.decode(arrBuf) : ""
     }
 
     var out, i, len, c, u
