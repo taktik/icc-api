@@ -4,20 +4,11 @@ import { Moment } from "moment"
 import * as _ from "lodash"
 
 export class UtilsClass {
-  private crypto: Crypto
-
   private textDecoder = TextDecoder ? new TextDecoder() : null
   private textEncoder = TextEncoder ? new TextEncoder() : null
 
-  constructor(
-    crypto: Crypto = typeof window !== "undefined"
-      ? window.crypto
-      : typeof self !== "undefined"
-        ? self.crypto
-        : ({} as Crypto)
-  ) {
-    this.crypto = crypto
-  }
+  constructor() {}
+
   /**
    * String to Uint8Array
    *
