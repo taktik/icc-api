@@ -211,7 +211,9 @@ export class UtilsClass {
     var out, i, len, c, u
     var char2, char3, char4
 
-    const array = new Uint8Array(arrBuf)
+    // avoid applying the Uint8Array constructor: on ArrayBuffer it creates a
+    // view but on Uint8Array it creates a copy
+    const array = ArrayBuffer.isView(arrBuf) ? arrBuf : new Uint8Array(arrBuf)
 
     out = ""
     len = array.length || array.byteLength
