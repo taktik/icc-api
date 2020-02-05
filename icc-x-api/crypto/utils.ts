@@ -262,6 +262,25 @@ export class UtilsClass {
     return out
   }
 
+  /**
+   * Provide a view over the given Uint8Array where any trailing null bytes at
+   * the end are truncated.
+   *
+   * This can be used to ignore null bytes at the end of a padded UTF-8 string
+   * without needing to copy that string, assuming code point U+0000 is encoded
+   * in one null byte according to standards rather than in a multi-byte
+   * overlong form.
+   */
+  truncateTrailingNulls(a: Uint8Array) {
+    let end = a.byteLength - 1
+    while (a[end] === 0 && end >= 0) {
+      end--
+    }
+    // end is now either the last non-null position in a or -1; in the latter
+    // case the returned array will have length 0.
+    return a.subarray(0, end + 1)
+  }
+
   base64url(b: Uint8Array): string {
     return base64js
       .fromByteArray(b)
