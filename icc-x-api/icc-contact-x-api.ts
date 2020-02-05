@@ -502,7 +502,9 @@ export class IccContactXApi extends iccContactApi {
                                 c => {
                                   let jsonContent
                                   try {
-                                    jsonContent = utils.ua2utf8(c!).replace(/\0+$/g, "")
+                                    jsonContent = utils.ua2utf8(
+                                      utils.truncateTrailingNull(new Uint8Array(c!))
+                                    )
                                     resolve(c && { content: JSON.parse(jsonContent) })
                                   } catch (e) {
                                     console.log(
@@ -526,7 +528,9 @@ export class IccContactXApi extends iccContactApi {
                                 s => {
                                   let jsonContent
                                   try {
-                                    jsonContent = utils.ua2utf8(s!).replace(/\0+$/g, "")
+                                    jsonContent = utils.ua2utf8(
+                                      utils.truncateTrailingNulls(new Uint8Array(s!))
+                                    )
                                     resolve(s && JSON.parse(jsonContent))
                                   } catch (e) {
                                     console.log(
@@ -620,7 +624,9 @@ export class IccContactXApi extends iccContactApi {
                               c => {
                                 let jsonContent
                                 try {
-                                  jsonContent = utils.ua2utf8(c!).replace(/\0+$/g, "")
+                                  jsonContent = utils.ua2utf8(
+                                    utils.truncateTrailingNulls(new Uint8Array(c!))
+                                  )
                                   resolve(c && { content: JSON.parse(jsonContent) })
                                 } catch (e) {
                                   console.log(
@@ -644,7 +650,9 @@ export class IccContactXApi extends iccContactApi {
                               s => {
                                 let jsonContent
                                 try {
-                                  jsonContent = utils.ua2utf8(s!).replace(/\0+$/g, "")
+                                  jsonContent = utils.ua2utf8(
+                                    utils.truncateTrailingNulls(new Uint8Array(s!))
+                                  )
                                   resolve(s && JSON.parse(jsonContent))
                                 } catch (e) {
                                   console.log(
