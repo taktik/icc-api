@@ -373,12 +373,12 @@ export class IccAccesslogXApi extends iccAccesslogApi {
     startDate?: number
   ): Promise<models.AccessLogDto[]> {
     let foundAccessLogs: AccessLogWithPatientId[] = [],
-      callCount = 0,
+      currentIteration = 0,
       startDocumentId
-    const CALL_SIZE = 100
-    const MAX_CALL_COUNT = 100
+    const numberRequestedAccessLogs = 100
+    const MAX_WHILE_ITERATIONS = 5
 
-    while (foundAccessLogs.length < limit && callCount < MAX_CALL_COUNT) {
+    while (foundAccessLogs.length < limit && currentIteration < MAX_WHILE_ITERATIONS) {
       const currentLimit = limit - foundAccessLogs.length
       const {
         rows: logs,
@@ -389,7 +389,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
         startDate,
         undefined,
         startDocumentId,
-        CALL_SIZE,
+        numberRequestedAccessLogs,
         true
       )
       const logsWithPatientId: AccessLogWithPatientId[] = await this.decrypt(
@@ -419,7 +419,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
 
       foundAccessLogs = [...foundAccessLogs, ...uniqueLogs]
 
-      if ((logs || []).length < CALL_SIZE) {
+      if ((logs || []).length < numberRequestedAccessLogs) {
         break
       } else if (nextKeyPair) {
         startDocumentId = nextKeyPair.startKeyDocId
@@ -427,7 +427,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
         break
       }
 
-      callCount++
+      currentIteration++
     }
 
     return foundAccessLogs

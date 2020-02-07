@@ -1056,7 +1056,7 @@ export class IccCryptoXApi {
     }
     const eckeysForAllDelegates = document.encryptionKeys
     if (!eckeysForAllDelegates || !Object.keys(eckeysForAllDelegates).length) {
-      console.log(`There is no encryption key in document (${document.id})`)
+      //console.log(`There is no encryption key in document (${document.id})`)
       return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
     }
     return this.extractKeysFromDelegationsForHcpHierarchy(
@@ -1231,10 +1231,10 @@ export class IccCryptoXApi {
             if (!genericSecretId) console.warn("Secret id is empty; " + details)
 
             if (objectId !== masterId) {
-              console.log(
+              /*console.log(
                 "Cryptographic mistake: object ID is not equal to the expected concatenated id within decrypted generic delegation. This may happen when patients have been merged; " +
                   details
-              )
+              )*/
             }
 
             return genericSecretId
