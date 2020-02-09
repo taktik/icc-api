@@ -74,6 +74,25 @@ export class iccAuthApi {
       .then(doc => new models.AuthenticationResponse(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+  token(method: string, path: string): Promise<string | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/token/{method}/{path}"
+        .replace("{method}", method)
+        .replace("{path}", encodeURIComponent(path)) +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => doc.body)
+      .catch(err => this.handleError(err))
+  }
+
   logoutPost(): Promise<models.AuthenticationResponse | any> {
     let _body = null
 

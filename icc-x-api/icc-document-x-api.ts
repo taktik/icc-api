@@ -1,4 +1,4 @@
-import { iccDocumentApi } from "../icc-api/iccApi"
+import { iccAuthApi, iccDocumentApi } from "../icc-api/iccApi"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 
 import * as _ from "lodash"
@@ -11,6 +11,7 @@ import { utils } from "./crypto/utils"
 export class IccDocumentXApi extends iccDocumentApi {
   crypto: IccCryptoXApi
   fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response>
+  authApi: iccAuthApi
 
   /** maps invalid UTI values to corresponding MIME type for backward-compatibility (pre-v1.0.117) */
   compatUtiRevDefs: { [key: string]: string } = {
@@ -547,12 +548,14 @@ export class IccDocumentXApi extends iccDocumentApi {
     host: string,
     headers: { [key: string]: string },
     crypto: IccCryptoXApi,
+    authApi: iccAuthApi,
     fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
     "undefined"
       ? window.fetch
       : (self.fetch as any)
   ) {
     super(host, headers, fetchImpl)
+    this.authApi = authApi
     this.crypto = crypto
     this.fetchImpl = fetchImpl
   }
@@ -752,19 +755,19 @@ export class IccDocumentXApi extends iccDocumentApi {
     documentId: string,
     attachmentId: string,
     sfks: Array<{ delegatorId: string; key: CryptoKey }>,
-    sessionId?: string,
     fileName?: string
   ) {
-    return (
-      this.host +
-      `/document/${documentId}/attachment/${attachmentId}${
-        sessionId ? `;jsessionid=${sessionId}` : ""
-      }` +
-      (sfks && sfks.length ? "?enckeys=" + sfks.join(",") : "") +
-      (fileName && fileName.length
-        ? `${sfks && sfks.length ? "&" : "?"}fileName=${encodeURIComponent(fileName)}`
-        : "")
-    )
+    return this.authApi
+      .token("GET", `/rest/v1/document/${documentId}/attachment/${attachmentId}`)
+      .then(
+        token =>
+          this.host +
+          `/document/${documentId}/attachment/${attachmentId}${token ? `;tokenid=${token}` : ""}` +
+          (sfks && sfks.length ? "?enckeys=" + sfks.join(",") : "") +
+          (fileName && fileName.length
+            ? `${sfks && sfks.length ? "&" : "?"}fileName=${encodeURIComponent(fileName)}`
+            : "")
+      )
   }
 
   // noinspection JSUnusedGlobalSymbols
