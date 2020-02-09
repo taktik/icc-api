@@ -62,6 +62,7 @@ export class iccAuthApi {
       .then(doc => new models.AuthenticationResponse(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+
   logout(): Promise<models.AuthenticationResponse | any> {
     let _body = null
 
@@ -74,12 +75,13 @@ export class iccAuthApi {
       .then(doc => new models.AuthenticationResponse(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+
   token(method: string, path: string): Promise<string | any> {
     let _body = null
 
     const _url =
       this.host +
-      "/token/{method}/{path}"
+      "/auth/token/{method}/{path}"
         .replace("{method}", method)
         .replace("{path}", encodeURIComponent(path)) +
       "?ts=" +
