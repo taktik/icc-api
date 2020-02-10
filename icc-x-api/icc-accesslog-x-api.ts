@@ -373,22 +373,25 @@ export class IccAccesslogXApi extends iccAccesslogApi {
     startDate?: number
   ): Promise<models.AccessLogDto[]> {
     let foundAccessLogs: AccessLogWithPatientId[] = [],
-      currentIteration = 0,
-      startDocumentId
+      nextKeyPair: models.PaginatedDocumentKeyIdPair | undefined = undefined
     const numberRequestedAccessLogs = 100
     const MAX_WHILE_ITERATIONS = 5
 
-    while (foundAccessLogs.length < limit && currentIteration < MAX_WHILE_ITERATIONS) {
+    for (
+      let currentIteration = 0;
+      foundAccessLogs.length < limit && currentIteration < MAX_WHILE_ITERATIONS;
+      currentIteration++
+    ) {
       const currentLimit = limit - foundAccessLogs.length
       const {
         rows: logs,
-        nextKeyPair
+        nextKeyPair: newNextKeyPair
       }: models.AccessLogPaginatedList = await super.findByUserAfterDate(
         userId,
         "USER_ACCESS",
         startDate,
-        undefined,
-        startDocumentId,
+        nextKeyPair && JSON.stringify(nextKeyPair.startKey!),
+        nextKeyPair && nextKeyPair.startKeyDocId!,
         numberRequestedAccessLogs,
         true
       )
@@ -421,13 +424,11 @@ export class IccAccesslogXApi extends iccAccesslogApi {
 
       if ((logs || []).length < numberRequestedAccessLogs) {
         break
-      } else if (nextKeyPair) {
-        startDocumentId = nextKeyPair.startKeyDocId
+      } else if (newNextKeyPair) {
+        nextKeyPair = newNextKeyPair
       } else {
         break
       }
-
-      currentIteration++
     }
 
     return foundAccessLogs
