@@ -87,7 +87,7 @@ export class iccBeResultImportApi {
         .replace("{language}", language + "") +
       "?ts=" +
       new Date().getTime() +
-      (protocolIds ? "&protocolIds=" + protocolIds : "") +
+      (protocolIds ? "&protocolIds=" + encodeURIComponent(protocolIds) : "") +
       (formIds ? "&formIds=" + formIds : "") +
       (planOfActionId ? "&planOfActionId=" + planOfActionId : "") +
       (enckeys ? "&enckeys=" + enckeys : "")
