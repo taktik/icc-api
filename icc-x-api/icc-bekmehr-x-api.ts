@@ -2,6 +2,7 @@ import * as models from "../icc-api/model/models"
 import { iccAuthApi, iccBeKmehrApi } from "../icc-api/iccApi"
 import { IccContactXApi } from "./icc-contact-x-api"
 import { IccHelementXApi } from "./icc-helement-x-api"
+import { utils } from "./crypto/utils"
 
 export class IccBekmehrXApi extends iccBeKmehrApi {
   private readonly ctcApi: IccContactXApi
@@ -39,26 +40,26 @@ export class IccBekmehrXApi extends iccBeKmehrApi {
   ) {
     const that = this
 
+    const send = (command: string, uuid: string, body: any) => {
+      const data = JSON.stringify({ command, uuid, body })
+      //socket.send(data.length > 65000 ? utils.text2ua(data).buffer : data)
+      socket.send(data)
+    }
+
     const messageHandler = (msg: any) => {
       if (msg.command === "decrypt") {
         if (msg.type === "ContactDto") {
           that.ctcApi
             .decrypt(healthcarePartyId, msg.body)
-            .then(res =>
-              socket.send(JSON.stringify({ command: "decryptResponse", uuid: msg.uuid, body: res }))
-            )
+            .then(res => send("decryptResponse", msg.uuid, res))
         } else if (msg.type === "HealthElementDto") {
           that.helementApi
             .decrypt(healthcarePartyId, msg.body)
-            .then(res =>
-              socket.send(JSON.stringify({ command: "decryptResponse", uuid: msg.uuid, body: res }))
-            )
+            .then(res => send("decryptResponse", msg.uuid, res))
         } else {
           that.ctcApi
             .decryptServices(healthcarePartyId, msg.body)
-            .then(res =>
-              socket.send(JSON.stringify({ command: "decryptResponse", uuid: msg.uuid, body: res }))
-            )
+            .then(res => send("decryptResponse", msg.uuid, res))
         }
       } else if ((msg.command = "progress")) {
         if (progressCallback && msg.body && msg.body[0]) {
@@ -80,7 +81,7 @@ export class IccBekmehrXApi extends iccBeKmehrApi {
 
           if (firstChar === 0x7b) {
             const tr = new FileReader()
-            br.onload = function(e) {
+            tr.onload = function(e) {
               const msg = e.target && JSON.parse(e.target.result)
               messageHandler(msg)
             }
