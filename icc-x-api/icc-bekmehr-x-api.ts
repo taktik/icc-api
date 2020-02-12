@@ -25,7 +25,6 @@ export class IccBekmehrXApi extends iccBeKmehrApi {
     this.ctcApi = ctcApi
     this.helementApi = helementApi
 
-    const auth = this.headers.find(h => h.header === "Authorization")
     this.wssHost = new URL(this.host, window.location.href).href
       .replace(/^http/, "ws")
       .replace(/\/rest\/v.+/, "/ws")
@@ -34,49 +33,64 @@ export class IccBekmehrXApi extends iccBeKmehrApi {
   socketEventListener(
     socket: WebSocket,
     healthcarePartyId: string,
-    resolve: (value?: Promise<Blob>) => void,
+    resolve: (value?: Blob) => void,
     reject: (reason?: any) => void,
     progressCallback?: (progress: number) => void
   ) {
     const that = this
+
+    const messageHandler = (msg: any) => {
+      if (msg.command === "decrypt") {
+        if (msg.type === "ContactDto") {
+          that.ctcApi
+            .decrypt(healthcarePartyId, msg.body)
+            .then(res =>
+              socket.send(JSON.stringify({ command: "decryptResponse", uuid: msg.uuid, body: res }))
+            )
+        } else if (msg.type === "HealthElementDto") {
+          that.helementApi
+            .decrypt(healthcarePartyId, msg.body)
+            .then(res =>
+              socket.send(JSON.stringify({ command: "decryptResponse", uuid: msg.uuid, body: res }))
+            )
+        } else {
+          that.ctcApi
+            .decryptServices(healthcarePartyId, msg.body)
+            .then(res =>
+              socket.send(JSON.stringify({ command: "decryptResponse", uuid: msg.uuid, body: res }))
+            )
+        }
+      } else if ((msg.command = "progress")) {
+        if (progressCallback && msg.body && msg.body[0]) {
+          progressCallback(msg.body[0].progress)
+        }
+      }
+    }
+
     return (event: MessageEvent) => {
       if (typeof event.data === "string") {
         const msg = JSON.parse(event.data)
+        messageHandler(msg)
+      } else {
+        const blob: Blob = event.data
+        var subBlob = blob.slice(0, 1)
+        const br = new FileReader()
+        br.onload = function(e) {
+          const firstChar = e.target && new Uint8Array(e.target.result)[0]
 
-        if (msg.command === "decrypt") {
-          if (msg.type === "ContactDto") {
-            that.ctcApi
-              .decrypt(healthcarePartyId, msg.body)
-              .then(res =>
-                socket.send(
-                  JSON.stringify({ command: "decryptResponse", uuid: msg.uuid, body: res })
-                )
-              )
-          } else if (msg.type === "HealthElementDto") {
-            that.helementApi
-              .decrypt(healthcarePartyId, msg.body)
-              .then(res =>
-                socket.send(
-                  JSON.stringify({ command: "decryptResponse", uuid: msg.uuid, body: res })
-                )
-              )
+          if (firstChar === 0x7b) {
+            const tr = new FileReader()
+            br.onload = function(e) {
+              const msg = e.target && JSON.parse(e.target.result)
+              messageHandler(msg)
+            }
+            tr.readAsBinaryString(blob)
           } else {
-            that.ctcApi
-              .decryptServices(healthcarePartyId, msg.body)
-              .then(res =>
-                socket.send(
-                  JSON.stringify({ command: "decryptResponse", uuid: msg.uuid, body: res })
-                )
-              )
-          }
-        } else if ((msg.command = "progress")) {
-          if (progressCallback && msg.body && msg.body[0]) {
-            progressCallback(msg.body[0].progress)
+            resolve(blob)
+            socket.close(1000, "Ok")
           }
         }
-      } else {
-        resolve(event.data)
-        socket.close(1000, "Ok")
+        br.readAsArrayBuffer(subBlob)
       }
     }
   }
