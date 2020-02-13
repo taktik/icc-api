@@ -22,7 +22,7 @@ export class IccCryptoXApi {
     return this._AES
   }
   hcPartyKeysCache: {
-    [key: string]: { delegatorId: string; key: CryptoKey }
+    [key: string]: { delegatorId: string; key: CryptoKey; rawKey: string }
   } = {}
   hcPartiesRequestsCache: {
     [key: string]:
@@ -184,7 +184,7 @@ export class IccCryptoXApi {
     delegateHcPartyId: string,
     encryptedHcPartyKey: string,
     encryptedForDelegator: boolean = false //TODO: suggestion: break this into 2 separate methods: decryptDelegatorEncryptedHcPartyKey() and decryptDelegateEncryptedHcPartyKey()
-  ): Promise<{ delegatorId: string; key: CryptoKey }> {
+  ): Promise<{ delegatorId: string; key: CryptoKey; rawKey: string }> {
     //TODO: why the delegatorId is also returned?
     const cacheKey =
       delegatorId + "|" + delegateHcPartyId + "|" + (encryptedForDelegator ? "->" : "<-")
@@ -211,12 +211,20 @@ export class IccCryptoXApi {
           )
           throw e
         })
-        .then(decryptedHcPartyKey => this._AES.importKey("raw", decryptedHcPartyKey))
+        .then(decryptedHcPartyKey =>
+          this._AES
+            .importKey("raw", decryptedHcPartyKey)
+            .then(decryptedImportedHcPartyKey => ({
+              decryptedHcPartyKey,
+              decryptedImportedHcPartyKey
+            }))
+        )
         .then(
-          decryptedImportedHcPartyKey =>
+          ({ decryptedHcPartyKey, decryptedImportedHcPartyKey }) =>
             (this.hcPartyKeysCache[cacheKey] = {
               delegatorId: delegatorId,
-              key: decryptedImportedHcPartyKey
+              key: decryptedImportedHcPartyKey,
+              rawKey: this.utils.ua2hex(new Uint8Array(decryptedHcPartyKey))
             })
         )
     }
