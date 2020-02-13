@@ -185,7 +185,6 @@ export class IccCryptoXApi {
     encryptedHcPartyKey: string,
     encryptedForDelegator: boolean = false //TODO: suggestion: break this into 2 separate methods: decryptDelegatorEncryptedHcPartyKey() and decryptDelegateEncryptedHcPartyKey()
   ): Promise<{ delegatorId: string; key: CryptoKey; rawKey: string }> {
-    //TODO: why the delegatorId is also returned?
     const cacheKey =
       delegatorId + "|" + delegateHcPartyId + "|" + (encryptedForDelegator ? "->" : "<-")
     const res = this.hcPartyKeysCache[cacheKey]
@@ -212,12 +211,10 @@ export class IccCryptoXApi {
           throw e
         })
         .then(decryptedHcPartyKey =>
-          this._AES
-            .importKey("raw", decryptedHcPartyKey)
-            .then(decryptedImportedHcPartyKey => ({
-              decryptedHcPartyKey,
-              decryptedImportedHcPartyKey
-            }))
+          this._AES.importKey("raw", decryptedHcPartyKey).then(decryptedImportedHcPartyKey => ({
+            decryptedHcPartyKey,
+            decryptedImportedHcPartyKey
+          }))
         )
         .then(
           ({ decryptedHcPartyKey, decryptedImportedHcPartyKey }) =>
@@ -402,13 +399,17 @@ export class IccCryptoXApi {
       )
       .then(importedAESHcPartyKey =>
         Promise.all([
-          this._AES.encrypt(importedAESHcPartyKey.key, utils.text2ua(
-            createdObject.id + ":" + secretId
-          ).buffer as ArrayBuffer),
+          this._AES.encrypt(
+            importedAESHcPartyKey.key,
+            utils.text2ua(createdObject.id + ":" + secretId).buffer as ArrayBuffer,
+            importedAESHcPartyKey.rawKey
+          ),
           parentObject
-            ? this._AES.encrypt(importedAESHcPartyKey.key, utils.text2ua(
-                createdObject.id + ":" + parentObject.id
-              ).buffer as ArrayBuffer)
+            ? this._AES.encrypt(
+                importedAESHcPartyKey.key,
+                utils.text2ua(createdObject.id + ":" + parentObject.id).buffer as ArrayBuffer,
+                importedAESHcPartyKey.rawKey
+              )
             : Promise.resolve(null)
         ])
       )
@@ -520,7 +521,11 @@ export class IccCryptoXApi {
               (d.key &&
                 d.owner === ownerId &&
                 this._AES
-                  .decrypt(importedAESHcPartyKey.key, this._utils.hex2ua(d.key))
+                  .decrypt(
+                    importedAESHcPartyKey.key,
+                    this._utils.hex2ua(d.key),
+                    importedAESHcPartyKey.rawKey
+                  )
                   .catch(() => {
                     console.log(
                       `Cannot decrypt delegation from ${d.owner} to ${
@@ -538,7 +543,11 @@ export class IccCryptoXApi {
               (d.key &&
                 d.owner === ownerId &&
                 this._AES
-                  .decrypt(importedAESHcPartyKey.key, this._utils.hex2ua(d.key))
+                  .decrypt(
+                    importedAESHcPartyKey.key,
+                    this._utils.hex2ua(d.key),
+                    importedAESHcPartyKey.rawKey
+                  )
                   .catch(() => {
                     console.log(
                       `Cannot decrypt cryptedForeignKeys from ${d.owner} to ${
@@ -551,14 +560,19 @@ export class IccCryptoXApi {
               Promise.resolve(null)
           ) as Array<Promise<ArrayBuffer>>),
 
-          this._AES.encrypt(importedAESHcPartyKey.key, utils.text2ua(
-            modifiedObject.id + ":" + secretIdOfModifiedObject!!
-          ).buffer as ArrayBuffer),
+          this._AES.encrypt(
+            importedAESHcPartyKey.key,
+            utils.text2ua(modifiedObject.id + ":" + secretIdOfModifiedObject!!)
+              .buffer as ArrayBuffer,
+            importedAESHcPartyKey.rawKey
+          ),
 
           parentObject
-            ? this._AES.encrypt(importedAESHcPartyKey.key, utils.text2ua(
-                modifiedObject.id + ":" + parentObject.id
-              ).buffer as ArrayBuffer)
+            ? this._AES.encrypt(
+                importedAESHcPartyKey.key,
+                utils.text2ua(modifiedObject.id + ":" + parentObject.id).buffer as ArrayBuffer,
+                importedAESHcPartyKey.rawKey
+              )
             : Promise.resolve(null)
         ])
       )
@@ -739,25 +753,31 @@ export class IccCryptoXApi {
       .then(encryptedHcPartyKey =>
         this.decryptHcPartyKey(ownerId, delegateId, encryptedHcPartyKey, true)
       )
-      .then(decryptedHcPartyKey =>
+      .then(importedAESHcPartyKey =>
         Promise.all([
           Promise.all(((modifiedObject.encryptionKeys || {})[delegateId] || []).map(
             (d: DelegationDto) =>
               (d.key &&
                 d.owner === ownerId &&
-                this._AES.decrypt(decryptedHcPartyKey.key, this._utils.hex2ua(d.key)).catch(() => {
-                  console.log(
-                    `Cannot decrypt encryption key from ${d.owner} to ${
-                      d.delegatedTo
-                    } for object with id ${modifiedObject.id}:`,
-                    modifiedObject
+                this._AES
+                  .decrypt(
+                    importedAESHcPartyKey.key,
+                    this._utils.hex2ua(d.key),
+                    importedAESHcPartyKey.rawKey
                   )
-                  return null
-                })) ||
+                  .catch(() => {
+                    console.log(
+                      `Cannot decrypt encryption key from ${d.owner} to ${
+                        d.delegatedTo
+                      } for object with id ${modifiedObject.id}:`,
+                      modifiedObject
+                    )
+                    return null
+                  })) ||
               Promise.resolve(null)
           ) as Array<Promise<ArrayBuffer>>),
           this._AES.encrypt(
-            decryptedHcPartyKey.key,
+            importedAESHcPartyKey.key,
             utils.text2ua(modifiedObject.id + ":" + secretEncryptionKeyOfObject)
           )
         ])
