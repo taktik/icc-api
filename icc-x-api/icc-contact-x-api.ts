@@ -434,18 +434,20 @@ export class IccContactXApi extends iccContactApi {
                     ctc.encryptionKeys!
                   )
                 )
-                .then((sfks: { extractedKeys: Array<string>; hcpartyId: string }) =>
-                  this.crypto.AES.importKey(
-                    "raw",
-                    utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, ""))
-                  )
-                )
-                .then((key: CryptoKey) =>
+                .then((sfks: { extractedKeys: Array<string>; hcpartyId: string }) => {
+                  const rawKey = sfks.extractedKeys[0].replace(/-/g, "")
+                  return this.crypto.AES.importKey("raw", utils.hex2ua(rawKey)).then(dk => ({
+                    key: dk,
+                    rawKey
+                  }))
+                })
+                .then(({ key, rawKey }) =>
                   Promise.all(
                     ctc.services!.map(svc =>
                       this.crypto.AES.encrypt(
                         key,
-                        utils.utf82ua(JSON.stringify({ content: svc.content }))
+                        utils.utf82ua(JSON.stringify({ content: svc.content })),
+                        rawKey
                       )
                     )
                   )
@@ -459,7 +461,8 @@ export class IccContactXApi extends iccContactApi {
                     .then(() =>
                       this.crypto.AES.encrypt(
                         key,
-                        utils.utf82ua(JSON.stringify({ descr: ctc.descr }))
+                        utils.utf82ua(JSON.stringify({ descr: ctc.descr })),
+                        rawKey
                       )
                     )
                     .then(es => {
@@ -468,6 +471,17 @@ export class IccContactXApi extends iccContactApi {
                       return ctc
                     })
                 )
+                .then(ctc => {
+                  console.log("Try to decrypt ")
+                  this.decrypt(hcpartyId, [ctc]).then(c => {
+                    console.log("With key:", c[0])
+                  })
+                  this.decrypt("cbafa3bc-67d2-48dc-a806-880f745fd346", [ctc]).then(c => {
+                    console.log("With key:", c[0])
+                  })
+
+                  return ctc
+                })
       )
     )
   }
@@ -489,14 +503,17 @@ export class IccContactXApi extends iccContactApi {
             return Promise.all(
               ctc.services!.map(svc => {
                 if (svc.encryptedContent || svc.encryptedSelf) {
-                  return this.crypto.AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
+                  const rawKey = sfks[0].replace(/-/g, "")
+                  return this.crypto.AES.importKey("raw", utils.hex2ua(rawKey))
+                    .then(dk => ({ key: dk, rawKey }))
                     .then(
-                      (key: CryptoKey) =>
+                      ({ key, rawKey }) =>
                         new Promise((resolve: (value: any) => any) => {
                           svc.encryptedContent
                             ? this.crypto.AES.decrypt(
                                 key,
-                                utils.text2ua(atob(svc.encryptedContent!))
+                                utils.text2ua(atob(svc.encryptedContent!)),
+                                rawKey
                               ).then(
                                 c => {
                                   let jsonContent
@@ -520,7 +537,8 @@ export class IccContactXApi extends iccContactApi {
                             : svc.encryptedSelf
                               ? this.crypto.AES.decrypt(
                                   key,
-                                  utils.text2ua(atob(svc.encryptedSelf!))
+                                  utils.text2ua(atob(svc.encryptedSelf!)),
+                                  rawKey
                                 ).then(
                                   s => {
                                     let jsonContent
@@ -555,37 +573,41 @@ export class IccContactXApi extends iccContactApi {
             ).then((svcs: Array<models.ServiceDto>) => {
               ctc.services = svcs
               //console.log('ES:'+ctc.encryptedSelf)
+              const rawKey = sfks[0].replace(/-/g, "")
               return ctc.encryptedSelf
-                ? this.crypto.AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(
-                    key =>
-                      new Promise<models.ContactDto>(
-                        (resolve: (value: models.ContactDto) => any) => {
-                          this.crypto.AES.decrypt(
-                            key,
-                            utils.text2ua(atob(ctc.encryptedSelf!))
-                          ).then(
-                            dec => {
-                              let jsonContent
-                              try {
-                                jsonContent = dec && utils.ua2utf8(dec)
-                                jsonContent && _.assign(ctc, JSON.parse(jsonContent))
-                              } catch (e) {
-                                console.log(
-                                  "Cannot parse ctc",
-                                  ctc.id,
-                                  jsonContent || "<- Invalid encoding"
-                                )
+                ? this.crypto.AES.importKey("raw", utils.hex2ua(rawKey))
+                    .then(dk => ({ key: dk, rawKey }))
+                    .then(
+                      ({ key, rawKey }) =>
+                        new Promise<models.ContactDto>(
+                          (resolve: (value: models.ContactDto) => any) => {
+                            this.crypto.AES.decrypt(
+                              key,
+                              utils.text2ua(atob(ctc.encryptedSelf!)),
+                              rawKey
+                            ).then(
+                              dec => {
+                                let jsonContent
+                                try {
+                                  jsonContent = dec && utils.ua2utf8(dec)
+                                  jsonContent && _.assign(ctc, JSON.parse(jsonContent))
+                                } catch (e) {
+                                  console.log(
+                                    "Cannot parse ctc",
+                                    ctc.id,
+                                    jsonContent || "<- Invalid encoding"
+                                  )
+                                }
+                                resolve(ctc)
+                              },
+                              () => {
+                                console.log("Cannot decrypt contact", ctc.id)
+                                resolve(ctc)
                               }
-                              resolve(ctc)
-                            },
-                            () => {
-                              console.log("Cannot decrypt contact", ctc.id)
-                              resolve(ctc)
-                            }
-                          )
-                        }
-                      )
-                  )
+                            )
+                          }
+                        )
+                    )
                 : Promise.resolve(ctc)
             })
           })

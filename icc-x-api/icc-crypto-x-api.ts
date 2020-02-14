@@ -292,7 +292,7 @@ export class IccCryptoXApi {
     //TODO:  suggested name: getDecryptedHcPKeysSharedBetweenDelegateAndDelegators
     delegatorsHcPartyIdsSet: Array<string>,
     delegateHcPartyId: string
-  ): Promise<Array<{ delegatorId: string; key: CryptoKey }>> {
+  ): Promise<Array<{ delegatorId: string; key: CryptoKey; rawKey: string }>> {
     return (
       this.hcPartyKeysRequestsCache[delegateHcPartyId] ||
       (this.hcPartyKeysRequestsCache[delegateHcPartyId] = this.getHcPartyKeysForDelegate(
@@ -338,7 +338,7 @@ export class IccCryptoXApi {
     healthcarePartyId: string,
     delegations: { [key: string]: Array<models.DelegationDto> },
     fallbackOnParent = true
-  ): Promise<Array<{ delegatorId: string; key: CryptoKey }>> {
+  ): Promise<Array<{ delegatorId: string; key: CryptoKey; rawKey: string }>> {
     const delegatorIds: { [key: string]: boolean } = {}
     const delegationsArray = delegations[healthcarePartyId]
     if (delegationsArray && delegationsArray.length) {
@@ -1144,9 +1144,11 @@ export class IccCryptoXApi {
       (delegations[hcpartyId] && delegations[hcpartyId].length
         ? this.decryptAndImportAesHcPartyKeysInDelegations(hcpartyId, delegations, false).then(
             decryptedAndImportedAesHcPartyKeys => {
-              const collatedAesKeysFromDelegatorToHcpartyId: { [key: string]: CryptoKey } = {}
+              const collatedAesKeysFromDelegatorToHcpartyId: {
+                [key: string]: { key: CryptoKey; rawKey: string }
+              } = {}
               decryptedAndImportedAesHcPartyKeys.forEach(
-                k => (collatedAesKeysFromDelegatorToHcpartyId[k.delegatorId] = k.key)
+                k => (collatedAesKeysFromDelegatorToHcpartyId[k.delegatorId] = k)
               )
               return this.decryptKeyInDelegationLikes(
                 delegations[hcpartyId],
@@ -1194,9 +1196,11 @@ export class IccCryptoXApi {
       (delegations[hcpartyId] && delegations[hcpartyId].length
         ? this.decryptAndImportAesHcPartyKeysInDelegations(hcpartyId, delegations, false).then(
             decryptedAndImportedAesHcPartyKeys => {
-              const collatedAesKeysFromDelegatorToHcpartyId: { [key: string]: CryptoKey } = {}
+              const collatedAesKeysFromDelegatorToHcpartyId: {
+                [key: string]: { key: CryptoKey; rawKey: string }
+              } = {}
               decryptedAndImportedAesHcPartyKeys.forEach(
-                k => (collatedAesKeysFromDelegatorToHcpartyId[k.delegatorId] = k.key)
+                k => (collatedAesKeysFromDelegatorToHcpartyId[k.delegatorId] = k)
               )
               return this.decryptKeyInDelegationLikes(
                 delegations[hcpartyId],
@@ -1238,7 +1242,7 @@ export class IccCryptoXApi {
   decryptKeyInDelegationLikes(
     //TODO: suggested name: getSecretIdsFromGenericDelegations
     delegationsArray: Array<models.DelegationDto>,
-    aesKeys: { [key: string]: CryptoKey },
+    aesKeys: { [key: string]: { key: CryptoKey; rawKey: string } },
     masterId: string
   ): Promise<Array<string>> {
     const decryptPromises: Array<Promise<string | undefined>> = []
@@ -1248,8 +1252,9 @@ export class IccCryptoXApi {
       decryptPromises.push(
         this._AES
           .decrypt(
-            aesKeys[genericDelegationItem.owner!!],
-            this._utils.hex2ua(genericDelegationItem.key!!)
+            aesKeys[genericDelegationItem.owner!!].key,
+            this._utils.hex2ua(genericDelegationItem.key!!),
+            aesKeys[genericDelegationItem.owner!!].rawKey
           )
           .then((decryptedGenericDelegationKey: ArrayBuffer) => {
             const results = utils.ua2text(decryptedGenericDelegationKey).split(":")
