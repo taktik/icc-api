@@ -322,7 +322,7 @@ export class IccContactXApi extends iccContactApi {
     return super
       .filterBy(startKey, startDocumentId, limit, body)
       .then(ctcs =>
-        this.decrypt(user.healthcarePartyId!, ctcs.rows).then(decryptedRows =>
+        this.decrypt(user.healthcarePartyId! || user.patientId!, ctcs.rows).then(decryptedRows =>
           Object.assign(ctcs, { rows: decryptedRows })
         )
       )
@@ -338,10 +338,11 @@ export class IccContactXApi extends iccContactApi {
   ): Promise<models.ContactPaginatedList | any> {
     return super
       .listContactsByOpeningDate(startKey, endKey, hcpartyid, startDocumentId, limit)
-      .then(ctcs => {
-        ctcs.rows = this.decrypt((user.healthcarePartyId || user.patientId)!, ctcs.rows)
-        return ctcs
-      })
+      .then(ctcs =>
+        this.decrypt(user.healthcarePartyId! || user.patientId!, ctcs.rows).then(decryptedRows =>
+          Object.assign(ctcs, { rows: decryptedRows })
+        )
+      )
   }
 
   findByHCPartyFormIdWithUser(
@@ -501,7 +502,9 @@ export class IccContactXApi extends iccContactApi {
                                 c => {
                                   let jsonContent
                                   try {
-                                    jsonContent = utils.ua2utf8(c!).replace(/\0+$/g, "")
+                                    jsonContent = utils.ua2utf8(
+                                      utils.truncateTrailingNulls(new Uint8Array(c!))
+                                    )
                                     resolve(c && { content: JSON.parse(jsonContent) })
                                   } catch (e) {
                                     console.log(
@@ -525,7 +528,9 @@ export class IccContactXApi extends iccContactApi {
                                 s => {
                                   let jsonContent
                                   try {
-                                    jsonContent = utils.ua2utf8(s!).replace(/\0+$/g, "")
+                                    jsonContent = utils.ua2utf8(
+                                      utils.truncateTrailingNulls(new Uint8Array(s!))
+                                    )
                                     resolve(s && JSON.parse(jsonContent))
                                   } catch (e) {
                                     console.log(
@@ -619,7 +624,9 @@ export class IccContactXApi extends iccContactApi {
                               c => {
                                 let jsonContent
                                 try {
-                                  jsonContent = utils.ua2utf8(c!).replace(/\0+$/g, "")
+                                  jsonContent = utils.ua2utf8(
+                                    utils.truncateTrailingNulls(new Uint8Array(c!))
+                                  )
                                   resolve(c && { content: JSON.parse(jsonContent) })
                                 } catch (e) {
                                   console.log(
@@ -643,7 +650,9 @@ export class IccContactXApi extends iccContactApi {
                               s => {
                                 let jsonContent
                                 try {
-                                  jsonContent = utils.ua2utf8(s!).replace(/\0+$/g, "")
+                                  jsonContent = utils.ua2utf8(
+                                    utils.truncateTrailingNulls(new Uint8Array(s!))
+                                  )
                                   resolve(s && JSON.parse(jsonContent))
                                 } catch (e) {
                                   console.log(

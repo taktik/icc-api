@@ -119,8 +119,8 @@ export class IccCryptoXApi {
     crypto: Crypto = typeof window !== "undefined"
       ? window.crypto
       : typeof self !== "undefined"
-      ? self.crypto
-      : ({} as Crypto)
+        ? self.crypto
+        : ({} as Crypto)
   ) {
     this.hcpartyBaseApi = hcpartyBaseApi
     this.patientBaseApi = patientBaseApi
@@ -128,7 +128,7 @@ export class IccCryptoXApi {
 
     this._AES = new AESUtils(crypto)
     this._RSA = new RSAUtils(crypto)
-    this._utils = new UtilsClass(crypto)
+    this._utils = new UtilsClass()
     this._shamir = new ShamirClass(crypto)
   }
 
@@ -341,10 +341,11 @@ export class IccCryptoXApi {
         delegatorIds[delegationItem.owner!] = true //TODO: why is set to true?
       })
     } else if (fallbackOnParent) {
-      return this.getHcpOrPatient(healthcarePartyId).then(hcp =>
-        (hcp as any).parentId
-          ? this.decryptAndImportAesHcPartyKeysInDelegations((hcp as any).parentId, delegations)
-          : Promise.resolve([])
+      return this.getHcpOrPatient(healthcarePartyId).then(
+        hcp =>
+          (hcp as any).parentId
+            ? this.decryptAndImportAesHcPartyKeysInDelegations((hcp as any).parentId, delegations)
+            : Promise.resolve([])
       )
     }
 
@@ -514,7 +515,9 @@ export class IccCryptoXApi {
                   .decrypt(importedAESHcPartyKey.key, this._utils.hex2ua(d.key))
                   .catch(() => {
                     console.log(
-                      `Cannot decrypt delegation from ${d.owner} to ${d.delegatedTo} for object with id ${modifiedObject.id}:`,
+                      `Cannot decrypt delegation from ${d.owner} to ${
+                        d.delegatedTo
+                      } for object with id ${modifiedObject.id}:`,
                       modifiedObject
                     )
                     return null
@@ -530,7 +533,9 @@ export class IccCryptoXApi {
                   .decrypt(importedAESHcPartyKey.key, this._utils.hex2ua(d.key))
                   .catch(() => {
                     console.log(
-                      `Cannot decrypt cryptedForeignKeys from ${d.owner} to ${d.delegatedTo} for object with id ${modifiedObject.id}:`,
+                      `Cannot decrypt cryptedForeignKeys from ${d.owner} to ${
+                        d.delegatedTo
+                      } for object with id ${modifiedObject.id}:`,
                       modifiedObject
                     )
                     return null
@@ -734,7 +739,9 @@ export class IccCryptoXApi {
                 d.owner === ownerId &&
                 this._AES.decrypt(decryptedHcPartyKey.key, this._utils.hex2ua(d.key)).catch(() => {
                   console.log(
-                    `Cannot decrypt encryption key from ${d.owner} to ${d.delegatedTo} for object with id ${modifiedObject.id}:`,
+                    `Cannot decrypt encryption key from ${d.owner} to ${
+                      d.delegatedTo
+                    } for object with id ${modifiedObject.id}:`,
                     modifiedObject
                   )
                   return null
@@ -862,19 +869,20 @@ export class IccCryptoXApi {
         )
       : Promise.resolve({ delegations: {}, cryptedForeignKeys: {} })
     )
-      .then(extendedChildObjectSPKsAndCFKs =>
-        secretEncryptionKey
-          ? this.appendEncryptionKeys(child, ownerId, delegateId, secretEncryptionKey).then(
-              //TODO: extendedDelegationsAndCryptedForeignKeys and appendEncryptionKeys can be done in parallel
-              extendedChildObjectEKs => ({
+      .then(
+        extendedChildObjectSPKsAndCFKs =>
+          secretEncryptionKey
+            ? this.appendEncryptionKeys(child, ownerId, delegateId, secretEncryptionKey).then(
+                //TODO: extendedDelegationsAndCryptedForeignKeys and appendEncryptionKeys can be done in parallel
+                extendedChildObjectEKs => ({
+                  extendedSPKsAndCFKs: extendedChildObjectSPKsAndCFKs,
+                  extendedEKs: extendedChildObjectEKs
+                })
+              )
+            : Promise.resolve({
                 extendedSPKsAndCFKs: extendedChildObjectSPKsAndCFKs,
-                extendedEKs: extendedChildObjectEKs
+                extendedEKs: { encryptionKeys: {} }
               })
-            )
-          : Promise.resolve({
-              extendedSPKsAndCFKs: extendedChildObjectSPKsAndCFKs,
-              extendedEKs: { encryptionKeys: {} }
-            })
       )
       .then(
         ({
@@ -1056,7 +1064,7 @@ export class IccCryptoXApi {
     }
     const eckeysForAllDelegates = document.encryptionKeys
     if (!eckeysForAllDelegates || !Object.keys(eckeysForAllDelegates).length) {
-      console.log(`There is no encryption key in document (${document.id})`)
+      //console.log(`There is no encryption key in document (${document.id})`)
       return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
     }
     return this.extractKeysFromDelegationsForHcpHierarchy(
@@ -1120,16 +1128,17 @@ export class IccCryptoXApi {
             }
           )
         : Promise.resolve([])
-      ).then(extractedKeys =>
-        (hcp as HealthcarePartyDto).parentId
-          ? this.extractKeysHierarchyFromDelegationLikes(
-              (hcp as HealthcarePartyDto).parentId!,
-              objectId,
-              delegations
-            ).then(parentResponse =>
-              parentResponse.concat({ extractedKeys: extractedKeys, hcpartyId: hcpartyId })
-            )
-          : [{ extractedKeys: extractedKeys, hcpartyId: hcpartyId }]
+      ).then(
+        extractedKeys =>
+          (hcp as HealthcarePartyDto).parentId
+            ? this.extractKeysHierarchyFromDelegationLikes(
+                (hcp as HealthcarePartyDto).parentId!,
+                objectId,
+                delegations
+              ).then(parentResponse =>
+                parentResponse.concat({ extractedKeys: extractedKeys, hcpartyId: hcpartyId })
+              )
+            : [{ extractedKeys: extractedKeys, hcpartyId: hcpartyId }]
       )
     )
   }
@@ -1169,18 +1178,19 @@ export class IccCryptoXApi {
             }
           )
         : Promise.resolve([])
-      ).then(extractedKeys =>
-        (hcp as HealthcarePartyDto).parentId
-          ? this.extractKeysFromDelegationsForHcpHierarchy(
-              (hcp as HealthcarePartyDto).parentId!,
-              objectId,
-              delegations
-            ).then(parentResponse =>
-              _.assign(parentResponse, {
-                extractedKeys: parentResponse.extractedKeys.concat(extractedKeys)
-              })
-            )
-          : { extractedKeys: extractedKeys, hcpartyId: hcpartyId }
+      ).then(
+        extractedKeys =>
+          (hcp as HealthcarePartyDto).parentId
+            ? this.extractKeysFromDelegationsForHcpHierarchy(
+                (hcp as HealthcarePartyDto).parentId!,
+                objectId,
+                delegations
+              ).then(parentResponse =>
+                _.assign(parentResponse, {
+                  extractedKeys: parentResponse.extractedKeys.concat(extractedKeys)
+                })
+              )
+            : { extractedKeys: extractedKeys, hcpartyId: hcpartyId }
       )
     )
   }
@@ -1231,17 +1241,19 @@ export class IccCryptoXApi {
             if (!genericSecretId) console.warn("Secret id is empty; " + details)
 
             if (objectId !== masterId) {
-              console.log(
+              /*console.log(
                 "Cryptographic mistake: object ID is not equal to the expected concatenated id within decrypted generic delegation. This may happen when patients have been merged; " +
                   details
-              )
+              )*/
             }
 
             return genericSecretId
           })
           .catch(err => {
             console.log(
-              `Could not decrypt generic delegation in object with ID: ${masterId} from ${genericDelegationItem.owner} to ${genericDelegationItem.delegatedTo}: ${err}`
+              `Could not decrypt generic delegation in object with ID: ${masterId} from ${
+                genericDelegationItem.owner
+              } to ${genericDelegationItem.delegatedTo}: ${err}`
             )
             return undefined
           })
