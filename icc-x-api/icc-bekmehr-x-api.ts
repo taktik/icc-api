@@ -37,7 +37,9 @@ export class IccBekmehrXApi extends iccBeKmehrApi {
     resolve: (value?: Promise<Blob>) => void,
     reject: (reason?: any) => void,
     progressCallback?: (progress: number) => void,
-    patcher?: (response: any[]) => Promise<any[]>
+    servicesPatcher?: (response: any[]) => Promise<any[]>,
+    contactsPatcher?: (response: any[]) => Promise<any[]>,
+    healthElementsPatcher?: (response: any[]) => Promise<any[]>
   ) {
     const that = this
     return (event: MessageEvent) => {
@@ -48,6 +50,7 @@ export class IccBekmehrXApi extends iccBeKmehrApi {
           if (msg.type === "ContactDto") {
             that.ctcApi
               .decrypt(healthcarePartyId, msg.body)
+              .then(res => (contactsPatcher ? contactsPatcher(res) : Promise.resolve(res)))
               .then(res =>
                 socket.send(
                   JSON.stringify({ command: "decryptResponse", uuid: msg.uuid, body: res })
@@ -56,6 +59,9 @@ export class IccBekmehrXApi extends iccBeKmehrApi {
           } else if (msg.type === "HealthElementDto") {
             that.helementApi
               .decrypt(healthcarePartyId, msg.body)
+              .then(
+                res => (healthElementsPatcher ? healthElementsPatcher(res) : Promise.resolve(res))
+              )
               .then(res =>
                 socket.send(
                   JSON.stringify({ command: "decryptResponse", uuid: msg.uuid, body: res })
@@ -64,7 +70,7 @@ export class IccBekmehrXApi extends iccBeKmehrApi {
           } else {
             that.ctcApi
               .decryptServices(healthcarePartyId, msg.body)
-              .then(res => (patcher ? patcher(res) : Promise.resolve(res)))
+              .then(res => (servicesPatcher ? servicesPatcher(res) : Promise.resolve(res)))
               .then(res =>
                 socket.send(
                   JSON.stringify({ command: "decryptResponse", uuid: msg.uuid, body: res })
@@ -93,7 +99,8 @@ export class IccBekmehrXApi extends iccBeKmehrApi {
     language: string,
     body: models.SoftwareMedicalFileExportDto,
     progressCallback?: (progress: number) => void,
-    sessionId?: string
+    sessionId?: string,
+    contactsPatcher?: (response: ContactDto[]) => Promise<ContactDto[]>
   ): Promise<Blob> {
     return new Promise((resolve, reject) => {
       const socket = new WebSocket(
@@ -108,7 +115,15 @@ export class IccBekmehrXApi extends iccBeKmehrApi {
       // Listen for messages
       socket.addEventListener(
         "message",
-        this.socketEventListener(socket, healthcarePartyId, resolve, reject, progressCallback)
+        this.socketEventListener(
+          socket,
+          healthcarePartyId,
+          resolve,
+          reject,
+          progressCallback,
+          undefined,
+          contactsPatcher
+        )
       )
     })
   }
