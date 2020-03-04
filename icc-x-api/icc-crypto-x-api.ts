@@ -281,7 +281,7 @@ export class IccCryptoXApi {
    *
    * 1. Get the keys for the delegateHealthCareParty (cache/backend).
    * 2. For each key in the delegators, decrypt it with the delegate's private key
-   * 3. Filter out undefined keys and return th
+   * 3. Filter out undefined keys and return them
    *
    * @param delegatorsHcPartyIdsSet array of delegator HcP IDs that could have delegated something to the HcP with ID `delegateHcPartyId`
    * @param delegateHcPartyId the HcP for which the HcPs with IDs in `delegatorsHcPartyIdsSet` could have delegated something
