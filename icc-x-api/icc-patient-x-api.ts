@@ -555,7 +555,7 @@ export class IccPatientXApi extends iccPatientApi {
   encrypt(user: models.UserDto, pats: Array<models.PatientDto>): Promise<Array<models.PatientDto>> {
     return Promise.all(
       pats.map(p =>
-        (p.encryptionKeys && Object.keys(p.encryptionKeys).length
+        (p.encryptionKeys && Object.keys(p.encryptionKeys).some(k => !!p.encryptionKeys![k].length)
           ? Promise.resolve(p)
           : this.initEncryptionKeys(user, p)
         )
