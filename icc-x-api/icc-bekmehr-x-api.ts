@@ -59,8 +59,8 @@ export class IccBekmehrXApi extends iccBeKmehrApi {
           } else if (msg.type === "HealthElementDto") {
             that.helementApi
               .decrypt(healthcarePartyId, msg.body)
-              .then(
-                res => (healthElementsPatcher ? healthElementsPatcher(res) : Promise.resolve(res))
+              .then(res =>
+                healthElementsPatcher ? healthElementsPatcher(res) : Promise.resolve(res)
               )
               .then(res =>
                 socket.send(
@@ -100,7 +100,8 @@ export class IccBekmehrXApi extends iccBeKmehrApi {
     body: models.SoftwareMedicalFileExportDto,
     progressCallback?: (progress: number) => void,
     sessionId?: string,
-    contactsPatcher?: (response: ContactDto[]) => Promise<ContactDto[]>
+    contactsPatcher?: (response: ContactDto[]) => Promise<ContactDto[]>,
+    healthElementsPatcher?: (response: any[]) => Promise<any[]>
   ): Promise<Blob> {
     return new Promise((resolve, reject) => {
       const socket = new WebSocket(
@@ -122,7 +123,8 @@ export class IccBekmehrXApi extends iccBeKmehrApi {
           reject,
           progressCallback,
           undefined,
-          contactsPatcher
+          contactsPatcher,
+          healthElementsPatcher
         )
       )
     })
