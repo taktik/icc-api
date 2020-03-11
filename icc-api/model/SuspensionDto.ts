@@ -24,25 +24,13 @@
 
 import * as models from "./models"
 
-export class SumehrExportInfoDto {
+export class SuspensionDto {
   constructor(json: JSON | any) {
-    Object.assign(this as SumehrExportInfoDto, json)
+    Object.assign(this as SuspensionDto, json)
   }
-  secretForeignKeys?: Array<string>
+  beginMoment?: number
 
-  excludedIds?: Array<string>
+  endMoment?: number
 
-  recipient?: models.HealthcarePartyDto
-
-  softwareName?: string
-
-  softwareVersion?: string
-
-  comment?: string
-
-  includeIrrelevantInformation?: boolean
-
-  services?: Array<models.ServiceDto>
-
-  healthElements?: Array<models.HealthElementDto>
+  suspensionReason?: string
 }

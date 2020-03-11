@@ -44,5 +44,7 @@ export class ContentDto {
 
   medicationValue?: models.MedicationDto
 
+  compoundValue?: Array<models.ServiceDto>
+
   binaryValue?: Array<string>
 }
