@@ -74,6 +74,8 @@ export class MedicationDto {
 
   agreements?: { [key: string]: models.ParagraphAgreementDto }
 
+  suspension?: Array<models.SuspensionDto>
+
   medicationSchemeIdOnSafe?: string
 
   medicationSchemeSafeVersion?: number
