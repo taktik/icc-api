@@ -403,6 +403,9 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
                         )
                         return {}
                       }
+                    }).catch(err => {
+                      console.log('Error during AES decryption', err);
+                      return {};
                     })
                   )
                 )
