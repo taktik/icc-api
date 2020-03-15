@@ -203,7 +203,12 @@ export class IccCryptoXApi {
     )
   }
 
-  // Decript shamir in case of only one notary !
+  /* Reconstructs the hcp's private key from the notaries' shamir shares and stores it in localstorage.
+  The retrieval procedure of the shares is not designed or implemented yet.  Therefore, it currently only
+  works if the private key of the notaries are stored in local storage (e.g. notaries = [hcp parent]).
+   * @param hcp : the hcp whose key we want to reconstruct
+   * @param notaries : holders of the shamir shares
+  **/
   async decryptedShamirRSAKey(
     hcp: HealthcarePartyDto,
     notaries: Array<HealthcarePartyDto>
@@ -228,6 +233,9 @@ export class IccCryptoXApi {
           (queue, notary) => {
             return queue.then(async (shares: string[]) => {
               try {
+                // TODO: now, we get the encrypted shares in db and decrypt them. This assumes that the
+                // the notaries' private keys are in localstorage. We should implement a way for the notaries to
+                // give hcp the decrypted shares without having to also share their private keys.
                 const importedAESHcPartyKey = await this.decryptHcPartyKey(
                   hcp.id!,
                   notary.id!,
@@ -712,7 +720,7 @@ export class IccCryptoXApi {
                 d: {
                   owner: ownerId,
                   delegatedTo: delegateId,
-                  key: this._utils.ua2hex(cryptedDelegation as ArrayBuffer)
+                  key: this._utils.ua2hex(cryptedDelegation!)
                 },
                 k: modifiedObject.id + ":" + secretIdOfModifiedObject!
               }
