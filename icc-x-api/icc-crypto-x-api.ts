@@ -151,22 +151,23 @@ export class IccCryptoXApi {
     notaries: Array<HealthcarePartyDto>,
     threshold: number
   ): Promise<Map<String, String>> {
-    const kp = this._RSA.loadKeyPairNotImported(hcp.id!)
-    return this._RSA.exportKey(kp.privateKey, "pkcs8").then(exportedKey => {
-      const pk = exportedKey as ArrayBuffer
-      const shares = this._shamir.share(this._utils.ua2hex(pk), notaries.length, threshold)
-      return Promise.all(
-        notaries.map((notary, idx) => {
-          const notaryPubKey = utils.spkiToJwk(utils.hex2ua(notary.publicKey!))
-          return this._RSA
-            .importKey("jwk", notaryPubKey, ["encrypt"])
-            .then(key => {
-              this._RSA.encrypt(key, this._utils.hex2ua(shares[idx]))
-            })
-            .then(k => [notary.id, k])
-        })
-      ).then(keys => _.fromPairs(keys) as Map<string, string>)
-    })
+    return this._RSA.loadKeyPairImported(hcp.id!)
+      .then(kp => this._RSA.exportKey(kp.privateKey, "pkcs8").then(exportedKey => {
+        const pk = exportedKey as ArrayBuffer
+        const shares = this._shamir.share(this._utils.ua2hex(pk), notaries.length, threshold)
+        return Promise.all(
+          notaries.map((notary, idx) => {
+            const notaryPubKey = utils.spkiToJwk(utils.hex2ua(notary.publicKey!))
+            return this._RSA
+              .importKey("jwk", notaryPubKey, ["encrypt"])
+              .then(key => {
+                this._RSA.encrypt(key, this._utils.hex2ua(shares[idx]))
+              })
+              .then(k => [notary.id, k])
+          })
+        )
+        .then(keys => _.fromPairs(keys) as Map<string, string>)
+    }))
   }
 
   /**
