@@ -146,6 +146,22 @@ export class IccCryptoXApi {
     )
   }
 
+  encryptedRSAKey(
+    hcp: HealthcarePartyDto,
+    notary: HealthcarePartyDto
+  ): Promise<Map<String, String>> {
+    return this._RSA.loadKeyPairImported(hcp.id!)
+      .then(kp => this._RSA.exportKey(kp.privateKey, "pkcs8").then(exportedKey => {
+        const pk = exportedKey as Uint8Array
+        const notaryPubKey = utils.spkiToJwk(utils.hex2ua(notary.publicKey!))
+        return this._RSA
+          .importKey("jwk", notaryPubKey, ["encrypt"])
+          .then(key => this._RSA.encrypt(key, pk))
+          .then(encyptedKey => [[notary.id, encyptedKey]])
+          .then(keys => _.fromPairs(keys) as Map<string, string>)
+    }))
+  }
+
   encryptedShamirRSAKey(
     hcp: HealthcarePartyDto,
     notaries: Array<HealthcarePartyDto>,
@@ -160,9 +176,9 @@ export class IccCryptoXApi {
             const notaryPubKey = utils.spkiToJwk(utils.hex2ua(notary.publicKey!))
             return this._RSA
               .importKey("jwk", notaryPubKey, ["encrypt"])
-              .then(key => {
+              .then(key => 
                 this._RSA.encrypt(key, this._utils.hex2ua(shares[idx]))
-              })
+              )
               .then(k => [notary.id, k])
           })
         )
