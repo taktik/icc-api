@@ -163,13 +163,13 @@ export class IccCryptoXApi {
           pk = new Uint8Array(exportedKey as ArrayBuffer)
         }
 
-        const notaryPubKey = utils.spkiToJwk(utils.hex2ua(notary.publicKey!))
+        const notaryPubKey = utils.hex2ua(notary.publicKey!)
         return this._RSA
-          .importKey("jwk", notaryPubKey, ["encrypt"])
+          .importKey("spki", notaryPubKey, ["encrypt"])
           .then(key => this._RSA.encrypt(key, pk))
           .then(encyptedKey => {
             const toReturn: { [key: string]: string } = {}
-            toReturn[notary.id!] = utils.ua2text(encyptedKey)
+            toReturn[notary.id!] = utils.ua2hex(encyptedKey)
             return toReturn
           })
       })
@@ -218,20 +218,29 @@ export class IccCryptoXApi {
       if (!hcp.privateKeyShamirPartitions || !hcp.privateKeyShamirPartitions[notary.id!]) {
         throw new Error("No encrypted private key. Aborting.")
       }
-      encryptedKey = this._utils.text2ua(hcp.privateKeyShamirPartitions[notary.id!])
+      encryptedKey = this._utils.hex2ua(hcp.privateKeyShamirPartitions[notary.id!])
       return this._RSA.decrypt(kp.privateKey, encryptedKey)
     })
   }
 
-  decryptAndImportRSAKey(hcp: HealthcarePartyDto, test?: boolean): Promise<CryptoKey | void> {
-    return this.hcpartyBaseApi
+  decryptAndImportRSAKey(hcp: HealthcarePartyDto, test?: boolean) {
+    this.hcpartyBaseApi
       .getHealthcareParty(hcp.parentId!)
       .then(notary => this.decryptRSAKey(hcp, notary))
       .then(decryptedKey => {
         if (test) {
           console.log(`decrypted key \"${utils.ua2text(decryptedKey)}\"`)
         } else {
-          return this._RSA.importPrivateKey("pkcs8", decryptedKey)
+          this._RSA.importPrivateKey("pkcs8", decryptedKey)
+        }
+        return this.loadKeyPairsAsJwkInBrowserLocalStorage(
+          hcp.id!,
+          utils.pkcs8ToJwk(decryptedKey as Uint8Array)
+        )
+      })
+      .then(() => {
+        if (test) {
+          console.log("Successfully stored the key pair in the local storage!")
         }
       })
   }
