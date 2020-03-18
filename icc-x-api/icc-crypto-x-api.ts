@@ -146,44 +146,68 @@ export class IccCryptoXApi {
     )
   }
 
-  encryptRSAKey(hcp: HealthcarePartyDto, notary: HealthcarePartyDto): Promise<Map<string, string>> {
+  encryptRSAKey(
+    hcp: HealthcarePartyDto,
+    notary: HealthcarePartyDto,
+    test?: boolean
+  ): Promise<{ [key: string]: string } | void> {
     return this._RSA.loadKeyPairImported(hcp.id!).then(kp =>
       this._RSA.exportKey(kp.privateKey, "pkcs8").then(exportedKey => {
-        const pk = exportedKey as Uint8Array
+        let pk: Uint8Array
+
+        if (test) {
+          const testString = "some gibberish"
+          pk = utils.text2ua(testString)
+          console.log(`encrypting \"${testString}\"`)
+        } else {
+          pk = new Uint8Array(exportedKey as ArrayBuffer)
+        }
+
         const notaryPubKey = utils.spkiToJwk(utils.hex2ua(notary.publicKey!))
         return this._RSA
           .importKey("jwk", notaryPubKey, ["encrypt"])
           .then(key => this._RSA.encrypt(key, pk))
-          .then(encyptedKey => [[notary.id, encyptedKey]])
-          .then(keys => _.fromPairs(keys) as Map<string, string>)
+          .then(encyptedKey => {
+            const toReturn: { [key: string]: string } = {}
+            toReturn[notary.id!] = utils.ua2text(encyptedKey)
+            return toReturn
+          })
       })
     )
   }
 
-  encryptAndSaveHCPPrivateKey(hcp: HealthcarePartyDto): Promise<HealthcarePartyDto> {
+  encryptAndSaveHCPPrivateKey(
+    hcp: HealthcarePartyDto,
+    test?: boolean
+  ): Promise<HealthcarePartyDto> {
     if (!hcp.parentId) {
       throw new Error("Parent HCP Id missing.")
     }
     return this.hcpartyBaseApi.getHealthcareParty(hcp.parentId!).then(notary =>
-      this.encryptRSAKey(hcp, notary)
+      this.encryptRSAKey(hcp, notary, test)
         .then(encryptedKey => {
           if (!encryptedKey) {
             throw new Error("Key not encrypted!")
           }
+
           if (!hcp.privateKeyShamirPartitions) {
             hcp.privateKeyShamirPartitions = {}
           }
+
           try {
-            for (const key of encryptedKey.keys()) {
-              hcp.privateKeyShamirPartitions[key] = encryptedKey.get(key)!
+            for (const key of Object.keys(encryptedKey)) {
+              hcp.privateKeyShamirPartitions[key] = encryptedKey[key]
             }
-            return this.hcpartyBaseApi.modifyHealthcareParty(hcp)
-          } catch {
-            console.error("Unable to store the encrypted Encrypted Private RSA Key")
+
+            return this.hcpartyBaseApi
+              .modifyHealthcareParty(hcp)
+              .catch(err => console.error("Unable to modify the HCP:", err))
+          } catch (err) {
+            console.error("Unable to store the encrypted private RSA Key", err)
           }
         })
         .catch(err => {
-          console.log("Unable to encrypt the key.", err)
+          console.error("Unable to encrypt the key.", err)
         })
     )
   }
@@ -199,11 +223,17 @@ export class IccCryptoXApi {
     })
   }
 
-  decryptAndImportRSAKey(hcp: HealthcarePartyDto): Promise<CryptoKey> {
+  decryptAndImportRSAKey(hcp: HealthcarePartyDto, test?: boolean): Promise<CryptoKey | void> {
     return this.hcpartyBaseApi
       .getHealthcareParty(hcp.parentId!)
       .then(notary => this.decryptRSAKey(hcp, notary))
-      .then(decryptedKey => this._RSA.importPrivateKey("pkcs8", decryptedKey))
+      .then(decryptedKey => {
+        if (test) {
+          console.log(`decrypted key \"${utils.ua2text(decryptedKey)}\"`)
+        } else {
+          return this._RSA.importPrivateKey("pkcs8", decryptedKey)
+        }
+      })
   }
 
   encryptedShamirRSAKey(
