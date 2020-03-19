@@ -228,6 +228,30 @@ export class iccUserApi {
       .then(doc => new models.UserPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+  listUsersInGroup(
+    groupId: string,
+    startKey?: string,
+    startDocumentId?: string,
+    limit?: string
+  ): Promise<models.UserPaginatedList | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/user/{groupId}".replace("{groupId}", groupId + "") +
+      "?ts=" +
+      new Date().getTime() +
+      (startKey ? "&startKey=" + startKey : "") +
+      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
+      (limit ? "&limit=" + limit : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => new models.UserPaginatedList(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
   modifyProperties(
     userId: string,
     body?: Array<models.PropertyDto>
