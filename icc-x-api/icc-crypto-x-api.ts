@@ -249,20 +249,42 @@ export class IccCryptoXApi {
     hcp: HealthcarePartyDto,
     notaries: Array<HealthcarePartyDto>,
     threshold: number
-  ): Promise<Map<String, String>> {
-    return this._RSA.loadKeyPairImported(hcp.id!).then(kp =>
-      this._RSA.exportKey(kp.privateKey, "pkcs8").then(exportedKey => {
-        const pk = exportedKey as ArrayBuffer
-        const shares = this._shamir.share(this._utils.ua2hex(pk), notaries.length, threshold)
-        return Promise.all(
-          notaries.map((notary, idx) => {
-            const notaryPubKey = utils.spkiToJwk(utils.hex2ua(notary.publicKey!))
-            return this._RSA
-              .importKey("jwk", notaryPubKey, ["encrypt"])
-              .then(key => this._RSA.encrypt(key, this._utils.hex2ua(shares[idx])))
-              .then(k => [notary.id, k])
-          })
-        ).then(keys => _.fromPairs(keys) as Map<string, string>)
+  ): Promise<{ [key: string]: string }> {
+    return this._RSA.loadKeyPairImported(hcp.id!).then(keyPair =>
+      this._RSA.exportKey(keyPair.privateKey, "pkcs8").then(exportedKey => {
+        const privateKey = exportedKey as ArrayBuffer
+        const shares =
+          notaries.length == 1
+            ? [privateKey]
+            : this._shamir
+                .share(this._utils.ua2hex(privateKey), notaries.length, threshold)
+                .map(share => this.utils.hex2ua(share))
+        return _.reduce(
+          notaries,
+          (queue, notary, idx) => {
+            return queue.then(async privateKeyShamirPartitions => {
+              const hcp_ = hcp.hcPartyKeys![notary.id!]
+                ? hcp
+                : await this.generateKeyForDelegate(hcp.id!, notary.id!)
+              const notaryEncryptedAESKey = this.utils.hex2ua(hcp_.hcPartyKeys![notary.id!][0])
+              const notaryDecryptedAESKeyBuffer = await this.RSA.decrypt(
+                keyPair.privateKey,
+                notaryEncryptedAESKey
+              )
+              const notaryDecryptedAESKey = await this.AES.importKey(
+                "raw",
+                notaryDecryptedAESKeyBuffer
+              )
+              const encryptedShamirPartition = await this.AES.encrypt(
+                notaryDecryptedAESKey,
+                shares[idx]
+              )
+              privateKeyShamirPartitions[notary.id!] = this.utils.ua2hex(encryptedShamirPartition)
+              return privateKeyShamirPartitions
+            })
+          },
+          Promise.resolve({}) as Promise<{ [key: string]: string }>
+        )
       })
     )
   }
