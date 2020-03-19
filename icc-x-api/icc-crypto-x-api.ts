@@ -167,19 +167,12 @@ export class IccCryptoXApi {
               const hcp_ = hcp.hcPartyKeys![notary.id!]
                 ? hcp
                 : await this.generateKeyForDelegate(hcp.id!, notary.id!)
-              const notaryEncryptedAESKey = this.utils.hex2ua(hcp_.hcPartyKeys![notary.id!][0])
-              const notaryDecryptedAESKeyBuffer = await this.RSA.decrypt(
-                keyPair.privateKey,
-                notaryEncryptedAESKey
-              )
-              const notaryDecryptedAESKey = await this.AES.importKey(
-                "raw",
-                notaryDecryptedAESKeyBuffer
-              )
-              const encryptedShamirPartition = await this.AES.encrypt(
-                notaryDecryptedAESKey,
-                shares[idx]
-              )
+
+              const importedAESHcPartyKey = 
+                await this.decryptHcPartyKey(hcp.id!, notary.id!, hcp_.hcPartyKeys![notary.id!][1], false)
+              const encryptedShamirPartition = 
+                await this.AES.encrypt(importedAESHcPartyKey.key, shares[idx])
+
               privateKeyShamirPartitions[notary.id!] = this.utils.ua2hex(encryptedShamirPartition)
               return privateKeyShamirPartitions
             })
@@ -188,6 +181,24 @@ export class IccCryptoXApi {
         )
       })
     )
+  }
+
+  // Decript shamir in case of only one notary !
+  async decryptedShamirRSAKey(hcp: HealthcarePartyDto): Promise<void> {
+    if (!hcp.parentId || !hcp.privateKeyShamirPartitions![hcp.parentId]) {
+      return
+    }
+    
+    const importedAESHcPartyKey = 
+      await this.decryptHcPartyKey(hcp.id!, hcp.parentId!, hcp.hcPartyKeys![hcp.parentId!][1], false)
+    
+    const cryptedPrivatedKey = hcp.privateKeyShamirPartitions![hcp.parentId!];
+    const decryptedPrivatedKey = 
+      await this.AES.decrypt(importedAESHcPartyKey.key, this.utils.hex2ua(cryptedPrivatedKey))
+
+    const importedPrivateKey = await this.RSA.importKey('jwk', decryptedPrivatedKey, ['decrypt']);
+    const importedPublicKey = await this.RSA.importKey('jwk', this.utils.hex2ua(hcp.publicKey!), ['encrypt']);
+    this.RSA.storeKeyPair(hcp.id!, {publicKey: importedPublicKey, privateKey: importedPrivateKey});
   }
 
   /**
