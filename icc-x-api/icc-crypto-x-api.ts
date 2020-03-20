@@ -189,16 +189,22 @@ export class IccCryptoXApi {
       return
     }
     
-    const importedAESHcPartyKey = 
+    try {
+      const importedAESHcPartyKey = 
       await this.decryptHcPartyKey(hcp.id!, hcp.parentId!, hcp.hcPartyKeys![hcp.parentId!][1], false)
     
-    const cryptedPrivatedKey = hcp.privateKeyShamirPartitions![hcp.parentId!];
-    const decryptedPrivatedKey = 
-      await this.AES.decrypt(importedAESHcPartyKey.key, this.utils.hex2ua(cryptedPrivatedKey))
+      const cryptedPrivatedKey = hcp.privateKeyShamirPartitions![hcp.parentId!];
+      const decryptedPrivatedKey = 
+        await this.AES.decrypt(importedAESHcPartyKey.key, this.utils.hex2ua(cryptedPrivatedKey))
 
-    const importedPrivateKey = await this.RSA.importKey('jwk', decryptedPrivatedKey, ['decrypt']);
-    const importedPublicKey = await this.RSA.importKey('jwk', this.utils.hex2ua(hcp.publicKey!), ['encrypt']);
-    this.RSA.storeKeyPair(hcp.id!, {publicKey: importedPublicKey, privateKey: importedPrivateKey});
+      const importedPrivateKey = await this.RSA.importKey('pkcs8', decryptedPrivatedKey, ['decrypt']);
+      const importedPublicKey = await this.RSA.importKey('spki', this.utils.hex2ua(hcp.publicKey!), ['encrypt']);
+      
+      const exportedKeyPair = await this.RSA.exportKeys({publicKey: importedPublicKey, privateKey: importedPrivateKey}, 'jwk', 'jwk')
+      this.RSA.storeKeyPair(hcp.id!, exportedKeyPair);
+    } catch(e) {
+      console.log('Cannot decrypt shamir RSA key')
+    }
   }
 
   /**
