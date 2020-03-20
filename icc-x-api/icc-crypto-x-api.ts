@@ -149,7 +149,7 @@ export class IccCryptoXApi {
   encryptedShamirRSAKey(
     hcp: HealthcarePartyDto,
     notaries: Array<HealthcarePartyDto>,
-    threshold: number
+    threshold?: number
   ): Promise<{ [key: string]: string }> {
     return this._RSA.loadKeyPairImported(hcp.id!).then(keyPair =>
       this._RSA.exportKey(keyPair.privateKey, "pkcs8").then(exportedKey => {
@@ -158,22 +158,26 @@ export class IccCryptoXApi {
           notaries.length == 1
             ? [privateKey]
             : this._shamir
-                .share(this._utils.ua2hex(privateKey), notaries.length, threshold)
+                .share(this._utils.ua2hex(privateKey), notaries.length, threshold || notaries.length)
                 .map(share => this.utils.hex2ua(share))
         return _.reduce(
           notaries,
           (queue, notary, idx) => {
             return queue.then(async privateKeyShamirPartitions => {
-              const hcp_ = hcp.hcPartyKeys![notary.id!]
-                ? hcp
-                : await this.generateKeyForDelegate(hcp.id!, notary.id!)
-
-              const importedAESHcPartyKey = 
-                await this.decryptHcPartyKey(hcp.id!, notary.id!, hcp_.hcPartyKeys![notary.id!][1], false)
-              const encryptedShamirPartition = 
-                await this.AES.encrypt(importedAESHcPartyKey.key, shares[idx])
-
-              privateKeyShamirPartitions[notary.id!] = this.utils.ua2hex(encryptedShamirPartition)
+              try{
+                const hcp_ = hcp.hcPartyKeys![notary.id!]
+                  ? hcp
+                  : await this.generateKeyForDelegate(hcp.id!, notary.id!)
+  
+                const importedAESHcPartyKey = 
+                  await this.decryptHcPartyKey(hcp.id!, notary.id!, hcp_.hcPartyKeys![notary.id!][1], false)
+                const encryptedShamirPartition = 
+                  await this.AES.encrypt(importedAESHcPartyKey.key, shares[idx])
+  
+                privateKeyShamirPartitions[notary.id!] = this.utils.ua2hex(encryptedShamirPartition)
+              } catch(e) {
+                console.log('Error during encryptedShamirRSAKey', notary.id, e)
+              }
               return privateKeyShamirPartitions
             })
           },
