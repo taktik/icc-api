@@ -150,38 +150,39 @@ export class IccCryptoXApi {
     hcp: HealthcarePartyDto,
     notaries: Array<HealthcarePartyDto>,
     threshold?: number
-  ): Promise<{ [key: string]: string }> {
+  ): Promise<HealthcarePartyDto> {
     return this._RSA.loadKeyPairImported(hcp.id!).then(keyPair =>
       this._RSA.exportKey(keyPair.privateKey, "pkcs8").then(exportedKey => {
         const privateKey = exportedKey as ArrayBuffer
-        const shares =
-          notaries.length == 1
+        const nLen = notaries.length
+        const shares = nLen == 1
             ? [privateKey]
             : this._shamir
-                .share(this._utils.ua2hex(privateKey), notaries.length, threshold || notaries.length)
+                .share(this._utils.ua2hex(privateKey), nLen, threshold || nLen)
                 .map(share => this.utils.hex2ua(share))
+        
         return _.reduce(
           notaries,
           (queue, notary, idx) => {
-            return queue.then(async privateKeyShamirPartitions => {
+            return queue.then(async hcp => {
+              const hcParty = hcp.hcPartyKeys![notary.id!]
+                ? hcp : (await this.generateKeyForDelegate(hcp.id!, notary.id!)) as HealthcarePartyDto
+
               try{
-                const hcp_ = hcp.hcPartyKeys![notary.id!]
-                  ? hcp
-                  : await this.generateKeyForDelegate(hcp.id!, notary.id!)
-  
                 const importedAESHcPartyKey = 
-                  await this.decryptHcPartyKey(hcp.id!, notary.id!, hcp_.hcPartyKeys![notary.id!][1], false)
+                  await this.decryptHcPartyKey(hcParty.id!, notary.id!, hcParty.hcPartyKeys![notary.id!][1], false)
                 const encryptedShamirPartition = 
                   await this.AES.encrypt(importedAESHcPartyKey.key, shares[idx])
-  
-                privateKeyShamirPartitions[notary.id!] = this.utils.ua2hex(encryptedShamirPartition)
+                
+                hcParty.privateKeyShamirPartitions = hcParty.privateKeyShamirPartitions || {};
+                hcParty.privateKeyShamirPartitions[notary.id!] = this.utils.ua2hex(encryptedShamirPartition)
               } catch(e) {
                 console.log('Error during encryptedShamirRSAKey', notary.id, e)
               }
-              return privateKeyShamirPartitions
+              return hcParty;
             })
           },
-          Promise.resolve({}) as Promise<{ [key: string]: string }>
+          Promise.resolve(hcp)
         )
       })
     )
@@ -620,7 +621,7 @@ export class IccCryptoXApi {
                 d: {
                   owner: ownerId,
                   delegatedTo: delegateId,
-                  key: this._utils.ua2hex(cryptedDelegation)
+                  key: this._utils.ua2hex(cryptedDelegation!)
                 },
                 k: modifiedObject.id + ":" + secretIdOfModifiedObject!
               }
