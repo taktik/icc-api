@@ -189,11 +189,7 @@ export class IccCryptoXApi {
   }
 
   // Decript shamir in case of only one notary !
-  async decryptedShamirRSAKey(hcp: HealthcarePartyDto): Promise<void> {
-    if (!hcp.parentId || !hcp.privateKeyShamirPartitions![hcp.parentId]) {
-      return
-    }
-    
+  async decryptedShamirRSAKey(hcp: HealthcarePartyDto): Promise<void> {    
     try {
       const importedAESHcPartyKey = 
       await this.decryptHcPartyKey(hcp.id!, hcp.parentId!, hcp.hcPartyKeys![hcp.parentId!][1], false)
