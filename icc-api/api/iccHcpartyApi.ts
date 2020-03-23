@@ -258,7 +258,7 @@ export class iccHcpartyApi {
 
     const _url =
       this.host +
-      "/hcparty/{groupId}/byIds".replace("{groupId}", groupId + "") +
+      "/hcparty/inGroup/{groupId}/byIds".replace("{groupId}", groupId + "") +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers

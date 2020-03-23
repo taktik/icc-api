@@ -238,7 +238,7 @@ export class iccUserApi {
 
     const _url =
       this.host +
-      "/user/{groupId}".replace("{groupId}", groupId + "") +
+      "/user/inGroup/{groupId}".replace("{groupId}", groupId + "") +
       "?ts=" +
       new Date().getTime() +
       (startKey ? "&startKey=" + startKey : "") +
