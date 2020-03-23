@@ -1060,7 +1060,7 @@ export class IccContactXApi extends iccContactApi {
           const cplxRegimen = !unit || quantity < 0
           const quantityUnit = cplxRegimen
             ? `1 ${this.i18n[lang].take_s_}`
-            : `${quantity} ${unit || this.i18n[lang].take_s_}`
+            : `${myself.quantityToString(quantity)} ${unit || this.i18n[lang].take_s_}`
 
           const dayPeriod = m.regimen.find(
             (r: any) => r.weekday !== null && r.weekday !== undefined
@@ -1108,12 +1108,19 @@ export class IccContactXApi extends iccContactApi {
       durationToString: (d: models.DurationDto, lang: string) => {
         return d.value ? `${d.value} ${this.localize(d.unit!.label, lang)}` : ""
       },
+      quantityToString: (quantity: number) => {
+        const mod = (quantity * 100) % 100
+        if (mod === 50) return Math.floor(quantity) * 2 + mod / 50 + "/2"
+        else if (mod === 33 || mod === 66) return Math.floor(quantity) * 3 + mod / 33 + "/3"
+        else if (mod === 25 || mod === 75) return Math.floor(quantity) * 4 + mod / 25 + "/4"
+        return quantity
+      },
       regimenToExtString: (r: models.RegimenItemDto, lang: string) => {
         const desc = myself.regimenToString(r, lang)
         return (
           (r.administratedQuantity && r.administratedQuantity.quantity && desc
-            ? `${desc} (${r.administratedQuantity.quantity} ${(r.administratedQuantity
-                .administrationUnit
+            ? `${desc} (${myself.quantityToString(r.administratedQuantity.quantity)} ${(r
+                .administratedQuantity.administrationUnit
                 ? r.administratedQuantity.administrationUnit.code
                 : r.administratedQuantity.unit) || this.i18n[lang].take_s_})`
             : desc) || ""
