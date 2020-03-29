@@ -1,10 +1,10 @@
 import * as models from "../icc-api/model/models"
-import { iccAuthApi, iccBeKmehrApi } from "../icc-api/iccApi"
+import { iccAuthApi, iccBekmehrApi } from "../icc-api/iccApi"
 import { IccContactXApi } from "./icc-contact-x-api"
 import { IccHelementXApi } from "./icc-helement-x-api"
 import { utils } from "./crypto/utils"
 
-export class IccBekmehrXApi extends iccBeKmehrApi {
+export class IccBekmehrXApi extends iccBekmehrApi {
   private readonly ctcApi: IccContactXApi
   private readonly helementApi: IccHelementXApi
   private readonly wssHost: string

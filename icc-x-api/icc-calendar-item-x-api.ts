@@ -162,10 +162,10 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
 
   findByHCPartyPatientSecretFKeys(
     hcPartyId: string,
-    secretFKeys?: string
+    secretFKeys: string
   ): Promise<Array<models.CalendarItemDto> | any> {
     return super
-      .findByHCPartyPatientSecretFKeys(hcPartyId, secretFKeys)
+      .findCalendarItemsByHCPartyPatientForeignKeys(hcPartyId, secretFKeys)
       .then(calendarItems => this.decrypt(hcPartyId, calendarItems))
   }
 
@@ -235,9 +235,9 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
 
   getCalendarItemsByPeriodAndHcPartyIdWithUser(
     user: models.UserDto,
-    startDate?: number,
-    endDate?: number,
-    hcPartyId?: string
+    startDate: number,
+    endDate: number,
+    hcPartyId: string
   ): Promise<Array<CalendarItemDto> | any> {
     return super
       .getCalendarItemsByPeriodAndHcPartyId(startDate, endDate, hcPartyId)
@@ -258,9 +258,9 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
 
   getCalendarsByPeriodAndAgendaIdWithUser(
     user: models.UserDto,
-    startDate?: number,
-    endDate?: number,
-    agendaId?: string
+    startDate: number,
+    endDate: number,
+    agendaId: string
   ): Promise<Array<CalendarItemDto> | any> {
     return super
       .getCalendarsByPeriodAndAgendaId(startDate, endDate, agendaId)
