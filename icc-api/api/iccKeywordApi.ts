@@ -46,7 +46,7 @@ export class iccKeywordApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/keyword" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/keyword` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -66,10 +66,7 @@ export class iccKeywordApi {
 
     const _url =
       this.host +
-      "/keyword/${encodeURIComponent(String(keywordIds))}".replace(
-        "{keywordIds}",
-        keywordIds + ""
-      ) +
+      `/keyword/${encodeURIComponent(String(keywordIds))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -87,7 +84,7 @@ export class iccKeywordApi {
 
     const _url =
       this.host +
-      "/keyword/${encodeURIComponent(String(keywordId))}" +
+      `/keyword/${encodeURIComponent(String(keywordId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -103,7 +100,7 @@ export class iccKeywordApi {
   getKeywords(): Promise<Array<KeywordDto> | any> {
     let _body = null
 
-    const _url = this.host + "/keyword" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/keyword` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new KeywordDto(it)))
@@ -120,7 +117,7 @@ export class iccKeywordApi {
 
     const _url =
       this.host +
-      "/keyword/byUser/${encodeURIComponent(String(userId))}".replace("{userId}", userId + "") +
+      `/keyword/byUser/${encodeURIComponent(String(userId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -138,7 +135,7 @@ export class iccKeywordApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/keyword" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/keyword` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")

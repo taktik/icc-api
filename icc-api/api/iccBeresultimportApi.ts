@@ -48,10 +48,10 @@ export class iccBeresultimportApi {
 
     const _url =
       this.host +
-      "/be_result_import/canhandle/${encodeURIComponent(String(id))}".replace("{id}", id + "") +
+      `/be_result_import/canhandle/${encodeURIComponent(String(id))}` +
       "?ts=" +
       new Date().getTime() +
-      (enckeys ? "&enckeys=" + enckeys : "")
+      (enckeys ? "&enckeys=" + encodeURIComponent(String(enckeys)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => JSON.parse(JSON.stringify(doc.body)))
@@ -84,17 +84,16 @@ export class iccBeresultimportApi {
 
     const _url =
       this.host +
-      "/be_result_import/import/${encodeURIComponent(String(documentId))}/${encodeURIComponent(String(hcpId))}/${encodeURIComponent(String(language))}"
-        .replace("{documentId}", documentId + "")
-        .replace("{hcpId}", hcpId + "")
-        .replace("{language}", language + "") +
+      `/be_result_import/import/${encodeURIComponent(String(documentId))}/${encodeURIComponent(
+        String(hcpId)
+      )}/${encodeURIComponent(String(language))}` +
       "?ts=" +
       new Date().getTime() +
-      (protocolIds ? "&protocolIds=" + protocolIds : "") +
-      (formIds ? "&formIds=" + formIds : "") +
-      (planOfActionId ? "&planOfActionId=" + planOfActionId : "") +
-      (enckeys ? "&enckeys=" + enckeys : "") +
-      (ctc ? "&ctc=" + ctc : "")
+      (protocolIds ? "&protocolIds=" + encodeURIComponent(String(protocolIds)) : "") +
+      (formIds ? "&formIds=" + encodeURIComponent(String(formIds)) : "") +
+      (planOfActionId ? "&planOfActionId=" + encodeURIComponent(String(planOfActionId)) : "") +
+      (enckeys ? "&enckeys=" + encodeURIComponent(String(enckeys)) : "") +
+      (ctc ? "&ctc=" + encodeURIComponent(String(ctc)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new ContactDto(doc.body as JSON))
@@ -119,12 +118,12 @@ export class iccBeresultimportApi {
 
     const _url =
       this.host +
-      "/be_result_import/infos/${encodeURIComponent(String(id))}".replace("{id}", id + "") +
+      `/be_result_import/infos/${encodeURIComponent(String(id))}` +
       "?ts=" +
       new Date().getTime() +
-      (language ? "&language=" + language : "") +
-      (enckeys ? "&enckeys=" + enckeys : "") +
-      (full ? "&full=" + full : "")
+      (language ? "&language=" + encodeURIComponent(String(language)) : "") +
+      (enckeys ? "&enckeys=" + encodeURIComponent(String(enckeys)) : "") +
+      (full ? "&full=" + encodeURIComponent(String(full)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new ResultInfoDto(it)))

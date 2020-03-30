@@ -47,7 +47,7 @@ export class iccAccesslogApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/accesslog" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/accesslog` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -67,10 +67,7 @@ export class iccAccesslogApi {
 
     const _url =
       this.host +
-      "/accesslog/${encodeURIComponent(String(accessLogIds))}".replace(
-        "{accessLogIds}",
-        accessLogIds + ""
-      ) +
+      `/accesslog/${encodeURIComponent(String(accessLogIds))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -93,11 +90,11 @@ export class iccAccesslogApi {
 
     const _url =
       this.host +
-      "/accesslog/byHcPartySecretForeignKeys" +
+      `/accesslog/byHcPartySecretForeignKeys` +
       "?ts=" +
       new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
-      (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
+      (hcPartyId ? "&hcPartyId=" + encodeURIComponent(String(hcPartyId)) : "") +
+      (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new AccessLogDto(it)))
@@ -128,16 +125,16 @@ export class iccAccesslogApi {
 
     const _url =
       this.host +
-      "/accesslog/byUser" +
+      `/accesslog/byUser` +
       "?ts=" +
       new Date().getTime() +
-      (userId ? "&userId=" + userId : "") +
-      (accessType ? "&accessType=" + accessType : "") +
-      (startDate ? "&startDate=" + startDate : "") +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "") +
-      (descending ? "&descending=" + descending : "")
+      (userId ? "&userId=" + encodeURIComponent(String(userId)) : "") +
+      (accessType ? "&accessType=" + encodeURIComponent(String(accessType)) : "") +
+      (startDate ? "&startDate=" + encodeURIComponent(String(startDate)) : "") +
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "") +
+      (descending ? "&descending=" + encodeURIComponent(String(descending)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PaginatedListAccessLogDto(doc.body as JSON))
@@ -154,10 +151,7 @@ export class iccAccesslogApi {
 
     const _url =
       this.host +
-      "/accesslog/${encodeURIComponent(String(accessLogId))}".replace(
-        "{accessLogId}",
-        accessLogId + ""
-      ) +
+      `/accesslog/${encodeURIComponent(String(accessLogId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -188,15 +182,15 @@ export class iccAccesslogApi {
 
     const _url =
       this.host +
-      "/accesslog" +
+      `/accesslog` +
       "?ts=" +
       new Date().getTime() +
-      (fromEpoch ? "&fromEpoch=" + fromEpoch : "") +
-      (toEpoch ? "&toEpoch=" + toEpoch : "") +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "") +
-      (descending ? "&descending=" + descending : "")
+      (fromEpoch ? "&fromEpoch=" + encodeURIComponent(String(fromEpoch)) : "") +
+      (toEpoch ? "&toEpoch=" + encodeURIComponent(String(toEpoch)) : "") +
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "") +
+      (descending ? "&descending=" + encodeURIComponent(String(descending)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PaginatedListAccessLogDto(doc.body as JSON))
@@ -212,7 +206,7 @@ export class iccAccesslogApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/accesslog" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/accesslog` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")

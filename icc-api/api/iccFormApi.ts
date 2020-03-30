@@ -51,7 +51,7 @@ export class iccFormApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/form/template/legacy" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/form/template/legacy` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -70,7 +70,7 @@ export class iccFormApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/form" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/form` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -89,7 +89,7 @@ export class iccFormApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/form/template" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/form/template` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -109,10 +109,7 @@ export class iccFormApi {
 
     const _url =
       this.host +
-      "/form/template/${encodeURIComponent(String(formTemplateId))}".replace(
-        "{formTemplateId}",
-        formTemplateId + ""
-      ) +
+      `/form/template/${encodeURIComponent(String(formTemplateId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -130,10 +127,7 @@ export class iccFormApi {
     let _body = null
 
     const _url =
-      this.host +
-      "/form/${encodeURIComponent(String(formIds))}".replace("{formIds}", formIds + "") +
-      "?ts=" +
-      new Date().getTime()
+      this.host + `/form/${encodeURIComponent(String(formIds))}` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new DocIdentifier(it)))
@@ -150,10 +144,10 @@ export class iccFormApi {
 
     const _url =
       this.host +
-      "/form/template" +
+      `/form/template` +
       "?ts=" +
       new Date().getTime() +
-      (loadLayout ? "&loadLayout=" + loadLayout : "")
+      (loadLayout ? "&loadLayout=" + encodeURIComponent(String(loadLayout)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new FormTemplateDto(it)))
@@ -174,13 +168,10 @@ export class iccFormApi {
 
     const _url =
       this.host +
-      "/form/template/bySpecialty/${encodeURIComponent(String(specialityCode))}".replace(
-        "{specialityCode}",
-        specialityCode + ""
-      ) +
+      `/form/template/bySpecialty/${encodeURIComponent(String(specialityCode))}` +
       "?ts=" +
       new Date().getTime() +
-      (loadLayout ? "&loadLayout=" + loadLayout : "")
+      (loadLayout ? "&loadLayout=" + encodeURIComponent(String(loadLayout)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new FormTemplateDto(it)))
@@ -207,14 +198,14 @@ export class iccFormApi {
 
     const _url =
       this.host +
-      "/form/byHcPartySecretForeignKeys" +
+      `/form/byHcPartySecretForeignKeys` +
       "?ts=" +
       new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
-      (secretFKeys ? "&secretFKeys=" + secretFKeys : "") +
-      (healthElementId ? "&healthElementId=" + healthElementId : "") +
-      (planOfActionId ? "&planOfActionId=" + planOfActionId : "") +
-      (formTemplateId ? "&formTemplateId=" + formTemplateId : "")
+      (hcPartyId ? "&hcPartyId=" + encodeURIComponent(String(hcPartyId)) : "") +
+      (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "") +
+      (healthElementId ? "&healthElementId=" + encodeURIComponent(String(healthElementId)) : "") +
+      (planOfActionId ? "&planOfActionId=" + encodeURIComponent(String(planOfActionId)) : "") +
+      (formTemplateId ? "&formTemplateId=" + encodeURIComponent(String(formTemplateId)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new FormDto(it)))
@@ -235,11 +226,11 @@ export class iccFormApi {
 
     const _url =
       this.host +
-      "/form/byHcPartySecretForeignKeys/delegations" +
+      `/form/byHcPartySecretForeignKeys/delegations` +
       "?ts=" +
       new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
-      (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
+      (hcPartyId ? "&hcPartyId=" + encodeURIComponent(String(hcPartyId)) : "") +
+      (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new IcureStubDto(it)))
@@ -257,9 +248,9 @@ export class iccFormApi {
 
     const _url =
       this.host +
-      "/form/childrenOf/${encodeURIComponent(String(formId))}/${encodeURIComponent(String(hcPartyId))}"
-        .replace("{formId}", formId + "")
-        .replace("{hcPartyId}", hcPartyId + "") +
+      `/form/childrenOf/${encodeURIComponent(String(formId))}/${encodeURIComponent(
+        String(hcPartyId)
+      )}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -277,10 +268,7 @@ export class iccFormApi {
     let _body = null
 
     const _url =
-      this.host +
-      "/form/${encodeURIComponent(String(formId))}".replace("{formId}", formId + "") +
-      "?ts=" +
-      new Date().getTime()
+      this.host + `/form/${encodeURIComponent(String(formId))}` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new FormDto(doc.body as JSON))
@@ -297,10 +285,7 @@ export class iccFormApi {
 
     const _url =
       this.host +
-      "/form/template/${encodeURIComponent(String(formTemplateId))}".replace(
-        "{formTemplateId}",
-        formTemplateId + ""
-      ) +
+      `/form/template/${encodeURIComponent(String(formTemplateId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -323,9 +308,9 @@ export class iccFormApi {
 
     const _url =
       this.host +
-      "/form/template/${encodeURIComponent(String(specialityCode))}/guid/${encodeURIComponent(String(formTemplateGuid))}"
-        .replace("{formTemplateGuid}", formTemplateGuid + "")
-        .replace("{specialityCode}", specialityCode + "") +
+      `/form/template/${encodeURIComponent(String(specialityCode))}/guid/${encodeURIComponent(
+        String(formTemplateGuid)
+      )}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -343,7 +328,7 @@ export class iccFormApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/form/byIds" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/form/byIds` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -362,7 +347,7 @@ export class iccFormApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/form" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/form` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -381,7 +366,7 @@ export class iccFormApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/form/batch" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/form/batch` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -403,7 +388,7 @@ export class iccFormApi {
 
     const _url =
       this.host +
-      "/form/delegate/${encodeURIComponent(String(formId))}".replace("{formId}", formId + "") +
+      `/form/delegate/${encodeURIComponent(String(formId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -424,7 +409,7 @@ export class iccFormApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/form/delegations" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/form/delegations` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -444,10 +429,7 @@ export class iccFormApi {
 
     const _url =
       this.host +
-      "/form/template/${encodeURIComponent(String(formTemplateId))}/attachment/multipart".replace(
-        "{formTemplateId}",
-        formTemplateId + ""
-      ) +
+      `/form/template/${encodeURIComponent(String(formTemplateId))}/attachment/multipart` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -474,10 +456,7 @@ export class iccFormApi {
 
     const _url =
       this.host +
-      "/form/template/${encodeURIComponent(String(formTemplateId))}".replace(
-        "{formTemplateId}",
-        formTemplateId + ""
-      ) +
+      `/form/template/${encodeURIComponent(String(formTemplateId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers

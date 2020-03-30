@@ -47,7 +47,7 @@ export class iccDoctemplateApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/doctemplate" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/doctemplate` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -67,10 +67,7 @@ export class iccDoctemplateApi {
 
     const _url =
       this.host +
-      "/doctemplate/${encodeURIComponent(String(documentTemplateIds))}".replace(
-        "{documentTemplateIds}",
-        documentTemplateIds + ""
-      ) +
+      `/doctemplate/${encodeURIComponent(String(documentTemplateIds))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -86,7 +83,7 @@ export class iccDoctemplateApi {
   findAllDocumentTemplates(): Promise<Array<DocumentTemplateDto> | any> {
     let _body = null
 
-    const _url = this.host + "/doctemplate/find/all" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/doctemplate/find/all` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new DocumentTemplateDto(it)))
@@ -100,7 +97,7 @@ export class iccDoctemplateApi {
   findDocumentTemplates(): Promise<Array<DocumentTemplateDto> | any> {
     let _body = null
 
-    const _url = this.host + "/doctemplate" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/doctemplate` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new DocumentTemplateDto(it)))
@@ -119,10 +116,7 @@ export class iccDoctemplateApi {
 
     const _url =
       this.host +
-      "/doctemplate/byDocumentType/${encodeURIComponent(String(documentTypeCode))}".replace(
-        "{documentTypeCode}",
-        documentTypeCode + ""
-      ) +
+      `/doctemplate/byDocumentType/${encodeURIComponent(String(documentTypeCode))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -143,10 +137,7 @@ export class iccDoctemplateApi {
 
     const _url =
       this.host +
-      "/doctemplate/byDocumentTypeForCurrentUser/${encodeURIComponent(String(documentTypeCode))}".replace(
-        "{documentTypeCode}",
-        documentTypeCode + ""
-      ) +
+      `/doctemplate/byDocumentTypeForCurrentUser/${encodeURIComponent(String(documentTypeCode))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -167,10 +158,7 @@ export class iccDoctemplateApi {
 
     const _url =
       this.host +
-      "/doctemplate/bySpecialty/${encodeURIComponent(String(specialityCode))}".replace(
-        "{specialityCode}",
-        specialityCode + ""
-      ) +
+      `/doctemplate/bySpecialty/${encodeURIComponent(String(specialityCode))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -190,9 +178,9 @@ export class iccDoctemplateApi {
 
     const _url =
       this.host +
-      "/doctemplate/${encodeURIComponent(String(documentTemplateId))}/attachmentText/${encodeURIComponent(String(attachmentId))}"
-        .replace("{documentTemplateId}", documentTemplateId + "")
-        .replace("{attachmentId}", attachmentId + "") +
+      `/doctemplate/${encodeURIComponent(
+        String(documentTemplateId)
+      )}/attachmentText/${encodeURIComponent(String(attachmentId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -211,10 +199,7 @@ export class iccDoctemplateApi {
 
     const _url =
       this.host +
-      "/doctemplate/${encodeURIComponent(String(documentTemplateId))}".replace(
-        "{documentTemplateId}",
-        documentTemplateId + ""
-      ) +
+      `/doctemplate/${encodeURIComponent(String(documentTemplateId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -237,9 +222,9 @@ export class iccDoctemplateApi {
 
     const _url =
       this.host +
-      "/doctemplate/${encodeURIComponent(String(documentTemplateId))}/attachment/${encodeURIComponent(String(attachmentId))}"
-        .replace("{documentTemplateId}", documentTemplateId + "")
-        .replace("{attachmentId}", attachmentId + "") +
+      `/doctemplate/${encodeURIComponent(
+        String(documentTemplateId)
+      )}/attachment/${encodeURIComponent(String(attachmentId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -263,10 +248,7 @@ export class iccDoctemplateApi {
 
     const _url =
       this.host +
-      "/doctemplate/${encodeURIComponent(String(documentTemplateId))}/attachment".replace(
-        "{documentTemplateId}",
-        documentTemplateId + ""
-      ) +
+      `/doctemplate/${encodeURIComponent(String(documentTemplateId))}/attachment` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -293,10 +275,7 @@ export class iccDoctemplateApi {
 
     const _url =
       this.host +
-      "/doctemplate/${encodeURIComponent(String(documentTemplateId))}/attachmentJson".replace(
-        "{documentTemplateId}",
-        documentTemplateId + ""
-      ) +
+      `/doctemplate/${encodeURIComponent(String(documentTemplateId))}/attachmentJson` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -323,10 +302,7 @@ export class iccDoctemplateApi {
 
     const _url =
       this.host +
-      "/doctemplate/${encodeURIComponent(String(documentTemplateId))}".replace(
-        "{documentTemplateId}",
-        documentTemplateId + ""
-      ) +
+      `/doctemplate/${encodeURIComponent(String(documentTemplateId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers

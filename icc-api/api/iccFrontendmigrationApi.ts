@@ -46,7 +46,7 @@ export class iccFrontendmigrationApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/frontendmigration" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/frontendmigration` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -66,10 +66,7 @@ export class iccFrontendmigrationApi {
 
     const _url =
       this.host +
-      "/frontendmigration/${encodeURIComponent(String(frontEndMigrationId))}".replace(
-        "{frontEndMigrationId}",
-        frontEndMigrationId + ""
-      ) +
+      `/frontendmigration/${encodeURIComponent(String(frontEndMigrationId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -88,10 +85,7 @@ export class iccFrontendmigrationApi {
 
     const _url =
       this.host +
-      "/frontendmigration/${encodeURIComponent(String(frontEndMigrationId))}".replace(
-        "{frontEndMigrationId}",
-        frontEndMigrationId + ""
-      ) +
+      `/frontendmigration/${encodeURIComponent(String(frontEndMigrationId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -112,10 +106,7 @@ export class iccFrontendmigrationApi {
 
     const _url =
       this.host +
-      "/frontendmigration/byName/${encodeURIComponent(String(frontEndMigrationName))}".replace(
-        "{frontEndMigrationName}",
-        frontEndMigrationName + ""
-      ) +
+      `/frontendmigration/byName/${encodeURIComponent(String(frontEndMigrationName))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -131,7 +122,7 @@ export class iccFrontendmigrationApi {
   getFrontEndMigrations(): Promise<Array<FrontEndMigrationDto> | any> {
     let _body = null
 
-    const _url = this.host + "/frontendmigration" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/frontendmigration` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new FrontEndMigrationDto(it)))
@@ -147,7 +138,7 @@ export class iccFrontendmigrationApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/frontendmigration" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/frontendmigration` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")

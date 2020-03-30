@@ -48,7 +48,7 @@ export class iccClassificationApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/classification" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/classification` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -68,10 +68,7 @@ export class iccClassificationApi {
 
     const _url =
       this.host +
-      "/classification/${encodeURIComponent(String(classificationIds))}".replace(
-        "{classificationIds}",
-        classificationIds + ""
-      ) +
+      `/classification/${encodeURIComponent(String(classificationIds))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -94,11 +91,11 @@ export class iccClassificationApi {
 
     const _url =
       this.host +
-      "/classification/byHcPartySecretForeignKeys" +
+      `/classification/byHcPartySecretForeignKeys` +
       "?ts=" +
       new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
-      (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
+      (hcPartyId ? "&hcPartyId=" + encodeURIComponent(String(hcPartyId)) : "") +
+      (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new ClassificationDto(it)))
@@ -115,10 +112,7 @@ export class iccClassificationApi {
 
     const _url =
       this.host +
-      "/classification/${encodeURIComponent(String(classificationId))}".replace(
-        "{classificationId}",
-        classificationId + ""
-      ) +
+      `/classification/${encodeURIComponent(String(classificationId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -137,7 +131,7 @@ export class iccClassificationApi {
 
     const _url =
       this.host +
-      "/classification/byIds/${encodeURIComponent(String(ids))}".replace("{ids}", ids + "") +
+      `/classification/byIds/${encodeURIComponent(String(ids))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -155,7 +149,7 @@ export class iccClassificationApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/classification" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/classification` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -180,10 +174,7 @@ export class iccClassificationApi {
 
     const _url =
       this.host +
-      "/classification/${encodeURIComponent(String(classificationId))}/delegate".replace(
-        "{classificationId}",
-        classificationId + ""
-      ) +
+      `/classification/${encodeURIComponent(String(classificationId))}/delegate` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -204,7 +195,7 @@ export class iccClassificationApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/classification/delegations" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/classification/delegations` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")

@@ -47,7 +47,7 @@ export class iccInsuranceApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/insurance" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/insurance` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -67,10 +67,7 @@ export class iccInsuranceApi {
 
     const _url =
       this.host +
-      "/insurance/${encodeURIComponent(String(insuranceId))}".replace(
-        "{insuranceId}",
-        insuranceId + ""
-      ) +
+      `/insurance/${encodeURIComponent(String(insuranceId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -89,10 +86,7 @@ export class iccInsuranceApi {
 
     const _url =
       this.host +
-      "/insurance/${encodeURIComponent(String(insuranceId))}".replace(
-        "{insuranceId}",
-        insuranceId + ""
-      ) +
+      `/insurance/${encodeURIComponent(String(insuranceId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -110,7 +104,7 @@ export class iccInsuranceApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/insurance/byIds" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/insurance/byIds` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -130,10 +124,7 @@ export class iccInsuranceApi {
 
     const _url =
       this.host +
-      "/insurance/byCode/${encodeURIComponent(String(insuranceCode))}".replace(
-        "{insuranceCode}",
-        insuranceCode + ""
-      ) +
+      `/insurance/byCode/${encodeURIComponent(String(insuranceCode))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -152,10 +143,7 @@ export class iccInsuranceApi {
 
     const _url =
       this.host +
-      "/insurance/byName/${encodeURIComponent(String(insuranceName))}".replace(
-        "{insuranceName}",
-        insuranceName + ""
-      ) +
+      `/insurance/byName/${encodeURIComponent(String(insuranceName))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -173,7 +161,7 @@ export class iccInsuranceApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/insurance" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/insurance` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")

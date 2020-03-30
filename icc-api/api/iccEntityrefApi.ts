@@ -45,7 +45,7 @@ export class iccEntityrefApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/entityref" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/entityref` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -65,7 +65,7 @@ export class iccEntityrefApi {
 
     const _url =
       this.host +
-      "/entityref/latest/${encodeURIComponent(String(prefix))}".replace("{prefix}", prefix + "") +
+      `/entityref/latest/${encodeURIComponent(String(prefix))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers

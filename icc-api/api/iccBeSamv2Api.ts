@@ -49,10 +49,7 @@ export class iccBesamv2Api {
 
     const _url =
       this.host +
-      "/be_samv2/amp/byDmppCode/${encodeURIComponent(String(dmppCode))}".replace(
-        "{dmppCode}",
-        dmppCode + ""
-      ) +
+      `/be_samv2/amp/byDmppCode/${encodeURIComponent(String(dmppCode))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -79,15 +76,12 @@ export class iccBesamv2Api {
 
     const _url =
       this.host +
-      "/be_samv2/amp/byGroupCode/${encodeURIComponent(String(vmpgCode))}".replace(
-        "{vmpgCode}",
-        vmpgCode + ""
-      ) +
+      `/be_samv2/amp/byGroupCode/${encodeURIComponent(String(vmpgCode))}` +
       "?ts=" +
       new Date().getTime() +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PaginatedListAmpDto(doc.body as JSON))
@@ -112,15 +106,12 @@ export class iccBesamv2Api {
 
     const _url =
       this.host +
-      "/be_samv2/amp/byGroupId/${encodeURIComponent(String(vmpgId))}".replace(
-        "{vmpgId}",
-        vmpgId + ""
-      ) +
+      `/be_samv2/amp/byGroupId/${encodeURIComponent(String(vmpgId))}` +
       "?ts=" +
       new Date().getTime() +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PaginatedListAmpDto(doc.body as JSON))
@@ -147,14 +138,14 @@ export class iccBesamv2Api {
 
     const _url =
       this.host +
-      "/be_samv2/amp" +
+      `/be_samv2/amp` +
       "?ts=" +
       new Date().getTime() +
-      (language ? "&language=" + language : "") +
-      (label ? "&label=" + label : "") +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (language ? "&language=" + encodeURIComponent(String(language)) : "") +
+      (label ? "&label=" + encodeURIComponent(String(label)) : "") +
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PaginatedListAmpDto(doc.body as JSON))
@@ -179,15 +170,12 @@ export class iccBesamv2Api {
 
     const _url =
       this.host +
-      "/be_samv2/amp/byVmpCode/${encodeURIComponent(String(vmpCode))}".replace(
-        "{vmpCode}",
-        vmpCode + ""
-      ) +
+      `/be_samv2/amp/byVmpCode/${encodeURIComponent(String(vmpCode))}` +
       "?ts=" +
       new Date().getTime() +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PaginatedListAmpDto(doc.body as JSON))
@@ -212,12 +200,12 @@ export class iccBesamv2Api {
 
     const _url =
       this.host +
-      "/be_samv2/amp/byVmpId/${encodeURIComponent(String(vmpId))}".replace("{vmpId}", vmpId + "") +
+      `/be_samv2/amp/byVmpId/${encodeURIComponent(String(vmpId))}` +
       "?ts=" +
       new Date().getTime() +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PaginatedListAmpDto(doc.body as JSON))
@@ -244,14 +232,14 @@ export class iccBesamv2Api {
 
     const _url =
       this.host +
-      "/be_samv2/vmpgroup" +
+      `/be_samv2/vmpgroup` +
       "?ts=" +
       new Date().getTime() +
-      (language ? "&language=" + language : "") +
-      (label ? "&label=" + label : "") +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (language ? "&language=" + encodeURIComponent(String(language)) : "") +
+      (label ? "&label=" + encodeURIComponent(String(label)) : "") +
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PaginatedListVmpGroupDto(doc.body as JSON))
@@ -276,15 +264,12 @@ export class iccBesamv2Api {
 
     const _url =
       this.host +
-      "/be_samv2/vmp/byGroupCode/${encodeURIComponent(String(vmpgCode))}".replace(
-        "{vmpgCode}",
-        vmpgCode + ""
-      ) +
+      `/be_samv2/vmp/byGroupCode/${encodeURIComponent(String(vmpgCode))}` +
       "?ts=" +
       new Date().getTime() +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PaginatedListVmpDto(doc.body as JSON))
@@ -309,15 +294,12 @@ export class iccBesamv2Api {
 
     const _url =
       this.host +
-      "/be_samv2/vmp/byGroupId/${encodeURIComponent(String(vmpgId))}".replace(
-        "{vmpgId}",
-        vmpgId + ""
-      ) +
+      `/be_samv2/vmp/byGroupId/${encodeURIComponent(String(vmpgId))}` +
       "?ts=" +
       new Date().getTime() +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PaginatedListVmpDto(doc.body as JSON))
@@ -344,14 +326,14 @@ export class iccBesamv2Api {
 
     const _url =
       this.host +
-      "/be_samv2/vmp" +
+      `/be_samv2/vmp` +
       "?ts=" +
       new Date().getTime() +
-      (language ? "&language=" + language : "") +
-      (label ? "&label=" + label : "") +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (language ? "&language=" + encodeURIComponent(String(language)) : "") +
+      (label ? "&label=" + encodeURIComponent(String(label)) : "") +
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PaginatedListVmpDto(doc.body as JSON))

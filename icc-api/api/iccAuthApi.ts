@@ -46,7 +46,7 @@ export class iccAuthApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/auth/login" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/auth/login` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -63,7 +63,7 @@ export class iccAuthApi {
   logout(): Promise<AuthenticationResponse | any> {
     let _body = null
 
-    const _url = this.host + "/auth/logout" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/auth/logout` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new AuthenticationResponse(doc.body as JSON))
@@ -77,7 +77,7 @@ export class iccAuthApi {
   logoutPost(): Promise<AuthenticationResponse | any> {
     let _body = null
 
-    const _url = this.host + "/auth/logout" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/auth/logout` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => new AuthenticationResponse(doc.body as JSON))
@@ -95,9 +95,7 @@ export class iccAuthApi {
 
     const _url =
       this.host +
-      "/auth/token/${encodeURIComponent(String(method))}/${encodeURIComponent(String(path))}"
-        .replace("{method}", method + "")
-        .replace("{path}", path + "") +
+      `/auth/token/${encodeURIComponent(String(method))}/${encodeURIComponent(String(path))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers

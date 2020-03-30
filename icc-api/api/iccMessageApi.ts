@@ -50,7 +50,7 @@ export class iccMessageApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/message" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/message` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -71,9 +71,9 @@ export class iccMessageApi {
 
     const _url =
       this.host +
-      "/message/${encodeURIComponent(String(messageId))}/delegate/${encodeURIComponent(String(delegateId))}"
-        .replace("{messageId}", messageId + "")
-        .replace("{delegateId}", delegateId + "") +
+      `/message/${encodeURIComponent(String(messageId))}/delegate/${encodeURIComponent(
+        String(delegateId)
+      )}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -92,10 +92,7 @@ export class iccMessageApi {
 
     const _url =
       this.host +
-      "/message/${encodeURIComponent(String(messageIds))}".replace(
-        "{messageIds}",
-        messageIds + ""
-      ) +
+      `/message/${encodeURIComponent(String(messageIds))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -113,7 +110,7 @@ export class iccMessageApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/message/delete/byIds" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/message/delete/byIds` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -139,12 +136,12 @@ export class iccMessageApi {
 
     const _url =
       this.host +
-      "/message" +
+      `/message` +
       "?ts=" +
       new Date().getTime() +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new MessagePaginatedList(doc.body as JSON))
@@ -171,14 +168,14 @@ export class iccMessageApi {
 
     const _url =
       this.host +
-      "/message/byFromAddress" +
+      `/message/byFromAddress` +
       "?ts=" +
       new Date().getTime() +
-      (fromAddress ? "&fromAddress=" + fromAddress : "") +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "") +
-      (hcpId ? "&hcpId=" + hcpId : "")
+      (fromAddress ? "&fromAddress=" + encodeURIComponent(String(fromAddress)) : "") +
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "") +
+      (hcpId ? "&hcpId=" + encodeURIComponent(String(hcpId)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new MessagePaginatedList(doc.body as JSON))
@@ -195,10 +192,10 @@ export class iccMessageApi {
 
     const _url =
       this.host +
-      "/message/byHcPartySecretForeignKeys" +
+      `/message/byHcPartySecretForeignKeys` +
       "?ts=" +
       new Date().getTime() +
-      (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
+      (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new MessageDto(it)))
@@ -227,15 +224,15 @@ export class iccMessageApi {
 
     const _url =
       this.host +
-      "/message/byToAddress" +
+      `/message/byToAddress` +
       "?ts=" +
       new Date().getTime() +
-      (toAddress ? "&toAddress=" + toAddress : "") +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "") +
-      (reverse ? "&reverse=" + reverse : "") +
-      (hcpId ? "&hcpId=" + hcpId : "")
+      (toAddress ? "&toAddress=" + encodeURIComponent(String(toAddress)) : "") +
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "") +
+      (reverse ? "&reverse=" + encodeURIComponent(String(reverse)) : "") +
+      (hcpId ? "&hcpId=" + encodeURIComponent(String(hcpId)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new MessagePaginatedList(doc.body as JSON))
@@ -264,15 +261,15 @@ export class iccMessageApi {
 
     const _url =
       this.host +
-      "/message/byTransportGuid" +
+      `/message/byTransportGuid` +
       "?ts=" +
       new Date().getTime() +
-      (transportGuid ? "&transportGuid=" + transportGuid : "") +
-      (received ? "&received=" + received : "") +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "") +
-      (hcpId ? "&hcpId=" + hcpId : "")
+      (transportGuid ? "&transportGuid=" + encodeURIComponent(String(transportGuid)) : "") +
+      (received ? "&received=" + encodeURIComponent(String(received)) : "") +
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "") +
+      (hcpId ? "&hcpId=" + encodeURIComponent(String(hcpId)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new MessagePaginatedList(doc.body as JSON))
@@ -303,16 +300,16 @@ export class iccMessageApi {
 
     const _url =
       this.host +
-      "/message/byTransportGuidSentDate" +
+      `/message/byTransportGuidSentDate` +
       "?ts=" +
       new Date().getTime() +
-      (from ? "&from=" + from : "") +
-      (to ? "&to=" + to : "") +
-      (transportGuid ? "&transportGuid=" + transportGuid : "") +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "") +
-      (hcpId ? "&hcpId=" + hcpId : "")
+      (from ? "&from=" + encodeURIComponent(String(from)) : "") +
+      (to ? "&to=" + encodeURIComponent(String(to)) : "") +
+      (transportGuid ? "&transportGuid=" + encodeURIComponent(String(transportGuid)) : "") +
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "") +
+      (hcpId ? "&hcpId=" + encodeURIComponent(String(hcpId)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new MessagePaginatedList(doc.body as JSON))
@@ -329,10 +326,7 @@ export class iccMessageApi {
 
     const _url =
       this.host +
-      "/message/${encodeURIComponent(String(messageId))}/children".replace(
-        "{messageId}",
-        messageId + ""
-      ) +
+      `/message/${encodeURIComponent(String(messageId))}/children` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -350,7 +344,7 @@ export class iccMessageApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/message/children/batch" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/message/children/batch` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -370,7 +364,7 @@ export class iccMessageApi {
 
     const _url =
       this.host +
-      "/message/${encodeURIComponent(String(messageId))}".replace("{messageId}", messageId + "") +
+      `/message/${encodeURIComponent(String(messageId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -388,7 +382,7 @@ export class iccMessageApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/message/byInvoiceId" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/message/byInvoiceId` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -407,7 +401,7 @@ export class iccMessageApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/message" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/message` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -429,10 +423,7 @@ export class iccMessageApi {
 
     const _url =
       this.host +
-      "/message/${encodeURIComponent(String(messageId))}/delegate".replace(
-        "{messageId}",
-        messageId + ""
-      ) +
+      `/message/${encodeURIComponent(String(messageId))}/delegate` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -453,7 +444,7 @@ export class iccMessageApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/message/readstatus" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/message/readstatus` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -475,7 +466,7 @@ export class iccMessageApi {
 
     const _url =
       this.host +
-      "/message/status/${encodeURIComponent(String(status))}".replace("{status}", status + "") +
+      `/message/status/${encodeURIComponent(String(status))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers

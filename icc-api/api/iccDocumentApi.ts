@@ -48,7 +48,7 @@ export class iccDocumentApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/document" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/document` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -68,10 +68,7 @@ export class iccDocumentApi {
 
     const _url =
       this.host +
-      "/document/${encodeURIComponent(String(documentId))}/attachment".replace(
-        "{documentId}",
-        documentId + ""
-      ) +
+      `/document/${encodeURIComponent(String(documentId))}/attachment` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -90,10 +87,7 @@ export class iccDocumentApi {
 
     const _url =
       this.host +
-      "/document/${encodeURIComponent(String(documentIds))}".replace(
-        "{documentIds}",
-        documentIds + ""
-      ) +
+      `/document/${encodeURIComponent(String(documentIds))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -118,12 +112,14 @@ export class iccDocumentApi {
 
     const _url =
       this.host +
-      "/document/byTypeHcPartySecretForeignKeys" +
+      `/document/byTypeHcPartySecretForeignKeys` +
       "?ts=" +
       new Date().getTime() +
-      (documentTypeCode ? "&documentTypeCode=" + documentTypeCode : "") +
-      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
-      (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
+      (documentTypeCode
+        ? "&documentTypeCode=" + encodeURIComponent(String(documentTypeCode))
+        : "") +
+      (hcPartyId ? "&hcPartyId=" + encodeURIComponent(String(hcPartyId)) : "") +
+      (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new DocumentDto(it)))
@@ -144,11 +140,11 @@ export class iccDocumentApi {
 
     const _url =
       this.host +
-      "/document/byHcPartySecretForeignKeys" +
+      `/document/byHcPartySecretForeignKeys` +
       "?ts=" +
       new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
-      (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
+      (hcPartyId ? "&hcPartyId=" + encodeURIComponent(String(hcPartyId)) : "") +
+      (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new DocumentDto(it)))
@@ -165,10 +161,10 @@ export class iccDocumentApi {
 
     const _url =
       this.host +
-      "/document/woDelegation" +
+      `/document/woDelegation` +
       "?ts=" +
       new Date().getTime() +
-      (limit ? "&limit=" + limit : "")
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new DocumentDto(it)))
@@ -185,10 +181,7 @@ export class iccDocumentApi {
 
     const _url =
       this.host +
-      "/document/${encodeURIComponent(String(documentId))}".replace(
-        "{documentId}",
-        documentId + ""
-      ) +
+      `/document/${encodeURIComponent(String(documentId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -215,13 +208,13 @@ export class iccDocumentApi {
 
     const _url =
       this.host +
-      "/document/${encodeURIComponent(String(documentId))}/attachment/${encodeURIComponent(String(attachmentId))}"
-        .replace("{documentId}", documentId + "")
-        .replace("{attachmentId}", attachmentId + "") +
+      `/document/${encodeURIComponent(String(documentId))}/attachment/${encodeURIComponent(
+        String(attachmentId)
+      )}` +
       "?ts=" +
       new Date().getTime() +
-      (enckeys ? "&enckeys=" + enckeys : "") +
-      (fileName ? "&fileName=" + fileName : "")
+      (enckeys ? "&enckeys=" + encodeURIComponent(String(enckeys)) : "") +
+      (fileName ? "&fileName=" + encodeURIComponent(String(fileName)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => doc.body)
@@ -237,7 +230,7 @@ export class iccDocumentApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/document/batch" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/document/batch` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -256,7 +249,7 @@ export class iccDocumentApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/document" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/document` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -275,7 +268,7 @@ export class iccDocumentApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/document/batch" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/document/batch` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -302,13 +295,10 @@ export class iccDocumentApi {
 
     const _url =
       this.host +
-      "/document/${encodeURIComponent(String(documentId))}/attachment".replace(
-        "{documentId}",
-        documentId + ""
-      ) +
+      `/document/${encodeURIComponent(String(documentId))}/attachment` +
       "?ts=" +
       new Date().getTime() +
-      (enckeys ? "&enckeys=" + enckeys : "")
+      (enckeys ? "&enckeys=" + encodeURIComponent(String(enckeys)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -329,13 +319,10 @@ export class iccDocumentApi {
 
     const _url =
       this.host +
-      "/document/${encodeURIComponent(String(documentId))}/attachment/multipart".replace(
-        "{documentId}",
-        documentId + ""
-      ) +
+      `/document/${encodeURIComponent(String(documentId))}/attachment/multipart` +
       "?ts=" +
       new Date().getTime() +
-      (enckeys ? "&enckeys=" + enckeys : "")
+      (enckeys ? "&enckeys=" + encodeURIComponent(String(enckeys)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -354,7 +341,7 @@ export class iccDocumentApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/document/delegations" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/document/delegations` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")

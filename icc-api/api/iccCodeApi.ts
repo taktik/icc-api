@@ -47,7 +47,7 @@ export class iccCodeApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/code" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/code` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -82,15 +82,15 @@ export class iccCodeApi {
 
     const _url =
       this.host +
-      "/code/filter" +
+      `/code/filter` +
       "?ts=" +
       new Date().getTime() +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "") +
-      (skip ? "&skip=" + skip : "") +
-      (sort ? "&sort=" + sort : "") +
-      (desc ? "&desc=" + desc : "")
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "") +
+      (skip ? "&skip=" + encodeURIComponent(String(skip)) : "") +
+      (sort ? "&sort=" + encodeURIComponent(String(sort)) : "") +
+      (desc ? "&desc=" + encodeURIComponent(String(desc)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -111,11 +111,11 @@ export class iccCodeApi {
 
     const _url =
       this.host +
-      "/code/codetype/byRegionType" +
+      `/code/codetype/byRegionType` +
       "?ts=" +
       new Date().getTime() +
-      (region ? "&region=" + region : "") +
-      (type ? "&type=" + type : "")
+      (region ? "&region=" + encodeURIComponent(String(region)) : "") +
+      (type ? "&type=" + encodeURIComponent(String(type)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
@@ -140,13 +140,13 @@ export class iccCodeApi {
 
     const _url =
       this.host +
-      "/code/byRegionTypeCode" +
+      `/code/byRegionTypeCode` +
       "?ts=" +
       new Date().getTime() +
-      (region ? "&region=" + region : "") +
-      (type ? "&type=" + type : "") +
-      (code ? "&code=" + code : "") +
-      (version ? "&version=" + version : "")
+      (region ? "&region=" + encodeURIComponent(String(region)) : "") +
+      (type ? "&type=" + encodeURIComponent(String(type)) : "") +
+      (code ? "&code=" + encodeURIComponent(String(code)) : "") +
+      (version ? "&version=" + encodeURIComponent(String(version)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new CodeDto(it)))
@@ -175,15 +175,15 @@ export class iccCodeApi {
 
     const _url =
       this.host +
-      "/code" +
+      `/code` +
       "?ts=" +
       new Date().getTime() +
-      (region ? "&region=" + region : "") +
-      (type ? "&type=" + type : "") +
-      (code ? "&code=" + code : "") +
-      (version ? "&version=" + version : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (region ? "&region=" + encodeURIComponent(String(region)) : "") +
+      (type ? "&type=" + encodeURIComponent(String(type)) : "") +
+      (code ? "&code=" + encodeURIComponent(String(code)) : "") +
+      (version ? "&version=" + encodeURIComponent(String(version)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PaginatedListCodeDto(doc.body as JSON))
@@ -214,16 +214,16 @@ export class iccCodeApi {
 
     const _url =
       this.host +
-      "/code/byLabel" +
+      `/code/byLabel` +
       "?ts=" +
       new Date().getTime() +
-      (region ? "&region=" + region : "") +
-      (types ? "&types=" + types : "") +
-      (language ? "&language=" + language : "") +
-      (label ? "&label=" + label : "") +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (region ? "&region=" + encodeURIComponent(String(region)) : "") +
+      (types ? "&types=" + encodeURIComponent(String(types)) : "") +
+      (language ? "&language=" + encodeURIComponent(String(language)) : "") +
+      (label ? "&label=" + encodeURIComponent(String(label)) : "") +
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PaginatedListCodeDto(doc.body as JSON))
@@ -250,13 +250,13 @@ export class iccCodeApi {
 
     const _url =
       this.host +
-      "/code/link/${encodeURIComponent(String(linkType))}".replace("{linkType}", linkType + "") +
+      `/code/link/${encodeURIComponent(String(linkType))}` +
       "?ts=" +
       new Date().getTime() +
-      (linkedId ? "&linkedId=" + linkedId : "") +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (linkedId ? "&linkedId=" + encodeURIComponent(String(linkedId)) : "") +
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PaginatedListCodeDto(doc.body as JSON))
@@ -274,11 +274,11 @@ export class iccCodeApi {
 
     const _url =
       this.host +
-      "/code/tagtype/byRegionType" +
+      `/code/tagtype/byRegionType` +
       "?ts=" +
       new Date().getTime() +
-      (region ? "&region=" + region : "") +
-      (type ? "&type=" + type : "")
+      (region ? "&region=" + encodeURIComponent(String(region)) : "") +
+      (type ? "&type=" + encodeURIComponent(String(type)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
@@ -294,10 +294,7 @@ export class iccCodeApi {
     let _body = null
 
     const _url =
-      this.host +
-      "/code/${encodeURIComponent(String(codeId))}".replace("{codeId}", codeId + "") +
-      "?ts=" +
-      new Date().getTime()
+      this.host + `/code/${encodeURIComponent(String(codeId))}` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new CodeDto(doc.body as JSON))
@@ -316,10 +313,9 @@ export class iccCodeApi {
 
     const _url =
       this.host +
-      "/code/${encodeURIComponent(String(type))}/${encodeURIComponent(String(code))}/${encodeURIComponent(String(version))}"
-        .replace("{type}", type + "")
-        .replace("{code}", code + "")
-        .replace("{version}", version + "") +
+      `/code/${encodeURIComponent(String(type))}/${encodeURIComponent(
+        String(code)
+      )}/${encodeURIComponent(String(version))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -338,7 +334,7 @@ export class iccCodeApi {
 
     const _url =
       this.host +
-      "/code/byIds/${encodeURIComponent(String(codeIds))}".replace("{codeIds}", codeIds + "") +
+      `/code/byIds/${encodeURIComponent(String(codeIds))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -356,7 +352,7 @@ export class iccCodeApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/code" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/code` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")

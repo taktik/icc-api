@@ -51,10 +51,7 @@ export class iccUserApi {
 
     const _url =
       this.host +
-      "/user/current/hcparty/${encodeURIComponent(String(healthcarePartyId))}".replace(
-        "{healthcarePartyId}",
-        healthcarePartyId + ""
-      ) +
+      `/user/current/hcparty/${encodeURIComponent(String(healthcarePartyId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -70,7 +67,7 @@ export class iccUserApi {
   checkPassword(password: string): Promise<boolean | any> {
     let _body = null
 
-    const _url = this.host + "/user/checkPassword" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/user/checkPassword` + "?ts=" + new Date().getTime()
     let headers = this.headers
     password && (headers = headers.concat(new XHR.Header("password", password)))
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
@@ -87,7 +84,7 @@ export class iccUserApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/user" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/user` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -109,7 +106,7 @@ export class iccUserApi {
 
     const _url =
       this.host +
-      "/user/inGroup/${encodeURIComponent(String(groupId))}".replace("{groupId}", groupId + "") +
+      `/user/inGroup/${encodeURIComponent(String(groupId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -130,10 +127,7 @@ export class iccUserApi {
     let _body = null
 
     const _url =
-      this.host +
-      "/user/${encodeURIComponent(String(userId))}".replace("{userId}", userId + "") +
-      "?ts=" +
-      new Date().getTime()
+      this.host + `/user/${encodeURIComponent(String(userId))}` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
       .then(doc => new DocIdentifier(doc.body as JSON))
@@ -151,9 +145,7 @@ export class iccUserApi {
 
     const _url =
       this.host +
-      "/user/inGroup/${encodeURIComponent(String(groupId))}/${encodeURIComponent(String(userId))}"
-        .replace("{groupId}", groupId + "")
-        .replace("{userId}", userId + "") +
+      `/user/inGroup/${encodeURIComponent(String(groupId))}/${encodeURIComponent(String(userId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -169,7 +161,7 @@ export class iccUserApi {
   encodePassword(password: string): Promise<string | any> {
     let _body = null
 
-    const _url = this.host + "/user/encodePassword" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/user/encodePassword` + "?ts=" + new Date().getTime()
     let headers = this.headers
     password && (headers = headers.concat(new XHR.Header("password", password)))
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
@@ -187,7 +179,7 @@ export class iccUserApi {
 
     const _url =
       this.host +
-      "/user/byHealthcarePartyId/${encodeURIComponent(String(id))}".replace("{id}", id + "") +
+      `/user/byHealthcarePartyId/${encodeURIComponent(String(id))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -203,7 +195,7 @@ export class iccUserApi {
   getCurrentSession(): Promise<string | any> {
     let _body = null
 
-    const _url = this.host + "/user/session" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/user/session` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => JSON.parse(JSON.stringify(doc.body)))
@@ -217,7 +209,7 @@ export class iccUserApi {
   getCurrentUser(): Promise<UserDto | any> {
     let _body = null
 
-    const _url = this.host + "/user/current" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/user/current` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new UserDto(doc.body as JSON))
@@ -231,7 +223,7 @@ export class iccUserApi {
   getMatchingUsers(): Promise<Array<UserGroupDto> | any> {
     let _body = null
 
-    const _url = this.host + "/user/matches" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/user/matches` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new UserGroupDto(it)))
@@ -247,10 +239,7 @@ export class iccUserApi {
     let _body = null
 
     const _url =
-      this.host +
-      "/user/${encodeURIComponent(String(userId))}".replace("{userId}", userId + "") +
-      "?ts=" +
-      new Date().getTime()
+      this.host + `/user/${encodeURIComponent(String(userId))}` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new UserDto(doc.body as JSON))
@@ -267,7 +256,7 @@ export class iccUserApi {
 
     const _url =
       this.host +
-      "/user/byEmail/${encodeURIComponent(String(email))}".replace("{email}", email + "") +
+      `/user/byEmail/${encodeURIComponent(String(email))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -292,12 +281,12 @@ export class iccUserApi {
 
     const _url =
       this.host +
-      "/user" +
+      `/user` +
       "?ts=" +
       new Date().getTime() +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new UserPaginatedList(doc.body as JSON))
@@ -322,12 +311,12 @@ export class iccUserApi {
 
     const _url =
       this.host +
-      "/user/inGroup/${encodeURIComponent(String(groupId))}".replace("{groupId}", groupId + "") +
+      `/user/inGroup/${encodeURIComponent(String(groupId))}` +
       "?ts=" +
       new Date().getTime() +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new UserPaginatedList(doc.body as JSON))
@@ -346,7 +335,7 @@ export class iccUserApi {
 
     const _url =
       this.host +
-      "/user/${encodeURIComponent(String(userId))}/properties".replace("{userId}", userId + "") +
+      `/user/${encodeURIComponent(String(userId))}/properties` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -367,7 +356,7 @@ export class iccUserApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/user" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/user` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -389,7 +378,7 @@ export class iccUserApi {
 
     const _url =
       this.host +
-      "/user/inGroup/${encodeURIComponent(String(groupId))}".replace("{groupId}", groupId + "") +
+      `/user/inGroup/${encodeURIComponent(String(groupId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers

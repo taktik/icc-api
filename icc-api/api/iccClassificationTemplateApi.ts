@@ -50,7 +50,7 @@ export class iccClassificationTemplateApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/classificationTemplate" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/classificationTemplate` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -72,10 +72,7 @@ export class iccClassificationTemplateApi {
 
     const _url =
       this.host +
-      "/classificationTemplate/${encodeURIComponent(String(classificationTemplateIds))}".replace(
-        "{classificationTemplateIds}",
-        classificationTemplateIds + ""
-      ) +
+      `/classificationTemplate/${encodeURIComponent(String(classificationTemplateIds))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -98,11 +95,11 @@ export class iccClassificationTemplateApi {
 
     const _url =
       this.host +
-      "/classificationTemplate/byHcPartySecretForeignKeys" +
+      `/classificationTemplate/byHcPartySecretForeignKeys` +
       "?ts=" +
       new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
-      (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
+      (hcPartyId ? "&hcPartyId=" + encodeURIComponent(String(hcPartyId)) : "") +
+      (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new ClassificationTemplateDto(it)))
@@ -121,10 +118,7 @@ export class iccClassificationTemplateApi {
 
     const _url =
       this.host +
-      "/classificationTemplate/${encodeURIComponent(String(classificationTemplateId))}".replace(
-        "{classificationTemplateId}",
-        classificationTemplateId + ""
-      ) +
+      `/classificationTemplate/${encodeURIComponent(String(classificationTemplateId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -143,10 +137,7 @@ export class iccClassificationTemplateApi {
 
     const _url =
       this.host +
-      "/classificationTemplate/byIds/${encodeURIComponent(String(ids))}".replace(
-        "{ids}",
-        ids + ""
-      ) +
+      `/classificationTemplate/byIds/${encodeURIComponent(String(ids))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -171,12 +162,12 @@ export class iccClassificationTemplateApi {
 
     const _url =
       this.host +
-      "/classificationTemplate" +
+      `/classificationTemplate` +
       "?ts=" +
       new Date().getTime() +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PaginatedListClassificationTemplateDto(doc.body as JSON))
@@ -194,7 +185,7 @@ export class iccClassificationTemplateApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/classificationTemplate" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/classificationTemplate` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -219,10 +210,7 @@ export class iccClassificationTemplateApi {
 
     const _url =
       this.host +
-      "/classificationTemplate/${encodeURIComponent(String(classificationTemplateId))}/delegate".replace(
-        "{classificationTemplateId}",
-        classificationTemplateId + ""
-      ) +
+      `/classificationTemplate/${encodeURIComponent(String(classificationTemplateId))}/delegate` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers

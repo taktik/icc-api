@@ -46,7 +46,7 @@ export class iccArticleApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/article" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/article` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -66,10 +66,7 @@ export class iccArticleApi {
 
     const _url =
       this.host +
-      "/article/${encodeURIComponent(String(articleIds))}".replace(
-        "{articleIds}",
-        articleIds + ""
-      ) +
+      `/article/${encodeURIComponent(String(articleIds))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -88,7 +85,7 @@ export class iccArticleApi {
 
     const _url =
       this.host +
-      "/article/${encodeURIComponent(String(articleId))}".replace("{articleId}", articleId + "") +
+      `/article/${encodeURIComponent(String(articleId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -104,7 +101,7 @@ export class iccArticleApi {
   getArticles(): Promise<Array<ArticleDto> | any> {
     let _body = null
 
-    const _url = this.host + "/article" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/article` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new ArticleDto(it)))
@@ -120,7 +117,7 @@ export class iccArticleApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/article" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/article` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")

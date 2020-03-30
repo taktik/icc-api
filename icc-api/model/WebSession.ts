@@ -17,10 +17,10 @@ export class WebSession {
   }
 
   maxIdleTime?: WebSessionMaxIdleTime
-  expired?: boolean
+  started?: boolean
   id?: string
   attributes?: { [key: string]: any }
-  started?: boolean
+  expired?: boolean
   lastAccessTime?: number
   creationTime?: number
 }

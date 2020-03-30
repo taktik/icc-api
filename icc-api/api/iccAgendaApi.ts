@@ -46,7 +46,7 @@ export class iccAgendaApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/agenda" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/agenda` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -65,10 +65,7 @@ export class iccAgendaApi {
     let _body = null
 
     const _url =
-      this.host +
-      "/agenda/${encodeURIComponent(String(agendaIds))}".replace("{agendaIds}", agendaIds + "") +
-      "?ts=" +
-      new Date().getTime()
+      this.host + `/agenda/${encodeURIComponent(String(agendaIds))}` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new DocIdentifier(it)))
@@ -84,10 +81,7 @@ export class iccAgendaApi {
     let _body = null
 
     const _url =
-      this.host +
-      "/agenda/${encodeURIComponent(String(agendaId))}".replace("{agendaId}", agendaId + "") +
-      "?ts=" +
-      new Date().getTime()
+      this.host + `/agenda/${encodeURIComponent(String(agendaId))}` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new AgendaDto(doc.body as JSON))
@@ -101,7 +95,7 @@ export class iccAgendaApi {
   getAgendas(): Promise<Array<AgendaDto> | any> {
     let _body = null
 
-    const _url = this.host + "/agenda" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/agenda` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new AgendaDto(it)))
@@ -118,10 +112,10 @@ export class iccAgendaApi {
 
     const _url =
       this.host +
-      "/agenda/byUser" +
+      `/agenda/byUser` +
       "?ts=" +
       new Date().getTime() +
-      (userId ? "&userId=" + userId : "")
+      (userId ? "&userId=" + encodeURIComponent(String(userId)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new AgendaDto(doc.body as JSON))
@@ -138,10 +132,10 @@ export class iccAgendaApi {
 
     const _url =
       this.host +
-      "/agenda/readableForUser" +
+      `/agenda/readableForUser` +
       "?ts=" +
       new Date().getTime() +
-      (userId ? "&userId=" + userId : "")
+      (userId ? "&userId=" + encodeURIComponent(String(userId)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new AgendaDto(it)))
@@ -157,7 +151,7 @@ export class iccAgendaApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/agenda" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/agenda` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")

@@ -46,7 +46,7 @@ export class iccReceiptApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/receipt" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/receipt` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -66,10 +66,7 @@ export class iccReceiptApi {
 
     const _url =
       this.host +
-      "/receipt/${encodeURIComponent(String(receiptIds))}".replace(
-        "{receiptIds}",
-        receiptIds + ""
-      ) +
+      `/receipt/${encodeURIComponent(String(receiptIds))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -88,7 +85,7 @@ export class iccReceiptApi {
 
     const _url =
       this.host +
-      "/receipt/${encodeURIComponent(String(receiptId))}".replace("{receiptId}", receiptId + "") +
+      `/receipt/${encodeURIComponent(String(receiptId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -113,12 +110,12 @@ export class iccReceiptApi {
 
     const _url =
       this.host +
-      "/receipt/${encodeURIComponent(String(receiptId))}/attachment/${encodeURIComponent(String(attachmentId))}"
-        .replace("{receiptId}", receiptId + "")
-        .replace("{attachmentId}", attachmentId + "") +
+      `/receipt/${encodeURIComponent(String(receiptId))}/attachment/${encodeURIComponent(
+        String(attachmentId)
+      )}` +
       "?ts=" +
       new Date().getTime() +
-      (enckeys ? "&enckeys=" + enckeys : "")
+      (enckeys ? "&enckeys=" + encodeURIComponent(String(enckeys)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
@@ -135,7 +132,7 @@ export class iccReceiptApi {
 
     const _url =
       this.host +
-      "/receipt/byref/${encodeURIComponent(String(ref))}".replace("{ref}", ref + "") +
+      `/receipt/byref/${encodeURIComponent(String(ref))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -153,7 +150,7 @@ export class iccReceiptApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/receipt" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/receipt` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -182,12 +179,12 @@ export class iccReceiptApi {
 
     const _url =
       this.host +
-      "/receipt/${encodeURIComponent(String(receiptId))}/attachment/${encodeURIComponent(String(blobType))}"
-        .replace("{receiptId}", receiptId + "")
-        .replace("{blobType}", blobType + "") +
+      `/receipt/${encodeURIComponent(String(receiptId))}/attachment/${encodeURIComponent(
+        String(blobType)
+      )}` +
       "?ts=" +
       new Date().getTime() +
-      (enckeys ? "&enckeys=" + enckeys : "")
+      (enckeys ? "&enckeys=" + encodeURIComponent(String(enckeys)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")

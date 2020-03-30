@@ -55,7 +55,7 @@ export class iccPatientApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/patient/bulk" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/patient/bulk` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -75,10 +75,7 @@ export class iccPatientApi {
 
     const _url =
       this.host +
-      "/patient/hcParty/${encodeURIComponent(String(hcPartyId))}/count".replace(
-        "{hcPartyId}",
-        hcPartyId + ""
-      ) +
+      `/patient/hcParty/${encodeURIComponent(String(hcPartyId))}/count` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -96,7 +93,7 @@ export class iccPatientApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/patient" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/patient` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -116,10 +113,7 @@ export class iccPatientApi {
 
     const _url =
       this.host +
-      "/patient/${encodeURIComponent(String(patientIds))}".replace(
-        "{patientIds}",
-        patientIds + ""
-      ) +
+      `/patient/${encodeURIComponent(String(patientIds))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -153,15 +147,15 @@ export class iccPatientApi {
 
     const _url =
       this.host +
-      "/patient/filter" +
+      `/patient/filter` +
       "?ts=" +
       new Date().getTime() +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "") +
-      (skip ? "&skip=" + skip : "") +
-      (sort ? "&sort=" + sort : "") +
-      (desc ? "&desc=" + desc : "")
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "") +
+      (skip ? "&skip=" + encodeURIComponent(String(skip)) : "") +
+      (sort ? "&sort=" + encodeURIComponent(String(sort)) : "") +
+      (desc ? "&desc=" + encodeURIComponent(String(desc)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -193,14 +187,14 @@ export class iccPatientApi {
 
     const _url =
       this.host +
-      "/patient/byAccess/${encodeURIComponent(String(userId))}".replace("{userId}", userId + "") +
+      `/patient/byAccess/${encodeURIComponent(String(userId))}` +
       "?ts=" +
       new Date().getTime() +
-      (accessType ? "&accessType=" + accessType : "") +
-      (startDate ? "&startDate=" + startDate : "") +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (accessType ? "&accessType=" + encodeURIComponent(String(accessType)) : "") +
+      (startDate ? "&startDate=" + encodeURIComponent(String(startDate)) : "") +
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PatientPaginatedList(doc.body as JSON))
@@ -217,10 +211,7 @@ export class iccPatientApi {
 
     const _url =
       this.host +
-      "/patient/byExternalId/${encodeURIComponent(String(externalId))}".replace(
-        "{externalId}",
-        externalId + ""
-      ) +
+      `/patient/byExternalId/${encodeURIComponent(String(externalId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -251,15 +242,17 @@ export class iccPatientApi {
 
     const _url =
       this.host +
-      "/patient/byNameBirthSsinAuto" +
+      `/patient/byNameBirthSsinAuto` +
       "?ts=" +
       new Date().getTime() +
-      (healthcarePartyId ? "&healthcarePartyId=" + healthcarePartyId : "") +
-      (filterValue ? "&filterValue=" + filterValue : "") +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "") +
-      (sortDirection ? "&sortDirection=" + sortDirection : "")
+      (healthcarePartyId
+        ? "&healthcarePartyId=" + encodeURIComponent(String(healthcarePartyId))
+        : "") +
+      (filterValue ? "&filterValue=" + encodeURIComponent(String(filterValue)) : "") +
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "") +
+      (sortDirection ? "&sortDirection=" + encodeURIComponent(String(sortDirection)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PatientPaginatedList(doc.body as JSON))
@@ -282,12 +275,12 @@ export class iccPatientApi {
 
     const _url =
       this.host +
-      "/patient/fuzzy" +
+      `/patient/fuzzy` +
       "?ts=" +
       new Date().getTime() +
-      (firstName ? "&firstName=" + firstName : "") +
-      (lastName ? "&lastName=" + lastName : "") +
-      (dateOfBirth ? "&dateOfBirth=" + dateOfBirth : "")
+      (firstName ? "&firstName=" + encodeURIComponent(String(firstName)) : "") +
+      (lastName ? "&lastName=" + encodeURIComponent(String(lastName)) : "") +
+      (dateOfBirth ? "&dateOfBirth=" + encodeURIComponent(String(dateOfBirth)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new PatientDto(it)))
@@ -304,7 +297,7 @@ export class iccPatientApi {
 
     const _url =
       this.host +
-      "/patient/${encodeURIComponent(String(patientId))}".replace("{patientId}", patientId + "") +
+      `/patient/${encodeURIComponent(String(patientId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -325,10 +318,7 @@ export class iccPatientApi {
 
     const _url =
       this.host +
-      "/patient/${encodeURIComponent(String(healthcarePartyId))}/keys".replace(
-        "{healthcarePartyId}",
-        healthcarePartyId + ""
-      ) +
+      `/patient/${encodeURIComponent(String(healthcarePartyId))}/keys` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -346,7 +336,7 @@ export class iccPatientApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/patient/byIds" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/patient/byIds` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -376,14 +366,14 @@ export class iccPatientApi {
 
     const _url =
       this.host +
-      "/patient/deleted/by_date" +
+      `/patient/deleted/by_date` +
       "?ts=" +
       new Date().getTime() +
-      (startDate ? "&startDate=" + startDate : "") +
-      (endDate ? "&endDate=" + endDate : "") +
-      (desc ? "&desc=" + desc : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (startDate ? "&startDate=" + encodeURIComponent(String(startDate)) : "") +
+      (endDate ? "&endDate=" + encodeURIComponent(String(endDate)) : "") +
+      (desc ? "&desc=" + encodeURIComponent(String(desc)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PaginatedListPatientDto(doc.body as JSON))
@@ -404,11 +394,11 @@ export class iccPatientApi {
 
     const _url =
       this.host +
-      "/patient/deleted/by_name" +
+      `/patient/deleted/by_name` +
       "?ts=" +
       new Date().getTime() +
-      (firstName ? "&firstName=" + firstName : "") +
-      (lastName ? "&lastName=" + lastName : "")
+      (firstName ? "&firstName=" + encodeURIComponent(String(firstName)) : "") +
+      (lastName ? "&lastName=" + encodeURIComponent(String(lastName)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new PatientDto(it)))
@@ -425,7 +415,7 @@ export class iccPatientApi {
 
     const _url =
       this.host +
-      "/patient/merges/${encodeURIComponent(String(date))}".replace("{date}", date + "") +
+      `/patient/merges/${encodeURIComponent(String(date))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -452,12 +442,12 @@ export class iccPatientApi {
 
     const _url =
       this.host +
-      "/patient/modifiedAfter/${encodeURIComponent(String(date))}".replace("{date}", date + "") +
+      `/patient/modifiedAfter/${encodeURIComponent(String(date))}` +
       "?ts=" +
       new Date().getTime() +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PatientPaginatedList(doc.body as JSON))
@@ -486,15 +476,15 @@ export class iccPatientApi {
 
     const _url =
       this.host +
-      "/patient" +
+      `/patient` +
       "?ts=" +
       new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
-      (sortField ? "&sortField=" + sortField : "") +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "") +
-      (sortDirection ? "&sortDirection=" + sortDirection : "")
+      (hcPartyId ? "&hcPartyId=" + encodeURIComponent(String(hcPartyId)) : "") +
+      (sortField ? "&sortField=" + encodeURIComponent(String(sortField)) : "") +
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "") +
+      (sortDirection ? "&sortDirection=" + encodeURIComponent(String(sortDirection)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PatientPaginatedList(doc.body as JSON))
@@ -523,17 +513,14 @@ export class iccPatientApi {
 
     const _url =
       this.host +
-      "/patient/hcParty/${encodeURIComponent(String(hcPartyId))}".replace(
-        "{hcPartyId}",
-        hcPartyId + ""
-      ) +
+      `/patient/hcParty/${encodeURIComponent(String(hcPartyId))}` +
       "?ts=" +
       new Date().getTime() +
-      (sortField ? "&sortField=" + sortField : "") +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "") +
-      (sortDirection ? "&sortDirection=" + sortDirection : "")
+      (sortField ? "&sortField=" + encodeURIComponent(String(sortField)) : "") +
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "") +
+      (sortDirection ? "&sortDirection=" + encodeURIComponent(String(sortDirection)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PatientPaginatedList(doc.body as JSON))
@@ -558,13 +545,13 @@ export class iccPatientApi {
 
     const _url =
       this.host +
-      "/patient/idsPages" +
+      `/patient/idsPages` +
       "?ts=" +
       new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (hcPartyId ? "&hcPartyId=" + encodeURIComponent(String(hcPartyId)) : "") +
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PaginatedListString(doc.body as JSON))
@@ -593,17 +580,14 @@ export class iccPatientApi {
 
     const _url =
       this.host +
-      "/patient/ofHcParty/${encodeURIComponent(String(hcPartyId))}".replace(
-        "{hcPartyId}",
-        hcPartyId + ""
-      ) +
+      `/patient/ofHcParty/${encodeURIComponent(String(hcPartyId))}` +
       "?ts=" +
       new Date().getTime() +
-      (sortField ? "&sortField=" + sortField : "") +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "") +
-      (sortDirection ? "&sortDirection=" + sortDirection : "")
+      (sortField ? "&sortField=" + encodeURIComponent(String(sortField)) : "") +
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "") +
+      (sortDirection ? "&sortDirection=" + encodeURIComponent(String(sortDirection)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PatientPaginatedList(doc.body as JSON))
@@ -619,7 +603,7 @@ export class iccPatientApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/patient/match" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/patient/match` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -640,9 +624,9 @@ export class iccPatientApi {
 
     const _url =
       this.host +
-      "/patient/mergeInto/${encodeURIComponent(String(toId))}/from/${encodeURIComponent(String(fromIds))}"
-        .replace("{toId}", toId + "")
-        .replace("{fromIds}", fromIds + "") +
+      `/patient/mergeInto/${encodeURIComponent(String(toId))}/from/${encodeURIComponent(
+        String(fromIds)
+      )}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -660,7 +644,7 @@ export class iccPatientApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/patient" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/patient` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -688,13 +672,13 @@ export class iccPatientApi {
 
     const _url =
       this.host +
-      "/patient/${encodeURIComponent(String(patientId))}/referral/${encodeURIComponent(String(referralId))}"
-        .replace("{patientId}", patientId + "")
-        .replace("{referralId}", referralId + "") +
+      `/patient/${encodeURIComponent(String(patientId))}/referral/${encodeURIComponent(
+        String(referralId)
+      )}` +
       "?ts=" +
       new Date().getTime() +
-      (start ? "&start=" + start : "") +
-      (end ? "&end=" + end : "")
+      (start ? "&start=" + encodeURIComponent(String(start)) : "") +
+      (end ? "&end=" + encodeURIComponent(String(end)) : "")
     let headers = this.headers
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
       .then(doc => new PatientDto(doc.body as JSON))
@@ -713,10 +697,7 @@ export class iccPatientApi {
 
     const _url =
       this.host +
-      "/patient/${encodeURIComponent(String(patientId))}/delegate".replace(
-        "{patientId}",
-        patientId + ""
-      ) +
+      `/patient/${encodeURIComponent(String(patientId))}/delegate` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -738,10 +719,7 @@ export class iccPatientApi {
 
     const _url =
       this.host +
-      "/patient/undelete/${encodeURIComponent(String(patientIds))}".replace(
-        "{patientIds}",
-        patientIds + ""
-      ) +
+      `/patient/undelete/${encodeURIComponent(String(patientIds))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers

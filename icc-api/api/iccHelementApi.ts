@@ -49,7 +49,7 @@ export class iccHelementApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/helement" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/helement` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -69,10 +69,7 @@ export class iccHelementApi {
 
     const _url =
       this.host +
-      "/helement/${encodeURIComponent(String(healthElementIds))}".replace(
-        "{healthElementIds}",
-        healthElementIds + ""
-      ) +
+      `/helement/${encodeURIComponent(String(healthElementIds))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -90,7 +87,7 @@ export class iccHelementApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/helement/filter" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/helement/filter` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -114,11 +111,11 @@ export class iccHelementApi {
 
     const _url =
       this.host +
-      "/helement/byHcPartySecretForeignKeys" +
+      `/helement/byHcPartySecretForeignKeys` +
       "?ts=" +
       new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
-      (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
+      (hcPartyId ? "&hcPartyId=" + encodeURIComponent(String(hcPartyId)) : "") +
+      (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new HealthElementDto(it)))
@@ -139,11 +136,11 @@ export class iccHelementApi {
 
     const _url =
       this.host +
-      "/helement/byHcPartySecretForeignKeys/delegations" +
+      `/helement/byHcPartySecretForeignKeys/delegations` +
       "?ts=" +
       new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
-      (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
+      (hcPartyId ? "&hcPartyId=" + encodeURIComponent(String(hcPartyId)) : "") +
+      (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new IcureStubDto(it)))
@@ -160,10 +157,7 @@ export class iccHelementApi {
 
     const _url =
       this.host +
-      "/helement/${encodeURIComponent(String(healthElementId))}".replace(
-        "{healthElementId}",
-        healthElementId + ""
-      ) +
+      `/helement/${encodeURIComponent(String(healthElementId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -181,7 +175,7 @@ export class iccHelementApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/helement" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/helement` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -200,7 +194,7 @@ export class iccHelementApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/helement/batch" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/helement/batch` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -225,10 +219,7 @@ export class iccHelementApi {
 
     const _url =
       this.host +
-      "/helement/${encodeURIComponent(String(healthElementId))}/delegate".replace(
-        "{healthElementId}",
-        healthElementId + ""
-      ) +
+      `/helement/${encodeURIComponent(String(healthElementId))}/delegate` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -249,7 +240,7 @@ export class iccHelementApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/helement/delegations" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/helement/delegations` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")

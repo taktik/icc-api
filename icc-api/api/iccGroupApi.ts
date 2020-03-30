@@ -62,18 +62,18 @@ export class iccGroupApi {
 
     const _url =
       this.host +
-      "/group/${encodeURIComponent(String(id))}".replace("{id}", id + "") +
+      `/group/${encodeURIComponent(String(id))}` +
       "?ts=" +
       new Date().getTime() +
-      (name ? "&name=" + name : "") +
-      (password ? "&password=" + password : "") +
-      (server ? "&server=" + server : "") +
-      (q ? "&q=" + q : "") +
-      (n ? "&n=" + n : "")
+      (name ? "&name=" + encodeURIComponent(String(name)) : "") +
+      (server ? "&server=" + encodeURIComponent(String(server)) : "") +
+      (q ? "&q=" + encodeURIComponent(String(q)) : "") +
+      (n ? "&n=" + encodeURIComponent(String(n)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
+    password && (headers = headers.concat(new XHR.Header("password", password)))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => new GroupDto(doc.body as JSON))
       .catch(err => this.handleError(err))
@@ -86,7 +86,7 @@ export class iccGroupApi {
   listGroups(): Promise<Array<GroupDto> | any> {
     let _body = null
 
-    const _url = this.host + "/group" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/group` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new GroupDto(it)))

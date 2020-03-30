@@ -45,7 +45,7 @@ export class iccEntitytemplateApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/entitytemplate" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/entitytemplate` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -71,11 +71,11 @@ export class iccEntitytemplateApi {
 
     const _url =
       this.host +
-      "/entitytemplate/findAll/${encodeURIComponent(String(type))}".replace("{type}", type + "") +
+      `/entitytemplate/findAll/${encodeURIComponent(String(type))}` +
       "?ts=" +
       new Date().getTime() +
-      (searchString ? "&searchString=" + searchString : "") +
-      (includeEntities ? "&includeEntities=" + includeEntities : "")
+      (searchString ? "&searchString=" + encodeURIComponent(String(searchString)) : "") +
+      (includeEntities ? "&includeEntities=" + encodeURIComponent(String(includeEntities)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new EntityTemplateDto(it)))
@@ -100,13 +100,13 @@ export class iccEntitytemplateApi {
 
     const _url =
       this.host +
-      "/entitytemplate/find/${encodeURIComponent(String(userId))}/${encodeURIComponent(String(type))}"
-        .replace("{userId}", userId + "")
-        .replace("{type}", type + "") +
+      `/entitytemplate/find/${encodeURIComponent(String(userId))}/${encodeURIComponent(
+        String(type)
+      )}` +
       "?ts=" +
       new Date().getTime() +
-      (searchString ? "&searchString=" + searchString : "") +
-      (includeEntities ? "&includeEntities=" + includeEntities : "")
+      (searchString ? "&searchString=" + encodeURIComponent(String(searchString)) : "") +
+      (includeEntities ? "&includeEntities=" + encodeURIComponent(String(includeEntities)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new EntityTemplateDto(it)))
@@ -123,10 +123,7 @@ export class iccEntitytemplateApi {
 
     const _url =
       this.host +
-      "/entitytemplate/${encodeURIComponent(String(entityTemplateId))}".replace(
-        "{entityTemplateId}",
-        entityTemplateId + ""
-      ) +
+      `/entitytemplate/${encodeURIComponent(String(entityTemplateId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -145,10 +142,7 @@ export class iccEntitytemplateApi {
 
     const _url =
       this.host +
-      "/entitytemplate/byIds/${encodeURIComponent(String(entityTemplateIds))}".replace(
-        "{entityTemplateIds}",
-        entityTemplateIds + ""
-      ) +
+      `/entitytemplate/byIds/${encodeURIComponent(String(entityTemplateIds))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -166,7 +160,7 @@ export class iccEntitytemplateApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/entitytemplate" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/entitytemplate` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")

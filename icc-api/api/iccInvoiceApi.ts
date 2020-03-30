@@ -72,16 +72,15 @@ export class iccInvoiceApi {
 
     const _url =
       this.host +
-      "/invoice/byauthor/${encodeURIComponent(String(userId))}/append/${encodeURIComponent(String(type))}/${encodeURIComponent(String(sentMediumType))}"
-        .replace("{userId}", userId + "")
-        .replace("{type}", type + "")
-        .replace("{sentMediumType}", sentMediumType + "") +
+      `/invoice/byauthor/${encodeURIComponent(String(userId))}/append/${encodeURIComponent(
+        String(type)
+      )}/${encodeURIComponent(String(sentMediumType))}` +
       "?ts=" +
       new Date().getTime() +
-      (secretFKeys ? "&secretFKeys=" + secretFKeys : "") +
-      (insuranceId ? "&insuranceId=" + insuranceId : "") +
-      (invoiceId ? "&invoiceId=" + invoiceId : "") +
-      (gracePeriod ? "&gracePeriod=" + gracePeriod : "")
+      (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "") +
+      (insuranceId ? "&insuranceId=" + encodeURIComponent(String(insuranceId)) : "") +
+      (invoiceId ? "&invoiceId=" + encodeURIComponent(String(invoiceId)) : "") +
+      (gracePeriod ? "&gracePeriod=" + encodeURIComponent(String(gracePeriod)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -100,7 +99,7 @@ export class iccInvoiceApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/invoice" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/invoice` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -120,7 +119,7 @@ export class iccInvoiceApi {
 
     const _url =
       this.host +
-      "/invoice/${encodeURIComponent(String(invoiceId))}".replace("{invoiceId}", invoiceId + "") +
+      `/invoice/${encodeURIComponent(String(invoiceId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -138,7 +137,7 @@ export class iccInvoiceApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/invoice/filter" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/invoice/filter` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -170,17 +169,14 @@ export class iccInvoiceApi {
 
     const _url =
       this.host +
-      "/invoice/byauthor/${encodeURIComponent(String(hcPartyId))}".replace(
-        "{hcPartyId}",
-        hcPartyId + ""
-      ) +
+      `/invoice/byauthor/${encodeURIComponent(String(hcPartyId))}` +
       "?ts=" +
       new Date().getTime() +
-      (fromDate ? "&fromDate=" + fromDate : "") +
-      (toDate ? "&toDate=" + toDate : "") +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (fromDate ? "&fromDate=" + encodeURIComponent(String(fromDate)) : "") +
+      (toDate ? "&toDate=" + encodeURIComponent(String(toDate)) : "") +
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PaginatedListInvoiceDto(doc.body as JSON))
@@ -201,11 +197,11 @@ export class iccInvoiceApi {
 
     const _url =
       this.host +
-      "/invoice/byHcPartySecretForeignKeys" +
+      `/invoice/byHcPartySecretForeignKeys` +
       "?ts=" +
       new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
-      (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
+      (hcPartyId ? "&hcPartyId=" + encodeURIComponent(String(hcPartyId)) : "") +
+      (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new InvoiceDto(it)))
@@ -226,11 +222,11 @@ export class iccInvoiceApi {
 
     const _url =
       this.host +
-      "/invoice/byHcPartySecretForeignKeys/delegations" +
+      `/invoice/byHcPartySecretForeignKeys/delegations` +
       "?ts=" +
       new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
-      (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
+      (hcPartyId ? "&hcPartyId=" + encodeURIComponent(String(hcPartyId)) : "") +
+      (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new IcureStubDto(it)))
@@ -247,7 +243,7 @@ export class iccInvoiceApi {
 
     const _url =
       this.host +
-      "/invoice/${encodeURIComponent(String(invoiceId))}".replace("{invoiceId}", invoiceId + "") +
+      `/invoice/${encodeURIComponent(String(invoiceId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -265,7 +261,7 @@ export class iccInvoiceApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/invoice/byIds" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/invoice/byIds` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -287,10 +283,7 @@ export class iccInvoiceApi {
 
     const _url =
       this.host +
-      "/invoice/codes/${encodeURIComponent(String(minOccurences))}".replace(
-        "{minOccurences}",
-        minOccurences + ""
-      ) +
+      `/invoice/codes/${encodeURIComponent(String(minOccurences))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -318,14 +311,11 @@ export class iccInvoiceApi {
 
     const _url =
       this.host +
-      "/invoice/allHcpsByStatus/${encodeURIComponent(String(status))}".replace(
-        "{status}",
-        status + ""
-      ) +
+      `/invoice/allHcpsByStatus/${encodeURIComponent(String(status))}` +
       "?ts=" +
       new Date().getTime() +
-      (from ? "&from=" + from : "") +
-      (to ? "&to=" + to : "")
+      (from ? "&from=" + encodeURIComponent(String(from)) : "") +
+      (to ? "&to=" + encodeURIComponent(String(to)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -344,7 +334,7 @@ export class iccInvoiceApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/invoice/byCtcts" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/invoice/byCtcts` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -365,9 +355,9 @@ export class iccInvoiceApi {
 
     const _url =
       this.host +
-      "/invoice/byHcPartyGroupId/${encodeURIComponent(String(hcPartyId))}/${encodeURIComponent(String(groupId))}"
-        .replace("{hcPartyId}", hcPartyId + "")
-        .replace("{groupId}", groupId + "") +
+      `/invoice/byHcPartyGroupId/${encodeURIComponent(String(hcPartyId))}/${encodeURIComponent(
+        String(groupId)
+      )}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -398,15 +388,15 @@ export class iccInvoiceApi {
 
     const _url =
       this.host +
-      "/invoice/byHcParty/${encodeURIComponent(String(hcPartyId))}/mediumType/${encodeURIComponent(String(sentMediumType))}/invoiceType/${encodeURIComponent(String(invoiceType))}/sent/${encodeURIComponent(String(sent))}"
-        .replace("{hcPartyId}", hcPartyId + "")
-        .replace("{sentMediumType}", sentMediumType + "")
-        .replace("{invoiceType}", invoiceType + "")
-        .replace("{sent}", sent + "") +
+      `/invoice/byHcParty/${encodeURIComponent(String(hcPartyId))}/mediumType/${encodeURIComponent(
+        String(sentMediumType)
+      )}/invoiceType/${encodeURIComponent(String(invoiceType))}/sent/${encodeURIComponent(
+        String(sent)
+      )}` +
       "?ts=" +
       new Date().getTime() +
-      (from ? "&from=" + from : "") +
-      (to ? "&to=" + to : "")
+      (from ? "&from=" + encodeURIComponent(String(from)) : "") +
+      (to ? "&to=" + encodeURIComponent(String(to)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new InvoiceDto(it)))
@@ -433,16 +423,13 @@ export class iccInvoiceApi {
 
     const _url =
       this.host +
-      "/invoice/byHcpartySendingModeStatusDate/${encodeURIComponent(String(hcPartyId))}".replace(
-        "{hcPartyId}",
-        hcPartyId + ""
-      ) +
+      `/invoice/byHcpartySendingModeStatusDate/${encodeURIComponent(String(hcPartyId))}` +
       "?ts=" +
       new Date().getTime() +
-      (sendingMode ? "&sendingMode=" + sendingMode : "") +
-      (status ? "&status=" + status : "") +
-      (from ? "&from=" + from : "") +
-      (to ? "&to=" + to : "")
+      (sendingMode ? "&sendingMode=" + encodeURIComponent(String(sendingMode)) : "") +
+      (status ? "&status=" + encodeURIComponent(String(status)) : "") +
+      (from ? "&from=" + encodeURIComponent(String(from)) : "") +
+      (to ? "&to=" + encodeURIComponent(String(to)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new InvoiceDto(it)))
@@ -459,10 +446,7 @@ export class iccInvoiceApi {
 
     const _url =
       this.host +
-      "/invoice/byIds/${encodeURIComponent(String(invoiceIds))}".replace(
-        "{invoiceIds}",
-        invoiceIds + ""
-      ) +
+      `/invoice/byIds/${encodeURIComponent(String(invoiceIds))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -481,10 +465,7 @@ export class iccInvoiceApi {
 
     const _url =
       this.host +
-      "/invoice/to/${encodeURIComponent(String(recipientIds))}".replace(
-        "{recipientIds}",
-        recipientIds + ""
-      ) +
+      `/invoice/to/${encodeURIComponent(String(recipientIds))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -503,10 +484,7 @@ export class iccInvoiceApi {
 
     const _url =
       this.host +
-      "/invoice/byServiceIds/${encodeURIComponent(String(serviceIds))}".replace(
-        "{serviceIds}",
-        serviceIds + ""
-      ) +
+      `/invoice/byServiceIds/${encodeURIComponent(String(serviceIds))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -525,10 +503,10 @@ export class iccInvoiceApi {
 
     const _url =
       this.host +
-      "/invoice/toInsurances" +
+      `/invoice/toInsurances` +
       "?ts=" +
       new Date().getTime() +
-      (userIds ? "&userIds=" + userIds : "")
+      (userIds ? "&userIds=" + encodeURIComponent(String(userIds)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new InvoiceDto(it)))
@@ -545,10 +523,10 @@ export class iccInvoiceApi {
 
     const _url =
       this.host +
-      "/invoice/toInsurances/unsent" +
+      `/invoice/toInsurances/unsent` +
       "?ts=" +
       new Date().getTime() +
-      (userIds ? "&userIds=" + userIds : "")
+      (userIds ? "&userIds=" + encodeURIComponent(String(userIds)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new InvoiceDto(it)))
@@ -565,10 +543,10 @@ export class iccInvoiceApi {
 
     const _url =
       this.host +
-      "/invoice/toPatients" +
+      `/invoice/toPatients` +
       "?ts=" +
       new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + hcPartyId : "")
+      (hcPartyId ? "&hcPartyId=" + encodeURIComponent(String(hcPartyId)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new InvoiceDto(it)))
@@ -585,10 +563,10 @@ export class iccInvoiceApi {
 
     const _url =
       this.host +
-      "/invoice/toPatients/unsent" +
+      `/invoice/toPatients/unsent` +
       "?ts=" +
       new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + hcPartyId : "")
+      (hcPartyId ? "&hcPartyId=" + encodeURIComponent(String(hcPartyId)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new InvoiceDto(it)))
@@ -607,10 +585,7 @@ export class iccInvoiceApi {
 
     const _url =
       this.host +
-      "/invoice/mergeTo/${encodeURIComponent(String(invoiceId))}".replace(
-        "{invoiceId}",
-        invoiceId + ""
-      ) +
+      `/invoice/mergeTo/${encodeURIComponent(String(invoiceId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -631,7 +606,7 @@ export class iccInvoiceApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/invoice" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/invoice` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -653,10 +628,7 @@ export class iccInvoiceApi {
 
     const _url =
       this.host +
-      "/invoice/${encodeURIComponent(String(invoiceId))}/delegate".replace(
-        "{invoiceId}",
-        invoiceId + ""
-      ) +
+      `/invoice/${encodeURIComponent(String(invoiceId))}/delegate` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -677,7 +649,7 @@ export class iccInvoiceApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/invoice/reassign" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/invoice/reassign` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -706,12 +678,12 @@ export class iccInvoiceApi {
 
     const _url =
       this.host +
-      "/invoice/byauthor/${encodeURIComponent(String(userId))}/service/${encodeURIComponent(String(serviceId))}"
-        .replace("{userId}", userId + "")
-        .replace("{serviceId}", serviceId + "") +
+      `/invoice/byauthor/${encodeURIComponent(String(userId))}/service/${encodeURIComponent(
+        String(serviceId)
+      )}` +
       "?ts=" +
       new Date().getTime() +
-      (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
+      (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -730,7 +702,7 @@ export class iccInvoiceApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/invoice/delegations" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/invoice/delegations` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -752,14 +724,11 @@ export class iccInvoiceApi {
 
     const _url =
       this.host +
-      "/invoice/validate/${encodeURIComponent(String(invoiceId))}".replace(
-        "{invoiceId}",
-        invoiceId + ""
-      ) +
+      `/invoice/validate/${encodeURIComponent(String(invoiceId))}` +
       "?ts=" +
       new Date().getTime() +
-      (scheme ? "&scheme=" + scheme : "") +
-      (forcedValue ? "&forcedValue=" + forcedValue : "")
+      (scheme ? "&scheme=" + encodeURIComponent(String(scheme)) : "") +
+      (forcedValue ? "&forcedValue=" + encodeURIComponent(String(forcedValue)) : "")
     let headers = this.headers
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => new InvoiceDto(doc.body as JSON))

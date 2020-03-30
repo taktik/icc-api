@@ -58,12 +58,11 @@ export class iccBeresultexportApi {
 
     const _url =
       this.host +
-      "/be_result_export/hl1/${encodeURIComponent(String(fromHcpId))}/${encodeURIComponent(String(toHcpId))}/${encodeURIComponent(String(patId))}/${encodeURIComponent(String(date))}/${encodeURIComponent(String(ref))}"
-        .replace("{fromHcpId}", fromHcpId + "")
-        .replace("{toHcpId}", toHcpId + "")
-        .replace("{patId}", patId + "")
-        .replace("{date}", date + "")
-        .replace("{ref}", ref + "") +
+      `/be_result_export/hl1/${encodeURIComponent(String(fromHcpId))}/${encodeURIComponent(
+        String(toHcpId)
+      )}/${encodeURIComponent(String(patId))}/${encodeURIComponent(
+        String(date)
+      )}/${encodeURIComponent(String(ref))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -100,15 +99,14 @@ export class iccBeresultexportApi {
 
     const _url =
       this.host +
-      "/be_result_export/kmehrreport/${encodeURIComponent(String(fromHcpId))}/${encodeURIComponent(String(toHcpId))}/${encodeURIComponent(String(patId))}/${encodeURIComponent(String(date))}/${encodeURIComponent(String(ref))}"
-        .replace("{fromHcpId}", fromHcpId + "")
-        .replace("{toHcpId}", toHcpId + "")
-        .replace("{patId}", patId + "")
-        .replace("{date}", date + "")
-        .replace("{ref}", ref + "") +
+      `/be_result_export/kmehrreport/${encodeURIComponent(String(fromHcpId))}/${encodeURIComponent(
+        String(toHcpId)
+      )}/${encodeURIComponent(String(patId))}/${encodeURIComponent(
+        String(date)
+      )}/${encodeURIComponent(String(ref))}` +
       "?ts=" +
       new Date().getTime() +
-      (mimeType ? "&mimeType=" + mimeType : "")
+      (mimeType ? "&mimeType=" + encodeURIComponent(String(mimeType)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -141,12 +139,11 @@ export class iccBeresultexportApi {
 
     const _url =
       this.host +
-      "/be_result_export/medidoc/${encodeURIComponent(String(fromHcpId))}/${encodeURIComponent(String(toHcpId))}/${encodeURIComponent(String(patId))}/${encodeURIComponent(String(date))}/${encodeURIComponent(String(ref))}"
-        .replace("{fromHcpId}", fromHcpId + "")
-        .replace("{toHcpId}", toHcpId + "")
-        .replace("{patId}", patId + "")
-        .replace("{date}", date + "")
-        .replace("{ref}", ref + "") +
+      `/be_result_export/medidoc/${encodeURIComponent(String(fromHcpId))}/${encodeURIComponent(
+        String(toHcpId)
+      )}/${encodeURIComponent(String(patId))}/${encodeURIComponent(
+        String(date)
+      )}/${encodeURIComponent(String(ref))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers

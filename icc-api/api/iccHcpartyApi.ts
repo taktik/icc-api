@@ -50,7 +50,7 @@ export class iccHcpartyApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/hcparty" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/hcparty` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -75,7 +75,7 @@ export class iccHcpartyApi {
 
     const _url =
       this.host +
-      "/hcparty/inGroup/${encodeURIComponent(String(groupId))}".replace("{groupId}", groupId + "") +
+      `/hcparty/inGroup/${encodeURIComponent(String(groupId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -96,7 +96,7 @@ export class iccHcpartyApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/hcparty/signup" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/hcparty/signup` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -116,10 +116,7 @@ export class iccHcpartyApi {
 
     const _url =
       this.host +
-      "/hcparty/${encodeURIComponent(String(healthcarePartyIds))}".replace(
-        "{healthcarePartyIds}",
-        healthcarePartyIds + ""
-      ) +
+      `/hcparty/${encodeURIComponent(String(healthcarePartyIds))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -142,9 +139,9 @@ export class iccHcpartyApi {
 
     const _url =
       this.host +
-      "/hcparty/inGroup/${encodeURIComponent(String(groupId))}/${encodeURIComponent(String(healthcarePartyIds))}"
-        .replace("{groupId}", groupId + "")
-        .replace("{healthcarePartyIds}", healthcarePartyIds + "") +
+      `/hcparty/inGroup/${encodeURIComponent(String(groupId))}/${encodeURIComponent(
+        String(healthcarePartyIds)
+      )}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -173,14 +170,14 @@ export class iccHcpartyApi {
 
     const _url =
       this.host +
-      "/hcparty/byName" +
+      `/hcparty/byName` +
       "?ts=" +
       new Date().getTime() +
-      (name ? "&name=" + name : "") +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "") +
-      (desc ? "&desc=" + desc : "")
+      (name ? "&name=" + encodeURIComponent(String(name)) : "") +
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "") +
+      (desc ? "&desc=" + encodeURIComponent(String(desc)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PaginatedListHealthcarePartyDto(doc.body as JSON))
@@ -207,14 +204,12 @@ export class iccHcpartyApi {
 
     const _url =
       this.host +
-      "/hcparty/bySpecialityAndPostCode/${encodeURIComponent(String(type))}/${encodeURIComponent(String(spec))}/${encodeURIComponent(String(firstCode))}/to/${encodeURIComponent(String(lastCode))}"
-        .replace("{type}", type + "")
-        .replace("{spec}", spec + "")
-        .replace("{firstCode}", firstCode + "")
-        .replace("{lastCode}", lastCode + "") +
+      `/hcparty/bySpecialityAndPostCode/${encodeURIComponent(String(type))}/${encodeURIComponent(
+        String(spec)
+      )}/${encodeURIComponent(String(firstCode))}/to/${encodeURIComponent(String(lastCode))}` +
       "?ts=" +
       new Date().getTime() +
-      (limit ? "&limit=" + limit : "")
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PaginatedListHealthcarePartyDto(doc.body as JSON))
@@ -241,16 +236,13 @@ export class iccHcpartyApi {
 
     const _url =
       this.host +
-      "/hcparty/byNihiiOrSsin/${encodeURIComponent(String(searchValue))}".replace(
-        "{searchValue}",
-        searchValue + ""
-      ) +
+      `/hcparty/byNihiiOrSsin/${encodeURIComponent(String(searchValue))}` +
       "?ts=" +
       new Date().getTime() +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "") +
-      (desc ? "&desc=" + desc : "")
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "") +
+      (desc ? "&desc=" + encodeURIComponent(String(desc)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PaginatedListHealthcarePartyDto(doc.body as JSON))
@@ -264,7 +256,7 @@ export class iccHcpartyApi {
   getCurrentHealthcareParty(): Promise<HealthcarePartyDto | any> {
     let _body = null
 
-    const _url = this.host + "/hcparty/current" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/hcparty/current` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new HealthcarePartyDto(doc.body as JSON))
@@ -281,10 +273,7 @@ export class iccHcpartyApi {
 
     const _url =
       this.host +
-      "/hcparty/${encodeURIComponent(String(healthcarePartyId))}/keys".replace(
-        "{healthcarePartyId}",
-        healthcarePartyId + ""
-      ) +
+      `/hcparty/${encodeURIComponent(String(healthcarePartyId))}/keys` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -303,10 +292,7 @@ export class iccHcpartyApi {
 
     const _url =
       this.host +
-      "/hcparty/byIds/${encodeURIComponent(String(healthcarePartyIds))}".replace(
-        "{healthcarePartyIds}",
-        healthcarePartyIds + ""
-      ) +
+      `/hcparty/byIds/${encodeURIComponent(String(healthcarePartyIds))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -325,10 +311,7 @@ export class iccHcpartyApi {
 
     const _url =
       this.host +
-      "/hcparty/${encodeURIComponent(String(parentId))}/children".replace(
-        "{parentId}",
-        parentId + ""
-      ) +
+      `/hcparty/${encodeURIComponent(String(parentId))}/children` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -352,10 +335,7 @@ export class iccHcpartyApi {
 
     const _url =
       this.host +
-      "/hcparty/inGroup/${encodeURIComponent(String(groupId))}/byIds".replace(
-        "{groupId}",
-        groupId + ""
-      ) +
+      `/hcparty/inGroup/${encodeURIComponent(String(groupId))}/byIds` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -377,10 +357,7 @@ export class iccHcpartyApi {
 
     const _url =
       this.host +
-      "/hcparty/${encodeURIComponent(String(healthcarePartyId))}".replace(
-        "{healthcarePartyId}",
-        healthcarePartyId + ""
-      ) +
+      `/hcparty/${encodeURIComponent(String(healthcarePartyId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -399,10 +376,7 @@ export class iccHcpartyApi {
 
     const _url =
       this.host +
-      "/hcparty/${encodeURIComponent(String(healthcarePartyId))}/publicKey".replace(
-        "{healthcarePartyId}",
-        healthcarePartyId + ""
-      ) +
+      `/hcparty/${encodeURIComponent(String(healthcarePartyId))}/publicKey` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -421,7 +395,7 @@ export class iccHcpartyApi {
 
     const _url =
       this.host +
-      "/hcparty/byNameStrict/${encodeURIComponent(String(name))}".replace("{name}", name + "") +
+      `/hcparty/byNameStrict/${encodeURIComponent(String(name))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -448,13 +422,13 @@ export class iccHcpartyApi {
 
     const _url =
       this.host +
-      "/hcparty" +
+      `/hcparty` +
       "?ts=" +
       new Date().getTime() +
-      (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "") +
-      (desc ? "&desc=" + desc : "")
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "") +
+      (desc ? "&desc=" + encodeURIComponent(String(desc)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PaginatedListHealthcarePartyDto(doc.body as JSON))
@@ -470,7 +444,7 @@ export class iccHcpartyApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/hcparty" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/hcparty` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -495,7 +469,7 @@ export class iccHcpartyApi {
 
     const _url =
       this.host +
-      "/hcparty/inGroup/${encodeURIComponent(String(groupId))}".replace("{groupId}", groupId + "") +
+      `/hcparty/inGroup/${encodeURIComponent(String(groupId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers

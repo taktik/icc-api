@@ -47,7 +47,7 @@ export class iccTarificationApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/tarification" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/tarification` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -79,15 +79,15 @@ export class iccTarificationApi {
 
     const _url =
       this.host +
-      "/tarification" +
+      `/tarification` +
       "?ts=" +
       new Date().getTime() +
-      (region ? "&region=" + region : "") +
-      (type ? "&type=" + type : "") +
-      (tarification ? "&tarification=" + tarification : "") +
-      (version ? "&version=" + version : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (region ? "&region=" + encodeURIComponent(String(region)) : "") +
+      (type ? "&type=" + encodeURIComponent(String(type)) : "") +
+      (tarification ? "&tarification=" + encodeURIComponent(String(tarification)) : "") +
+      (version ? "&version=" + encodeURIComponent(String(version)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new TarificationPaginatedList(doc.body as JSON))
@@ -116,15 +116,15 @@ export class iccTarificationApi {
 
     const _url =
       this.host +
-      "/tarification/byLabel" +
+      `/tarification/byLabel` +
       "?ts=" +
       new Date().getTime() +
-      (region ? "&region=" + region : "") +
-      (types ? "&types=" + types : "") +
-      (language ? "&language=" + language : "") +
-      (label ? "&label=" + label : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (region ? "&region=" + encodeURIComponent(String(region)) : "") +
+      (types ? "&types=" + encodeURIComponent(String(types)) : "") +
+      (language ? "&language=" + encodeURIComponent(String(language)) : "") +
+      (label ? "&label=" + encodeURIComponent(String(label)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new TarificationPaginatedList(doc.body as JSON))
@@ -149,13 +149,13 @@ export class iccTarificationApi {
 
     const _url =
       this.host +
-      "/tarification/byRegionTypeTarification" +
+      `/tarification/byRegionTypeTarification` +
       "?ts=" +
       new Date().getTime() +
-      (region ? "&region=" + region : "") +
-      (type ? "&type=" + type : "") +
-      (tarification ? "&tarification=" + tarification : "") +
-      (version ? "&version=" + version : "")
+      (region ? "&region=" + encodeURIComponent(String(region)) : "") +
+      (type ? "&type=" + encodeURIComponent(String(type)) : "") +
+      (tarification ? "&tarification=" + encodeURIComponent(String(tarification)) : "") +
+      (version ? "&version=" + encodeURIComponent(String(version)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new TarificationDto(it)))
@@ -171,7 +171,7 @@ export class iccTarificationApi {
 
     const _url =
       this.host +
-      "/tarification/${encodeURIComponent(String(tarificationId))}" +
+      `/tarification/${encodeURIComponent(String(tarificationId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -189,7 +189,9 @@ export class iccTarificationApi {
 
     const _url =
       this.host +
-      "/tarification/${encodeURIComponent(String(type))}/${encodeURIComponent(String(tarification))}/${encodeURIComponent(String(version))}" +
+      `/tarification/${encodeURIComponent(String(type))}/${encodeURIComponent(
+        String(tarification)
+      )}/${encodeURIComponent(String(version))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -207,7 +209,7 @@ export class iccTarificationApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/tarification/byIds" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/tarification/byIds` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -226,7 +228,7 @@ export class iccTarificationApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/tarification" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/tarification` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")

@@ -66,15 +66,12 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/smf/${encodeURIComponent(String(documentId))}/checkIfSMFPatientsExists".replace(
-        "{documentId}",
-        documentId + ""
-      ) +
+      `/be_kmehr/smf/${encodeURIComponent(String(documentId))}/checkIfSMFPatientsExists` +
       "?ts=" +
       new Date().getTime() +
-      (documentKey ? "&documentKey=" + documentKey : "") +
-      (patientId ? "&patientId=" + patientId : "") +
-      (language ? "&language=" + language : "")
+      (documentKey ? "&documentKey=" + encodeURIComponent(String(documentKey)) : "") +
+      (patientId ? "&patientId=" + encodeURIComponent(String(patientId)) : "") +
+      (language ? "&language=" + encodeURIComponent(String(language)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -113,17 +110,21 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/contactreport/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(String(id))}"
-        .replace("{patientId}", patientId + "")
-        .replace("{id}", id + "") +
+      `/be_kmehr/contactreport/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(
+        String(id)
+      )}` +
       "?ts=" +
       new Date().getTime() +
-      (date ? "&date=" + date : "") +
-      (language ? "&language=" + language : "") +
-      (recipientNihii ? "&recipientNihii=" + recipientNihii : "") +
-      (recipientFirstName ? "&recipientFirstName=" + recipientFirstName : "") +
-      (recipientLastName ? "&recipientLastName=" + recipientLastName : "") +
-      (mimeType ? "&mimeType=" + mimeType : "")
+      (date ? "&date=" + encodeURIComponent(String(date)) : "") +
+      (language ? "&language=" + encodeURIComponent(String(language)) : "") +
+      (recipientNihii ? "&recipientNihii=" + encodeURIComponent(String(recipientNihii)) : "") +
+      (recipientFirstName
+        ? "&recipientFirstName=" + encodeURIComponent(String(recipientFirstName))
+        : "") +
+      (recipientLastName
+        ? "&recipientLastName=" + encodeURIComponent(String(recipientLastName))
+        : "") +
+      (mimeType ? "&mimeType=" + encodeURIComponent(String(mimeType)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -150,13 +151,10 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/diarynote/${encodeURIComponent(String(patientId))}/export".replace(
-        "{patientId}",
-        patientId + ""
-      ) +
+      `/be_kmehr/diarynote/${encodeURIComponent(String(patientId))}/export` +
       "?ts=" +
       new Date().getTime() +
-      (language ? "&language=" + language : "")
+      (language ? "&language=" + encodeURIComponent(String(language)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -195,17 +193,21 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/labresult/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(String(id))}"
-        .replace("{patientId}", patientId + "")
-        .replace("{id}", id + "") +
+      `/be_kmehr/labresult/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(
+        String(id)
+      )}` +
       "?ts=" +
       new Date().getTime() +
-      (date ? "&date=" + date : "") +
-      (language ? "&language=" + language : "") +
-      (recipientNihii ? "&recipientNihii=" + recipientNihii : "") +
-      (recipientFirstName ? "&recipientFirstName=" + recipientFirstName : "") +
-      (recipientLastName ? "&recipientLastName=" + recipientLastName : "") +
-      (mimeType ? "&mimeType=" + mimeType : "")
+      (date ? "&date=" + encodeURIComponent(String(date)) : "") +
+      (language ? "&language=" + encodeURIComponent(String(language)) : "") +
+      (recipientNihii ? "&recipientNihii=" + encodeURIComponent(String(recipientNihii)) : "") +
+      (recipientFirstName
+        ? "&recipientFirstName=" + encodeURIComponent(String(recipientFirstName))
+        : "") +
+      (recipientLastName
+        ? "&recipientLastName=" + encodeURIComponent(String(recipientLastName))
+        : "") +
+      (mimeType ? "&mimeType=" + encodeURIComponent(String(mimeType)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -236,15 +238,12 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/medicationscheme/${encodeURIComponent(String(patientId))}/export".replace(
-        "{patientId}",
-        patientId + ""
-      ) +
+      `/be_kmehr/medicationscheme/${encodeURIComponent(String(patientId))}/export` +
       "?ts=" +
       new Date().getTime() +
-      (language ? "&language=" + language : "") +
-      (recipientSafe ? "&recipientSafe=" + recipientSafe : "") +
-      (version ? "&version=" + version : "")
+      (language ? "&language=" + encodeURIComponent(String(language)) : "") +
+      (recipientSafe ? "&recipientSafe=" + encodeURIComponent(String(recipientSafe)) : "") +
+      (version ? "&version=" + encodeURIComponent(String(version)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -283,17 +282,21 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/note/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(String(id))}"
-        .replace("{patientId}", patientId + "")
-        .replace("{id}", id + "") +
+      `/be_kmehr/note/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(
+        String(id)
+      )}` +
       "?ts=" +
       new Date().getTime() +
-      (date ? "&date=" + date : "") +
-      (language ? "&language=" + language : "") +
-      (recipientNihii ? "&recipientNihii=" + recipientNihii : "") +
-      (recipientFirstName ? "&recipientFirstName=" + recipientFirstName : "") +
-      (recipientLastName ? "&recipientLastName=" + recipientLastName : "") +
-      (mimeType ? "&mimeType=" + mimeType : "")
+      (date ? "&date=" + encodeURIComponent(String(date)) : "") +
+      (language ? "&language=" + encodeURIComponent(String(language)) : "") +
+      (recipientNihii ? "&recipientNihii=" + encodeURIComponent(String(recipientNihii)) : "") +
+      (recipientFirstName
+        ? "&recipientFirstName=" + encodeURIComponent(String(recipientFirstName))
+        : "") +
+      (recipientLastName
+        ? "&recipientLastName=" + encodeURIComponent(String(recipientLastName))
+        : "") +
+      (mimeType ? "&mimeType=" + encodeURIComponent(String(mimeType)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -332,17 +335,21 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/prescription/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(String(id))}"
-        .replace("{patientId}", patientId + "")
-        .replace("{id}", id + "") +
+      `/be_kmehr/prescription/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(
+        String(id)
+      )}` +
       "?ts=" +
       new Date().getTime() +
-      (date ? "&date=" + date : "") +
-      (language ? "&language=" + language : "") +
-      (recipientNihii ? "&recipientNihii=" + recipientNihii : "") +
-      (recipientFirstName ? "&recipientFirstName=" + recipientFirstName : "") +
-      (recipientLastName ? "&recipientLastName=" + recipientLastName : "") +
-      (mimeType ? "&mimeType=" + mimeType : "")
+      (date ? "&date=" + encodeURIComponent(String(date)) : "") +
+      (language ? "&language=" + encodeURIComponent(String(language)) : "") +
+      (recipientNihii ? "&recipientNihii=" + encodeURIComponent(String(recipientNihii)) : "") +
+      (recipientFirstName
+        ? "&recipientFirstName=" + encodeURIComponent(String(recipientFirstName))
+        : "") +
+      (recipientLastName
+        ? "&recipientLastName=" + encodeURIComponent(String(recipientLastName))
+        : "") +
+      (mimeType ? "&mimeType=" + encodeURIComponent(String(mimeType)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -381,17 +388,21 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/report/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(String(id))}"
-        .replace("{patientId}", patientId + "")
-        .replace("{id}", id + "") +
+      `/be_kmehr/report/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(
+        String(id)
+      )}` +
       "?ts=" +
       new Date().getTime() +
-      (date ? "&date=" + date : "") +
-      (language ? "&language=" + language : "") +
-      (recipientNihii ? "&recipientNihii=" + recipientNihii : "") +
-      (recipientFirstName ? "&recipientFirstName=" + recipientFirstName : "") +
-      (recipientLastName ? "&recipientLastName=" + recipientLastName : "") +
-      (mimeType ? "&mimeType=" + mimeType : "")
+      (date ? "&date=" + encodeURIComponent(String(date)) : "") +
+      (language ? "&language=" + encodeURIComponent(String(language)) : "") +
+      (recipientNihii ? "&recipientNihii=" + encodeURIComponent(String(recipientNihii)) : "") +
+      (recipientFirstName
+        ? "&recipientFirstName=" + encodeURIComponent(String(recipientFirstName))
+        : "") +
+      (recipientLastName
+        ? "&recipientLastName=" + encodeURIComponent(String(recipientLastName))
+        : "") +
+      (mimeType ? "&mimeType=" + encodeURIComponent(String(mimeType)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -430,17 +441,21 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/request/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(String(id))}"
-        .replace("{patientId}", patientId + "")
-        .replace("{id}", id + "") +
+      `/be_kmehr/request/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(
+        String(id)
+      )}` +
       "?ts=" +
       new Date().getTime() +
-      (date ? "&date=" + date : "") +
-      (language ? "&language=" + language : "") +
-      (recipientNihii ? "&recipientNihii=" + recipientNihii : "") +
-      (recipientFirstName ? "&recipientFirstName=" + recipientFirstName : "") +
-      (recipientLastName ? "&recipientLastName=" + recipientLastName : "") +
-      (mimeType ? "&mimeType=" + mimeType : "")
+      (date ? "&date=" + encodeURIComponent(String(date)) : "") +
+      (language ? "&language=" + encodeURIComponent(String(language)) : "") +
+      (recipientNihii ? "&recipientNihii=" + encodeURIComponent(String(recipientNihii)) : "") +
+      (recipientFirstName
+        ? "&recipientFirstName=" + encodeURIComponent(String(recipientFirstName))
+        : "") +
+      (recipientLastName
+        ? "&recipientLastName=" + encodeURIComponent(String(recipientLastName))
+        : "") +
+      (mimeType ? "&mimeType=" + encodeURIComponent(String(mimeType)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -479,17 +494,21 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/result/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(String(id))}"
-        .replace("{patientId}", patientId + "")
-        .replace("{id}", id + "") +
+      `/be_kmehr/result/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(
+        String(id)
+      )}` +
       "?ts=" +
       new Date().getTime() +
-      (date ? "&date=" + date : "") +
-      (language ? "&language=" + language : "") +
-      (recipientNihii ? "&recipientNihii=" + recipientNihii : "") +
-      (recipientFirstName ? "&recipientFirstName=" + recipientFirstName : "") +
-      (recipientLastName ? "&recipientLastName=" + recipientLastName : "") +
-      (mimeType ? "&mimeType=" + mimeType : "")
+      (date ? "&date=" + encodeURIComponent(String(date)) : "") +
+      (language ? "&language=" + encodeURIComponent(String(language)) : "") +
+      (recipientNihii ? "&recipientNihii=" + encodeURIComponent(String(recipientNihii)) : "") +
+      (recipientFirstName
+        ? "&recipientFirstName=" + encodeURIComponent(String(recipientFirstName))
+        : "") +
+      (recipientLastName
+        ? "&recipientLastName=" + encodeURIComponent(String(recipientLastName))
+        : "") +
+      (mimeType ? "&mimeType=" + encodeURIComponent(String(mimeType)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -516,13 +535,10 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/smf/${encodeURIComponent(String(patientId))}/export".replace(
-        "{patientId}",
-        patientId + ""
-      ) +
+      `/be_kmehr/smf/${encodeURIComponent(String(patientId))}/export` +
       "?ts=" +
       new Date().getTime() +
-      (language ? "&language=" + language : "")
+      (language ? "&language=" + encodeURIComponent(String(language)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -549,13 +565,10 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/sumehr/${encodeURIComponent(String(patientId))}/export".replace(
-        "{patientId}",
-        patientId + ""
-      ) +
+      `/be_kmehr/sumehr/${encodeURIComponent(String(patientId))}/export` +
       "?ts=" +
       new Date().getTime() +
-      (language ? "&language=" + language : "")
+      (language ? "&language=" + encodeURIComponent(String(language)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -582,13 +595,10 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/sumehrv2/${encodeURIComponent(String(patientId))}/export".replace(
-        "{patientId}",
-        patientId + ""
-      ) +
+      `/be_kmehr/sumehrv2/${encodeURIComponent(String(patientId))}/export` +
       "?ts=" +
       new Date().getTime() +
-      (language ? "&language=" + language : "")
+      (language ? "&language=" + encodeURIComponent(String(language)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -610,10 +620,7 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/sumehr/${encodeURIComponent(String(patientId))}/content".replace(
-        "{patientId}",
-        patientId + ""
-      ) +
+      `/be_kmehr/sumehr/${encodeURIComponent(String(patientId))}/content` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -637,10 +644,7 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/sumehr/${encodeURIComponent(String(patientId))}/md5".replace(
-        "{patientId}",
-        patientId + ""
-      ) +
+      `/be_kmehr/sumehr/${encodeURIComponent(String(patientId))}/md5` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -667,10 +671,7 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/sumehrv2/${encodeURIComponent(String(patientId))}/content".replace(
-        "{patientId}",
-        patientId + ""
-      ) +
+      `/be_kmehr/sumehrv2/${encodeURIComponent(String(patientId))}/content` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -694,10 +695,7 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/sumehrv2/${encodeURIComponent(String(patientId))}/md5".replace(
-        "{patientId}",
-        patientId + ""
-      ) +
+      `/be_kmehr/sumehrv2/${encodeURIComponent(String(patientId))}/md5` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -732,16 +730,13 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/medicationscheme/${encodeURIComponent(String(documentId))}/import".replace(
-        "{documentId}",
-        documentId + ""
-      ) +
+      `/be_kmehr/medicationscheme/${encodeURIComponent(String(documentId))}/import` +
       "?ts=" +
       new Date().getTime() +
-      (documentKey ? "&documentKey=" + documentKey : "") +
-      (dryRun ? "&dryRun=" + dryRun : "") +
-      (patientId ? "&patientId=" + patientId : "") +
-      (language ? "&language=" + language : "")
+      (documentKey ? "&documentKey=" + encodeURIComponent(String(documentKey)) : "") +
+      (dryRun ? "&dryRun=" + encodeURIComponent(String(dryRun)) : "") +
+      (patientId ? "&patientId=" + encodeURIComponent(String(patientId)) : "") +
+      (language ? "&language=" + encodeURIComponent(String(language)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -772,15 +767,12 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/smf/${encodeURIComponent(String(documentId))}/import".replace(
-        "{documentId}",
-        documentId + ""
-      ) +
+      `/be_kmehr/smf/${encodeURIComponent(String(documentId))}/import` +
       "?ts=" +
       new Date().getTime() +
-      (documentKey ? "&documentKey=" + documentKey : "") +
-      (patientId ? "&patientId=" + patientId : "") +
-      (language ? "&language=" + language : "")
+      (documentKey ? "&documentKey=" + encodeURIComponent(String(documentKey)) : "") +
+      (patientId ? "&patientId=" + encodeURIComponent(String(patientId)) : "") +
+      (language ? "&language=" + encodeURIComponent(String(language)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -813,16 +805,13 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/sumehr/${encodeURIComponent(String(documentId))}/import".replace(
-        "{documentId}",
-        documentId + ""
-      ) +
+      `/be_kmehr/sumehr/${encodeURIComponent(String(documentId))}/import` +
       "?ts=" +
       new Date().getTime() +
-      (documentKey ? "&documentKey=" + documentKey : "") +
-      (dryRun ? "&dryRun=" + dryRun : "") +
-      (patientId ? "&patientId=" + patientId : "") +
-      (language ? "&language=" + language : "")
+      (documentKey ? "&documentKey=" + encodeURIComponent(String(documentKey)) : "") +
+      (dryRun ? "&dryRun=" + encodeURIComponent(String(dryRun)) : "") +
+      (patientId ? "&patientId=" + encodeURIComponent(String(patientId)) : "") +
+      (language ? "&language=" + encodeURIComponent(String(language)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -857,17 +846,14 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/sumehr/${encodeURIComponent(String(documentId))}/importbyitemid".replace(
-        "{documentId}",
-        documentId + ""
-      ) +
+      `/be_kmehr/sumehr/${encodeURIComponent(String(documentId))}/importbyitemid` +
       "?ts=" +
       new Date().getTime() +
-      (itemId ? "&itemId=" + itemId : "") +
-      (documentKey ? "&documentKey=" + documentKey : "") +
-      (dryRun ? "&dryRun=" + dryRun : "") +
-      (patientId ? "&patientId=" + patientId : "") +
-      (language ? "&language=" + language : "")
+      (itemId ? "&itemId=" + encodeURIComponent(String(itemId)) : "") +
+      (documentKey ? "&documentKey=" + encodeURIComponent(String(documentKey)) : "") +
+      (dryRun ? "&dryRun=" + encodeURIComponent(String(dryRun)) : "") +
+      (patientId ? "&patientId=" + encodeURIComponent(String(patientId)) : "") +
+      (language ? "&language=" + encodeURIComponent(String(language)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -889,10 +875,7 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/sumehrv2/${encodeURIComponent(String(patientId))}/valid".replace(
-        "{patientId}",
-        patientId + ""
-      ) +
+      `/be_kmehr/sumehrv2/${encodeURIComponent(String(patientId))}/valid` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -916,10 +899,7 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/sumehr/${encodeURIComponent(String(patientId))}/valid".replace(
-        "{patientId}",
-        patientId + ""
-      ) +
+      `/be_kmehr/sumehr/${encodeURIComponent(String(patientId))}/valid` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -948,13 +928,10 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/sumehr/${encodeURIComponent(String(patientId))}/validate".replace(
-        "{patientId}",
-        patientId + ""
-      ) +
+      `/be_kmehr/sumehr/${encodeURIComponent(String(patientId))}/validate` +
       "?ts=" +
       new Date().getTime() +
-      (language ? "&language=" + language : "")
+      (language ? "&language=" + encodeURIComponent(String(language)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -981,13 +958,10 @@ export class iccBekmehrApi {
 
     const _url =
       this.host +
-      "/be_kmehr/sumehrv2/${encodeURIComponent(String(patientId))}/validate".replace(
-        "{patientId}",
-        patientId + ""
-      ) +
+      `/be_kmehr/sumehrv2/${encodeURIComponent(String(patientId))}/validate` +
       "?ts=" +
       new Date().getTime() +
-      (language ? "&language=" + language : "")
+      (language ? "&language=" + encodeURIComponent(String(language)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")

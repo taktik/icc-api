@@ -45,7 +45,7 @@ export class iccMedexApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/medex/generate" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/medex/generate` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")

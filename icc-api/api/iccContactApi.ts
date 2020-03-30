@@ -60,11 +60,11 @@ export class iccContactApi {
 
     const _url =
       this.host +
-      "/contact/byHcPartySecretForeignKeys/close" +
+      `/contact/byHcPartySecretForeignKeys/close` +
       "?ts=" +
       new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
-      (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
+      (hcPartyId ? "&hcPartyId=" + encodeURIComponent(String(hcPartyId)) : "") +
+      (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "")
     let headers = this.headers
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new ContactDto(it)))
@@ -80,7 +80,7 @@ export class iccContactApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/contact" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/contact` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -100,10 +100,7 @@ export class iccContactApi {
 
     const _url =
       this.host +
-      "/contact/${encodeURIComponent(String(contactIds))}".replace(
-        "{contactIds}",
-        contactIds + ""
-      ) +
+      `/contact/${encodeURIComponent(String(contactIds))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -129,11 +126,11 @@ export class iccContactApi {
 
     const _url =
       this.host +
-      "/contact/filter" +
+      `/contact/filter` +
       "?ts=" +
       new Date().getTime() +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -160,11 +157,11 @@ export class iccContactApi {
 
     const _url =
       this.host +
-      "/contact/service/filter" +
+      `/contact/service/filter` +
       "?ts=" +
       new Date().getTime() +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -185,11 +182,11 @@ export class iccContactApi {
 
     const _url =
       this.host +
-      "/contact/byHcPartyFormId" +
+      `/contact/byHcPartyFormId` +
       "?ts=" +
       new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
-      (formId ? "&formId=" + formId : "")
+      (hcPartyId ? "&hcPartyId=" + encodeURIComponent(String(hcPartyId)) : "") +
+      (formId ? "&formId=" + encodeURIComponent(String(formId)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new ContactDto(it)))
@@ -208,10 +205,10 @@ export class iccContactApi {
 
     const _url =
       this.host +
-      "/contact/byHcPartyFormIds" +
+      `/contact/byHcPartyFormIds` +
       "?ts=" +
       new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + hcPartyId : "")
+      (hcPartyId ? "&hcPartyId=" + encodeURIComponent(String(hcPartyId)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -239,13 +236,17 @@ export class iccContactApi {
 
     const _url =
       this.host +
-      "/contact/byHcPartySecretForeignKeys" +
+      `/contact/byHcPartySecretForeignKeys` +
       "?ts=" +
       new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
-      (secretFKeys ? "&secretFKeys=" + secretFKeys : "") +
-      (planOfActionsIds ? "&planOfActionsIds=" + planOfActionsIds : "") +
-      (skipClosedContacts ? "&skipClosedContacts=" + skipClosedContacts : "")
+      (hcPartyId ? "&hcPartyId=" + encodeURIComponent(String(hcPartyId)) : "") +
+      (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "") +
+      (planOfActionsIds
+        ? "&planOfActionsIds=" + encodeURIComponent(String(planOfActionsIds))
+        : "") +
+      (skipClosedContacts
+        ? "&skipClosedContacts=" + encodeURIComponent(String(skipClosedContacts))
+        : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new ContactDto(it)))
@@ -267,10 +268,10 @@ export class iccContactApi {
 
     const _url =
       this.host +
-      "/contact/byHcPartyPatientForeignKeys" +
+      `/contact/byHcPartyPatientForeignKeys` +
       "?ts=" +
       new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + hcPartyId : "")
+      (hcPartyId ? "&hcPartyId=" + encodeURIComponent(String(hcPartyId)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -294,11 +295,11 @@ export class iccContactApi {
 
     const _url =
       this.host +
-      "/contact/byHcPartySecretForeignKeys/delegations" +
+      `/contact/byHcPartySecretForeignKeys/delegations` +
       "?ts=" +
       new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + hcPartyId : "") +
-      (secretFKeys ? "&secretFKeys=" + secretFKeys : "")
+      (hcPartyId ? "&hcPartyId=" + encodeURIComponent(String(hcPartyId)) : "") +
+      (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new IcureStubDto(it)))
@@ -315,7 +316,7 @@ export class iccContactApi {
 
     const _url =
       this.host +
-      "/contact/${encodeURIComponent(String(contactId))}".replace("{contactId}", contactId + "") +
+      `/contact/${encodeURIComponent(String(contactId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -333,7 +334,7 @@ export class iccContactApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/contact/byIds" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/contact/byIds` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -350,7 +351,7 @@ export class iccContactApi {
   getEmptyContent(): Promise<ContentDto | any> {
     let _body = null
 
-    const _url = this.host + "/contact/service/content/empty" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/contact/service/content/empty` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new ContentDto(doc.body as JSON))
@@ -371,9 +372,9 @@ export class iccContactApi {
 
     const _url =
       this.host +
-      "/contact/service/codes/${encodeURIComponent(String(codeType))}/${encodeURIComponent(String(minOccurences))}"
-        .replace("{codeType}", codeType + "")
-        .replace("{minOccurences}", minOccurences + "") +
+      `/contact/service/codes/${encodeURIComponent(String(codeType))}/${encodeURIComponent(
+        String(minOccurences)
+      )}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -402,14 +403,14 @@ export class iccContactApi {
 
     const _url =
       this.host +
-      "/contact/byOpeningDate" +
+      `/contact/byOpeningDate` +
       "?ts=" +
       new Date().getTime() +
-      (startKey ? "&startKey=" + startKey : "") +
-      (endKey ? "&endKey=" + endKey : "") +
-      (hcpartyid ? "&hcpartyid=" + hcpartyid : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
-      (limit ? "&limit=" + limit : "")
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (endKey ? "&endKey=" + encodeURIComponent(String(endKey)) : "") +
+      (hcpartyid ? "&hcpartyid=" + encodeURIComponent(String(hcpartyid)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PaginatedListContactDto(doc.body as JSON))
@@ -425,7 +426,7 @@ export class iccContactApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/contact/match" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/contact/match` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -444,7 +445,7 @@ export class iccContactApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/contact" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/contact` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -463,7 +464,7 @@ export class iccContactApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/contact/batch" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/contact/batch` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -485,10 +486,7 @@ export class iccContactApi {
 
     const _url =
       this.host +
-      "/contact/${encodeURIComponent(String(contactId))}/delegate".replace(
-        "{contactId}",
-        contactId + ""
-      ) +
+      `/contact/${encodeURIComponent(String(contactId))}/delegate` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -509,7 +507,7 @@ export class iccContactApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/contact/delegations" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/contact/delegations` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")

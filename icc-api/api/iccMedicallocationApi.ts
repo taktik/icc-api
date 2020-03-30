@@ -46,7 +46,7 @@ export class iccMedicallocationApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/medicalLocation" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/medicalLocation` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -66,10 +66,7 @@ export class iccMedicallocationApi {
 
     const _url =
       this.host +
-      "/medicalLocation/${encodeURIComponent(String(locationIds))}".replace(
-        "{locationIds}",
-        locationIds + ""
-      ) +
+      `/medicalLocation/${encodeURIComponent(String(locationIds))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -88,10 +85,7 @@ export class iccMedicallocationApi {
 
     const _url =
       this.host +
-      "/medicalLocation/${encodeURIComponent(String(locationId))}".replace(
-        "{locationId}",
-        locationId + ""
-      ) +
+      `/medicalLocation/${encodeURIComponent(String(locationId))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -107,7 +101,7 @@ export class iccMedicallocationApi {
   getMedicalLocations(): Promise<Array<MedicalLocationDto> | any> {
     let _body = null
 
-    const _url = this.host + "/medicalLocation" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/medicalLocation` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new MedicalLocationDto(it)))
@@ -123,7 +117,7 @@ export class iccMedicallocationApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/medicalLocation" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/medicalLocation` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")

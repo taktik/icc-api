@@ -56,10 +56,9 @@ export class iccBeefactApi {
 
     const _url =
       this.host +
-      "/be_efact/${encodeURIComponent(String(insuranceId))}/${encodeURIComponent(String(newMessageId))}/${encodeURIComponent(String(numericalRef))}"
-        .replace("{insuranceId}", insuranceId + "")
-        .replace("{newMessageId}", newMessageId + "")
-        .replace("{numericalRef}", numericalRef + "") +
+      `/be_efact/${encodeURIComponent(String(insuranceId))}/${encodeURIComponent(
+        String(newMessageId)
+      )}/${encodeURIComponent(String(numericalRef))}` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers

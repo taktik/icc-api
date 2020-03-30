@@ -46,7 +46,7 @@ export class iccPlaceApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/place" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/place` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -65,10 +65,7 @@ export class iccPlaceApi {
     let _body = null
 
     const _url =
-      this.host +
-      "/place/${encodeURIComponent(String(placeIds))}".replace("{placeIds}", placeIds + "") +
-      "?ts=" +
-      new Date().getTime()
+      this.host + `/place/${encodeURIComponent(String(placeIds))}` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new DocIdentifier(it)))
@@ -83,7 +80,7 @@ export class iccPlaceApi {
     let _body = null
 
     const _url =
-      this.host + "/place/${encodeURIComponent(String(placeId))}" + "?ts=" + new Date().getTime()
+      this.host + `/place/${encodeURIComponent(String(placeId))}` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PlaceDto(doc.body as JSON))
@@ -97,7 +94,7 @@ export class iccPlaceApi {
   getPlaces(): Promise<Array<PlaceDto> | any> {
     let _body = null
 
-    const _url = this.host + "/place" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/place` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new PlaceDto(it)))
@@ -113,7 +110,7 @@ export class iccPlaceApi {
     let _body = null
     _body = body
 
-    const _url = this.host + "/place" + "?ts=" + new Date().getTime()
+    const _url = this.host + `/place` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
