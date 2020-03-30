@@ -47,15 +47,15 @@ export class HealthElementDto {
   idClosingContact?: string
   status?: number
   idService?: string
-  laterality?: HealthElementDto.HealthElementDtoLateralityEnum
+  laterality?: HealthElementDto.LateralityEnum
   plansOfAction?: Array<PlanOfActionDto>
   episodes?: Array<EpisodeDto>
   careTeam?: Array<CareTeamMemberDto>
 }
 export namespace HealthElementDto {
-  export type HealthElementDtoLateralityEnum = "left" | "right"
-  export const HealthElementDtoLateralityEnum = {
-    Left: "left" as HealthElementDtoLateralityEnum,
-    Right: "right" as HealthElementDtoLateralityEnum
+  export type LateralityEnum = "left" | "right" | "HealthElementDto#desambiguationToken"
+  export const LateralityEnum = {
+    Left: "left" as LateralityEnum,
+    Right: "right" as LateralityEnum
   }
 }

@@ -50,7 +50,7 @@ export class PatientDto {
   lastName?: string
   alias?: string
   active?: boolean
-  deactivationReason?: PatientDto.PatientDtoDeactivationReasonEnum
+  deactivationReason?: PatientDto.DeactivationReasonEnum
   chronicalDisease?: string
   ssin?: string
   civility?: string
@@ -96,7 +96,7 @@ export class PatientDto {
   properties?: Array<Property>
 }
 export namespace PatientDto {
-  export type PatientDtoDeactivationReasonEnum =
+  export type DeactivationReasonEnum =
     | "deceased"
     | "moved"
     | "other_doctor"
@@ -104,13 +104,14 @@ export namespace PatientDto {
     | "no_contact"
     | "unknown"
     | "none"
-  export const PatientDtoDeactivationReasonEnum = {
-    Deceased: "deceased" as PatientDtoDeactivationReasonEnum,
-    Moved: "moved" as PatientDtoDeactivationReasonEnum,
-    OtherDoctor: "other_doctor" as PatientDtoDeactivationReasonEnum,
-    Retired: "retired" as PatientDtoDeactivationReasonEnum,
-    NoContact: "no_contact" as PatientDtoDeactivationReasonEnum,
-    Unknown: "unknown" as PatientDtoDeactivationReasonEnum,
-    None: "none" as PatientDtoDeactivationReasonEnum
+    | "PatientDto#desambiguationToken"
+  export const DeactivationReasonEnum = {
+    Deceased: "deceased" as DeactivationReasonEnum,
+    Moved: "moved" as DeactivationReasonEnum,
+    OtherDoctor: "other_doctor" as DeactivationReasonEnum,
+    Retired: "retired" as DeactivationReasonEnum,
+    NoContact: "no_contact" as DeactivationReasonEnum,
+    Unknown: "unknown" as DeactivationReasonEnum,
+    None: "none" as DeactivationReasonEnum
   }
 }

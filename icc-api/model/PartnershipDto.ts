@@ -16,14 +16,14 @@ export class PartnershipDto {
   }
 
   partnershipDescription?: string
-  type?: PartnershipDto.PartnershipDtoTypeEnum
-  status?: PartnershipDto.PartnershipDtoStatusEnum
+  type?: PartnershipDto.TypeEnum
+  status?: PartnershipDto.StatusEnum
   meToOtherRelationshipDescription?: string
   otherToMeRelationshipDescription?: string
   partnerId?: string
 }
 export namespace PartnershipDto {
-  export type PartnershipDtoTypeEnum =
+  export type TypeEnum =
     | "primary_contact"
     | "primary_contact_for"
     | "tutor"
@@ -31,19 +31,20 @@ export namespace PartnershipDto {
     | "friend"
     | "counselor"
     | "contact"
-  export const PartnershipDtoTypeEnum = {
-    PrimaryContact: "primary_contact" as PartnershipDtoTypeEnum,
-    PrimaryContactFor: "primary_contact_for" as PartnershipDtoTypeEnum,
-    Tutor: "tutor" as PartnershipDtoTypeEnum,
-    Family: "family" as PartnershipDtoTypeEnum,
-    Friend: "friend" as PartnershipDtoTypeEnum,
-    Counselor: "counselor" as PartnershipDtoTypeEnum,
-    Contact: "contact" as PartnershipDtoTypeEnum
+    | "PartnershipDto#desambiguationToken"
+  export const TypeEnum = {
+    PrimaryContact: "primary_contact" as TypeEnum,
+    PrimaryContactFor: "primary_contact_for" as TypeEnum,
+    Tutor: "tutor" as TypeEnum,
+    Family: "family" as TypeEnum,
+    Friend: "friend" as TypeEnum,
+    Counselor: "counselor" as TypeEnum,
+    Contact: "contact" as TypeEnum
   }
-  export type PartnershipDtoStatusEnum = "active" | "complicated" | "past"
-  export const PartnershipDtoStatusEnum = {
-    Active: "active" as PartnershipDtoStatusEnum,
-    Complicated: "complicated" as PartnershipDtoStatusEnum,
-    Past: "past" as PartnershipDtoStatusEnum
+  export type StatusEnum = "active" | "complicated" | "past" | "PartnershipDto#desambiguationToken"
+  export const StatusEnum = {
+    Active: "active" as StatusEnum,
+    Complicated: "complicated" as StatusEnum,
+    Past: "past" as StatusEnum
   }
 }

@@ -22,17 +22,21 @@ export class FrontEndMigrationDto {
   userId?: string
   startDate?: number
   endDate?: number
-  status?: FrontEndMigrationDto.FrontEndMigrationDtoStatusEnum
+  status?: FrontEndMigrationDto.StatusEnum
   logs?: string
   startKey?: string
   startKeyDocId?: string
   processCount?: number
 }
 export namespace FrontEndMigrationDto {
-  export type FrontEndMigrationDtoStatusEnum = "STARTED" | "ERROR" | "SUCCESS"
-  export const FrontEndMigrationDtoStatusEnum = {
-    STARTED: "STARTED" as FrontEndMigrationDtoStatusEnum,
-    ERROR: "ERROR" as FrontEndMigrationDtoStatusEnum,
-    SUCCESS: "SUCCESS" as FrontEndMigrationDtoStatusEnum
+  export type StatusEnum =
+    | "STARTED"
+    | "ERROR"
+    | "SUCCESS"
+    | "FrontEndMigrationDto#desambiguationToken"
+  export const StatusEnum = {
+    STARTED: "STARTED" as StatusEnum,
+    ERROR: "ERROR" as StatusEnum,
+    SUCCESS: "SUCCESS" as StatusEnum
   }
 }

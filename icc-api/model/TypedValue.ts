@@ -15,7 +15,7 @@ export class TypedValue {
     Object.assign(this as TypedValue, json)
   }
 
-  type?: TypedValue.TypedValueTypeEnum
+  type?: TypedValue.TypeEnum
   booleanValue?: boolean
   integerValue?: number
   doubleValue?: number
@@ -23,7 +23,7 @@ export class TypedValue {
   dateValue?: number
 }
 export namespace TypedValue {
-  export type TypedValueTypeEnum =
+  export type TypeEnum =
     | "BOOLEAN"
     | "INTEGER"
     | "DOUBLE"
@@ -31,13 +31,14 @@ export namespace TypedValue {
     | "DATE"
     | "CLOB"
     | "JSON"
-  export const TypedValueTypeEnum = {
-    BOOLEAN: "BOOLEAN" as TypedValueTypeEnum,
-    INTEGER: "INTEGER" as TypedValueTypeEnum,
-    DOUBLE: "DOUBLE" as TypedValueTypeEnum,
-    STRING: "STRING" as TypedValueTypeEnum,
-    DATE: "DATE" as TypedValueTypeEnum,
-    CLOB: "CLOB" as TypedValueTypeEnum,
-    JSON: "JSON" as TypedValueTypeEnum
+    | "TypedValue#desambiguationToken"
+  export const TypeEnum = {
+    BOOLEAN: "BOOLEAN" as TypeEnum,
+    INTEGER: "INTEGER" as TypeEnum,
+    DOUBLE: "DOUBLE" as TypeEnum,
+    STRING: "STRING" as TypeEnum,
+    DATE: "DATE" as TypeEnum,
+    CLOB: "CLOB" as TypeEnum,
+    JSON: "JSON" as TypeEnum
   }
 }

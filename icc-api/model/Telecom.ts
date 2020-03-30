@@ -15,13 +15,13 @@ export class Telecom {
     Object.assign(this as Telecom, json)
   }
 
-  telecomType?: Telecom.TelecomTelecomTypeEnum
+  telecomType?: Telecom.TelecomTypeEnum
   telecomNumber?: string
   telecomDescription?: string
   encryptedSelf?: string
 }
 export namespace Telecom {
-  export type TelecomTelecomTypeEnum =
+  export type TelecomTypeEnum =
     | "mobile"
     | "phone"
     | "email"
@@ -34,18 +34,19 @@ export namespace Telecom {
     | "web"
     | "print"
     | "disk"
-  export const TelecomTelecomTypeEnum = {
-    Mobile: "mobile" as TelecomTelecomTypeEnum,
-    Phone: "phone" as TelecomTelecomTypeEnum,
-    Email: "email" as TelecomTelecomTypeEnum,
-    Fax: "fax" as TelecomTelecomTypeEnum,
-    Skype: "skype" as TelecomTelecomTypeEnum,
-    Im: "im" as TelecomTelecomTypeEnum,
-    Medibridge: "medibridge" as TelecomTelecomTypeEnum,
-    Ehealthbox: "ehealthbox" as TelecomTelecomTypeEnum,
-    Apicrypt: "apicrypt" as TelecomTelecomTypeEnum,
-    Web: "web" as TelecomTelecomTypeEnum,
-    Print: "print" as TelecomTelecomTypeEnum,
-    Disk: "disk" as TelecomTelecomTypeEnum
+    | "Telecom#desambiguationToken"
+  export const TelecomTypeEnum = {
+    Mobile: "mobile" as TelecomTypeEnum,
+    Phone: "phone" as TelecomTypeEnum,
+    Email: "email" as TelecomTypeEnum,
+    Fax: "fax" as TelecomTypeEnum,
+    Skype: "skype" as TelecomTypeEnum,
+    Im: "im" as TelecomTypeEnum,
+    Medibridge: "medibridge" as TelecomTypeEnum,
+    Ehealthbox: "ehealthbox" as TelecomTypeEnum,
+    Apicrypt: "apicrypt" as TelecomTypeEnum,
+    Web: "web" as TelecomTypeEnum,
+    Print: "print" as TelecomTypeEnum,
+    Disk: "disk" as TelecomTypeEnum
   }
 }

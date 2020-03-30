@@ -18,9 +18,9 @@ export class DmppDto {
 
   from?: number
   to?: number
-  deliveryEnvironment?: DmppDto.DmppDtoDeliveryEnvironmentEnum
+  deliveryEnvironment?: DmppDto.DeliveryEnvironmentEnum
   code?: string
-  codeType?: DmppDto.DmppDtoCodeTypeEnum
+  codeType?: DmppDto.CodeTypeEnum
   price?: string
   cheap?: boolean
   cheapest?: boolean
@@ -28,16 +28,16 @@ export class DmppDto {
   reimbursements?: Array<ReimbursementDto>
 }
 export namespace DmppDto {
-  export type DmppDtoDeliveryEnvironmentEnum = "P" | "A" | "H" | "R"
-  export const DmppDtoDeliveryEnvironmentEnum = {
-    P: "P" as DmppDtoDeliveryEnvironmentEnum,
-    A: "A" as DmppDtoDeliveryEnvironmentEnum,
-    H: "H" as DmppDtoDeliveryEnvironmentEnum,
-    R: "R" as DmppDtoDeliveryEnvironmentEnum
+  export type DeliveryEnvironmentEnum = "P" | "A" | "H" | "R" | "DmppDto#desambiguationToken"
+  export const DeliveryEnvironmentEnum = {
+    P: "P" as DeliveryEnvironmentEnum,
+    A: "A" as DeliveryEnvironmentEnum,
+    H: "H" as DeliveryEnvironmentEnum,
+    R: "R" as DeliveryEnvironmentEnum
   }
-  export type DmppDtoCodeTypeEnum = "CNK" | "PSEUDO"
-  export const DmppDtoCodeTypeEnum = {
-    CNK: "CNK" as DmppDtoCodeTypeEnum,
-    PSEUDO: "PSEUDO" as DmppDtoCodeTypeEnum
+  export type CodeTypeEnum = "CNK" | "PSEUDO" | "DmppDto#desambiguationToken"
+  export const CodeTypeEnum = {
+    CNK: "CNK" as CodeTypeEnum,
+    PSEUDO: "PSEUDO" as CodeTypeEnum
   }
 }

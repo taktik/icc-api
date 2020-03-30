@@ -22,7 +22,7 @@ export class InvoicingCodeDto {
   serviceId?: string
   tarificationId?: string
   label?: string
-  paymentType?: InvoicingCodeDto.InvoicingCodeDtoPaymentTypeEnum
+  paymentType?: InvoicingCodeDto.PaymentTypeEnum
   paid?: number
   totalAmount?: number
   reimbursement?: number
@@ -66,7 +66,7 @@ export class InvoicingCodeDto {
   status?: number
 }
 export namespace InvoicingCodeDto {
-  export type InvoicingCodeDtoPaymentTypeEnum =
+  export type PaymentTypeEnum =
     | "wired"
     | "cash"
     | "insurance"
@@ -74,13 +74,14 @@ export namespace InvoicingCodeDto {
     | "debitcard"
     | "paypal"
     | "bitcoin"
-  export const InvoicingCodeDtoPaymentTypeEnum = {
-    Wired: "wired" as InvoicingCodeDtoPaymentTypeEnum,
-    Cash: "cash" as InvoicingCodeDtoPaymentTypeEnum,
-    Insurance: "insurance" as InvoicingCodeDtoPaymentTypeEnum,
-    Creditcard: "creditcard" as InvoicingCodeDtoPaymentTypeEnum,
-    Debitcard: "debitcard" as InvoicingCodeDtoPaymentTypeEnum,
-    Paypal: "paypal" as InvoicingCodeDtoPaymentTypeEnum,
-    Bitcoin: "bitcoin" as InvoicingCodeDtoPaymentTypeEnum
+    | "InvoicingCodeDto#desambiguationToken"
+  export const PaymentTypeEnum = {
+    Wired: "wired" as PaymentTypeEnum,
+    Cash: "cash" as PaymentTypeEnum,
+    Insurance: "insurance" as PaymentTypeEnum,
+    Creditcard: "creditcard" as PaymentTypeEnum,
+    Debitcard: "debitcard" as PaymentTypeEnum,
+    Paypal: "paypal" as PaymentTypeEnum,
+    Bitcoin: "bitcoin" as PaymentTypeEnum
   }
 }

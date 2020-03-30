@@ -40,7 +40,7 @@ export class InvoiceDto {
   sentDate?: number
   printedDate?: number
   paid?: number
-  paymentType?: InvoiceDto.InvoiceDtoPaymentTypeEnum
+  paymentType?: InvoiceDto.PaymentTypeEnum
   payments?: Array<Payment>
   invoicingCodes?: Array<InvoicingCodeDto>
   invoiceType?: string
@@ -88,7 +88,7 @@ export class InvoiceDto {
   idDocument?: IdentityDocumentReader
 }
 export namespace InvoiceDto {
-  export type InvoiceDtoPaymentTypeEnum =
+  export type PaymentTypeEnum =
     | "wired"
     | "cash"
     | "insurance"
@@ -96,13 +96,14 @@ export namespace InvoiceDto {
     | "debitcard"
     | "paypal"
     | "bitcoin"
-  export const InvoiceDtoPaymentTypeEnum = {
-    Wired: "wired" as InvoiceDtoPaymentTypeEnum,
-    Cash: "cash" as InvoiceDtoPaymentTypeEnum,
-    Insurance: "insurance" as InvoiceDtoPaymentTypeEnum,
-    Creditcard: "creditcard" as InvoiceDtoPaymentTypeEnum,
-    Debitcard: "debitcard" as InvoiceDtoPaymentTypeEnum,
-    Paypal: "paypal" as InvoiceDtoPaymentTypeEnum,
-    Bitcoin: "bitcoin" as InvoiceDtoPaymentTypeEnum
+    | "InvoiceDto#desambiguationToken"
+  export const PaymentTypeEnum = {
+    Wired: "wired" as PaymentTypeEnum,
+    Cash: "cash" as PaymentTypeEnum,
+    Insurance: "insurance" as PaymentTypeEnum,
+    Creditcard: "creditcard" as PaymentTypeEnum,
+    Debitcard: "debitcard" as PaymentTypeEnum,
+    Paypal: "paypal" as PaymentTypeEnum,
+    Bitcoin: "bitcoin" as PaymentTypeEnum
   }
 }

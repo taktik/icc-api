@@ -16,11 +16,11 @@ export class Payment {
   }
 
   paymentDate?: number
-  paymentType?: Payment.PaymentPaymentTypeEnum
+  paymentType?: Payment.PaymentTypeEnum
   paid?: number
 }
 export namespace Payment {
-  export type PaymentPaymentTypeEnum =
+  export type PaymentTypeEnum =
     | "cash"
     | "wired"
     | "insurance"
@@ -29,14 +29,15 @@ export namespace Payment {
     | "paypal"
     | "bitcoin"
     | "other"
-  export const PaymentPaymentTypeEnum = {
-    Cash: "cash" as PaymentPaymentTypeEnum,
-    Wired: "wired" as PaymentPaymentTypeEnum,
-    Insurance: "insurance" as PaymentPaymentTypeEnum,
-    Creditcard: "creditcard" as PaymentPaymentTypeEnum,
-    Debitcard: "debitcard" as PaymentPaymentTypeEnum,
-    Paypal: "paypal" as PaymentPaymentTypeEnum,
-    Bitcoin: "bitcoin" as PaymentPaymentTypeEnum,
-    Other: "other" as PaymentPaymentTypeEnum
+    | "Payment#desambiguationToken"
+  export const PaymentTypeEnum = {
+    Cash: "cash" as PaymentTypeEnum,
+    Wired: "wired" as PaymentTypeEnum,
+    Insurance: "insurance" as PaymentTypeEnum,
+    Creditcard: "creditcard" as PaymentTypeEnum,
+    Debitcard: "debitcard" as PaymentTypeEnum,
+    Paypal: "paypal" as PaymentTypeEnum,
+    Bitcoin: "bitcoin" as PaymentTypeEnum,
+    Other: "other" as PaymentTypeEnum
   }
 }

@@ -17,7 +17,7 @@ export class AddressDto {
   }
 
   objectType?: string
-  addressType?: AddressDto.AddressDtoAddressTypeEnum
+  addressType?: AddressDto.AddressTypeEnum
   descr?: string
   street?: string
   houseNumber?: string
@@ -30,7 +30,7 @@ export class AddressDto {
   telecoms?: Array<TelecomDtoEmbed>
 }
 export namespace AddressDto {
-  export type AddressDtoAddressTypeEnum =
+  export type AddressTypeEnum =
     | "home"
     | "work"
     | "vacation"
@@ -38,13 +38,14 @@ export namespace AddressDto {
     | "clinic"
     | "hq"
     | "other"
-  export const AddressDtoAddressTypeEnum = {
-    Home: "home" as AddressDtoAddressTypeEnum,
-    Work: "work" as AddressDtoAddressTypeEnum,
-    Vacation: "vacation" as AddressDtoAddressTypeEnum,
-    Hospital: "hospital" as AddressDtoAddressTypeEnum,
-    Clinic: "clinic" as AddressDtoAddressTypeEnum,
-    Hq: "hq" as AddressDtoAddressTypeEnum,
-    Other: "other" as AddressDtoAddressTypeEnum
+    | "AddressDto#desambiguationToken"
+  export const AddressTypeEnum = {
+    Home: "home" as AddressTypeEnum,
+    Work: "work" as AddressTypeEnum,
+    Vacation: "vacation" as AddressTypeEnum,
+    Hospital: "hospital" as AddressTypeEnum,
+    Clinic: "clinic" as AddressTypeEnum,
+    Hq: "hq" as AddressTypeEnum,
+    Other: "other" as AddressTypeEnum
   }
 }

@@ -28,12 +28,12 @@ export class EmailOrSmsMessageDto {
   patientId?: string
   senderId?: string
   subject?: string
-  type?: EmailOrSmsMessageDto.EmailOrSmsMessageDtoTypeEnum
+  type?: EmailOrSmsMessageDto.TypeEnum
 }
 export namespace EmailOrSmsMessageDto {
-  export type EmailOrSmsMessageDtoTypeEnum = "EMAIL" | "SMS"
-  export const EmailOrSmsMessageDtoTypeEnum = {
-    EMAIL: "EMAIL" as EmailOrSmsMessageDtoTypeEnum,
-    SMS: "SMS" as EmailOrSmsMessageDtoTypeEnum
+  export type TypeEnum = "EMAIL" | "SMS" | "EmailOrSmsMessageDto#desambiguationToken"
+  export const TypeEnum = {
+    EMAIL: "EMAIL" as TypeEnum,
+    SMS: "SMS" as TypeEnum
   }
 }

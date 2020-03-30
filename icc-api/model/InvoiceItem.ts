@@ -26,60 +26,68 @@ export class InvoiceItem {
   reimbursedAmount?: number
   patientFee?: number
   doctorSupplement?: number
-  sideCode?: InvoiceItem.InvoiceItemSideCodeEnum
-  timeOfDay?: InvoiceItem.InvoiceItemTimeOfDayEnum
+  sideCode?: InvoiceItem.SideCodeEnum
+  timeOfDay?: InvoiceItem.TimeOfDayEnum
   override3rdPayerCode?: number
   gnotionNihii?: string
-  derogationMaxNumber?: InvoiceItem.InvoiceItemDerogationMaxNumberEnum
-  prescriberNorm?: InvoiceItem.InvoiceItemPrescriberNormEnum
+  derogationMaxNumber?: InvoiceItem.DerogationMaxNumberEnum
+  prescriberNorm?: InvoiceItem.PrescriberNormEnum
   prescriberNihii?: string
   personalInterventionCoveredByThirdPartyCode?: number
   doctorIdentificationNumber?: string
   invoiceRef?: string
-  percentNorm?: InvoiceItem.InvoiceItemPercentNormEnum
+  percentNorm?: InvoiceItem.PercentNormEnum
 }
 export namespace InvoiceItem {
-  export type InvoiceItemSideCodeEnum = "None" | "Left" | "Right"
-  export const InvoiceItemSideCodeEnum = {
-    None: "None" as InvoiceItemSideCodeEnum,
-    Left: "Left" as InvoiceItemSideCodeEnum,
-    Right: "Right" as InvoiceItemSideCodeEnum
+  export type SideCodeEnum = "None" | "Left" | "Right" | "InvoiceItem#desambiguationToken"
+  export const SideCodeEnum = {
+    None: "None" as SideCodeEnum,
+    Left: "Left" as SideCodeEnum,
+    Right: "Right" as SideCodeEnum
   }
-  export type InvoiceItemTimeOfDayEnum = "Other" | "Night" | "Weekend" | "Bankholiday" | "Urgent"
-  export const InvoiceItemTimeOfDayEnum = {
-    Other: "Other" as InvoiceItemTimeOfDayEnum,
-    Night: "Night" as InvoiceItemTimeOfDayEnum,
-    Weekend: "Weekend" as InvoiceItemTimeOfDayEnum,
-    Bankholiday: "Bankholiday" as InvoiceItemTimeOfDayEnum,
-    Urgent: "Urgent" as InvoiceItemTimeOfDayEnum
+  export type TimeOfDayEnum =
+    | "Other"
+    | "Night"
+    | "Weekend"
+    | "Bankholiday"
+    | "Urgent"
+    | "InvoiceItem#desambiguationToken"
+  export const TimeOfDayEnum = {
+    Other: "Other" as TimeOfDayEnum,
+    Night: "Night" as TimeOfDayEnum,
+    Weekend: "Weekend" as TimeOfDayEnum,
+    Bankholiday: "Bankholiday" as TimeOfDayEnum,
+    Urgent: "Urgent" as TimeOfDayEnum
   }
-  export type InvoiceItemDerogationMaxNumberEnum =
+  export type DerogationMaxNumberEnum =
     | "Other"
     | "DerogationMaxNumber"
     | "OtherPrescription"
     | "SecondPrestationOfDay"
     | "ThirdAndNextPrestationOfDay"
-  export const InvoiceItemDerogationMaxNumberEnum = {
-    Other: "Other" as InvoiceItemDerogationMaxNumberEnum,
-    DerogationMaxNumber: "DerogationMaxNumber" as InvoiceItemDerogationMaxNumberEnum,
-    OtherPrescription: "OtherPrescription" as InvoiceItemDerogationMaxNumberEnum,
-    SecondPrestationOfDay: "SecondPrestationOfDay" as InvoiceItemDerogationMaxNumberEnum,
-    ThirdAndNextPrestationOfDay: "ThirdAndNextPrestationOfDay" as InvoiceItemDerogationMaxNumberEnum
+    | "InvoiceItem#desambiguationToken"
+  export const DerogationMaxNumberEnum = {
+    Other: "Other" as DerogationMaxNumberEnum,
+    DerogationMaxNumber: "DerogationMaxNumber" as DerogationMaxNumberEnum,
+    OtherPrescription: "OtherPrescription" as DerogationMaxNumberEnum,
+    SecondPrestationOfDay: "SecondPrestationOfDay" as DerogationMaxNumberEnum,
+    ThirdAndNextPrestationOfDay: "ThirdAndNextPrestationOfDay" as DerogationMaxNumberEnum
   }
-  export type InvoiceItemPrescriberNormEnum =
+  export type PrescriberNormEnum =
     | "None"
     | "OnePrescriber"
     | "SelfPrescriber"
     | "AddedCode"
     | "ManyPrescribers"
-  export const InvoiceItemPrescriberNormEnum = {
-    None: "None" as InvoiceItemPrescriberNormEnum,
-    OnePrescriber: "OnePrescriber" as InvoiceItemPrescriberNormEnum,
-    SelfPrescriber: "SelfPrescriber" as InvoiceItemPrescriberNormEnum,
-    AddedCode: "AddedCode" as InvoiceItemPrescriberNormEnum,
-    ManyPrescribers: "ManyPrescribers" as InvoiceItemPrescriberNormEnum
+    | "InvoiceItem#desambiguationToken"
+  export const PrescriberNormEnum = {
+    None: "None" as PrescriberNormEnum,
+    OnePrescriber: "OnePrescriber" as PrescriberNormEnum,
+    SelfPrescriber: "SelfPrescriber" as PrescriberNormEnum,
+    AddedCode: "AddedCode" as PrescriberNormEnum,
+    ManyPrescribers: "ManyPrescribers" as PrescriberNormEnum
   }
-  export type InvoiceItemPercentNormEnum =
+  export type PercentNormEnum =
     | "None"
     | "SurgicalAid1"
     | "SurgicalAid2"
@@ -88,14 +96,15 @@ export namespace InvoiceItem {
     | "HalfPriceSecondAct"
     | "InvoiceException"
     | "ForInformation"
-  export const InvoiceItemPercentNormEnum = {
-    None: "None" as InvoiceItemPercentNormEnum,
-    SurgicalAid1: "SurgicalAid1" as InvoiceItemPercentNormEnum,
-    SurgicalAid2: "SurgicalAid2" as InvoiceItemPercentNormEnum,
-    ReducedFee: "ReducedFee" as InvoiceItemPercentNormEnum,
-    Ah1n1: "Ah1n1" as InvoiceItemPercentNormEnum,
-    HalfPriceSecondAct: "HalfPriceSecondAct" as InvoiceItemPercentNormEnum,
-    InvoiceException: "InvoiceException" as InvoiceItemPercentNormEnum,
-    ForInformation: "ForInformation" as InvoiceItemPercentNormEnum
+    | "InvoiceItem#desambiguationToken"
+  export const PercentNormEnum = {
+    None: "None" as PercentNormEnum,
+    SurgicalAid1: "SurgicalAid1" as PercentNormEnum,
+    SurgicalAid2: "SurgicalAid2" as PercentNormEnum,
+    ReducedFee: "ReducedFee" as PercentNormEnum,
+    Ah1n1: "Ah1n1" as PercentNormEnum,
+    HalfPriceSecondAct: "HalfPriceSecondAct" as PercentNormEnum,
+    InvoiceException: "InvoiceException" as PercentNormEnum,
+    ForInformation: "ForInformation" as PercentNormEnum
   }
 }

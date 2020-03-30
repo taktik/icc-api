@@ -35,34 +35,36 @@ export class MedicalHouseContractDto {
   noNurse?: boolean
   startOfSuspension?: number
   endOfSuspension?: number
-  suspensionReason?: MedicalHouseContractDto.MedicalHouseContractDtoSuspensionReasonEnum
+  suspensionReason?: MedicalHouseContractDto.SuspensionReasonEnum
   suspensionSource?: string
   forcedSuspension?: boolean
-  changeType?: MedicalHouseContractDto.MedicalHouseContractDtoChangeTypeEnum
+  changeType?: MedicalHouseContractDto.ChangeTypeEnum
 }
 export namespace MedicalHouseContractDto {
-  export type MedicalHouseContractDtoSuspensionReasonEnum =
+  export type SuspensionReasonEnum =
     | "notInsured"
     | "noReasonGiven"
     | "isHospitalized"
     | "outsideOfCountry"
     | "changeOfMutuality"
-  export const MedicalHouseContractDtoSuspensionReasonEnum = {
-    NotInsured: "notInsured" as MedicalHouseContractDtoSuspensionReasonEnum,
-    NoReasonGiven: "noReasonGiven" as MedicalHouseContractDtoSuspensionReasonEnum,
-    IsHospitalized: "isHospitalized" as MedicalHouseContractDtoSuspensionReasonEnum,
-    OutsideOfCountry: "outsideOfCountry" as MedicalHouseContractDtoSuspensionReasonEnum,
-    ChangeOfMutuality: "changeOfMutuality" as MedicalHouseContractDtoSuspensionReasonEnum
+    | "MedicalHouseContractDto#desambiguationToken"
+  export const SuspensionReasonEnum = {
+    NotInsured: "notInsured" as SuspensionReasonEnum,
+    NoReasonGiven: "noReasonGiven" as SuspensionReasonEnum,
+    IsHospitalized: "isHospitalized" as SuspensionReasonEnum,
+    OutsideOfCountry: "outsideOfCountry" as SuspensionReasonEnum,
+    ChangeOfMutuality: "changeOfMutuality" as SuspensionReasonEnum
   }
-  export type MedicalHouseContractDtoChangeTypeEnum =
+  export type ChangeTypeEnum =
     | "inscriptionStart"
     | "inscriptionEnd"
     | "suspension"
     | "coverageChange"
-  export const MedicalHouseContractDtoChangeTypeEnum = {
-    InscriptionStart: "inscriptionStart" as MedicalHouseContractDtoChangeTypeEnum,
-    InscriptionEnd: "inscriptionEnd" as MedicalHouseContractDtoChangeTypeEnum,
-    Suspension: "suspension" as MedicalHouseContractDtoChangeTypeEnum,
-    CoverageChange: "coverageChange" as MedicalHouseContractDtoChangeTypeEnum
+    | "MedicalHouseContractDto#desambiguationToken"
+  export const ChangeTypeEnum = {
+    InscriptionStart: "inscriptionStart" as ChangeTypeEnum,
+    InscriptionEnd: "inscriptionEnd" as ChangeTypeEnum,
+    Suspension: "suspension" as ChangeTypeEnum,
+    CoverageChange: "coverageChange" as ChangeTypeEnum
   }
 }

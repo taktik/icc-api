@@ -15,16 +15,16 @@ export class TypedValueDto {
     Object.assign(this as TypedValueDto, json)
   }
 
-  type?: TypedValueDto.TypedValueDtoTypeEnum
+  type?: TypedValueDto.TypeEnum
   booleanValue?: boolean
   integerValue?: number
   doubleValue?: number
   stringValue?: string
   dateValue?: Date
-  valueType?: TypedValueDto.TypedValueDtoValueTypeEnum
+  valueType?: TypedValueDto.ValueTypeEnum
 }
 export namespace TypedValueDto {
-  export type TypedValueDtoTypeEnum =
+  export type TypeEnum =
     | "BOOLEAN"
     | "INTEGER"
     | "DOUBLE"
@@ -32,16 +32,17 @@ export namespace TypedValueDto {
     | "DATE"
     | "CLOB"
     | "JSON"
-  export const TypedValueDtoTypeEnum = {
-    BOOLEAN: "BOOLEAN" as TypedValueDtoTypeEnum,
-    INTEGER: "INTEGER" as TypedValueDtoTypeEnum,
-    DOUBLE: "DOUBLE" as TypedValueDtoTypeEnum,
-    STRING: "STRING" as TypedValueDtoTypeEnum,
-    DATE: "DATE" as TypedValueDtoTypeEnum,
-    CLOB: "CLOB" as TypedValueDtoTypeEnum,
-    JSON: "JSON" as TypedValueDtoTypeEnum
+    | "TypedValueDto#desambiguationToken"
+  export const TypeEnum = {
+    BOOLEAN: "BOOLEAN" as TypeEnum,
+    INTEGER: "INTEGER" as TypeEnum,
+    DOUBLE: "DOUBLE" as TypeEnum,
+    STRING: "STRING" as TypeEnum,
+    DATE: "DATE" as TypeEnum,
+    CLOB: "CLOB" as TypeEnum,
+    JSON: "JSON" as TypeEnum
   }
-  export type TypedValueDtoValueTypeEnum =
+  export type ValueTypeEnum =
     | "BOOLEAN"
     | "INTEGER"
     | "DOUBLE"
@@ -49,13 +50,14 @@ export namespace TypedValueDto {
     | "DATE"
     | "CLOB"
     | "JSON"
-  export const TypedValueDtoValueTypeEnum = {
-    BOOLEAN: "BOOLEAN" as TypedValueDtoValueTypeEnum,
-    INTEGER: "INTEGER" as TypedValueDtoValueTypeEnum,
-    DOUBLE: "DOUBLE" as TypedValueDtoValueTypeEnum,
-    STRING: "STRING" as TypedValueDtoValueTypeEnum,
-    DATE: "DATE" as TypedValueDtoValueTypeEnum,
-    CLOB: "CLOB" as TypedValueDtoValueTypeEnum,
-    JSON: "JSON" as TypedValueDtoValueTypeEnum
+    | "TypedValueDto#desambiguationToken"
+  export const ValueTypeEnum = {
+    BOOLEAN: "BOOLEAN" as ValueTypeEnum,
+    INTEGER: "INTEGER" as ValueTypeEnum,
+    DOUBLE: "DOUBLE" as ValueTypeEnum,
+    STRING: "STRING" as ValueTypeEnum,
+    DATE: "DATE" as ValueTypeEnum,
+    CLOB: "CLOB" as ValueTypeEnum,
+    JSON: "JSON" as ValueTypeEnum
   }
 }

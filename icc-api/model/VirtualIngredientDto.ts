@@ -20,14 +20,17 @@ export class VirtualIngredientDto {
   from?: number
   to?: number
   rank?: number
-  type?: VirtualIngredientDto.VirtualIngredientDtoTypeEnum
+  type?: VirtualIngredientDto.TypeEnum
   strengthRange?: StrengthRangeDto
   substance?: SubstanceDto
 }
 export namespace VirtualIngredientDto {
-  export type VirtualIngredientDtoTypeEnum = "ACTIVE_SUBSTANCE" | "EXCIPIENT"
-  export const VirtualIngredientDtoTypeEnum = {
-    ACTIVESUBSTANCE: "ACTIVE_SUBSTANCE" as VirtualIngredientDtoTypeEnum,
-    EXCIPIENT: "EXCIPIENT" as VirtualIngredientDtoTypeEnum
+  export type TypeEnum =
+    | "ACTIVE_SUBSTANCE"
+    | "EXCIPIENT"
+    | "VirtualIngredientDto#desambiguationToken"
+  export const TypeEnum = {
+    ACTIVESUBSTANCE: "ACTIVE_SUBSTANCE" as TypeEnum,
+    EXCIPIENT: "EXCIPIENT" as TypeEnum
   }
 }

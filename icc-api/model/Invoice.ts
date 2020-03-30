@@ -20,7 +20,7 @@ export class Invoice {
   patient?: PatientDto
   ioCode?: string
   items?: Array<InvoiceItem>
-  reason?: Invoice.InvoiceReasonEnum
+  reason?: Invoice.ReasonEnum
   invoiceRef?: string
   invoiceNumber?: number
   ignorePrescriptionDate?: boolean
@@ -32,17 +32,18 @@ export class Invoice {
   relatedBatchYearMonth?: number
 }
 export namespace Invoice {
-  export type InvoiceReasonEnum =
+  export type ReasonEnum =
     | "Chimiotherapy"
     | "ProfessionalDisease"
     | "WorkAccident"
     | "Accident"
     | "Other"
-  export const InvoiceReasonEnum = {
-    Chimiotherapy: "Chimiotherapy" as InvoiceReasonEnum,
-    ProfessionalDisease: "ProfessionalDisease" as InvoiceReasonEnum,
-    WorkAccident: "WorkAccident" as InvoiceReasonEnum,
-    Accident: "Accident" as InvoiceReasonEnum,
-    Other: "Other" as InvoiceReasonEnum
+    | "Invoice#desambiguationToken"
+  export const ReasonEnum = {
+    Chimiotherapy: "Chimiotherapy" as ReasonEnum,
+    ProfessionalDisease: "ProfessionalDisease" as ReasonEnum,
+    WorkAccident: "WorkAccident" as ReasonEnum,
+    Accident: "Accident" as ReasonEnum,
+    Other: "Other" as ReasonEnum
   }
 }

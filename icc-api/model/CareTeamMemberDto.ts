@@ -17,15 +17,19 @@ export class CareTeamMemberDto {
   }
 
   id?: string
-  careTeamMemberType?: CareTeamMemberDto.CareTeamMemberDtoCareTeamMemberTypeEnum
+  careTeamMemberType?: CareTeamMemberDto.CareTeamMemberTypeEnum
   healthcarePartyId?: string
   quality?: CodeStub
 }
 export namespace CareTeamMemberDto {
-  export type CareTeamMemberDtoCareTeamMemberTypeEnum = "physician" | "specialist" | "other"
-  export const CareTeamMemberDtoCareTeamMemberTypeEnum = {
-    Physician: "physician" as CareTeamMemberDtoCareTeamMemberTypeEnum,
-    Specialist: "specialist" as CareTeamMemberDtoCareTeamMemberTypeEnum,
-    Other: "other" as CareTeamMemberDtoCareTeamMemberTypeEnum
+  export type CareTeamMemberTypeEnum =
+    | "physician"
+    | "specialist"
+    | "other"
+    | "CareTeamMemberDto#desambiguationToken"
+  export const CareTeamMemberTypeEnum = {
+    Physician: "physician" as CareTeamMemberTypeEnum,
+    Specialist: "specialist" as CareTeamMemberTypeEnum,
+    Other: "other" as CareTeamMemberTypeEnum
   }
 }

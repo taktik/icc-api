@@ -35,7 +35,7 @@ export class AmppDto {
   packMultiplier?: number
   packAmount?: QuantityDto
   packDisplayValue?: string
-  status?: AmppDto.AmppDtoStatusEnum
+  status?: AmppDto.StatusEnum
   atcs?: Array<AtcDto>
   crmLink?: SamTextDto
   deliveryModusCode?: string
@@ -62,10 +62,10 @@ export class AmppDto {
   singleUse?: boolean
 }
 export namespace AmppDto {
-  export type AmppDtoStatusEnum = "AUTHORIZED" | "SUSPENDED" | "REVOKED"
-  export const AmppDtoStatusEnum = {
-    AUTHORIZED: "AUTHORIZED" as AmppDtoStatusEnum,
-    SUSPENDED: "SUSPENDED" as AmppDtoStatusEnum,
-    REVOKED: "REVOKED" as AmppDtoStatusEnum
+  export type StatusEnum = "AUTHORIZED" | "SUSPENDED" | "REVOKED" | "AmppDto#desambiguationToken"
+  export const StatusEnum = {
+    AUTHORIZED: "AUTHORIZED" as StatusEnum,
+    SUSPENDED: "SUSPENDED" as StatusEnum,
+    REVOKED: "REVOKED" as StatusEnum
   }
 }

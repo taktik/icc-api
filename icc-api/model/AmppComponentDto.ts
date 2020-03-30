@@ -19,22 +19,23 @@ export class AmppComponentDto {
 
   from?: number
   to?: number
-  contentType?: AmppComponentDto.AmppComponentDtoContentTypeEnum
+  contentType?: AmppComponentDto.ContentTypeEnum
   contentMultiplier?: number
   packSpecification?: string
   deviceType?: DeviceTypeDto
   packagingType?: PackagingTypeDto
 }
 export namespace AmppComponentDto {
-  export type AmppComponentDtoContentTypeEnum =
+  export type ContentTypeEnum =
     | "ACTIVE_COMPONENT"
     | "SOLVENT"
     | "DEVICE"
     | "EXCIPIENT"
-  export const AmppComponentDtoContentTypeEnum = {
-    ACTIVECOMPONENT: "ACTIVE_COMPONENT" as AmppComponentDtoContentTypeEnum,
-    SOLVENT: "SOLVENT" as AmppComponentDtoContentTypeEnum,
-    DEVICE: "DEVICE" as AmppComponentDtoContentTypeEnum,
-    EXCIPIENT: "EXCIPIENT" as AmppComponentDtoContentTypeEnum
+    | "AmppComponentDto#desambiguationToken"
+  export const ContentTypeEnum = {
+    ACTIVECOMPONENT: "ACTIVE_COMPONENT" as ContentTypeEnum,
+    SOLVENT: "SOLVENT" as ContentTypeEnum,
+    DEVICE: "DEVICE" as ContentTypeEnum,
+    EXCIPIENT: "EXCIPIENT" as ContentTypeEnum
   }
 }

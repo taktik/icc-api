@@ -20,10 +20,10 @@ export class ReimbursementDto {
 
   from?: number
   to?: number
-  deliveryEnvironment?: ReimbursementDto.ReimbursementDtoDeliveryEnvironmentEnum
+  deliveryEnvironment?: ReimbursementDto.DeliveryEnvironmentEnum
   code?: string
-  codeType?: ReimbursementDto.ReimbursementDtoCodeTypeEnum
-  multiple?: ReimbursementDto.ReimbursementDtoMultipleEnum
+  codeType?: ReimbursementDto.CodeTypeEnum
+  multiple?: ReimbursementDto.MultipleEnum
   temporary?: boolean
   reference?: boolean
   flatRateSystem?: boolean
@@ -36,21 +36,26 @@ export class ReimbursementDto {
   copayments?: Array<CopaymentDto>
 }
 export namespace ReimbursementDto {
-  export type ReimbursementDtoDeliveryEnvironmentEnum = "P" | "A" | "H" | "R"
-  export const ReimbursementDtoDeliveryEnvironmentEnum = {
-    P: "P" as ReimbursementDtoDeliveryEnvironmentEnum,
-    A: "A" as ReimbursementDtoDeliveryEnvironmentEnum,
-    H: "H" as ReimbursementDtoDeliveryEnvironmentEnum,
-    R: "R" as ReimbursementDtoDeliveryEnvironmentEnum
+  export type DeliveryEnvironmentEnum =
+    | "P"
+    | "A"
+    | "H"
+    | "R"
+    | "ReimbursementDto#desambiguationToken"
+  export const DeliveryEnvironmentEnum = {
+    P: "P" as DeliveryEnvironmentEnum,
+    A: "A" as DeliveryEnvironmentEnum,
+    H: "H" as DeliveryEnvironmentEnum,
+    R: "R" as DeliveryEnvironmentEnum
   }
-  export type ReimbursementDtoCodeTypeEnum = "CNK" | "PSEUDO"
-  export const ReimbursementDtoCodeTypeEnum = {
-    CNK: "CNK" as ReimbursementDtoCodeTypeEnum,
-    PSEUDO: "PSEUDO" as ReimbursementDtoCodeTypeEnum
+  export type CodeTypeEnum = "CNK" | "PSEUDO" | "ReimbursementDto#desambiguationToken"
+  export const CodeTypeEnum = {
+    CNK: "CNK" as CodeTypeEnum,
+    PSEUDO: "PSEUDO" as CodeTypeEnum
   }
-  export type ReimbursementDtoMultipleEnum = "M" | "V"
-  export const ReimbursementDtoMultipleEnum = {
-    M: "M" as ReimbursementDtoMultipleEnum,
-    V: "V" as ReimbursementDtoMultipleEnum
+  export type MultipleEnum = "M" | "V" | "ReimbursementDto#desambiguationToken"
+  export const MultipleEnum = {
+    M: "M" as MultipleEnum,
+    V: "V" as MultipleEnum
   }
 }

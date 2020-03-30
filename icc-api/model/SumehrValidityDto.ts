@@ -15,13 +15,17 @@ export class SumehrValidityDto {
     Object.assign(this as SumehrValidityDto, json)
   }
 
-  sumehrValid?: SumehrValidityDto.SumehrValidityDtoSumehrValidEnum
+  sumehrValid?: SumehrValidityDto.SumehrValidEnum
 }
 export namespace SumehrValidityDto {
-  export type SumehrValidityDtoSumehrValidEnum = "absent" | "uptodate" | "outdated"
-  export const SumehrValidityDtoSumehrValidEnum = {
-    Absent: "absent" as SumehrValidityDtoSumehrValidEnum,
-    Uptodate: "uptodate" as SumehrValidityDtoSumehrValidEnum,
-    Outdated: "outdated" as SumehrValidityDtoSumehrValidEnum
+  export type SumehrValidEnum =
+    | "absent"
+    | "uptodate"
+    | "outdated"
+    | "SumehrValidityDto#desambiguationToken"
+  export const SumehrValidEnum = {
+    Absent: "absent" as SumehrValidEnum,
+    Uptodate: "uptodate" as SumehrValidEnum,
+    Outdated: "outdated" as SumehrValidEnum
   }
 }
