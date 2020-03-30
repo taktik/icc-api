@@ -79,7 +79,7 @@ export class iccKeywordApi {
    *
    * @summary Get a keyword
    */
-  getKeyword(): Promise<KeywordDto | any> {
+  getKeyword(keywordId: string): Promise<KeywordDto | any> {
     let _body = null
 
     const _url =

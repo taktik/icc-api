@@ -76,7 +76,7 @@ export class iccPlaceApi {
    *
    * @summary Gets an place
    */
-  getPlace(): Promise<PlaceDto | any> {
+  getPlace(placeId: string): Promise<PlaceDto | any> {
     let _body = null
 
     const _url =

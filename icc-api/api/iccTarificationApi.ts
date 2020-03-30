@@ -166,7 +166,7 @@ export class iccTarificationApi {
    * Get a tarification based on ID or (tarification,type,version) as query strings. (tarification,type,version) is unique.
    * @summary Get a tarification
    */
-  getTarification(): Promise<TarificationDto | any> {
+  getTarification(tarificationId: string): Promise<TarificationDto | any> {
     let _body = null
 
     const _url =
@@ -184,7 +184,11 @@ export class iccTarificationApi {
    * Get a tarification based on ID or (tarification,type,version) as query strings. (tarification,type,version) is unique.
    * @summary Get a tarification
    */
-  getTarificationWithParts(): Promise<TarificationDto | any> {
+  getTarificationWithParts(
+    type: string,
+    tarification: string,
+    version: string
+  ): Promise<TarificationDto | any> {
     let _body = null
 
     const _url =
