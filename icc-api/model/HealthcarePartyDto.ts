@@ -25,7 +25,7 @@ export class HealthcarePartyDto {
   name?: string
   lastName?: string
   firstName?: string
-  gender?: HealthcarePartyDto.GenderEnum
+  gender?: HealthcarePartyDto.HealthcarePartyDtoGenderEnum
   civility?: string
   speciality?: string
   companyName?: string
@@ -49,7 +49,7 @@ export class HealthcarePartyDto {
   sendFormats?: { [key: string]: string }
   addresses?: Array<AddressDto>
   languages?: Array<string>
-  statuses?: Array<HealthcarePartyDto.StatusesEnum>
+  statuses?: Array<HealthcarePartyDto.HealthcarePartyDtoStatusesEnum>
   specialityCodes?: Array<CodeDto>
   hcPartyKeys?: { [key: string]: Array<string> }
   privateKeyShamirPartitions?: { [key: string]: string }
@@ -63,7 +63,7 @@ export class HealthcarePartyDto {
   importedData?: { [key: string]: string }
 }
 export namespace HealthcarePartyDto {
-  export type GenderEnum =
+  export type HealthcarePartyDtoGenderEnum =
     | "male"
     | "female"
     | "unknown"
@@ -71,19 +71,19 @@ export namespace HealthcarePartyDto {
     | "changed"
     | "changedToMale"
     | "changedToFemale"
-  export const GenderEnum = {
-    Male: "male" as GenderEnum,
-    Female: "female" as GenderEnum,
-    Unknown: "unknown" as GenderEnum,
-    Indeterminate: "indeterminate" as GenderEnum,
-    Changed: "changed" as GenderEnum,
-    ChangedToMale: "changedToMale" as GenderEnum,
-    ChangedToFemale: "changedToFemale" as GenderEnum
+  export const HealthcarePartyDtoGenderEnum = {
+    Male: "male" as HealthcarePartyDtoGenderEnum,
+    Female: "female" as HealthcarePartyDtoGenderEnum,
+    Unknown: "unknown" as HealthcarePartyDtoGenderEnum,
+    Indeterminate: "indeterminate" as HealthcarePartyDtoGenderEnum,
+    Changed: "changed" as HealthcarePartyDtoGenderEnum,
+    ChangedToMale: "changedToMale" as HealthcarePartyDtoGenderEnum,
+    ChangedToFemale: "changedToFemale" as HealthcarePartyDtoGenderEnum
   }
-  export type StatusesEnum = "trainee" | "withconvention" | "accreditated"
-  export const StatusesEnum = {
-    Trainee: "trainee" as StatusesEnum,
-    Withconvention: "withconvention" as StatusesEnum,
-    Accreditated: "accreditated" as StatusesEnum
+  export type HealthcarePartyDtoStatusesEnum = "trainee" | "withconvention" | "accreditated"
+  export const HealthcarePartyDtoStatusesEnum = {
+    Trainee: "trainee" as HealthcarePartyDtoStatusesEnum,
+    Withconvention: "withconvention" as HealthcarePartyDtoStatusesEnum,
+    Accreditated: "accreditated" as HealthcarePartyDtoStatusesEnum
   }
 }

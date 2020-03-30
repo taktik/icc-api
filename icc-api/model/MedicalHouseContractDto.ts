@@ -35,34 +35,34 @@ export class MedicalHouseContractDto {
   noNurse?: boolean
   startOfSuspension?: number
   endOfSuspension?: number
-  suspensionReason?: MedicalHouseContractDto.SuspensionReasonEnum
+  suspensionReason?: MedicalHouseContractDto.MedicalHouseContractDtoSuspensionReasonEnum
   suspensionSource?: string
   forcedSuspension?: boolean
-  changeType?: MedicalHouseContractDto.ChangeTypeEnum
+  changeType?: MedicalHouseContractDto.MedicalHouseContractDtoChangeTypeEnum
 }
 export namespace MedicalHouseContractDto {
-  export type SuspensionReasonEnum =
+  export type MedicalHouseContractDtoSuspensionReasonEnum =
     | "notInsured"
     | "noReasonGiven"
     | "isHospitalized"
     | "outsideOfCountry"
     | "changeOfMutuality"
-  export const SuspensionReasonEnum = {
-    NotInsured: "notInsured" as SuspensionReasonEnum,
-    NoReasonGiven: "noReasonGiven" as SuspensionReasonEnum,
-    IsHospitalized: "isHospitalized" as SuspensionReasonEnum,
-    OutsideOfCountry: "outsideOfCountry" as SuspensionReasonEnum,
-    ChangeOfMutuality: "changeOfMutuality" as SuspensionReasonEnum
+  export const MedicalHouseContractDtoSuspensionReasonEnum = {
+    NotInsured: "notInsured" as MedicalHouseContractDtoSuspensionReasonEnum,
+    NoReasonGiven: "noReasonGiven" as MedicalHouseContractDtoSuspensionReasonEnum,
+    IsHospitalized: "isHospitalized" as MedicalHouseContractDtoSuspensionReasonEnum,
+    OutsideOfCountry: "outsideOfCountry" as MedicalHouseContractDtoSuspensionReasonEnum,
+    ChangeOfMutuality: "changeOfMutuality" as MedicalHouseContractDtoSuspensionReasonEnum
   }
-  export type ChangeTypeEnum =
+  export type MedicalHouseContractDtoChangeTypeEnum =
     | "inscriptionStart"
     | "inscriptionEnd"
     | "suspension"
     | "coverageChange"
-  export const ChangeTypeEnum = {
-    InscriptionStart: "inscriptionStart" as ChangeTypeEnum,
-    InscriptionEnd: "inscriptionEnd" as ChangeTypeEnum,
-    Suspension: "suspension" as ChangeTypeEnum,
-    CoverageChange: "coverageChange" as ChangeTypeEnum
+  export const MedicalHouseContractDtoChangeTypeEnum = {
+    InscriptionStart: "inscriptionStart" as MedicalHouseContractDtoChangeTypeEnum,
+    InscriptionEnd: "inscriptionEnd" as MedicalHouseContractDtoChangeTypeEnum,
+    Suspension: "suspension" as MedicalHouseContractDtoChangeTypeEnum,
+    CoverageChange: "coverageChange" as MedicalHouseContractDtoChangeTypeEnum
   }
 }

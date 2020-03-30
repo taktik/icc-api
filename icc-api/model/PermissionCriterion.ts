@@ -16,40 +16,48 @@ export class PermissionCriterion {
   }
 
   negative?: boolean
-  currentUser?: PermissionCriterion.CurrentUserEnum
-  dataType?: PermissionCriterion.DataTypeEnum
+  currentUser?: PermissionCriterion.PermissionCriterionCurrentUserEnum
+  dataType?: PermissionCriterion.PermissionCriterionDataTypeEnum
   patientStatus?: string
   useless?: boolean
-  type?: PermissionCriterion.TypeEnum
+  type?: PermissionCriterion.PermissionCriterionTypeEnum
 }
 export namespace PermissionCriterion {
-  export type CurrentUserEnum =
+  export type PermissionCriterionCurrentUserEnum =
     | "DATA_CREATION_USER"
     | "DATA_MODIFICATION_USER"
     | "PATIENT_CREATION_USER"
     | "PATIENT_MODIFICATION_USER"
     | "PATIENT_REFERENCE_HC_USER"
     | "PATIENT_HC_TEAM_USER"
-  export const CurrentUserEnum = {
-    DATACREATIONUSER: "DATA_CREATION_USER" as CurrentUserEnum,
-    DATAMODIFICATIONUSER: "DATA_MODIFICATION_USER" as CurrentUserEnum,
-    PATIENTCREATIONUSER: "PATIENT_CREATION_USER" as CurrentUserEnum,
-    PATIENTMODIFICATIONUSER: "PATIENT_MODIFICATION_USER" as CurrentUserEnum,
-    PATIENTREFERENCEHCUSER: "PATIENT_REFERENCE_HC_USER" as CurrentUserEnum,
-    PATIENTHCTEAMUSER: "PATIENT_HC_TEAM_USER" as CurrentUserEnum
+  export const PermissionCriterionCurrentUserEnum = {
+    DATACREATIONUSER: "DATA_CREATION_USER" as PermissionCriterionCurrentUserEnum,
+    DATAMODIFICATIONUSER: "DATA_MODIFICATION_USER" as PermissionCriterionCurrentUserEnum,
+    PATIENTCREATIONUSER: "PATIENT_CREATION_USER" as PermissionCriterionCurrentUserEnum,
+    PATIENTMODIFICATIONUSER: "PATIENT_MODIFICATION_USER" as PermissionCriterionCurrentUserEnum,
+    PATIENTREFERENCEHCUSER: "PATIENT_REFERENCE_HC_USER" as PermissionCriterionCurrentUserEnum,
+    PATIENTHCTEAMUSER: "PATIENT_HC_TEAM_USER" as PermissionCriterionCurrentUserEnum
   }
-  export type DataTypeEnum = "ADMINISTRATIVE" | "HEALTH" | "SENSITIVE" | "CONFIDENTIAL"
-  export const DataTypeEnum = {
-    ADMINISTRATIVE: "ADMINISTRATIVE" as DataTypeEnum,
-    HEALTH: "HEALTH" as DataTypeEnum,
-    SENSITIVE: "SENSITIVE" as DataTypeEnum,
-    CONFIDENTIAL: "CONFIDENTIAL" as DataTypeEnum
+  export type PermissionCriterionDataTypeEnum =
+    | "ADMINISTRATIVE"
+    | "HEALTH"
+    | "SENSITIVE"
+    | "CONFIDENTIAL"
+  export const PermissionCriterionDataTypeEnum = {
+    ADMINISTRATIVE: "ADMINISTRATIVE" as PermissionCriterionDataTypeEnum,
+    HEALTH: "HEALTH" as PermissionCriterionDataTypeEnum,
+    SENSITIVE: "SENSITIVE" as PermissionCriterionDataTypeEnum,
+    CONFIDENTIAL: "CONFIDENTIAL" as PermissionCriterionDataTypeEnum
   }
-  export type TypeEnum = "VIRTUALHOST" | "CURRENT_USER" | "DATA_TYPE" | "PATIENT_STATUS"
-  export const TypeEnum = {
-    VIRTUALHOST: "VIRTUALHOST" as TypeEnum,
-    CURRENTUSER: "CURRENT_USER" as TypeEnum,
-    DATATYPE: "DATA_TYPE" as TypeEnum,
-    PATIENTSTATUS: "PATIENT_STATUS" as TypeEnum
+  export type PermissionCriterionTypeEnum =
+    | "VIRTUALHOST"
+    | "CURRENT_USER"
+    | "DATA_TYPE"
+    | "PATIENT_STATUS"
+  export const PermissionCriterionTypeEnum = {
+    VIRTUALHOST: "VIRTUALHOST" as PermissionCriterionTypeEnum,
+    CURRENTUSER: "CURRENT_USER" as PermissionCriterionTypeEnum,
+    DATATYPE: "DATA_TYPE" as PermissionCriterionTypeEnum,
+    PATIENTSTATUS: "PATIENT_STATUS" as PermissionCriterionTypeEnum
   }
 }

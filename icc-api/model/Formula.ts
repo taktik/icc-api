@@ -16,15 +16,15 @@ export class Formula {
   }
 
   value?: string
-  lifecycle?: Formula.LifecycleEnum
+  lifecycle?: Formula.FormulaLifecycleEnum
 }
 export namespace Formula {
-  export type LifecycleEnum = "OnCreate" | "OnLoad" | "OnChange" | "OnSave" | "OnDestroy"
-  export const LifecycleEnum = {
-    OnCreate: "OnCreate" as LifecycleEnum,
-    OnLoad: "OnLoad" as LifecycleEnum,
-    OnChange: "OnChange" as LifecycleEnum,
-    OnSave: "OnSave" as LifecycleEnum,
-    OnDestroy: "OnDestroy" as LifecycleEnum
+  export type FormulaLifecycleEnum = "OnCreate" | "OnLoad" | "OnChange" | "OnSave" | "OnDestroy"
+  export const FormulaLifecycleEnum = {
+    OnCreate: "OnCreate" as FormulaLifecycleEnum,
+    OnLoad: "OnLoad" as FormulaLifecycleEnum,
+    OnChange: "OnChange" as FormulaLifecycleEnum,
+    OnSave: "OnSave" as FormulaLifecycleEnum,
+    OnDestroy: "OnDestroy" as FormulaLifecycleEnum
   }
 }

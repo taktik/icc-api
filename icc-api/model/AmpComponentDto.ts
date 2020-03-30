@@ -26,8 +26,8 @@ export class AmpComponentDto {
   routeOfAdministrations?: Array<RouteOfAdministrationDto>
   dividable?: string
   scored?: string
-  crushable?: AmpComponentDto.CrushableEnum
-  containsAlcohol?: AmpComponentDto.ContainsAlcoholEnum
+  crushable?: AmpComponentDto.AmpComponentDtoCrushableEnum
+  containsAlcohol?: AmpComponentDto.AmpComponentDtoContainsAlcoholEnum
   isSugarFree?: boolean
   modifiedReleaseType?: number
   specificDrugDevice?: number
@@ -37,16 +37,16 @@ export class AmpComponentDto {
   sugarFree?: boolean
 }
 export namespace AmpComponentDto {
-  export type CrushableEnum = "Y" | "N" | "X"
-  export const CrushableEnum = {
-    Y: "Y" as CrushableEnum,
-    N: "N" as CrushableEnum,
-    X: "X" as CrushableEnum
+  export type AmpComponentDtoCrushableEnum = "Y" | "N" | "X"
+  export const AmpComponentDtoCrushableEnum = {
+    Y: "Y" as AmpComponentDtoCrushableEnum,
+    N: "N" as AmpComponentDtoCrushableEnum,
+    X: "X" as AmpComponentDtoCrushableEnum
   }
-  export type ContainsAlcoholEnum = "Y" | "N" | "X"
-  export const ContainsAlcoholEnum = {
-    Y: "Y" as ContainsAlcoholEnum,
-    N: "N" as ContainsAlcoholEnum,
-    X: "X" as ContainsAlcoholEnum
+  export type AmpComponentDtoContainsAlcoholEnum = "Y" | "N" | "X"
+  export const AmpComponentDtoContainsAlcoholEnum = {
+    Y: "Y" as AmpComponentDtoContainsAlcoholEnum,
+    N: "N" as AmpComponentDtoContainsAlcoholEnum,
+    X: "X" as AmpComponentDtoContainsAlcoholEnum
   }
 }

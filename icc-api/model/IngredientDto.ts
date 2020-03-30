@@ -20,7 +20,7 @@ export class IngredientDto {
   from?: number
   to?: number
   rank?: number
-  type?: IngredientDto.TypeEnum
+  type?: IngredientDto.IngredientDtoTypeEnum
   knownEffect?: boolean
   strengthDescription?: string
   strength?: QuantityDto
@@ -28,9 +28,9 @@ export class IngredientDto {
   substance?: SubstanceDto
 }
 export namespace IngredientDto {
-  export type TypeEnum = "ACTIVE_SUBSTANCE" | "EXCIPIENT"
-  export const TypeEnum = {
-    ACTIVESUBSTANCE: "ACTIVE_SUBSTANCE" as TypeEnum,
-    EXCIPIENT: "EXCIPIENT" as TypeEnum
+  export type IngredientDtoTypeEnum = "ACTIVE_SUBSTANCE" | "EXCIPIENT"
+  export const IngredientDtoTypeEnum = {
+    ACTIVESUBSTANCE: "ACTIVE_SUBSTANCE" as IngredientDtoTypeEnum,
+    EXCIPIENT: "EXCIPIENT" as IngredientDtoTypeEnum
   }
 }

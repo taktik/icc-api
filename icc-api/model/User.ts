@@ -22,8 +22,8 @@ export class User {
   name?: string
   properties?: Array<Property>
   permissions?: Array<Permission>
-  type?: User.TypeEnum
-  status?: User.StatusEnum
+  type?: User.UserTypeEnum
+  status?: User.UserStatusEnum
   login?: string
   passwordHash?: string
   secret?: string
@@ -53,16 +53,16 @@ export class User {
   revHistory?: { [key: string]: string }
 }
 export namespace User {
-  export type TypeEnum = "database" | "ldap" | "token"
-  export const TypeEnum = {
-    Database: "database" as TypeEnum,
-    Ldap: "ldap" as TypeEnum,
-    Token: "token" as TypeEnum
+  export type UserTypeEnum = "database" | "ldap" | "token"
+  export const UserTypeEnum = {
+    Database: "database" as UserTypeEnum,
+    Ldap: "ldap" as UserTypeEnum,
+    Token: "token" as UserTypeEnum
   }
-  export type StatusEnum = "ACTIVE" | "DISABLED" | "REGISTERING"
-  export const StatusEnum = {
-    ACTIVE: "ACTIVE" as StatusEnum,
-    DISABLED: "DISABLED" as StatusEnum,
-    REGISTERING: "REGISTERING" as StatusEnum
+  export type UserStatusEnum = "ACTIVE" | "DISABLED" | "REGISTERING"
+  export const UserStatusEnum = {
+    ACTIVE: "ACTIVE" as UserStatusEnum,
+    DISABLED: "DISABLED" as UserStatusEnum,
+    REGISTERING: "REGISTERING" as UserStatusEnum
   }
 }

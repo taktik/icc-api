@@ -19,13 +19,13 @@ export class FlatRateTarificationDto {
   code?: string
   label?: { [key: string]: string }
   valorisations?: Array<ValorisationDto>
-  flatRateType?: FlatRateTarificationDto.FlatRateTypeEnum
+  flatRateType?: FlatRateTarificationDto.FlatRateTarificationDtoFlatRateTypeEnum
 }
 export namespace FlatRateTarificationDto {
-  export type FlatRateTypeEnum = "physician" | "physiotherapist" | "nurse"
-  export const FlatRateTypeEnum = {
-    Physician: "physician" as FlatRateTypeEnum,
-    Physiotherapist: "physiotherapist" as FlatRateTypeEnum,
-    Nurse: "nurse" as FlatRateTypeEnum
+  export type FlatRateTarificationDtoFlatRateTypeEnum = "physician" | "physiotherapist" | "nurse"
+  export const FlatRateTarificationDtoFlatRateTypeEnum = {
+    Physician: "physician" as FlatRateTarificationDtoFlatRateTypeEnum,
+    Physiotherapist: "physiotherapist" as FlatRateTarificationDtoFlatRateTypeEnum,
+    Nurse: "nurse" as FlatRateTarificationDtoFlatRateTypeEnum
   }
 }

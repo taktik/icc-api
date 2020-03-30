@@ -16,7 +16,7 @@ export class Address {
     Object.assign(this as Address, json)
   }
 
-  addressType?: Address.AddressTypeEnum
+  addressType?: Address.AddressAddressTypeEnum
   descr?: string
   street?: string
   houseNumber?: string
@@ -29,7 +29,7 @@ export class Address {
   telecoms?: Array<Telecom>
 }
 export namespace Address {
-  export type AddressTypeEnum =
+  export type AddressAddressTypeEnum =
     | "home"
     | "work"
     | "vacation"
@@ -37,13 +37,13 @@ export namespace Address {
     | "clinic"
     | "hq"
     | "other"
-  export const AddressTypeEnum = {
-    Home: "home" as AddressTypeEnum,
-    Work: "work" as AddressTypeEnum,
-    Vacation: "vacation" as AddressTypeEnum,
-    Hospital: "hospital" as AddressTypeEnum,
-    Clinic: "clinic" as AddressTypeEnum,
-    Hq: "hq" as AddressTypeEnum,
-    Other: "other" as AddressTypeEnum
+  export const AddressAddressTypeEnum = {
+    Home: "home" as AddressAddressTypeEnum,
+    Work: "work" as AddressAddressTypeEnum,
+    Vacation: "vacation" as AddressAddressTypeEnum,
+    Hospital: "hospital" as AddressAddressTypeEnum,
+    Clinic: "clinic" as AddressAddressTypeEnum,
+    Hq: "hq" as AddressAddressTypeEnum,
+    Other: "other" as AddressAddressTypeEnum
   }
 }

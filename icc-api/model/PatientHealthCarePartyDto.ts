@@ -16,14 +16,14 @@ export class PatientHealthCarePartyDto {
     Object.assign(this as PatientHealthCarePartyDto, json)
   }
 
-  type?: PatientHealthCarePartyDto.TypeEnum
+  type?: PatientHealthCarePartyDto.PatientHealthCarePartyDtoTypeEnum
   referral?: boolean
   healthcarePartyId?: string
   sendFormats?: { [key: string]: string }
   referralPeriods?: Array<ReferralPeriod>
 }
 export namespace PatientHealthCarePartyDto {
-  export type TypeEnum =
+  export type PatientHealthCarePartyDtoTypeEnum =
     | "doctor"
     | "referral"
     | "medicalhouse"
@@ -31,13 +31,13 @@ export namespace PatientHealthCarePartyDto {
     | "hospital"
     | "other"
     | "referringphysician"
-  export const TypeEnum = {
-    Doctor: "doctor" as TypeEnum,
-    Referral: "referral" as TypeEnum,
-    Medicalhouse: "medicalhouse" as TypeEnum,
-    Retirementhome: "retirementhome" as TypeEnum,
-    Hospital: "hospital" as TypeEnum,
-    Other: "other" as TypeEnum,
-    Referringphysician: "referringphysician" as TypeEnum
+  export const PatientHealthCarePartyDtoTypeEnum = {
+    Doctor: "doctor" as PatientHealthCarePartyDtoTypeEnum,
+    Referral: "referral" as PatientHealthCarePartyDtoTypeEnum,
+    Medicalhouse: "medicalhouse" as PatientHealthCarePartyDtoTypeEnum,
+    Retirementhome: "retirementhome" as PatientHealthCarePartyDtoTypeEnum,
+    Hospital: "hospital" as PatientHealthCarePartyDtoTypeEnum,
+    Other: "other" as PatientHealthCarePartyDtoTypeEnum,
+    Referringphysician: "referringphysician" as PatientHealthCarePartyDtoTypeEnum
   }
 }

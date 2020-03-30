@@ -23,8 +23,8 @@ export class UserDto {
   name?: string
   properties?: Array<PropertyDto>
   permissions?: Array<PermissionDto>
-  type?: UserDto.TypeEnum
-  status?: UserDto.StatusEnum
+  type?: UserDto.UserDtoTypeEnum
+  status?: UserDto.UserDtoStatusEnum
   groupId?: string
   login?: string
   password?: string
@@ -45,26 +45,26 @@ export class UserDto {
   email?: string
   autoDelegations?: { [key: string]: Array<string> }
   applicationTokens?: { [key: string]: string }
-  virtualHostDependency?: UserDto.VirtualHostDependencyEnum
+  virtualHostDependency?: UserDto.UserDtoVirtualHostDependencyEnum
   virtualHosts?: Array<string>
 }
 export namespace UserDto {
-  export type TypeEnum = "database" | "ldap" | "token"
-  export const TypeEnum = {
-    Database: "database" as TypeEnum,
-    Ldap: "ldap" as TypeEnum,
-    Token: "token" as TypeEnum
+  export type UserDtoTypeEnum = "database" | "ldap" | "token"
+  export const UserDtoTypeEnum = {
+    Database: "database" as UserDtoTypeEnum,
+    Ldap: "ldap" as UserDtoTypeEnum,
+    Token: "token" as UserDtoTypeEnum
   }
-  export type StatusEnum = "ACTIVE" | "DISABLED" | "REGISTERING"
-  export const StatusEnum = {
-    ACTIVE: "ACTIVE" as StatusEnum,
-    DISABLED: "DISABLED" as StatusEnum,
-    REGISTERING: "REGISTERING" as StatusEnum
+  export type UserDtoStatusEnum = "ACTIVE" | "DISABLED" | "REGISTERING"
+  export const UserDtoStatusEnum = {
+    ACTIVE: "ACTIVE" as UserDtoStatusEnum,
+    DISABLED: "DISABLED" as UserDtoStatusEnum,
+    REGISTERING: "REGISTERING" as UserDtoStatusEnum
   }
-  export type VirtualHostDependencyEnum = "NONE" | "DIRECT" | "FULL"
-  export const VirtualHostDependencyEnum = {
-    NONE: "NONE" as VirtualHostDependencyEnum,
-    DIRECT: "DIRECT" as VirtualHostDependencyEnum,
-    FULL: "FULL" as VirtualHostDependencyEnum
+  export type UserDtoVirtualHostDependencyEnum = "NONE" | "DIRECT" | "FULL"
+  export const UserDtoVirtualHostDependencyEnum = {
+    NONE: "NONE" as UserDtoVirtualHostDependencyEnum,
+    DIRECT: "DIRECT" as UserDtoVirtualHostDependencyEnum,
+    FULL: "FULL" as UserDtoVirtualHostDependencyEnum
   }
 }

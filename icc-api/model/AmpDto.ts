@@ -28,10 +28,10 @@ export class AmpDto {
   code?: string
   vmp?: VmpStubDto
   officialName?: string
-  status?: AmpDto.StatusEnum
+  status?: AmpDto.AmpDtoStatusEnum
   name?: SamTextDto
   blackTriangle?: boolean
-  medicineType?: AmpDto.MedicineTypeEnum
+  medicineType?: AmpDto.AmpDtoMedicineTypeEnum
   company?: CompanyDto
   abbreviatedName?: SamTextDto
   proprietarySuffix?: SamTextDto
@@ -47,15 +47,15 @@ export class AmpDto {
   revHistory?: { [key: string]: string }
 }
 export namespace AmpDto {
-  export type StatusEnum = "AUTHORIZED" | "SUSPENDED" | "REVOKED"
-  export const StatusEnum = {
-    AUTHORIZED: "AUTHORIZED" as StatusEnum,
-    SUSPENDED: "SUSPENDED" as StatusEnum,
-    REVOKED: "REVOKED" as StatusEnum
+  export type AmpDtoStatusEnum = "AUTHORIZED" | "SUSPENDED" | "REVOKED"
+  export const AmpDtoStatusEnum = {
+    AUTHORIZED: "AUTHORIZED" as AmpDtoStatusEnum,
+    SUSPENDED: "SUSPENDED" as AmpDtoStatusEnum,
+    REVOKED: "REVOKED" as AmpDtoStatusEnum
   }
-  export type MedicineTypeEnum = "ALLOPATHIC" | "HOMEOPATHIC"
-  export const MedicineTypeEnum = {
-    ALLOPATHIC: "ALLOPATHIC" as MedicineTypeEnum,
-    HOMEOPATHIC: "HOMEOPATHIC" as MedicineTypeEnum
+  export type AmpDtoMedicineTypeEnum = "ALLOPATHIC" | "HOMEOPATHIC"
+  export const AmpDtoMedicineTypeEnum = {
+    ALLOPATHIC: "ALLOPATHIC" as AmpDtoMedicineTypeEnum,
+    HOMEOPATHIC: "HOMEOPATHIC" as AmpDtoMedicineTypeEnum
   }
 }

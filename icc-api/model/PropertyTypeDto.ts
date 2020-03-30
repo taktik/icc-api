@@ -21,19 +21,19 @@ export class PropertyTypeDto {
   deletionDate?: number
   identifier?: string
   type?: string
-  scope?: PropertyTypeDto.ScopeEnum
+  scope?: PropertyTypeDto.PropertyTypeDtoScopeEnum
   unique?: boolean
   editor?: string
   localized?: boolean
   name?: LocalizedStringDto
 }
 export namespace PropertyTypeDto {
-  export type ScopeEnum = "SYSTEM" | "NODE" | "ROLE" | "USER" | "EVENT"
-  export const ScopeEnum = {
-    SYSTEM: "SYSTEM" as ScopeEnum,
-    NODE: "NODE" as ScopeEnum,
-    ROLE: "ROLE" as ScopeEnum,
-    USER: "USER" as ScopeEnum,
-    EVENT: "EVENT" as ScopeEnum
+  export type PropertyTypeDtoScopeEnum = "SYSTEM" | "NODE" | "ROLE" | "USER" | "EVENT"
+  export const PropertyTypeDtoScopeEnum = {
+    SYSTEM: "SYSTEM" as PropertyTypeDtoScopeEnum,
+    NODE: "NODE" as PropertyTypeDtoScopeEnum,
+    ROLE: "ROLE" as PropertyTypeDtoScopeEnum,
+    USER: "USER" as PropertyTypeDtoScopeEnum,
+    EVENT: "EVENT" as PropertyTypeDtoScopeEnum
   }
 }

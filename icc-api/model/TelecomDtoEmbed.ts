@@ -15,13 +15,13 @@ export class TelecomDtoEmbed {
     Object.assign(this as TelecomDtoEmbed, json)
   }
 
-  telecomType?: TelecomDtoEmbed.TelecomTypeEnum
+  telecomType?: TelecomDtoEmbed.TelecomDtoEmbedTelecomTypeEnum
   telecomNumber?: string
   telecomDescription?: string
   encryptedSelf?: string
 }
 export namespace TelecomDtoEmbed {
-  export type TelecomTypeEnum =
+  export type TelecomDtoEmbedTelecomTypeEnum =
     | "mobile"
     | "phone"
     | "email"
@@ -34,18 +34,18 @@ export namespace TelecomDtoEmbed {
     | "web"
     | "print"
     | "disk"
-  export const TelecomTypeEnum = {
-    Mobile: "mobile" as TelecomTypeEnum,
-    Phone: "phone" as TelecomTypeEnum,
-    Email: "email" as TelecomTypeEnum,
-    Fax: "fax" as TelecomTypeEnum,
-    Skype: "skype" as TelecomTypeEnum,
-    Im: "im" as TelecomTypeEnum,
-    Medibridge: "medibridge" as TelecomTypeEnum,
-    Ehealthbox: "ehealthbox" as TelecomTypeEnum,
-    Apicrypt: "apicrypt" as TelecomTypeEnum,
-    Web: "web" as TelecomTypeEnum,
-    Print: "print" as TelecomTypeEnum,
-    Disk: "disk" as TelecomTypeEnum
+  export const TelecomDtoEmbedTelecomTypeEnum = {
+    Mobile: "mobile" as TelecomDtoEmbedTelecomTypeEnum,
+    Phone: "phone" as TelecomDtoEmbedTelecomTypeEnum,
+    Email: "email" as TelecomDtoEmbedTelecomTypeEnum,
+    Fax: "fax" as TelecomDtoEmbedTelecomTypeEnum,
+    Skype: "skype" as TelecomDtoEmbedTelecomTypeEnum,
+    Im: "im" as TelecomDtoEmbedTelecomTypeEnum,
+    Medibridge: "medibridge" as TelecomDtoEmbedTelecomTypeEnum,
+    Ehealthbox: "ehealthbox" as TelecomDtoEmbedTelecomTypeEnum,
+    Apicrypt: "apicrypt" as TelecomDtoEmbedTelecomTypeEnum,
+    Web: "web" as TelecomDtoEmbedTelecomTypeEnum,
+    Print: "print" as TelecomDtoEmbedTelecomTypeEnum,
+    Disk: "disk" as TelecomDtoEmbedTelecomTypeEnum
   }
 }

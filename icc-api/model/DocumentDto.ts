@@ -34,9 +34,9 @@ export class DocumentDto {
   delegations?: { [key: string]: Array<DelegationDto> }
   encryptionKeys?: { [key: string]: Array<DelegationDto> }
   attachmentId?: string
-  documentLocation?: DocumentDto.DocumentLocationEnum
-  documentType?: DocumentDto.DocumentTypeEnum
-  documentStatus?: DocumentDto.DocumentStatusEnum
+  documentLocation?: DocumentDto.DocumentDtoDocumentLocationEnum
+  documentType?: DocumentDto.DocumentDtoDocumentTypeEnum
+  documentStatus?: DocumentDto.DocumentDtoDocumentStatusEnum
   mainUti?: string
   name?: string
   otherUtis?: Array<string>
@@ -44,12 +44,12 @@ export class DocumentDto {
   storedICureDocumentId?: string
 }
 export namespace DocumentDto {
-  export type DocumentLocationEnum = "annex" | "body"
-  export const DocumentLocationEnum = {
-    Annex: "annex" as DocumentLocationEnum,
-    Body: "body" as DocumentLocationEnum
+  export type DocumentDtoDocumentLocationEnum = "annex" | "body"
+  export const DocumentDtoDocumentLocationEnum = {
+    Annex: "annex" as DocumentDtoDocumentLocationEnum,
+    Body: "body" as DocumentDtoDocumentLocationEnum
   }
-  export type DocumentTypeEnum =
+  export type DocumentDtoDocumentTypeEnum =
     | "admission"
     | "alert"
     | "bvt_sample"
@@ -89,48 +89,48 @@ export namespace DocumentDto {
     | "template_admin"
     | "treatmentsuspension"
     | "vaccination"
-  export const DocumentTypeEnum = {
-    Admission: "admission" as DocumentTypeEnum,
-    Alert: "alert" as DocumentTypeEnum,
-    BvtSample: "bvt_sample" as DocumentTypeEnum,
-    Clinicalpath: "clinicalpath" as DocumentTypeEnum,
-    Clinicalsummary: "clinicalsummary" as DocumentTypeEnum,
-    Contactreport: "contactreport" as DocumentTypeEnum,
-    Quote: "quote" as DocumentTypeEnum,
-    Invoice: "invoice" as DocumentTypeEnum,
-    Death: "death" as DocumentTypeEnum,
-    Discharge: "discharge" as DocumentTypeEnum,
-    Dischargereport: "dischargereport" as DocumentTypeEnum,
-    EbirthBabyMedicalform: "ebirth_baby_medicalform" as DocumentTypeEnum,
-    EbirthBabyNotification: "ebirth_baby_notification" as DocumentTypeEnum,
-    EbirthMotherMedicalform: "ebirth_mother_medicalform" as DocumentTypeEnum,
-    EbirthMotherNotification: "ebirth_mother_notification" as DocumentTypeEnum,
-    EcareSafeConsultation: "ecare_safe_consultation" as DocumentTypeEnum,
-    Epidemiology: "epidemiology" as DocumentTypeEnum,
-    Intervention: "intervention" as DocumentTypeEnum,
-    Labrequest: "labrequest" as DocumentTypeEnum,
-    Labresult: "labresult" as DocumentTypeEnum,
-    Medicaladvisoragreement: "medicaladvisoragreement" as DocumentTypeEnum,
-    Medicationschemeelement: "medicationschemeelement" as DocumentTypeEnum,
-    Note: "note" as DocumentTypeEnum,
-    Notification: "notification" as DocumentTypeEnum,
-    Pharmaceuticalprescription: "pharmaceuticalprescription" as DocumentTypeEnum,
-    Prescription: "prescription" as DocumentTypeEnum,
-    Productdelivery: "productdelivery" as DocumentTypeEnum,
-    Quickdischargereport: "quickdischargereport" as DocumentTypeEnum,
-    Radiationexposuremonitoring: "radiationexposuremonitoring" as DocumentTypeEnum,
-    Referral: "referral" as DocumentTypeEnum,
-    Report: "report" as DocumentTypeEnum,
-    Request: "request" as DocumentTypeEnum,
-    Result: "result" as DocumentTypeEnum,
-    Sumehr: "sumehr" as DocumentTypeEnum,
-    Telemonitoring: "telemonitoring" as DocumentTypeEnum,
-    Template: "template" as DocumentTypeEnum,
-    TemplateAdmin: "template_admin" as DocumentTypeEnum,
-    Treatmentsuspension: "treatmentsuspension" as DocumentTypeEnum,
-    Vaccination: "vaccination" as DocumentTypeEnum
+  export const DocumentDtoDocumentTypeEnum = {
+    Admission: "admission" as DocumentDtoDocumentTypeEnum,
+    Alert: "alert" as DocumentDtoDocumentTypeEnum,
+    BvtSample: "bvt_sample" as DocumentDtoDocumentTypeEnum,
+    Clinicalpath: "clinicalpath" as DocumentDtoDocumentTypeEnum,
+    Clinicalsummary: "clinicalsummary" as DocumentDtoDocumentTypeEnum,
+    Contactreport: "contactreport" as DocumentDtoDocumentTypeEnum,
+    Quote: "quote" as DocumentDtoDocumentTypeEnum,
+    Invoice: "invoice" as DocumentDtoDocumentTypeEnum,
+    Death: "death" as DocumentDtoDocumentTypeEnum,
+    Discharge: "discharge" as DocumentDtoDocumentTypeEnum,
+    Dischargereport: "dischargereport" as DocumentDtoDocumentTypeEnum,
+    EbirthBabyMedicalform: "ebirth_baby_medicalform" as DocumentDtoDocumentTypeEnum,
+    EbirthBabyNotification: "ebirth_baby_notification" as DocumentDtoDocumentTypeEnum,
+    EbirthMotherMedicalform: "ebirth_mother_medicalform" as DocumentDtoDocumentTypeEnum,
+    EbirthMotherNotification: "ebirth_mother_notification" as DocumentDtoDocumentTypeEnum,
+    EcareSafeConsultation: "ecare_safe_consultation" as DocumentDtoDocumentTypeEnum,
+    Epidemiology: "epidemiology" as DocumentDtoDocumentTypeEnum,
+    Intervention: "intervention" as DocumentDtoDocumentTypeEnum,
+    Labrequest: "labrequest" as DocumentDtoDocumentTypeEnum,
+    Labresult: "labresult" as DocumentDtoDocumentTypeEnum,
+    Medicaladvisoragreement: "medicaladvisoragreement" as DocumentDtoDocumentTypeEnum,
+    Medicationschemeelement: "medicationschemeelement" as DocumentDtoDocumentTypeEnum,
+    Note: "note" as DocumentDtoDocumentTypeEnum,
+    Notification: "notification" as DocumentDtoDocumentTypeEnum,
+    Pharmaceuticalprescription: "pharmaceuticalprescription" as DocumentDtoDocumentTypeEnum,
+    Prescription: "prescription" as DocumentDtoDocumentTypeEnum,
+    Productdelivery: "productdelivery" as DocumentDtoDocumentTypeEnum,
+    Quickdischargereport: "quickdischargereport" as DocumentDtoDocumentTypeEnum,
+    Radiationexposuremonitoring: "radiationexposuremonitoring" as DocumentDtoDocumentTypeEnum,
+    Referral: "referral" as DocumentDtoDocumentTypeEnum,
+    Report: "report" as DocumentDtoDocumentTypeEnum,
+    Request: "request" as DocumentDtoDocumentTypeEnum,
+    Result: "result" as DocumentDtoDocumentTypeEnum,
+    Sumehr: "sumehr" as DocumentDtoDocumentTypeEnum,
+    Telemonitoring: "telemonitoring" as DocumentDtoDocumentTypeEnum,
+    Template: "template" as DocumentDtoDocumentTypeEnum,
+    TemplateAdmin: "template_admin" as DocumentDtoDocumentTypeEnum,
+    Treatmentsuspension: "treatmentsuspension" as DocumentDtoDocumentTypeEnum,
+    Vaccination: "vaccination" as DocumentDtoDocumentTypeEnum
   }
-  export type DocumentStatusEnum =
+  export type DocumentDtoDocumentStatusEnum =
     | "draft"
     | "finalized"
     | "pending_review"
@@ -140,15 +140,15 @@ export namespace DocumentDto {
     | "canceled"
     | "sent"
     | "delivered"
-  export const DocumentStatusEnum = {
-    Draft: "draft" as DocumentStatusEnum,
-    Finalized: "finalized" as DocumentStatusEnum,
-    PendingReview: "pending_review" as DocumentStatusEnum,
-    Reviewed: "reviewed" as DocumentStatusEnum,
-    PendingSignature: "pending_signature" as DocumentStatusEnum,
-    Signed: "signed" as DocumentStatusEnum,
-    Canceled: "canceled" as DocumentStatusEnum,
-    Sent: "sent" as DocumentStatusEnum,
-    Delivered: "delivered" as DocumentStatusEnum
+  export const DocumentDtoDocumentStatusEnum = {
+    Draft: "draft" as DocumentDtoDocumentStatusEnum,
+    Finalized: "finalized" as DocumentDtoDocumentStatusEnum,
+    PendingReview: "pending_review" as DocumentDtoDocumentStatusEnum,
+    Reviewed: "reviewed" as DocumentDtoDocumentStatusEnum,
+    PendingSignature: "pending_signature" as DocumentDtoDocumentStatusEnum,
+    Signed: "signed" as DocumentDtoDocumentStatusEnum,
+    Canceled: "canceled" as DocumentDtoDocumentStatusEnum,
+    Sent: "sent" as DocumentDtoDocumentStatusEnum,
+    Delivered: "delivered" as DocumentDtoDocumentStatusEnum
   }
 }

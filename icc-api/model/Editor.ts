@@ -20,16 +20,16 @@ export class Editor {
   width?: number
   height?: number
   multiline?: boolean
-  labelPosition?: Editor.LabelPositionEnum
+  labelPosition?: Editor.EditorLabelPositionEnum
   readOnly?: boolean
   key?: string
 }
 export namespace Editor {
-  export type LabelPositionEnum = "Up" | "Down" | "Left" | "Right"
-  export const LabelPositionEnum = {
-    Up: "Up" as LabelPositionEnum,
-    Down: "Down" as LabelPositionEnum,
-    Left: "Left" as LabelPositionEnum,
-    Right: "Right" as LabelPositionEnum
+  export type EditorLabelPositionEnum = "Up" | "Down" | "Left" | "Right"
+  export const EditorLabelPositionEnum = {
+    Up: "Up" as EditorLabelPositionEnum,
+    Down: "Down" as EditorLabelPositionEnum,
+    Left: "Left" as EditorLabelPositionEnum,
+    Right: "Right" as EditorLabelPositionEnum
   }
 }

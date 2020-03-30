@@ -25,7 +25,7 @@ export class DocumentTemplateDto {
   owner?: string
   guid?: string
   attachmentId?: string
-  documentType?: DocumentTemplateDto.DocumentTypeEnum
+  documentType?: DocumentTemplateDto.DocumentTemplateDtoDocumentTypeEnum
   mainUti?: string
   group?: DocumentGroupDto
   name?: string
@@ -34,7 +34,7 @@ export class DocumentTemplateDto {
   specialty?: CodeDto
 }
 export namespace DocumentTemplateDto {
-  export type DocumentTypeEnum =
+  export type DocumentTemplateDtoDocumentTypeEnum =
     | "admission"
     | "alert"
     | "bvt_sample"
@@ -74,45 +74,45 @@ export namespace DocumentTemplateDto {
     | "template_admin"
     | "treatmentsuspension"
     | "vaccination"
-  export const DocumentTypeEnum = {
-    Admission: "admission" as DocumentTypeEnum,
-    Alert: "alert" as DocumentTypeEnum,
-    BvtSample: "bvt_sample" as DocumentTypeEnum,
-    Clinicalpath: "clinicalpath" as DocumentTypeEnum,
-    Clinicalsummary: "clinicalsummary" as DocumentTypeEnum,
-    Contactreport: "contactreport" as DocumentTypeEnum,
-    Quote: "quote" as DocumentTypeEnum,
-    Invoice: "invoice" as DocumentTypeEnum,
-    Death: "death" as DocumentTypeEnum,
-    Discharge: "discharge" as DocumentTypeEnum,
-    Dischargereport: "dischargereport" as DocumentTypeEnum,
-    EbirthBabyMedicalform: "ebirth_baby_medicalform" as DocumentTypeEnum,
-    EbirthBabyNotification: "ebirth_baby_notification" as DocumentTypeEnum,
-    EbirthMotherMedicalform: "ebirth_mother_medicalform" as DocumentTypeEnum,
-    EbirthMotherNotification: "ebirth_mother_notification" as DocumentTypeEnum,
-    EcareSafeConsultation: "ecare_safe_consultation" as DocumentTypeEnum,
-    Epidemiology: "epidemiology" as DocumentTypeEnum,
-    Intervention: "intervention" as DocumentTypeEnum,
-    Labrequest: "labrequest" as DocumentTypeEnum,
-    Labresult: "labresult" as DocumentTypeEnum,
-    Medicaladvisoragreement: "medicaladvisoragreement" as DocumentTypeEnum,
-    Medicationschemeelement: "medicationschemeelement" as DocumentTypeEnum,
-    Note: "note" as DocumentTypeEnum,
-    Notification: "notification" as DocumentTypeEnum,
-    Pharmaceuticalprescription: "pharmaceuticalprescription" as DocumentTypeEnum,
-    Prescription: "prescription" as DocumentTypeEnum,
-    Productdelivery: "productdelivery" as DocumentTypeEnum,
-    Quickdischargereport: "quickdischargereport" as DocumentTypeEnum,
-    Radiationexposuremonitoring: "radiationexposuremonitoring" as DocumentTypeEnum,
-    Referral: "referral" as DocumentTypeEnum,
-    Report: "report" as DocumentTypeEnum,
-    Request: "request" as DocumentTypeEnum,
-    Result: "result" as DocumentTypeEnum,
-    Sumehr: "sumehr" as DocumentTypeEnum,
-    Telemonitoring: "telemonitoring" as DocumentTypeEnum,
-    Template: "template" as DocumentTypeEnum,
-    TemplateAdmin: "template_admin" as DocumentTypeEnum,
-    Treatmentsuspension: "treatmentsuspension" as DocumentTypeEnum,
-    Vaccination: "vaccination" as DocumentTypeEnum
+  export const DocumentTemplateDtoDocumentTypeEnum = {
+    Admission: "admission" as DocumentTemplateDtoDocumentTypeEnum,
+    Alert: "alert" as DocumentTemplateDtoDocumentTypeEnum,
+    BvtSample: "bvt_sample" as DocumentTemplateDtoDocumentTypeEnum,
+    Clinicalpath: "clinicalpath" as DocumentTemplateDtoDocumentTypeEnum,
+    Clinicalsummary: "clinicalsummary" as DocumentTemplateDtoDocumentTypeEnum,
+    Contactreport: "contactreport" as DocumentTemplateDtoDocumentTypeEnum,
+    Quote: "quote" as DocumentTemplateDtoDocumentTypeEnum,
+    Invoice: "invoice" as DocumentTemplateDtoDocumentTypeEnum,
+    Death: "death" as DocumentTemplateDtoDocumentTypeEnum,
+    Discharge: "discharge" as DocumentTemplateDtoDocumentTypeEnum,
+    Dischargereport: "dischargereport" as DocumentTemplateDtoDocumentTypeEnum,
+    EbirthBabyMedicalform: "ebirth_baby_medicalform" as DocumentTemplateDtoDocumentTypeEnum,
+    EbirthBabyNotification: "ebirth_baby_notification" as DocumentTemplateDtoDocumentTypeEnum,
+    EbirthMotherMedicalform: "ebirth_mother_medicalform" as DocumentTemplateDtoDocumentTypeEnum,
+    EbirthMotherNotification: "ebirth_mother_notification" as DocumentTemplateDtoDocumentTypeEnum,
+    EcareSafeConsultation: "ecare_safe_consultation" as DocumentTemplateDtoDocumentTypeEnum,
+    Epidemiology: "epidemiology" as DocumentTemplateDtoDocumentTypeEnum,
+    Intervention: "intervention" as DocumentTemplateDtoDocumentTypeEnum,
+    Labrequest: "labrequest" as DocumentTemplateDtoDocumentTypeEnum,
+    Labresult: "labresult" as DocumentTemplateDtoDocumentTypeEnum,
+    Medicaladvisoragreement: "medicaladvisoragreement" as DocumentTemplateDtoDocumentTypeEnum,
+    Medicationschemeelement: "medicationschemeelement" as DocumentTemplateDtoDocumentTypeEnum,
+    Note: "note" as DocumentTemplateDtoDocumentTypeEnum,
+    Notification: "notification" as DocumentTemplateDtoDocumentTypeEnum,
+    Pharmaceuticalprescription: "pharmaceuticalprescription" as DocumentTemplateDtoDocumentTypeEnum,
+    Prescription: "prescription" as DocumentTemplateDtoDocumentTypeEnum,
+    Productdelivery: "productdelivery" as DocumentTemplateDtoDocumentTypeEnum,
+    Quickdischargereport: "quickdischargereport" as DocumentTemplateDtoDocumentTypeEnum,
+    Radiationexposuremonitoring: "radiationexposuremonitoring" as DocumentTemplateDtoDocumentTypeEnum,
+    Referral: "referral" as DocumentTemplateDtoDocumentTypeEnum,
+    Report: "report" as DocumentTemplateDtoDocumentTypeEnum,
+    Request: "request" as DocumentTemplateDtoDocumentTypeEnum,
+    Result: "result" as DocumentTemplateDtoDocumentTypeEnum,
+    Sumehr: "sumehr" as DocumentTemplateDtoDocumentTypeEnum,
+    Telemonitoring: "telemonitoring" as DocumentTemplateDtoDocumentTypeEnum,
+    Template: "template" as DocumentTemplateDtoDocumentTypeEnum,
+    TemplateAdmin: "template_admin" as DocumentTemplateDtoDocumentTypeEnum,
+    Treatmentsuspension: "treatmentsuspension" as DocumentTemplateDtoDocumentTypeEnum,
+    Vaccination: "vaccination" as DocumentTemplateDtoDocumentTypeEnum
   }
 }

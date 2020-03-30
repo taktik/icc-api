@@ -20,10 +20,10 @@ export class ReimbursementDto {
 
   from?: number
   to?: number
-  deliveryEnvironment?: ReimbursementDto.DeliveryEnvironmentEnum
+  deliveryEnvironment?: ReimbursementDto.ReimbursementDtoDeliveryEnvironmentEnum
   code?: string
-  codeType?: ReimbursementDto.CodeTypeEnum
-  multiple?: ReimbursementDto.MultipleEnum
+  codeType?: ReimbursementDto.ReimbursementDtoCodeTypeEnum
+  multiple?: ReimbursementDto.ReimbursementDtoMultipleEnum
   temporary?: boolean
   reference?: boolean
   flatRateSystem?: boolean
@@ -36,21 +36,21 @@ export class ReimbursementDto {
   copayments?: Array<CopaymentDto>
 }
 export namespace ReimbursementDto {
-  export type DeliveryEnvironmentEnum = "P" | "A" | "H" | "R"
-  export const DeliveryEnvironmentEnum = {
-    P: "P" as DeliveryEnvironmentEnum,
-    A: "A" as DeliveryEnvironmentEnum,
-    H: "H" as DeliveryEnvironmentEnum,
-    R: "R" as DeliveryEnvironmentEnum
+  export type ReimbursementDtoDeliveryEnvironmentEnum = "P" | "A" | "H" | "R"
+  export const ReimbursementDtoDeliveryEnvironmentEnum = {
+    P: "P" as ReimbursementDtoDeliveryEnvironmentEnum,
+    A: "A" as ReimbursementDtoDeliveryEnvironmentEnum,
+    H: "H" as ReimbursementDtoDeliveryEnvironmentEnum,
+    R: "R" as ReimbursementDtoDeliveryEnvironmentEnum
   }
-  export type CodeTypeEnum = "CNK" | "PSEUDO"
-  export const CodeTypeEnum = {
-    CNK: "CNK" as CodeTypeEnum,
-    PSEUDO: "PSEUDO" as CodeTypeEnum
+  export type ReimbursementDtoCodeTypeEnum = "CNK" | "PSEUDO"
+  export const ReimbursementDtoCodeTypeEnum = {
+    CNK: "CNK" as ReimbursementDtoCodeTypeEnum,
+    PSEUDO: "PSEUDO" as ReimbursementDtoCodeTypeEnum
   }
-  export type MultipleEnum = "M" | "V"
-  export const MultipleEnum = {
-    M: "M" as MultipleEnum,
-    V: "V" as MultipleEnum
+  export type ReimbursementDtoMultipleEnum = "M" | "V"
+  export const ReimbursementDtoMultipleEnum = {
+    M: "M" as ReimbursementDtoMultipleEnum,
+    V: "V" as ReimbursementDtoMultipleEnum
   }
 }

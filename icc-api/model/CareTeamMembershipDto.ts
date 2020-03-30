@@ -18,15 +18,20 @@ export class CareTeamMembershipDto {
   startDate?: number
   endDate?: number
   careTeamMemberId?: string
-  membershipType?: CareTeamMembershipDto.MembershipTypeEnum
+  membershipType?: CareTeamMembershipDto.CareTeamMembershipDtoMembershipTypeEnum
 }
 export namespace CareTeamMembershipDto {
-  export type MembershipTypeEnum = "doctor" | "mutuality" | "patient" | "specialist" | "other"
-  export const MembershipTypeEnum = {
-    Doctor: "doctor" as MembershipTypeEnum,
-    Mutuality: "mutuality" as MembershipTypeEnum,
-    Patient: "patient" as MembershipTypeEnum,
-    Specialist: "specialist" as MembershipTypeEnum,
-    Other: "other" as MembershipTypeEnum
+  export type CareTeamMembershipDtoMembershipTypeEnum =
+    | "doctor"
+    | "mutuality"
+    | "patient"
+    | "specialist"
+    | "other"
+  export const CareTeamMembershipDtoMembershipTypeEnum = {
+    Doctor: "doctor" as CareTeamMembershipDtoMembershipTypeEnum,
+    Mutuality: "mutuality" as CareTeamMembershipDtoMembershipTypeEnum,
+    Patient: "patient" as CareTeamMembershipDtoMembershipTypeEnum,
+    Specialist: "specialist" as CareTeamMembershipDtoMembershipTypeEnum,
+    Other: "other" as CareTeamMembershipDtoMembershipTypeEnum
   }
 }

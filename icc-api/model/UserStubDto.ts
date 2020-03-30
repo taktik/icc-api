@@ -23,14 +23,14 @@ export class UserStubDto {
   patientId?: string
   email?: string
   autoDelegations?: { [key: string]: Array<string> }
-  virtualHostDependency?: UserStubDto.VirtualHostDependencyEnum
+  virtualHostDependency?: UserStubDto.UserStubDtoVirtualHostDependencyEnum
   virtualHosts?: Array<string>
 }
 export namespace UserStubDto {
-  export type VirtualHostDependencyEnum = "NONE" | "DIRECT" | "FULL"
-  export const VirtualHostDependencyEnum = {
-    NONE: "NONE" as VirtualHostDependencyEnum,
-    DIRECT: "DIRECT" as VirtualHostDependencyEnum,
-    FULL: "FULL" as VirtualHostDependencyEnum
+  export type UserStubDtoVirtualHostDependencyEnum = "NONE" | "DIRECT" | "FULL"
+  export const UserStubDtoVirtualHostDependencyEnum = {
+    NONE: "NONE" as UserStubDtoVirtualHostDependencyEnum,
+    DIRECT: "DIRECT" as UserStubDtoVirtualHostDependencyEnum,
+    FULL: "FULL" as UserStubDtoVirtualHostDependencyEnum
   }
 }

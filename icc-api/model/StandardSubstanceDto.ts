@@ -17,17 +17,17 @@ export class StandardSubstanceDto {
   }
 
   code?: string
-  type?: StandardSubstanceDto.TypeEnum
+  type?: StandardSubstanceDto.StandardSubstanceDtoTypeEnum
   name?: SamTextDto
   definition?: SamTextDto
   url?: string
 }
 export namespace StandardSubstanceDto {
-  export type TypeEnum = "CAS" | "DM_D" | "EDQM" | "SNOMED_CT"
-  export const TypeEnum = {
-    CAS: "CAS" as TypeEnum,
-    DMD: "DM_D" as TypeEnum,
-    EDQM: "EDQM" as TypeEnum,
-    SNOMEDCT: "SNOMED_CT" as TypeEnum
+  export type StandardSubstanceDtoTypeEnum = "CAS" | "DM_D" | "EDQM" | "SNOMED_CT"
+  export const StandardSubstanceDtoTypeEnum = {
+    CAS: "CAS" as StandardSubstanceDtoTypeEnum,
+    DMD: "DM_D" as StandardSubstanceDtoTypeEnum,
+    EDQM: "EDQM" as StandardSubstanceDtoTypeEnum,
+    SNOMEDCT: "SNOMED_CT" as StandardSubstanceDtoTypeEnum
   }
 }
