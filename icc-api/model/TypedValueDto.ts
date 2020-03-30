@@ -24,15 +24,7 @@ export class TypedValueDto {
   valueType?: TypedValueDto.ValueTypeEnum
 }
 export namespace TypedValueDto {
-  export type TypeEnum =
-    | "BOOLEAN"
-    | "INTEGER"
-    | "DOUBLE"
-    | "STRING"
-    | "DATE"
-    | "CLOB"
-    | "JSON"
-    | "TypedValueDto#desambiguationToken"
+  export type TypeEnum = "BOOLEAN" | "INTEGER" | "DOUBLE" | "STRING" | "DATE" | "CLOB" | "JSON"
   export const TypeEnum = {
     BOOLEAN: "BOOLEAN" as TypeEnum,
     INTEGER: "INTEGER" as TypeEnum,
@@ -42,15 +34,7 @@ export namespace TypedValueDto {
     CLOB: "CLOB" as TypeEnum,
     JSON: "JSON" as TypeEnum
   }
-  export type ValueTypeEnum =
-    | "BOOLEAN"
-    | "INTEGER"
-    | "DOUBLE"
-    | "STRING"
-    | "DATE"
-    | "CLOB"
-    | "JSON"
-    | "TypedValueDto#desambiguationToken"
+  export type ValueTypeEnum = "BOOLEAN" | "INTEGER" | "DOUBLE" | "STRING" | "DATE" | "CLOB" | "JSON"
   export const ValueTypeEnum = {
     BOOLEAN: "BOOLEAN" as ValueTypeEnum,
     INTEGER: "INTEGER" as ValueTypeEnum,

@@ -39,19 +39,13 @@ export class InvoiceItem {
   percentNorm?: InvoiceItem.PercentNormEnum
 }
 export namespace InvoiceItem {
-  export type SideCodeEnum = "None" | "Left" | "Right" | "InvoiceItem#desambiguationToken"
+  export type SideCodeEnum = "None" | "Left" | "Right"
   export const SideCodeEnum = {
     None: "None" as SideCodeEnum,
     Left: "Left" as SideCodeEnum,
     Right: "Right" as SideCodeEnum
   }
-  export type TimeOfDayEnum =
-    | "Other"
-    | "Night"
-    | "Weekend"
-    | "Bankholiday"
-    | "Urgent"
-    | "InvoiceItem#desambiguationToken"
+  export type TimeOfDayEnum = "Other" | "Night" | "Weekend" | "Bankholiday" | "Urgent"
   export const TimeOfDayEnum = {
     Other: "Other" as TimeOfDayEnum,
     Night: "Night" as TimeOfDayEnum,
@@ -65,7 +59,6 @@ export namespace InvoiceItem {
     | "OtherPrescription"
     | "SecondPrestationOfDay"
     | "ThirdAndNextPrestationOfDay"
-    | "InvoiceItem#desambiguationToken"
   export const DerogationMaxNumberEnum = {
     Other: "Other" as DerogationMaxNumberEnum,
     DerogationMaxNumber: "DerogationMaxNumber" as DerogationMaxNumberEnum,
@@ -79,7 +72,6 @@ export namespace InvoiceItem {
     | "SelfPrescriber"
     | "AddedCode"
     | "ManyPrescribers"
-    | "InvoiceItem#desambiguationToken"
   export const PrescriberNormEnum = {
     None: "None" as PrescriberNormEnum,
     OnePrescriber: "OnePrescriber" as PrescriberNormEnum,
@@ -96,7 +88,6 @@ export namespace InvoiceItem {
     | "HalfPriceSecondAct"
     | "InvoiceException"
     | "ForInformation"
-    | "InvoiceItem#desambiguationToken"
   export const PercentNormEnum = {
     None: "None" as PercentNormEnum,
     SurgicalAid1: "SurgicalAid1" as PercentNormEnum,

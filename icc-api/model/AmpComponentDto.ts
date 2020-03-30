@@ -37,13 +37,13 @@ export class AmpComponentDto {
   sugarFree?: boolean
 }
 export namespace AmpComponentDto {
-  export type CrushableEnum = "Y" | "N" | "X" | "AmpComponentDto#desambiguationToken"
+  export type CrushableEnum = "Y" | "N" | "X"
   export const CrushableEnum = {
     Y: "Y" as CrushableEnum,
     N: "N" as CrushableEnum,
     X: "X" as CrushableEnum
   }
-  export type ContainsAlcoholEnum = "Y" | "N" | "X" | "AmpComponentDto#desambiguationToken"
+  export type ContainsAlcoholEnum = "Y" | "N" | "X"
   export const ContainsAlcoholEnum = {
     Y: "Y" as ContainsAlcoholEnum,
     N: "N" as ContainsAlcoholEnum,

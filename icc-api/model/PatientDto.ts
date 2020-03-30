@@ -104,7 +104,6 @@ export namespace PatientDto {
     | "no_contact"
     | "unknown"
     | "none"
-    | "PatientDto#desambiguationToken"
   export const DeactivationReasonEnum = {
     Deceased: "deceased" as DeactivationReasonEnum,
     Moved: "moved" as DeactivationReasonEnum,

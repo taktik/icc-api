@@ -22,11 +22,7 @@ export class FlatRateTarificationDto {
   flatRateType?: FlatRateTarificationDto.FlatRateTypeEnum
 }
 export namespace FlatRateTarificationDto {
-  export type FlatRateTypeEnum =
-    | "physician"
-    | "physiotherapist"
-    | "nurse"
-    | "FlatRateTarificationDto#desambiguationToken"
+  export type FlatRateTypeEnum = "physician" | "physiotherapist" | "nurse"
   export const FlatRateTypeEnum = {
     Physician: "physician" as FlatRateTypeEnum,
     Physiotherapist: "physiotherapist" as FlatRateTypeEnum,

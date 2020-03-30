@@ -96,7 +96,6 @@ export namespace InvoiceDto {
     | "debitcard"
     | "paypal"
     | "bitcoin"
-    | "InvoiceDto#desambiguationToken"
   export const PaymentTypeEnum = {
     Wired: "wired" as PaymentTypeEnum,
     Cash: "cash" as PaymentTypeEnum,

@@ -71,7 +71,6 @@ export namespace HealthcarePartyDto {
     | "changed"
     | "changedToMale"
     | "changedToFemale"
-    | "HealthcarePartyDto#desambiguationToken"
   export const GenderEnum = {
     Male: "male" as GenderEnum,
     Female: "female" as GenderEnum,
@@ -81,11 +80,7 @@ export namespace HealthcarePartyDto {
     ChangedToMale: "changedToMale" as GenderEnum,
     ChangedToFemale: "changedToFemale" as GenderEnum
   }
-  export type StatusesEnum =
-    | "trainee"
-    | "withconvention"
-    | "accreditated"
-    | "HealthcarePartyDto#desambiguationToken"
+  export type StatusesEnum = "trainee" | "withconvention" | "accreditated"
   export const StatusesEnum = {
     Trainee: "trainee" as StatusesEnum,
     Withconvention: "withconvention" as StatusesEnum,

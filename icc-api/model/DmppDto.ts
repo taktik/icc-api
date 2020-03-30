@@ -28,14 +28,14 @@ export class DmppDto {
   reimbursements?: Array<ReimbursementDto>
 }
 export namespace DmppDto {
-  export type DeliveryEnvironmentEnum = "P" | "A" | "H" | "R" | "DmppDto#desambiguationToken"
+  export type DeliveryEnvironmentEnum = "P" | "A" | "H" | "R"
   export const DeliveryEnvironmentEnum = {
     P: "P" as DeliveryEnvironmentEnum,
     A: "A" as DeliveryEnvironmentEnum,
     H: "H" as DeliveryEnvironmentEnum,
     R: "R" as DeliveryEnvironmentEnum
   }
-  export type CodeTypeEnum = "CNK" | "PSEUDO" | "DmppDto#desambiguationToken"
+  export type CodeTypeEnum = "CNK" | "PSEUDO"
   export const CodeTypeEnum = {
     CNK: "CNK" as CodeTypeEnum,
     PSEUDO: "PSEUDO" as CodeTypeEnum

@@ -25,10 +25,7 @@ export class VirtualIngredientDto {
   substance?: SubstanceDto
 }
 export namespace VirtualIngredientDto {
-  export type TypeEnum =
-    | "ACTIVE_SUBSTANCE"
-    | "EXCIPIENT"
-    | "VirtualIngredientDto#desambiguationToken"
+  export type TypeEnum = "ACTIVE_SUBSTANCE" | "EXCIPIENT"
   export const TypeEnum = {
     ACTIVESUBSTANCE: "ACTIVE_SUBSTANCE" as TypeEnum,
     EXCIPIENT: "EXCIPIENT" as TypeEnum

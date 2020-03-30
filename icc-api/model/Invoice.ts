@@ -38,7 +38,6 @@ export namespace Invoice {
     | "WorkAccident"
     | "Accident"
     | "Other"
-    | "Invoice#desambiguationToken"
   export const ReasonEnum = {
     Chimiotherapy: "Chimiotherapy" as ReasonEnum,
     ProfessionalDisease: "ProfessionalDisease" as ReasonEnum,

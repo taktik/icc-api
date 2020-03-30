@@ -37,7 +37,6 @@ export namespace Address {
     | "clinic"
     | "hq"
     | "other"
-    | "Address#desambiguationToken"
   export const AddressTypeEnum = {
     Home: "home" as AddressTypeEnum,
     Work: "work" as AddressTypeEnum,

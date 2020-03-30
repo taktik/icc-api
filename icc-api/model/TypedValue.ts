@@ -23,15 +23,7 @@ export class TypedValue {
   dateValue?: number
 }
 export namespace TypedValue {
-  export type TypeEnum =
-    | "BOOLEAN"
-    | "INTEGER"
-    | "DOUBLE"
-    | "STRING"
-    | "DATE"
-    | "CLOB"
-    | "JSON"
-    | "TypedValue#desambiguationToken"
+  export type TypeEnum = "BOOLEAN" | "INTEGER" | "DOUBLE" | "STRING" | "DATE" | "CLOB" | "JSON"
   export const TypeEnum = {
     BOOLEAN: "BOOLEAN" as TypeEnum,
     INTEGER: "INTEGER" as TypeEnum,

@@ -31,7 +31,6 @@ export namespace PartnershipDto {
     | "friend"
     | "counselor"
     | "contact"
-    | "PartnershipDto#desambiguationToken"
   export const TypeEnum = {
     PrimaryContact: "primary_contact" as TypeEnum,
     PrimaryContactFor: "primary_contact_for" as TypeEnum,
@@ -41,7 +40,7 @@ export namespace PartnershipDto {
     Counselor: "counselor" as TypeEnum,
     Contact: "contact" as TypeEnum
   }
-  export type StatusEnum = "active" | "complicated" | "past" | "PartnershipDto#desambiguationToken"
+  export type StatusEnum = "active" | "complicated" | "past"
   export const StatusEnum = {
     Active: "active" as StatusEnum,
     Complicated: "complicated" as StatusEnum,

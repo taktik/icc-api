@@ -48,7 +48,7 @@ export class IccCryptoXApi {
     const cached = this.hcPartiesRequestsCache[hcpartyId]
 
     return cached
-      ? cached.entity.catch(() => {
+      ? (cached.entity as Promise<any>).catch(() => {
           delete this.hcPartiesRequestsCache[hcpartyId]
           return this.getHcpOrPatient(hcpartyId)
         })
@@ -603,7 +603,7 @@ export class IccCryptoXApi {
                 d: {
                   owner: ownerId,
                   delegatedTo: delegateId,
-                  key: this._utils.ua2hex(cryptedDelegation)
+                  key: this._utils.ua2hex(cryptedDelegation as ArrayBuffer)
                 },
                 k: modifiedObject.id + ":" + secretIdOfModifiedObject!
               }

@@ -36,24 +36,19 @@ export class ReimbursementDto {
   copayments?: Array<CopaymentDto>
 }
 export namespace ReimbursementDto {
-  export type DeliveryEnvironmentEnum =
-    | "P"
-    | "A"
-    | "H"
-    | "R"
-    | "ReimbursementDto#desambiguationToken"
+  export type DeliveryEnvironmentEnum = "P" | "A" | "H" | "R"
   export const DeliveryEnvironmentEnum = {
     P: "P" as DeliveryEnvironmentEnum,
     A: "A" as DeliveryEnvironmentEnum,
     H: "H" as DeliveryEnvironmentEnum,
     R: "R" as DeliveryEnvironmentEnum
   }
-  export type CodeTypeEnum = "CNK" | "PSEUDO" | "ReimbursementDto#desambiguationToken"
+  export type CodeTypeEnum = "CNK" | "PSEUDO"
   export const CodeTypeEnum = {
     CNK: "CNK" as CodeTypeEnum,
     PSEUDO: "PSEUDO" as CodeTypeEnum
   }
-  export type MultipleEnum = "M" | "V" | "ReimbursementDto#desambiguationToken"
+  export type MultipleEnum = "M" | "V"
   export const MultipleEnum = {
     M: "M" as MultipleEnum,
     V: "V" as MultipleEnum

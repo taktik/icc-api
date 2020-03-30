@@ -74,7 +74,6 @@ export namespace DocumentTemplateDto {
     | "template_admin"
     | "treatmentsuspension"
     | "vaccination"
-    | "DocumentTemplateDto#desambiguationToken"
   export const DocumentTypeEnum = {
     Admission: "admission" as DocumentTypeEnum,
     Alert: "alert" as DocumentTypeEnum,

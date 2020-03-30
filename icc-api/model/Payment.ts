@@ -29,7 +29,6 @@ export namespace Payment {
     | "paypal"
     | "bitcoin"
     | "other"
-    | "Payment#desambiguationToken"
   export const PaymentTypeEnum = {
     Cash: "cash" as PaymentTypeEnum,
     Wired: "wired" as PaymentTypeEnum,

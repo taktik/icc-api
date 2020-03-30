@@ -62,7 +62,7 @@ export class AmppDto {
   singleUse?: boolean
 }
 export namespace AmppDto {
-  export type StatusEnum = "AUTHORIZED" | "SUSPENDED" | "REVOKED" | "AmppDto#desambiguationToken"
+  export type StatusEnum = "AUTHORIZED" | "SUSPENDED" | "REVOKED"
   export const StatusEnum = {
     AUTHORIZED: "AUTHORIZED" as StatusEnum,
     SUSPENDED: "SUSPENDED" as StatusEnum,

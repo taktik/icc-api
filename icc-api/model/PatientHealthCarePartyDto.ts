@@ -31,7 +31,6 @@ export namespace PatientHealthCarePartyDto {
     | "hospital"
     | "other"
     | "referringphysician"
-    | "PatientHealthCarePartyDto#desambiguationToken"
   export const TypeEnum = {
     Doctor: "doctor" as TypeEnum,
     Referral: "referral" as TypeEnum,

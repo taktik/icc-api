@@ -30,7 +30,6 @@ export namespace PermissionCriterion {
     | "PATIENT_MODIFICATION_USER"
     | "PATIENT_REFERENCE_HC_USER"
     | "PATIENT_HC_TEAM_USER"
-    | "PermissionCriterion#desambiguationToken"
   export const CurrentUserEnum = {
     DATACREATIONUSER: "DATA_CREATION_USER" as CurrentUserEnum,
     DATAMODIFICATIONUSER: "DATA_MODIFICATION_USER" as CurrentUserEnum,
@@ -39,24 +38,14 @@ export namespace PermissionCriterion {
     PATIENTREFERENCEHCUSER: "PATIENT_REFERENCE_HC_USER" as CurrentUserEnum,
     PATIENTHCTEAMUSER: "PATIENT_HC_TEAM_USER" as CurrentUserEnum
   }
-  export type DataTypeEnum =
-    | "ADMINISTRATIVE"
-    | "HEALTH"
-    | "SENSITIVE"
-    | "CONFIDENTIAL"
-    | "PermissionCriterion#desambiguationToken"
+  export type DataTypeEnum = "ADMINISTRATIVE" | "HEALTH" | "SENSITIVE" | "CONFIDENTIAL"
   export const DataTypeEnum = {
     ADMINISTRATIVE: "ADMINISTRATIVE" as DataTypeEnum,
     HEALTH: "HEALTH" as DataTypeEnum,
     SENSITIVE: "SENSITIVE" as DataTypeEnum,
     CONFIDENTIAL: "CONFIDENTIAL" as DataTypeEnum
   }
-  export type TypeEnum =
-    | "VIRTUALHOST"
-    | "CURRENT_USER"
-    | "DATA_TYPE"
-    | "PATIENT_STATUS"
-    | "PermissionCriterion#desambiguationToken"
+  export type TypeEnum = "VIRTUALHOST" | "CURRENT_USER" | "DATA_TYPE" | "PATIENT_STATUS"
   export const TypeEnum = {
     VIRTUALHOST: "VIRTUALHOST" as TypeEnum,
     CURRENTUSER: "CURRENT_USER" as TypeEnum,

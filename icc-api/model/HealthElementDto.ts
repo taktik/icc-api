@@ -53,7 +53,7 @@ export class HealthElementDto {
   careTeam?: Array<CareTeamMemberDto>
 }
 export namespace HealthElementDto {
-  export type LateralityEnum = "left" | "right" | "HealthElementDto#desambiguationToken"
+  export type LateralityEnum = "left" | "right"
   export const LateralityEnum = {
     Left: "left" as LateralityEnum,
     Right: "right" as LateralityEnum

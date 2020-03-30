@@ -23,12 +23,7 @@ export class StandardSubstanceDto {
   url?: string
 }
 export namespace StandardSubstanceDto {
-  export type TypeEnum =
-    | "CAS"
-    | "DM_D"
-    | "EDQM"
-    | "SNOMED_CT"
-    | "StandardSubstanceDto#desambiguationToken"
+  export type TypeEnum = "CAS" | "DM_D" | "EDQM" | "SNOMED_CT"
   export const TypeEnum = {
     CAS: "CAS" as TypeEnum,
     DMD: "DM_D" as TypeEnum,

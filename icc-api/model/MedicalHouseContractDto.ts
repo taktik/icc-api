@@ -47,7 +47,6 @@ export namespace MedicalHouseContractDto {
     | "isHospitalized"
     | "outsideOfCountry"
     | "changeOfMutuality"
-    | "MedicalHouseContractDto#desambiguationToken"
   export const SuspensionReasonEnum = {
     NotInsured: "notInsured" as SuspensionReasonEnum,
     NoReasonGiven: "noReasonGiven" as SuspensionReasonEnum,
@@ -60,7 +59,6 @@ export namespace MedicalHouseContractDto {
     | "inscriptionEnd"
     | "suspension"
     | "coverageChange"
-    | "MedicalHouseContractDto#desambiguationToken"
   export const ChangeTypeEnum = {
     InscriptionStart: "inscriptionStart" as ChangeTypeEnum,
     InscriptionEnd: "inscriptionEnd" as ChangeTypeEnum,

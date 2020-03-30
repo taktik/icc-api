@@ -29,11 +29,7 @@ export class FrontEndMigrationDto {
   processCount?: number
 }
 export namespace FrontEndMigrationDto {
-  export type StatusEnum =
-    | "STARTED"
-    | "ERROR"
-    | "SUCCESS"
-    | "FrontEndMigrationDto#desambiguationToken"
+  export type StatusEnum = "STARTED" | "ERROR" | "SUCCESS"
   export const StatusEnum = {
     STARTED: "STARTED" as StatusEnum,
     ERROR: "ERROR" as StatusEnum,

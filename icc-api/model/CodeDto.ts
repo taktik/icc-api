@@ -116,7 +116,6 @@ export namespace CodeDto {
     | "depttransplantsurgery"
     | "deptpercutaneous"
     | "deptchildbirth"
-    | "CodeDto#desambiguationToken"
   export const FlagsEnum = {
     MaleOnly: "male_only" as FlagsEnum,
     FemaleOnly: "female_only" as FlagsEnum,

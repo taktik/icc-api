@@ -47,13 +47,13 @@ export class AmpDto {
   revHistory?: { [key: string]: string }
 }
 export namespace AmpDto {
-  export type StatusEnum = "AUTHORIZED" | "SUSPENDED" | "REVOKED" | "AmpDto#desambiguationToken"
+  export type StatusEnum = "AUTHORIZED" | "SUSPENDED" | "REVOKED"
   export const StatusEnum = {
     AUTHORIZED: "AUTHORIZED" as StatusEnum,
     SUSPENDED: "SUSPENDED" as StatusEnum,
     REVOKED: "REVOKED" as StatusEnum
   }
-  export type MedicineTypeEnum = "ALLOPATHIC" | "HOMEOPATHIC" | "AmpDto#desambiguationToken"
+  export type MedicineTypeEnum = "ALLOPATHIC" | "HOMEOPATHIC"
   export const MedicineTypeEnum = {
     ALLOPATHIC: "ALLOPATHIC" as MedicineTypeEnum,
     HOMEOPATHIC: "HOMEOPATHIC" as MedicineTypeEnum

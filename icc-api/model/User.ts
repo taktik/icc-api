@@ -53,13 +53,13 @@ export class User {
   revHistory?: { [key: string]: string }
 }
 export namespace User {
-  export type TypeEnum = "database" | "ldap" | "token" | "User#desambiguationToken"
+  export type TypeEnum = "database" | "ldap" | "token"
   export const TypeEnum = {
     Database: "database" as TypeEnum,
     Ldap: "ldap" as TypeEnum,
     Token: "token" as TypeEnum
   }
-  export type StatusEnum = "ACTIVE" | "DISABLED" | "REGISTERING" | "User#desambiguationToken"
+  export type StatusEnum = "ACTIVE" | "DISABLED" | "REGISTERING"
   export const StatusEnum = {
     ACTIVE: "ACTIVE" as StatusEnum,
     DISABLED: "DISABLED" as StatusEnum,

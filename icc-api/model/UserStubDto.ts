@@ -27,11 +27,7 @@ export class UserStubDto {
   virtualHosts?: Array<string>
 }
 export namespace UserStubDto {
-  export type VirtualHostDependencyEnum =
-    | "NONE"
-    | "DIRECT"
-    | "FULL"
-    | "UserStubDto#desambiguationToken"
+  export type VirtualHostDependencyEnum = "NONE" | "DIRECT" | "FULL"
   export const VirtualHostDependencyEnum = {
     NONE: "NONE" as VirtualHostDependencyEnum,
     DIRECT: "DIRECT" as VirtualHostDependencyEnum,

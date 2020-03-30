@@ -25,7 +25,7 @@ export class Editor {
   key?: string
 }
 export namespace Editor {
-  export type LabelPositionEnum = "Up" | "Down" | "Left" | "Right" | "Editor#desambiguationToken"
+  export type LabelPositionEnum = "Up" | "Down" | "Left" | "Right"
   export const LabelPositionEnum = {
     Up: "Up" as LabelPositionEnum,
     Down: "Down" as LabelPositionEnum,

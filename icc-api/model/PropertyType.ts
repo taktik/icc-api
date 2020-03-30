@@ -33,15 +33,7 @@ export class PropertyType {
   revHistory?: { [key: string]: string }
 }
 export namespace PropertyType {
-  export type TypeEnum =
-    | "BOOLEAN"
-    | "INTEGER"
-    | "DOUBLE"
-    | "STRING"
-    | "DATE"
-    | "CLOB"
-    | "JSON"
-    | "PropertyType#desambiguationToken"
+  export type TypeEnum = "BOOLEAN" | "INTEGER" | "DOUBLE" | "STRING" | "DATE" | "CLOB" | "JSON"
   export const TypeEnum = {
     BOOLEAN: "BOOLEAN" as TypeEnum,
     INTEGER: "INTEGER" as TypeEnum,
@@ -51,13 +43,7 @@ export namespace PropertyType {
     CLOB: "CLOB" as TypeEnum,
     JSON: "JSON" as TypeEnum
   }
-  export type ScopeEnum =
-    | "SYSTEM"
-    | "NODE"
-    | "ROLE"
-    | "USER"
-    | "EVENT"
-    | "PropertyType#desambiguationToken"
+  export type ScopeEnum = "SYSTEM" | "NODE" | "ROLE" | "USER" | "EVENT"
   export const ScopeEnum = {
     SYSTEM: "SYSTEM" as ScopeEnum,
     NODE: "NODE" as ScopeEnum,

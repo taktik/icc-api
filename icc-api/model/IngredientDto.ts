@@ -28,7 +28,7 @@ export class IngredientDto {
   substance?: SubstanceDto
 }
 export namespace IngredientDto {
-  export type TypeEnum = "ACTIVE_SUBSTANCE" | "EXCIPIENT" | "IngredientDto#desambiguationToken"
+  export type TypeEnum = "ACTIVE_SUBSTANCE" | "EXCIPIENT"
   export const TypeEnum = {
     ACTIVESUBSTANCE: "ACTIVE_SUBSTANCE" as TypeEnum,
     EXCIPIENT: "EXCIPIENT" as TypeEnum

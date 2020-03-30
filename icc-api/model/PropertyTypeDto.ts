@@ -28,13 +28,7 @@ export class PropertyTypeDto {
   name?: LocalizedStringDto
 }
 export namespace PropertyTypeDto {
-  export type ScopeEnum =
-    | "SYSTEM"
-    | "NODE"
-    | "ROLE"
-    | "USER"
-    | "EVENT"
-    | "PropertyTypeDto#desambiguationToken"
+  export type ScopeEnum = "SYSTEM" | "NODE" | "ROLE" | "USER" | "EVENT"
   export const ScopeEnum = {
     SYSTEM: "SYSTEM" as ScopeEnum,
     NODE: "NODE" as ScopeEnum,

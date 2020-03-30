@@ -21,13 +21,7 @@ export class CareTeamMembershipDto {
   membershipType?: CareTeamMembershipDto.MembershipTypeEnum
 }
 export namespace CareTeamMembershipDto {
-  export type MembershipTypeEnum =
-    | "doctor"
-    | "mutuality"
-    | "patient"
-    | "specialist"
-    | "other"
-    | "CareTeamMembershipDto#desambiguationToken"
+  export type MembershipTypeEnum = "doctor" | "mutuality" | "patient" | "specialist" | "other"
   export const MembershipTypeEnum = {
     Doctor: "doctor" as MembershipTypeEnum,
     Mutuality: "mutuality" as MembershipTypeEnum,

@@ -26,12 +26,7 @@ export class AmppComponentDto {
   packagingType?: PackagingTypeDto
 }
 export namespace AmppComponentDto {
-  export type ContentTypeEnum =
-    | "ACTIVE_COMPONENT"
-    | "SOLVENT"
-    | "DEVICE"
-    | "EXCIPIENT"
-    | "AmppComponentDto#desambiguationToken"
+  export type ContentTypeEnum = "ACTIVE_COMPONENT" | "SOLVENT" | "DEVICE" | "EXCIPIENT"
   export const ContentTypeEnum = {
     ACTIVECOMPONENT: "ACTIVE_COMPONENT" as ContentTypeEnum,
     SOLVENT: "SOLVENT" as ContentTypeEnum,

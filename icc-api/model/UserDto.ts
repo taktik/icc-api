@@ -49,19 +49,19 @@ export class UserDto {
   virtualHosts?: Array<string>
 }
 export namespace UserDto {
-  export type TypeEnum = "database" | "ldap" | "token" | "UserDto#desambiguationToken"
+  export type TypeEnum = "database" | "ldap" | "token"
   export const TypeEnum = {
     Database: "database" as TypeEnum,
     Ldap: "ldap" as TypeEnum,
     Token: "token" as TypeEnum
   }
-  export type StatusEnum = "ACTIVE" | "DISABLED" | "REGISTERING" | "UserDto#desambiguationToken"
+  export type StatusEnum = "ACTIVE" | "DISABLED" | "REGISTERING"
   export const StatusEnum = {
     ACTIVE: "ACTIVE" as StatusEnum,
     DISABLED: "DISABLED" as StatusEnum,
     REGISTERING: "REGISTERING" as StatusEnum
   }
-  export type VirtualHostDependencyEnum = "NONE" | "DIRECT" | "FULL" | "UserDto#desambiguationToken"
+  export type VirtualHostDependencyEnum = "NONE" | "DIRECT" | "FULL"
   export const VirtualHostDependencyEnum = {
     NONE: "NONE" as VirtualHostDependencyEnum,
     DIRECT: "DIRECT" as VirtualHostDependencyEnum,

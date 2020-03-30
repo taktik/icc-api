@@ -18,11 +18,7 @@ export class SumehrValidityDto {
   sumehrValid?: SumehrValidityDto.SumehrValidEnum
 }
 export namespace SumehrValidityDto {
-  export type SumehrValidEnum =
-    | "absent"
-    | "uptodate"
-    | "outdated"
-    | "SumehrValidityDto#desambiguationToken"
+  export type SumehrValidEnum = "absent" | "uptodate" | "outdated"
   export const SumehrValidEnum = {
     Absent: "absent" as SumehrValidEnum,
     Uptodate: "uptodate" as SumehrValidEnum,

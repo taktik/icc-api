@@ -122,7 +122,6 @@ export namespace Code {
     | "depttransplantsurgery"
     | "deptpercutaneous"
     | "deptchildbirth"
-    | "Code#desambiguationToken"
   export const FlagsEnum = {
     MaleOnly: "male_only" as FlagsEnum,
     FemaleOnly: "female_only" as FlagsEnum,

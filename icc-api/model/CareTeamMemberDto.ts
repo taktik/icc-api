@@ -22,11 +22,7 @@ export class CareTeamMemberDto {
   quality?: CodeStub
 }
 export namespace CareTeamMemberDto {
-  export type CareTeamMemberTypeEnum =
-    | "physician"
-    | "specialist"
-    | "other"
-    | "CareTeamMemberDto#desambiguationToken"
+  export type CareTeamMemberTypeEnum = "physician" | "specialist" | "other"
   export const CareTeamMemberTypeEnum = {
     Physician: "physician" as CareTeamMemberTypeEnum,
     Specialist: "specialist" as CareTeamMemberTypeEnum,

@@ -34,7 +34,6 @@ export namespace TelecomDtoEmbed {
     | "web"
     | "print"
     | "disk"
-    | "TelecomDtoEmbed#desambiguationToken"
   export const TelecomTypeEnum = {
     Mobile: "mobile" as TelecomTypeEnum,
     Phone: "phone" as TelecomTypeEnum,

@@ -44,7 +44,7 @@ export class DocumentDto {
   storedICureDocumentId?: string
 }
 export namespace DocumentDto {
-  export type DocumentLocationEnum = "annex" | "body" | "DocumentDto#desambiguationToken"
+  export type DocumentLocationEnum = "annex" | "body"
   export const DocumentLocationEnum = {
     Annex: "annex" as DocumentLocationEnum,
     Body: "body" as DocumentLocationEnum
@@ -89,7 +89,6 @@ export namespace DocumentDto {
     | "template_admin"
     | "treatmentsuspension"
     | "vaccination"
-    | "DocumentDto#desambiguationToken"
   export const DocumentTypeEnum = {
     Admission: "admission" as DocumentTypeEnum,
     Alert: "alert" as DocumentTypeEnum,
@@ -141,7 +140,6 @@ export namespace DocumentDto {
     | "canceled"
     | "sent"
     | "delivered"
-    | "DocumentDto#desambiguationToken"
   export const DocumentStatusEnum = {
     Draft: "draft" as DocumentStatusEnum,
     Finalized: "finalized" as DocumentStatusEnum,
