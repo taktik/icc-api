@@ -82,9 +82,17 @@ export class HealthElementDto {
 
   idService?: string
 
+  laterality?: HealthElementDto.LateralityEnum
+
   plansOfAction?: Array<models.PlanOfActionDto>
 
   episodes?: Array<models.EpisodeDto>
 
   careTeam?: Array<models.CareTeamMemberDto>
+}
+export namespace HealthElementDto {
+  export enum LateralityEnum {
+    Left = <any>"left",
+    Right = <any>"right"
+  }
 }

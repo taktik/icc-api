@@ -24,27 +24,13 @@
 
 import * as models from "./models"
 
-export class ContentDto {
+export class SuspensionDto {
   constructor(json: JSON | any) {
-    Object.assign(this as ContentDto, json)
+    Object.assign(this as SuspensionDto, json)
   }
-  stringValue?: string
+  beginMoment?: number
 
-  numberValue?: number
+  endMoment?: number
 
-  booleanValue?: boolean
-
-  instantValue?: number
-
-  fuzzyDateValue?: number
-
-  documentId?: string
-
-  measureValue?: models.MeasureDto
-
-  medicationValue?: models.MedicationDto
-
-  compoundValue?: Array<models.ServiceDto>
-
-  binaryValue?: Array<string>
+  suspensionReason?: string
 }
