@@ -1304,7 +1304,7 @@ export class IccPatientXApi extends iccPatientApi {
                         console.log(
                           `exception occured exporting calendarItem for ownerId: ${ownerId} - ${ex}`
                         )
-                        throw ex
+                        //throw ex
                       }
                     }) as Promise<Array<models.CalendarItemDto>>
                   ]).then(([hes, frms, ctcs, ivs, cls, cis]) => {
