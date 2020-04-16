@@ -84,6 +84,7 @@ export class iccBeKmehrApi {
     date?: number,
     language?: string,
     recipientNihii?: string,
+    recipientSsin?: string,
     recipientFirstName?: string,
     recipientLastName?: string,
     mimeType?: string,
@@ -102,6 +103,7 @@ export class iccBeKmehrApi {
       (date ? "&date=" + date : "") +
       (language ? "&language=" + language : "") +
       (recipientNihii ? "&recipientNihii=" + recipientNihii : "") +
+      (recipientSsin ? "&recipientSsin=" + recipientSsin : "") +
       (recipientFirstName ? "&recipientFirstName=" + recipientFirstName : "") +
       (recipientLastName ? "&recipientLastName=" + recipientLastName : "") +
       (mimeType ? "&mimeType=" + mimeType : "")
@@ -141,6 +143,7 @@ export class iccBeKmehrApi {
     date?: number,
     language?: string,
     recipientNihii?: string,
+    recipientSsin?: string,
     recipientFirstName?: string,
     recipientLastName?: string,
     mimeType?: string,
@@ -159,6 +162,7 @@ export class iccBeKmehrApi {
       (date ? "&date=" + date : "") +
       (language ? "&language=" + language : "") +
       (recipientNihii ? "&recipientNihii=" + recipientNihii : "") +
+      (recipientSsin ? "&recipientSsin=" + recipientSsin : "") +
       (recipientFirstName ? "&recipientFirstName=" + recipientFirstName : "") +
       (recipientLastName ? "&recipientLastName=" + recipientLastName : "") +
       (mimeType ? "&mimeType=" + mimeType : "")
@@ -202,6 +206,7 @@ export class iccBeKmehrApi {
     date?: number,
     language?: string,
     recipientNihii?: string,
+    recipientSsin?: string,
     recipientFirstName?: string,
     recipientLastName?: string,
     mimeType?: string,
@@ -220,6 +225,7 @@ export class iccBeKmehrApi {
       (date ? "&date=" + date : "") +
       (language ? "&language=" + language : "") +
       (recipientNihii ? "&recipientNihii=" + recipientNihii : "") +
+      (recipientSsin ? "&recipientSsin=" + recipientSsin : "") +
       (recipientFirstName ? "&recipientFirstName=" + recipientFirstName : "") +
       (recipientLastName ? "&recipientLastName=" + recipientLastName : "") +
       (mimeType ? "&mimeType=" + mimeType : "")
@@ -237,6 +243,7 @@ export class iccBeKmehrApi {
     date?: number,
     language?: string,
     recipientNihii?: string,
+    recipientSsin?: string,
     recipientFirstName?: string,
     recipientLastName?: string,
     mimeType?: string,
@@ -255,6 +262,7 @@ export class iccBeKmehrApi {
       (date ? "&date=" + date : "") +
       (language ? "&language=" + language : "") +
       (recipientNihii ? "&recipientNihii=" + recipientNihii : "") +
+      (recipientSsin ? "&recipientSsin=" + recipientSsin : "") +
       (recipientFirstName ? "&recipientFirstName=" + recipientFirstName : "") +
       (recipientLastName ? "&recipientLastName=" + recipientLastName : "") +
       (mimeType ? "&mimeType=" + mimeType : "")
@@ -272,6 +280,7 @@ export class iccBeKmehrApi {
     date?: number,
     language?: string,
     recipientNihii?: string,
+    recipientSsin?: string,
     recipientFirstName?: string,
     recipientLastName?: string,
     mimeType?: string,
@@ -290,6 +299,7 @@ export class iccBeKmehrApi {
       (date ? "&date=" + date : "") +
       (language ? "&language=" + language : "") +
       (recipientNihii ? "&recipientNihii=" + recipientNihii : "") +
+      (recipientSsin ? "&recipientSsin=" + recipientSsin : "") +
       (recipientFirstName ? "&recipientFirstName=" + recipientFirstName : "") +
       (recipientLastName ? "&recipientLastName=" + recipientLastName : "") +
       (mimeType ? "&mimeType=" + mimeType : "")
@@ -307,6 +317,7 @@ export class iccBeKmehrApi {
     date?: number,
     language?: string,
     recipientNihii?: string,
+    recipientSsin?: string,
     recipientFirstName?: string,
     recipientLastName?: string,
     mimeType?: string,
@@ -325,6 +336,7 @@ export class iccBeKmehrApi {
       (date ? "&date=" + date : "") +
       (language ? "&language=" + language : "") +
       (recipientNihii ? "&recipientNihii=" + recipientNihii : "") +
+      (recipientSsin ? "&recipientSsin=" + recipientSsin : "") +
       (recipientFirstName ? "&recipientFirstName=" + recipientFirstName : "") +
       (recipientLastName ? "&recipientLastName=" + recipientLastName : "") +
       (mimeType ? "&mimeType=" + mimeType : "")
@@ -342,6 +354,7 @@ export class iccBeKmehrApi {
     date?: number,
     language?: string,
     recipientNihii?: string,
+    recipientSsin?: string,
     recipientFirstName?: string,
     recipientLastName?: string,
     mimeType?: string,
@@ -360,6 +373,7 @@ export class iccBeKmehrApi {
       (date ? "&date=" + date : "") +
       (language ? "&language=" + language : "") +
       (recipientNihii ? "&recipientNihii=" + recipientNihii : "") +
+      (recipientSsin ? "&recipientSsin=" + recipientSsin : "") +
       (recipientFirstName ? "&recipientFirstName=" + recipientFirstName : "") +
       (recipientLastName ? "&recipientLastName=" + recipientLastName : "") +
       (mimeType ? "&mimeType=" + mimeType : "")

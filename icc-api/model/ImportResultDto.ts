@@ -43,4 +43,6 @@ export class ImportResultDto {
   hcps?: Array<models.HealthcarePartyDto>
 
   documents?: Array<models.DocumentDto>
+
+  attachments?: { [key: string]: models.Attachment }
 }
