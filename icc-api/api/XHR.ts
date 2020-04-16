@@ -103,7 +103,8 @@ export namespace XHR {
             }
           : {}
       ),
-      timeout
+      timeout,
+      fetchImpl
     ).then(function(response) {
       if (response.status >= 400) {
         throw new XHRError(response.statusText, response.status, response.status, response.headers)
@@ -113,7 +114,9 @@ export namespace XHR {
         ? response.json()
         : ct.startsWith("application/xml") || ct.startsWith("text/")
           ? response.text()
-          : response.arrayBuffer()
+          : response.arrayBuffer
+            ? response.arrayBuffer()
+            : response.blob().then(blob => new Response(blob).arrayBuffer())
       ).then(d => new Data(response.status, ct, d))
     })
   }
