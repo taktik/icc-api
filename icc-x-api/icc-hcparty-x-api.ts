@@ -49,7 +49,11 @@ export class IccHcpartyXApi extends iccHcpartyApi {
   }
 
   modifyHealthcareParty(body?: HealthcarePartyDto): Promise<HealthcarePartyDto | any> {
-    body && body.id && delete this.hcPartyCache[body.id]
+    if (body && body.id) {
+      console.log(`Evict key ${body.id} because of modification`)
+      delete this.hcPartyCache[body.id]
+    }
+
     return super
       .modifyHealthcareParty(body)
       .then(hcp => this.putHcPartyInCache(hcp.id, Promise.resolve(hcp)))
@@ -59,10 +63,8 @@ export class IccHcpartyXApi extends iccHcpartyApi {
     healthcarePartyId: string,
     bypassCache: boolean = false
   ): Promise<HealthcarePartyDto | any> {
-    const fromCache = bypassCache ? undefined : this.hcPartyCache[healthcarePartyId]
-    return !fromCache || Date.now() > fromCache[0]
-      ? this.putHcPartyInCache(healthcarePartyId)
-      : fromCache[1]
+    const fromCache = bypassCache ? undefined : this.getHcPartyFromCache(healthcarePartyId)
+    return fromCache || this.putHcPartyInCache(healthcarePartyId)
   }
 
   getHealthcareParties(healthcarePartyIds: string): Promise<Array<HealthcarePartyDto> | any> {
