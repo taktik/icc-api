@@ -309,8 +309,11 @@ export class IccCryptoXApi {
       // [key: delegatorId] = delegateEncryptedHcPartyKey
       // For each delegatorId, obtain the AES key (decrypted HcParty Key) shared with the delegate, decrypted by the delegate
       return Promise.all(
-        delegatorsHcPartyIdsSet.map((delegatorId: string) =>
-          this.decryptHcPartyKey(
+        delegatorsHcPartyIdsSet.map((delegatorId: string) => {
+          if (!delegatorIDsWithDelegateEncryptedHcPartyKey[delegatorId]) {
+            return undefined
+          }
+          return this.decryptHcPartyKey(
             delegatorId,
             delegateHcPartyId,
             delegatorIDsWithDelegateEncryptedHcPartyKey[delegatorId]
@@ -318,7 +321,7 @@ export class IccCryptoXApi {
             console.log(`failed to decrypt hcPartyKey from ${delegatorId} to ${delegateHcPartyId}`)
             return undefined
           })
-        )
+        })
       ).then(hcPartyKeys =>
         hcPartyKeys.filter(<T>(hcPartyKey: T | undefined): hcPartyKey is T => !!hcPartyKey)
       )
