@@ -1255,49 +1255,49 @@ export class IccCryptoXApi {
     const decryptPromises: Array<Promise<string | undefined>> = []
     for (var i = 0; i < (delegationsArray || []).length; i++) {
       var genericDelegationItem = delegationsArray[i]
+      const aesKey = aesKeys[genericDelegationItem.owner!!]
+      if (aesKey) {
+        decryptPromises.push(
+          this._AES
+            .decrypt(aesKey.key, this._utils.hex2ua(genericDelegationItem.key!!), aesKey.rawKey)
+            .then((decryptedGenericDelegationKey: ArrayBuffer) => {
+              const results = utils.ua2text(decryptedGenericDelegationKey).split(":")
 
-      decryptPromises.push(
-        this._AES
-          .decrypt(
-            aesKeys[genericDelegationItem.owner!!].key,
-            this._utils.hex2ua(genericDelegationItem.key!!),
-            aesKeys[genericDelegationItem.owner!!].rawKey
-          )
-          .then((decryptedGenericDelegationKey: ArrayBuffer) => {
-            const results = utils.ua2text(decryptedGenericDelegationKey).split(":")
+              const objectId = results[0] //must be the ID of the object, for checksum
+              const genericSecretId = results[1]
 
-            const objectId = results[0] //must be the ID of the object, for checksum
-            const genericSecretId = results[1]
+              const details =
+                "object ID: " +
+                masterId +
+                "; generic delegation from " +
+                genericDelegationItem.owner +
+                " to " +
+                genericDelegationItem.delegatedTo
 
-            const details =
-              "object ID: " +
-              masterId +
-              "; generic delegation from " +
-              genericDelegationItem.owner +
-              " to " +
-              genericDelegationItem.delegatedTo
+              if (!objectId) console.warn("Object id is empty; " + details)
+              if (!genericSecretId) console.warn("Secret id is empty; " + details)
 
-            if (!objectId) console.warn("Object id is empty; " + details)
-            if (!genericSecretId) console.warn("Secret id is empty; " + details)
+              if (objectId !== masterId) {
+                /*console.log(
+                  "Cryptographic mistake: object ID is not equal to the expected concatenated id within decrypted generic delegation. This may happen when patients have been merged; " +
+                    details
+                )*/
+              }
 
-            if (objectId !== masterId) {
-              /*console.log(
-                "Cryptographic mistake: object ID is not equal to the expected concatenated id within decrypted generic delegation. This may happen when patients have been merged; " +
-                  details
-              )*/
-            }
-
-            return genericSecretId
-          })
-          .catch(err => {
-            console.log(
-              `Could not decrypt generic delegation in object with ID: ${masterId} from ${
-                genericDelegationItem.owner
-              } to ${genericDelegationItem.delegatedTo}: ${err}`
-            )
-            return undefined
-          })
-      )
+              return genericSecretId
+            })
+            .catch(err => {
+              console.log(
+                `Could not decrypt generic delegation in object with ID: ${masterId} from ${
+                  genericDelegationItem.owner
+                } to ${genericDelegationItem.delegatedTo}: ${err}`
+              )
+              return undefined
+            })
+        )
+      } else {
+        console.log(`Could not find aes key for object with ID: ${masterId}`)
+      }
     }
 
     return Promise.all(decryptPromises).then(
