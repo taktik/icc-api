@@ -24,6 +24,7 @@
 
 import { XHR } from "./XHR"
 import * as models from "../model/models"
+import { MikronoAppointmentTypeRestDto } from "../model/models"
 
 export class iccBeMikronoApi {
   host: string
@@ -88,8 +89,8 @@ export class iccBeMikronoApi {
       .catch(err => this.handleError(err))
   }
   createAppointmentTypes(
-    body?: Array<models.MikronoAppointmentTypeRestDto>
-  ): Promise<any | Boolean> {
+    body?: Array<MikronoAppointmentTypeRestDto>
+  ): Promise<Array<MikronoAppointmentTypeRestDto> | any> {
     let _body = null
     _body = body
 
@@ -99,7 +100,7 @@ export class iccBeMikronoApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => true)
+      .then(doc => (doc.body as Array<JSON>).map(it => new MikronoAppointmentTypeRestDto(it)))
       .catch(err => this.handleError(err))
   }
   createAppointments(
