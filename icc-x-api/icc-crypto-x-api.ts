@@ -99,8 +99,10 @@ export class IccCryptoXApi {
     ]).then(([a, b]) => Object.assign({}, a, b))
   }
 
-  keychainLocalStoreIdPrefix: String = "org.taktik.icure.ehealth.keychain."
+  keychainLocalStoreIdPrefix = "org.taktik.icure.ehealth.keychain."
+  keychainValidityDateLocalStoreIdPrefix = "org.taktik.icure.ehealth.keychain-date."
   hcpPreferenceKeyEhealthCert: string = "eHealthCRT"
+  hcpPreferenceKeyEhealthCertDate = "eHealthCRTDate"
 
   private hcpartyBaseApi: iccHcpartyApi
   private patientBaseApi: iccPatientApi
@@ -119,8 +121,8 @@ export class IccCryptoXApi {
     crypto: Crypto = typeof window !== "undefined"
       ? window.crypto
       : typeof self !== "undefined"
-        ? self.crypto
-        : ({} as Crypto)
+      ? self.crypto
+      : ({} as Crypto)
   ) {
     this.hcpartyBaseApi = hcpartyBaseApi
     this.patientBaseApi = patientBaseApi
@@ -874,15 +876,15 @@ export class IccCryptoXApi {
           secretEncryptionKey
             ? this.appendEncryptionKeys(child, ownerId, delegateId, secretEncryptionKey).then(
                 //TODO: extendedDelegationsAndCryptedForeignKeys and appendEncryptionKeys can be done in parallel
-                extendedChildObjectEKs => ({
-                  extendedSPKsAndCFKs: extendedChildObjectSPKsAndCFKs,
-                  extendedEKs: extendedChildObjectEKs
-                })
-              )
-            : Promise.resolve({
+              extendedChildObjectEKs => ({
                 extendedSPKsAndCFKs: extendedChildObjectSPKsAndCFKs,
-                extendedEKs: { encryptionKeys: {} }
+                extendedEKs: extendedChildObjectEKs
               })
+            )
+          : Promise.resolve({
+              extendedSPKsAndCFKs: extendedChildObjectSPKsAndCFKs,
+              extendedEKs: { encryptionKeys: {} }
+            })
       )
       .then(
         ({
@@ -1133,12 +1135,12 @@ export class IccCryptoXApi {
           (hcp as HealthcarePartyDto).parentId
             ? this.extractKeysHierarchyFromDelegationLikes(
                 (hcp as HealthcarePartyDto).parentId!,
-                objectId,
-                delegations
-              ).then(parentResponse =>
-                parentResponse.concat({ extractedKeys: extractedKeys, hcpartyId: hcpartyId })
-              )
-            : [{ extractedKeys: extractedKeys, hcpartyId: hcpartyId }]
+              objectId,
+              delegations
+            ).then(parentResponse =>
+              parentResponse.concat({ extractedKeys: extractedKeys, hcpartyId: hcpartyId })
+            )
+          : [{ extractedKeys: extractedKeys, hcpartyId: hcpartyId }]
       )
     )
   }
@@ -1183,14 +1185,14 @@ export class IccCryptoXApi {
           (hcp as HealthcarePartyDto).parentId
             ? this.extractKeysFromDelegationsForHcpHierarchy(
                 (hcp as HealthcarePartyDto).parentId!,
-                objectId,
-                delegations
-              ).then(parentResponse =>
-                _.assign(parentResponse, {
-                  extractedKeys: parentResponse.extractedKeys.concat(extractedKeys)
-                })
-              )
-            : { extractedKeys: extractedKeys, hcpartyId: hcpartyId }
+              objectId,
+              delegations
+            ).then(parentResponse =>
+              _.assign(parentResponse, {
+                extractedKeys: parentResponse.extractedKeys.concat(extractedKeys)
+              })
+            )
+          : { extractedKeys: extractedKeys, hcpartyId: hcpartyId }
       )
     )
   }
@@ -1334,6 +1336,14 @@ export class IccCryptoXApi {
     )
   }
 
+  // noinspection JSUnusedGlobalSymbols
+  saveKeychainValidityDateInBrowserLocalStorage(id: string, date: number) {
+    localStorage.setItem(
+      this.keychainValidityDateLocalStoreIdPrefix + id,
+      date.toString() || undefined
+    )
+  }
+
   saveKeychainInBrowserLocalStorageAsBase64(id: string, keyChainB64: string) {
     localStorage.setItem(this.keychainLocalStoreIdPrefix + id, keyChainB64)
   }
@@ -1342,9 +1352,16 @@ export class IccCryptoXApi {
     return this.hcpartyBaseApi
       .getHealthcareParty(hcpId)
       .then(hcp => {
-        const crt = this.getKeychainInBrowserLocalStorageAsBase64(hcp.id!!)
         const opts = hcp.options || {}
+
+        const crt = this.getKeychainInBrowserLocalStorageAsBase64(hcp.id!!)
         _.set(opts, this.hcpPreferenceKeyEhealthCert, crt)
+
+        const crtValidityDate = this.getKeychainValidityDateInBrowserLocalStorage(hcp.id!!)
+        if (opts[this.hcpPreferenceKeyEhealthCertDate] !== crtValidityDate) {
+          _.set(opts, this.hcpPreferenceKeyEhealthCertDate, crtValidityDate)
+        }
+
         hcp.options = opts
         return hcp
       })
@@ -1390,6 +1407,10 @@ export class IccCryptoXApi {
 
   getKeychainInBrowserLocalStorageAsBase64(id: string) {
     return localStorage.getItem(this.keychainLocalStoreIdPrefix + id)
+  }
+
+  getKeychainValidityDateInBrowserLocalStorage(id: string): string {
+    return localStorage.getItem(this.keychainValidityDateLocalStoreIdPrefix + id)
   }
 
   // noinspection JSUnusedGlobalSymbols
