@@ -37,4 +37,6 @@ export class PropertyDto {
   type?: models.PropertyTypeDto
 
   typedValue?: models.TypedValueDto
+
+  encryptedSelf?: string
 }
