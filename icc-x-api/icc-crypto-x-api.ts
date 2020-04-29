@@ -121,8 +121,8 @@ export class IccCryptoXApi {
     crypto: Crypto = typeof window !== "undefined"
       ? window.crypto
       : typeof self !== "undefined"
-      ? self.crypto
-      : ({} as Crypto)
+        ? self.crypto
+        : ({} as Crypto)
   ) {
     this.hcpartyBaseApi = hcpartyBaseApi
     this.patientBaseApi = patientBaseApi
@@ -876,15 +876,15 @@ export class IccCryptoXApi {
           secretEncryptionKey
             ? this.appendEncryptionKeys(child, ownerId, delegateId, secretEncryptionKey).then(
                 //TODO: extendedDelegationsAndCryptedForeignKeys and appendEncryptionKeys can be done in parallel
-              extendedChildObjectEKs => ({
+                extendedChildObjectEKs => ({
+                  extendedSPKsAndCFKs: extendedChildObjectSPKsAndCFKs,
+                  extendedEKs: extendedChildObjectEKs
+                })
+              )
+            : Promise.resolve({
                 extendedSPKsAndCFKs: extendedChildObjectSPKsAndCFKs,
-                extendedEKs: extendedChildObjectEKs
+                extendedEKs: { encryptionKeys: {} }
               })
-            )
-          : Promise.resolve({
-              extendedSPKsAndCFKs: extendedChildObjectSPKsAndCFKs,
-              extendedEKs: { encryptionKeys: {} }
-            })
       )
       .then(
         ({
@@ -1135,12 +1135,12 @@ export class IccCryptoXApi {
           (hcp as HealthcarePartyDto).parentId
             ? this.extractKeysHierarchyFromDelegationLikes(
                 (hcp as HealthcarePartyDto).parentId!,
-              objectId,
-              delegations
-            ).then(parentResponse =>
-              parentResponse.concat({ extractedKeys: extractedKeys, hcpartyId: hcpartyId })
-            )
-          : [{ extractedKeys: extractedKeys, hcpartyId: hcpartyId }]
+                objectId,
+                delegations
+              ).then(parentResponse =>
+                parentResponse.concat({ extractedKeys: extractedKeys, hcpartyId: hcpartyId })
+              )
+            : [{ extractedKeys: extractedKeys, hcpartyId: hcpartyId }]
       )
     )
   }
@@ -1185,14 +1185,14 @@ export class IccCryptoXApi {
           (hcp as HealthcarePartyDto).parentId
             ? this.extractKeysFromDelegationsForHcpHierarchy(
                 (hcp as HealthcarePartyDto).parentId!,
-              objectId,
-              delegations
-            ).then(parentResponse =>
-              _.assign(parentResponse, {
-                extractedKeys: parentResponse.extractedKeys.concat(extractedKeys)
-              })
-            )
-          : { extractedKeys: extractedKeys, hcpartyId: hcpartyId }
+                objectId,
+                delegations
+              ).then(parentResponse =>
+                _.assign(parentResponse, {
+                  extractedKeys: parentResponse.extractedKeys.concat(extractedKeys)
+                })
+              )
+            : { extractedKeys: extractedKeys, hcpartyId: hcpartyId }
       )
     )
   }
@@ -1338,10 +1338,7 @@ export class IccCryptoXApi {
 
   // noinspection JSUnusedGlobalSymbols
   saveKeychainValidityDateInBrowserLocalStorage(id: string, date: number) {
-    localStorage.setItem(
-      this.keychainValidityDateLocalStoreIdPrefix + id,
-      date.toString() || undefined
-    )
+    localStorage.setItem(this.keychainValidityDateLocalStoreIdPrefix + id, date.toString())
   }
 
   saveKeychainInBrowserLocalStorageAsBase64(id: string, keyChainB64: string) {
@@ -1409,7 +1406,7 @@ export class IccCryptoXApi {
     return localStorage.getItem(this.keychainLocalStoreIdPrefix + id)
   }
 
-  getKeychainValidityDateInBrowserLocalStorage(id: string): string {
+  getKeychainValidityDateInBrowserLocalStorage(id: string) {
     return localStorage.getItem(this.keychainValidityDateLocalStoreIdPrefix + id)
   }
 
