@@ -32,6 +32,8 @@ export class Property {
 
   typedValue?: models.TypedValue
 
+  encryptedSelf?: string
+
   attachments?: { [key: string]: models.Attachment }
 
   deleted?: number
