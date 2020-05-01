@@ -42,7 +42,8 @@ export class IccAccesslogXApi extends iccAccesslogApi {
         codes: [],
         tags: [],
         user: user.id,
-        accessType: "USER_ACCESS"
+        accessType: "USER_ACCESS",
+        patientId: patient.id
       },
       h || {}
     )
