@@ -9,16 +9,12 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { WebSessionMaxIdleTimeUnits } from "./WebSessionMaxIdleTimeUnits"
 
-export class WebSessionMaxIdleTime {
+export class EmailTemplateDto {
   constructor(json: JSON | any) {
-    Object.assign(this as WebSessionMaxIdleTime, json)
+    Object.assign(this as EmailTemplateDto, json)
   }
 
-  seconds?: number
-  units?: Array<WebSessionMaxIdleTimeUnits>
-  negative?: boolean
-  zero?: boolean
-  nano?: number
+  subject?: string
+  body?: string
 }

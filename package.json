@@ -53,8 +53,8 @@
   "scripts": {
     "genhtml": "java -classpath swagger-codegen-cli.jar io.swagger.codegen.SwaggerCodegen generate -i https://backendb.svc.icure.cloud/rest/v1/swagger.json -l html --additional-properties classPrefix=icc -o ./apidocs",
     "gen": "java -classpath swagger-codegen-cli.jar io.swagger.codegen.SwaggerCodegen generate -i https://backendb.svc.icure.cloud/rest/v1/swagger.json -l typescript --additional-properties classPrefix=icc -o ./icc-api",
-    "genloc": "java -classpath swagger-codegen-cli.jar io.swagger.codegen.SwaggerCodegen generate -i http://127.0.0.1:16043/v2/api-docs -l typescript --additional-properties classPrefix=icc -o ./icc-api",
-    "gendev": "java -classpath swagger-codegen-cli.jar io.swagger.codegen.SwaggerCodegen generate -i https://backend.icure.dev/rest/v1/swagger.json -l typescript --additional-properties classPrefix=icc -o ./icc-api",
+    "genloc": "java -classpath swagger-codegen-cli.jar io.swagger.codegen.SwaggerCodegen generate -i http://127.0.0.1:16043/v3/api-docs -l typescript --additional-properties classPrefix=icc -o ./icc-api",
+    "gendev": "java -classpath swagger-codegen-cli.jar io.swagger.codegen.SwaggerCodegen generate -i https://backend-reactive.icure.dev/v3/api-docs -l typescript --additional-properties classPrefix=icc -o ./icc-api",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "prepare": "rimraf dist && npm run build",

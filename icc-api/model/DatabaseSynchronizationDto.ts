@@ -17,4 +17,5 @@ export class DatabaseSynchronizationDto {
 
   source?: string
   target?: string
+  localTarget?: string
 }

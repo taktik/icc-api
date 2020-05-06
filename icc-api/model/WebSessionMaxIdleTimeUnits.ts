@@ -15,7 +15,7 @@ export class WebSessionMaxIdleTimeUnits {
     Object.assign(this as WebSessionMaxIdleTimeUnits, json)
   }
 
+  durationEstimated?: boolean
   dateBased?: boolean
   timeBased?: boolean
-  durationEstimated?: boolean
 }

@@ -11,6 +11,7 @@
  */
 import { XHR } from "./XHR"
 import { DocIdentifier } from "../model/DocIdentifier"
+import { EmailTemplateDto } from "../model/EmailTemplateDto"
 import { PropertyDto } from "../model/PropertyDto"
 import { Unit } from "../model/Unit"
 import { UserDto } from "../model/UserDto"
@@ -185,6 +186,30 @@ export class iccUserApi {
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   *
+   * @summary Send a forgotten email message to an user
+   * @param body
+   * @param email the email of the user
+   */
+  forgottenPassword(email: string, body?: EmailTemplateDto): Promise<boolean | any> {
+    let _body = null
+    _body = body
+
+    const _url =
+      this.host +
+      `/user/forgottenPassword/${encodeURIComponent(String(email))}` +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => JSON.parse(JSON.stringify(doc.body)))
       .catch(err => this.handleError(err))
   }
 
