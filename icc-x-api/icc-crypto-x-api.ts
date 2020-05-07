@@ -101,7 +101,7 @@ export class IccCryptoXApi {
 
   keychainLocalStoreIdPrefix = "org.taktik.icure.ehealth.keychain."
   keychainValidityDateLocalStoreIdPrefix = "org.taktik.icure.ehealth.keychain-date."
-  hcpPreferenceKeyEhealthCert: string = "eHealthCRT"
+  hcpPreferenceKeyEhealthCert = "eHealthCRT"
   hcpPreferenceKeyEhealthCertDate = "eHealthCRTDate"
 
   private hcpartyBaseApi: iccHcpartyApi
@@ -1337,12 +1337,25 @@ export class IccCryptoXApi {
   }
 
   // noinspection JSUnusedGlobalSymbols
-  saveKeychainValidityDateInBrowserLocalStorage(id: string, date: number) {
-    localStorage.setItem(this.keychainValidityDateLocalStoreIdPrefix + id, date.toString())
+  saveKeychainValidityDateInBrowserLocalStorage(id: string, date: string) {
+    if (!id) return
+
+    if (!date) {
+      localStorage.removeItem(this.keychainValidityDateLocalStoreIdPrefix + id)
+    } else {
+      localStorage.setItem(this.keychainValidityDateLocalStoreIdPrefix + id, date)
+    }
   }
 
+  // noinspection JSUnusedGlobalSymbols
   saveKeychainInBrowserLocalStorageAsBase64(id: string, keyChainB64: string) {
-    localStorage.setItem(this.keychainLocalStoreIdPrefix + id, keyChainB64)
+    if (!id) return
+
+    if (!keyChainB64) {
+      localStorage.removeItem(this.keychainLocalStoreIdPrefix + id)
+    } else {
+      localStorage.setItem(this.keychainLocalStoreIdPrefix + id, keyChainB64)
+    }
   }
 
   saveKeyChainInHCPFromLocalStorage(hcpId: string): Promise<HealthcarePartyDto> {
@@ -1355,7 +1368,7 @@ export class IccCryptoXApi {
         _.set(opts, this.hcpPreferenceKeyEhealthCert, crt)
 
         const crtValidityDate = this.getKeychainValidityDateInBrowserLocalStorage(hcp.id!!)
-        if (opts[this.hcpPreferenceKeyEhealthCertDate] !== crtValidityDate) {
+        if (!!crtValidityDate) {
           _.set(opts, this.hcpPreferenceKeyEhealthCertDate, crtValidityDate)
         }
 
@@ -1370,8 +1383,13 @@ export class IccCryptoXApi {
   importKeychainInBrowserFromHCP(hcpId: string): Promise<void> {
     return this.hcpartyBaseApi.getHealthcareParty(hcpId).then(hcp => {
       const crt = _.get(hcp.options, this.hcpPreferenceKeyEhealthCert)
+      const crtValidityDate = _.get(hcp.options, this.hcpPreferenceKeyEhealthCertDate)
       if (crt) {
         this.saveKeychainInBrowserLocalStorageAsBase64(hcp.id!!, crt)
+      }
+
+      if (crtValidityDate) {
+        this.saveKeychainValidityDateInBrowserLocalStorage(hcp.id!!, crtValidityDate)
       }
     })
   }
