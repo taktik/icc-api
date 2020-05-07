@@ -99,8 +99,10 @@ export class IccCryptoXApi {
     ]).then(([a, b]) => Object.assign({}, a, b))
   }
 
-  keychainLocalStoreIdPrefix: String = "org.taktik.icure.ehealth.keychain."
-  hcpPreferenceKeyEhealthCert: string = "eHealthCRT"
+  keychainLocalStoreIdPrefix = "org.taktik.icure.ehealth.keychain."
+  keychainValidityDateLocalStoreIdPrefix = "org.taktik.icure.ehealth.keychain-date."
+  hcpPreferenceKeyEhealthCert = "eHealthCRT"
+  hcpPreferenceKeyEhealthCertDate = "eHealthCRTDate"
 
   private hcpartyBaseApi: iccHcpartyApi
   private patientBaseApi: iccPatientApi
@@ -1334,17 +1336,42 @@ export class IccCryptoXApi {
     )
   }
 
+  // noinspection JSUnusedGlobalSymbols
+  saveKeychainValidityDateInBrowserLocalStorage(id: string, date: string) {
+    if (!id) return
+
+    if (!date) {
+      localStorage.removeItem(this.keychainValidityDateLocalStoreIdPrefix + id)
+    } else {
+      localStorage.setItem(this.keychainValidityDateLocalStoreIdPrefix + id, date)
+    }
+  }
+
+  // noinspection JSUnusedGlobalSymbols
   saveKeychainInBrowserLocalStorageAsBase64(id: string, keyChainB64: string) {
-    localStorage.setItem(this.keychainLocalStoreIdPrefix + id, keyChainB64)
+    if (!id) return
+
+    if (!keyChainB64) {
+      localStorage.removeItem(this.keychainLocalStoreIdPrefix + id)
+    } else {
+      localStorage.setItem(this.keychainLocalStoreIdPrefix + id, keyChainB64)
+    }
   }
 
   saveKeyChainInHCPFromLocalStorage(hcpId: string): Promise<HealthcarePartyDto> {
     return this.hcpartyBaseApi
       .getHealthcareParty(hcpId)
       .then(hcp => {
-        const crt = this.getKeychainInBrowserLocalStorageAsBase64(hcp.id!!)
         const opts = hcp.options || {}
+
+        const crt = this.getKeychainInBrowserLocalStorageAsBase64(hcp.id!!)
         _.set(opts, this.hcpPreferenceKeyEhealthCert, crt)
+
+        const crtValidityDate = this.getKeychainValidityDateInBrowserLocalStorage(hcp.id!!)
+        if (!!crtValidityDate) {
+          _.set(opts, this.hcpPreferenceKeyEhealthCertDate, crtValidityDate)
+        }
+
         hcp.options = opts
         return hcp
       })
@@ -1356,8 +1383,13 @@ export class IccCryptoXApi {
   importKeychainInBrowserFromHCP(hcpId: string): Promise<void> {
     return this.hcpartyBaseApi.getHealthcareParty(hcpId).then(hcp => {
       const crt = _.get(hcp.options, this.hcpPreferenceKeyEhealthCert)
+      const crtValidityDate = _.get(hcp.options, this.hcpPreferenceKeyEhealthCertDate)
       if (crt) {
         this.saveKeychainInBrowserLocalStorageAsBase64(hcp.id!!, crt)
+      }
+
+      if (crtValidityDate) {
+        this.saveKeychainValidityDateInBrowserLocalStorage(hcp.id!!, crtValidityDate)
       }
     })
   }
@@ -1390,6 +1422,10 @@ export class IccCryptoXApi {
 
   getKeychainInBrowserLocalStorageAsBase64(id: string) {
     return localStorage.getItem(this.keychainLocalStoreIdPrefix + id)
+  }
+
+  getKeychainValidityDateInBrowserLocalStorage(id: string) {
+    return localStorage.getItem(this.keychainValidityDateLocalStoreIdPrefix + id)
   }
 
   // noinspection JSUnusedGlobalSymbols
