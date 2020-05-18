@@ -165,9 +165,9 @@ export class iccMessageApi {
       new Date().getTime() +
       (fromAddress ? "&fromAddress=" + fromAddress : "") +
       (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(startDocumentId) : "") +
       (limit ? "&limit=" + limit : "") +
-      (hcpId ? "&hcpId=" + hcpId : "")
+      (hcpId ? "&hcpId=" + encodeURIComponent(hcpId) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -193,10 +193,10 @@ export class iccMessageApi {
       new Date().getTime() +
       (toAddress ? "&toAddress=" + toAddress : "") +
       (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(startDocumentId) : "") +
       (limit ? "&limit=" + limit : "") +
       (reverse ? "&reverse=" + reverse : "") +
-      (hcpId ? "&hcpId=" + hcpId : "")
+      (hcpId ? "&hcpId=" + encodeURIComponent(hcpId) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -223,9 +223,9 @@ export class iccMessageApi {
       (transportGuid ? "&transportGuid=" + transportGuid : "") +
       (received ? "&received=" + received : "") +
       (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(startDocumentId) : "") +
       (limit ? "&limit=" + limit : "") +
-      (hcpId ? "&hcpId=" + hcpId : "")
+      (hcpId ? "&hcpId=" + encodeURIComponent(hcpId) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
@@ -254,9 +254,9 @@ export class iccMessageApi {
       (from ? "&from=" + from : "") +
       (to ? "&to=" + to : "") +
       (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(startDocumentId) : "") +
       (limit ? "&limit=" + limit : "") +
-      (hcpId ? "&hcpId=" + hcpId : "")
+      (hcpId ? "&hcpId=" + encodeURIComponent(hcpId) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
