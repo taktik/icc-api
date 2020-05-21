@@ -94,7 +94,8 @@ export class IccDoctemplateXApi extends iccDoctemplateApi {
           return enc.decode(arr)
         } else if (
           doc.contentType.startsWith("text/plain") ||
-          doc.contentType.startsWith("text/html")
+          doc.contentType.startsWith("text/html") ||
+          doc.contentType.startsWith("text/xml")
         ) {
           return doc.body
         } else {
