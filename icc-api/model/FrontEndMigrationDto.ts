@@ -51,6 +51,8 @@ export class FrontEndMigrationDto {
   startKeyDocId?: string
 
   processCount?: number
+
+  global?: boolean
 }
 export namespace FrontEndMigrationDto {
   export enum StatusEnum {
