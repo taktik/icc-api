@@ -121,8 +121,8 @@ export class IccCryptoXApi {
     crypto: Crypto = typeof window !== "undefined"
       ? window.crypto
       : typeof self !== "undefined"
-      ? self.crypto
-      : ({} as Crypto)
+        ? self.crypto
+        : ({} as Crypto)
   ) {
     this.hcpartyBaseApi = hcpartyBaseApi
     this.patientBaseApi = patientBaseApi
@@ -155,31 +155,41 @@ export class IccCryptoXApi {
       this._RSA.exportKey(keyPair.privateKey, "pkcs8").then(exportedKey => {
         const privateKey = exportedKey as ArrayBuffer
         const nLen = notaries.length
-        const shares = nLen == 1
+        const shares =
+          nLen == 1
             ? [privateKey]
             : this._shamir
                 .share(this._utils.ua2hex(privateKey), nLen, threshold || nLen)
                 .map(share => this.utils.hex2ua(share))
-        
+
         return _.reduce(
           notaries,
           (queue, notary, idx) => {
             return queue.then(async hcp => {
               const hcParty = hcp.hcPartyKeys![notary.id!]
-                ? hcp : (await this.generateKeyForDelegate(hcp.id!, notary.id!)) as HealthcarePartyDto
+                ? hcp
+                : ((await this.generateKeyForDelegate(hcp.id!, notary.id!)) as HealthcarePartyDto)
 
-              try{
-                const importedAESHcPartyKey = 
-                  await this.decryptHcPartyKey(hcParty.id!, notary.id!, hcParty.hcPartyKeys![notary.id!][1], false)
-                const encryptedShamirPartition = 
-                  await this.AES.encrypt(importedAESHcPartyKey.key, shares[idx])
-                
-                hcParty.privateKeyShamirPartitions = hcParty.privateKeyShamirPartitions || {};
-                hcParty.privateKeyShamirPartitions[notary.id!] = this.utils.ua2hex(encryptedShamirPartition)
-              } catch(e) {
-                console.log('Error during encryptedShamirRSAKey', notary.id, e)
+              try {
+                const importedAESHcPartyKey = await this.decryptHcPartyKey(
+                  hcParty.id!,
+                  notary.id!,
+                  hcParty.hcPartyKeys![notary.id!][1],
+                  false
+                )
+                const encryptedShamirPartition = await this.AES.encrypt(
+                  importedAESHcPartyKey.key,
+                  shares[idx]
+                )
+
+                hcParty.privateKeyShamirPartitions = hcParty.privateKeyShamirPartitions || {}
+                hcParty.privateKeyShamirPartitions[notary.id!] = this.utils.ua2hex(
+                  encryptedShamirPartition
+                )
+              } catch (e) {
+                console.log("Error during encryptedShamirRSAKey", notary.id, e)
               }
-              return hcParty;
+              return hcParty
             })
           },
           Promise.resolve(hcp)
@@ -189,22 +199,75 @@ export class IccCryptoXApi {
   }
 
   // Decript shamir in case of only one notary !
-  async decryptedShamirRSAKey(hcp: HealthcarePartyDto): Promise<void> {    
+  async decryptedShamirRSAKey(
+    hcp: HealthcarePartyDto,
+    notaries: Array<HealthcarePartyDto>
+  ): Promise<void> {
     try {
-      const importedAESHcPartyKey = 
-      await this.decryptHcPartyKey(hcp.id!, hcp.parentId!, hcp.hcPartyKeys![hcp.parentId!][1], false)
-    
-      const cryptedPrivatedKey = hcp.privateKeyShamirPartitions![hcp.parentId!];
-      const decryptedPrivatedKey = 
-        await this.AES.decrypt(importedAESHcPartyKey.key, this.utils.hex2ua(cryptedPrivatedKey))
+      const nLen = notaries.length
+      let decryptedPrivatedKey
+      if (nLen == 1) {
+        const importedAESHcPartyKey = await this.decryptHcPartyKey(
+          hcp.id!,
+          hcp.parentId!,
+          hcp.hcPartyKeys![hcp.parentId!][1],
+          false
+        )
+        const cryptedPrivatedKey = hcp.privateKeyShamirPartitions![hcp.parentId!]
+        decryptedPrivatedKey = this.utils.ua2hex(
+          await this.AES.decrypt(importedAESHcPartyKey.key, this.utils.hex2ua(cryptedPrivatedKey))
+        )
+      } else {
+        const decryptedShares: string[] = await _.reduce(
+          notaries,
+          (queue, notary) => {
+            return queue.then(async (shares: string[]) => {
+              try {
+                const importedAESHcPartyKey = await this.decryptHcPartyKey(
+                  hcp.id!,
+                  notary.id!,
+                  hcp.hcPartyKeys![notary.id!][1],
+                  false
+                )
+                const encryptedShare = hcp.privateKeyShamirPartitions![notary.id!]
+                const decryptedShamirPartition = this.utils.ua2hex(
+                  await this.AES.decrypt(
+                    importedAESHcPartyKey.key,
+                    this.utils.hex2ua(encryptedShare)
+                  )
+                )
+                shares.push(decryptedShamirPartition)
+              } catch (e) {
+                console.log("Error during encryptedShamirRSAKey", notary.id, e)
+              }
+              return shares
+            })
+          },
+          Promise.resolve([] as string[])
+        )
 
-      const importedPrivateKey = await this.RSA.importKey('pkcs8', decryptedPrivatedKey, ['decrypt']);
-      const importedPublicKey = await this.RSA.importKey('spki', this.utils.hex2ua(hcp.publicKey!), ['encrypt']);
-      
-      const exportedKeyPair = await this.RSA.exportKeys({publicKey: importedPublicKey, privateKey: importedPrivateKey}, 'jwk', 'jwk')
-      this.RSA.storeKeyPair(hcp.id!, exportedKeyPair);
-    } catch(e) {
-      console.log('Cannot decrypt shamir RSA key')
+        decryptedPrivatedKey = this._shamir.combine(decryptedShares)
+      }
+
+      const importedPrivateKey = await this.RSA.importKey(
+        "pkcs8",
+        this.utils.hex2ua(decryptedPrivatedKey),
+        ["decrypt"]
+      )
+      const importedPublicKey = await this.RSA.importKey(
+        "spki",
+        this.utils.hex2ua(hcp.publicKey!),
+        ["encrypt"]
+      )
+
+      const exportedKeyPair = await this.RSA.exportKeys(
+        { publicKey: importedPublicKey, privateKey: importedPrivateKey },
+        "jwk",
+        "jwk"
+      )
+      this.RSA.storeKeyPair(hcp.id!, exportedKeyPair)
+    } catch (e) {
+      console.log("Cannot decrypt shamir RSA key")
     }
   }
 
@@ -382,10 +445,11 @@ export class IccCryptoXApi {
         delegatorIds[delegationItem.owner!] = true //TODO: why is set to true?
       })
     } else if (fallbackOnParent) {
-      return this.getHcpOrPatient(healthcarePartyId).then(hcp =>
-        (hcp as any).parentId
-          ? this.decryptAndImportAesHcPartyKeysInDelegations((hcp as any).parentId, delegations)
-          : Promise.resolve([])
+      return this.getHcpOrPatient(healthcarePartyId).then(
+        hcp =>
+          (hcp as any).parentId
+            ? this.decryptAndImportAesHcPartyKeysInDelegations((hcp as any).parentId, delegations)
+            : Promise.resolve([])
       )
     }
 
@@ -555,7 +619,9 @@ export class IccCryptoXApi {
                   .decrypt(importedAESHcPartyKey.key, this._utils.hex2ua(d.key))
                   .catch(() => {
                     console.log(
-                      `Cannot decrypt delegation from ${d.owner} to ${d.delegatedTo} for object with id ${modifiedObject.id}:`,
+                      `Cannot decrypt delegation from ${d.owner} to ${
+                        d.delegatedTo
+                      } for object with id ${modifiedObject.id}:`,
                       modifiedObject
                     )
                     return null
@@ -571,7 +637,9 @@ export class IccCryptoXApi {
                   .decrypt(importedAESHcPartyKey.key, this._utils.hex2ua(d.key))
                   .catch(() => {
                     console.log(
-                      `Cannot decrypt cryptedForeignKeys from ${d.owner} to ${d.delegatedTo} for object with id ${modifiedObject.id}:`,
+                      `Cannot decrypt cryptedForeignKeys from ${d.owner} to ${
+                        d.delegatedTo
+                      } for object with id ${modifiedObject.id}:`,
                       modifiedObject
                     )
                     return null
@@ -775,7 +843,9 @@ export class IccCryptoXApi {
                 d.owner === ownerId &&
                 this._AES.decrypt(decryptedHcPartyKey.key, this._utils.hex2ua(d.key)).catch(() => {
                   console.log(
-                    `Cannot decrypt encryption key from ${d.owner} to ${d.delegatedTo} for object with id ${modifiedObject.id}:`,
+                    `Cannot decrypt encryption key from ${d.owner} to ${
+                      d.delegatedTo
+                    } for object with id ${modifiedObject.id}:`,
                     modifiedObject
                   )
                   return null
@@ -903,19 +973,20 @@ export class IccCryptoXApi {
         )
       : Promise.resolve({ delegations: {}, cryptedForeignKeys: {} })
     )
-      .then(extendedChildObjectSPKsAndCFKs =>
-        secretEncryptionKey
-          ? this.appendEncryptionKeys(child, ownerId, delegateId, secretEncryptionKey).then(
-              //TODO: extendedDelegationsAndCryptedForeignKeys and appendEncryptionKeys can be done in parallel
-              extendedChildObjectEKs => ({
+      .then(
+        extendedChildObjectSPKsAndCFKs =>
+          secretEncryptionKey
+            ? this.appendEncryptionKeys(child, ownerId, delegateId, secretEncryptionKey).then(
+                //TODO: extendedDelegationsAndCryptedForeignKeys and appendEncryptionKeys can be done in parallel
+                extendedChildObjectEKs => ({
+                  extendedSPKsAndCFKs: extendedChildObjectSPKsAndCFKs,
+                  extendedEKs: extendedChildObjectEKs
+                })
+              )
+            : Promise.resolve({
                 extendedSPKsAndCFKs: extendedChildObjectSPKsAndCFKs,
-                extendedEKs: extendedChildObjectEKs
+                extendedEKs: { encryptionKeys: {} }
               })
-            )
-          : Promise.resolve({
-              extendedSPKsAndCFKs: extendedChildObjectSPKsAndCFKs,
-              extendedEKs: { encryptionKeys: {} }
-            })
       )
       .then(
         ({
@@ -1161,16 +1232,17 @@ export class IccCryptoXApi {
             }
           )
         : Promise.resolve([])
-      ).then(extractedKeys =>
-        (hcp as HealthcarePartyDto).parentId
-          ? this.extractKeysHierarchyFromDelegationLikes(
-              (hcp as HealthcarePartyDto).parentId!,
-              objectId,
-              delegations
-            ).then(parentResponse =>
-              parentResponse.concat({ extractedKeys: extractedKeys, hcpartyId: hcpartyId })
-            )
-          : [{ extractedKeys: extractedKeys, hcpartyId: hcpartyId }]
+      ).then(
+        extractedKeys =>
+          (hcp as HealthcarePartyDto).parentId
+            ? this.extractKeysHierarchyFromDelegationLikes(
+                (hcp as HealthcarePartyDto).parentId!,
+                objectId,
+                delegations
+              ).then(parentResponse =>
+                parentResponse.concat({ extractedKeys: extractedKeys, hcpartyId: hcpartyId })
+              )
+            : [{ extractedKeys: extractedKeys, hcpartyId: hcpartyId }]
       )
     )
   }
@@ -1210,18 +1282,19 @@ export class IccCryptoXApi {
             }
           )
         : Promise.resolve([])
-      ).then(extractedKeys =>
-        (hcp as HealthcarePartyDto).parentId
-          ? this.extractKeysFromDelegationsForHcpHierarchy(
-              (hcp as HealthcarePartyDto).parentId!,
-              objectId,
-              delegations
-            ).then(parentResponse =>
-              _.assign(parentResponse, {
-                extractedKeys: parentResponse.extractedKeys.concat(extractedKeys)
-              })
-            )
-          : { extractedKeys: extractedKeys, hcpartyId: hcpartyId }
+      ).then(
+        extractedKeys =>
+          (hcp as HealthcarePartyDto).parentId
+            ? this.extractKeysFromDelegationsForHcpHierarchy(
+                (hcp as HealthcarePartyDto).parentId!,
+                objectId,
+                delegations
+              ).then(parentResponse =>
+                _.assign(parentResponse, {
+                  extractedKeys: parentResponse.extractedKeys.concat(extractedKeys)
+                })
+              )
+            : { extractedKeys: extractedKeys, hcpartyId: hcpartyId }
       )
     )
   }
@@ -1282,7 +1355,9 @@ export class IccCryptoXApi {
           })
           .catch(err => {
             console.log(
-              `Could not decrypt generic delegation in object with ID: ${masterId} from ${genericDelegationItem.owner} to ${genericDelegationItem.delegatedTo}: ${err}`
+              `Could not decrypt generic delegation in object with ID: ${masterId} from ${
+                genericDelegationItem.owner
+              } to ${genericDelegationItem.delegatedTo}: ${err}`
             )
             return undefined
           })
