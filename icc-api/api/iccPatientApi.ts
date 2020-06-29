@@ -14,7 +14,7 @@ import { ContentDto } from "../model/ContentDto"
 import { DelegationDto } from "../model/DelegationDto"
 import { DocIdentifier } from "../model/DocIdentifier"
 import { FilterChainPatient } from "../model/FilterChainPatient"
-import { FilterDtoObject } from "../model/FilterDtoObject"
+import { FilterDtoPatient } from "../model/FilterDtoPatient"
 import { IdWithRevDto } from "../model/IdWithRevDto"
 import { ListOfIdsDto } from "../model/ListOfIdsDto"
 import { PaginatedListPatientDto } from "../model/PaginatedListPatientDto"
@@ -598,7 +598,7 @@ export class iccPatientApi {
    * @summary Get ids of patients matching the provided filter for the current user (HcParty)
    * @param body
    */
-  matchPatientsBy(body?: FilterDtoObject): Promise<Array<string> | any> {
+  matchPatientsBy(body?: FilterDtoPatient): Promise<Array<string> | any> {
     let _body = null
     _body = body
 

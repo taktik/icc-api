@@ -16,11 +16,11 @@ export class WebSession {
     Object.assign(this as WebSession, json)
   }
 
-  expired?: boolean
   maxIdleTime?: WebSessionMaxIdleTime
+  started?: boolean
   id?: string
   attributes?: { [key: string]: any }
+  expired?: boolean
   lastAccessTime?: number
   creationTime?: number
-  started?: boolean
 }

@@ -11,6 +11,7 @@
  */
 import { MeasureDto } from "./MeasureDto"
 import { MedicationDto } from "./MedicationDto"
+import { ServiceDto } from "./ServiceDto"
 
 export class ContentDto {
   constructor(json: JSON | any) {
@@ -26,4 +27,5 @@ export class ContentDto {
   documentId?: string
   measureValue?: MeasureDto
   medicationValue?: MedicationDto
+  compoundValue?: Array<ServiceDto>
 }
