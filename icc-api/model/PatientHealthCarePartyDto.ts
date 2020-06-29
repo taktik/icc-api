@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { ReferralPeriod } from "./ReferralPeriod"
+import { ReferralPeriodDto } from "./ReferralPeriodDto"
 
 export class PatientHealthCarePartyDto {
   constructor(json: JSON | any) {
@@ -20,7 +20,8 @@ export class PatientHealthCarePartyDto {
   referral?: boolean
   healthcarePartyId?: string
   sendFormats?: { [key: string]: string }
-  referralPeriods?: Array<ReferralPeriod>
+  referralPeriods?: Array<ReferralPeriodDto>
+  encryptedSelf?: string
 }
 export namespace PatientHealthCarePartyDto {
   export type TypeEnum =

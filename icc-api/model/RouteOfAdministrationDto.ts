@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Code } from "./Code"
+import { CodeStubDto } from "./CodeStubDto"
 import { SamTextDto } from "./SamTextDto"
 
 export class RouteOfAdministrationDto {
@@ -18,5 +18,5 @@ export class RouteOfAdministrationDto {
   }
 
   name?: SamTextDto
-  standardRoutes?: Array<Code>
+  standardRoutes?: Array<CodeStubDto>
 }

@@ -13,14 +13,13 @@ import { XHR } from "./XHR"
 import { ContentDto } from "../model/ContentDto"
 import { DelegationDto } from "../model/DelegationDto"
 import { DocIdentifier } from "../model/DocIdentifier"
-import { FilterChain } from "../model/FilterChain"
+import { FilterChainPatient } from "../model/FilterChainPatient"
 import { FilterDtoObject } from "../model/FilterDtoObject"
 import { IdWithRevDto } from "../model/IdWithRevDto"
 import { ListOfIdsDto } from "../model/ListOfIdsDto"
 import { PaginatedListPatientDto } from "../model/PaginatedListPatientDto"
 import { PaginatedListString } from "../model/PaginatedListString"
 import { PatientDto } from "../model/PatientDto"
-import { PatientPaginatedList } from "../model/PatientPaginatedList"
 
 export class iccPatientApi {
   host: string
@@ -140,7 +139,7 @@ export class iccPatientApi {
     skip?: number,
     sort?: string,
     desc?: boolean,
-    body?: FilterChain
+    body?: FilterChainPatient
   ): Promise<PaginatedListPatientDto | any> {
     let _body = null
     _body = body
@@ -182,7 +181,7 @@ export class iccPatientApi {
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<PatientPaginatedList | any> {
+  ): Promise<PaginatedListPatientDto | any> {
     let _body = null
 
     const _url =
@@ -197,7 +196,7 @@ export class iccPatientApi {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PatientPaginatedList(doc.body as JSON))
+      .then(doc => new PaginatedListPatientDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 
@@ -237,7 +236,7 @@ export class iccPatientApi {
     startDocumentId?: string,
     limit?: number,
     sortDirection?: string
-  ): Promise<PatientPaginatedList | any> {
+  ): Promise<PaginatedListPatientDto | any> {
     let _body = null
 
     const _url =
@@ -255,7 +254,7 @@ export class iccPatientApi {
       (sortDirection ? "&sortDirection=" + encodeURIComponent(String(sortDirection)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PatientPaginatedList(doc.body as JSON))
+      .then(doc => new PaginatedListPatientDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 
@@ -437,7 +436,7 @@ export class iccPatientApi {
     startKey?: number,
     startDocumentId?: string,
     limit?: number
-  ): Promise<PatientPaginatedList | any> {
+  ): Promise<PaginatedListPatientDto | any> {
     let _body = null
 
     const _url =
@@ -450,7 +449,7 @@ export class iccPatientApi {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PatientPaginatedList(doc.body as JSON))
+      .then(doc => new PaginatedListPatientDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 
@@ -471,7 +470,7 @@ export class iccPatientApi {
     startDocumentId?: string,
     limit?: number,
     sortDirection?: string
-  ): Promise<PatientPaginatedList | any> {
+  ): Promise<PaginatedListPatientDto | any> {
     let _body = null
 
     const _url =
@@ -487,7 +486,7 @@ export class iccPatientApi {
       (sortDirection ? "&sortDirection=" + encodeURIComponent(String(sortDirection)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PatientPaginatedList(doc.body as JSON))
+      .then(doc => new PaginatedListPatientDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 
@@ -508,7 +507,7 @@ export class iccPatientApi {
     startDocumentId?: string,
     limit?: number,
     sortDirection?: string
-  ): Promise<PatientPaginatedList | any> {
+  ): Promise<PaginatedListPatientDto | any> {
     let _body = null
 
     const _url =
@@ -523,7 +522,7 @@ export class iccPatientApi {
       (sortDirection ? "&sortDirection=" + encodeURIComponent(String(sortDirection)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PatientPaginatedList(doc.body as JSON))
+      .then(doc => new PaginatedListPatientDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 
@@ -575,7 +574,7 @@ export class iccPatientApi {
     startDocumentId?: string,
     limit?: number,
     sortDirection?: string
-  ): Promise<PatientPaginatedList | any> {
+  ): Promise<PaginatedListPatientDto | any> {
     let _body = null
 
     const _url =
@@ -590,7 +589,7 @@ export class iccPatientApi {
       (sortDirection ? "&sortDirection=" + encodeURIComponent(String(sortDirection)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PatientPaginatedList(doc.body as JSON))
+      .then(doc => new PaginatedListPatientDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 

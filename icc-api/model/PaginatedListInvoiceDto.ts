@@ -10,15 +10,15 @@
  * Do not edit the class manually.
  */
 import { InvoiceDto } from "./InvoiceDto"
-import { PaginatedDocumentKeyIdPair } from "./PaginatedDocumentKeyIdPair"
+import { PaginatedDocumentKeyIdPairObject } from "./PaginatedDocumentKeyIdPairObject"
 
 export class PaginatedListInvoiceDto {
   constructor(json: JSON | any) {
     Object.assign(this as PaginatedListInvoiceDto, json)
   }
 
-  totalSize?: number
   pageSize?: number
-  nextKeyPair?: PaginatedDocumentKeyIdPair
+  totalSize?: number
   rows?: Array<InvoiceDto>
+  nextKeyPair?: PaginatedDocumentKeyIdPairObject
 }

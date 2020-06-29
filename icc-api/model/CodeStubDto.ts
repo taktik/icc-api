@@ -10,11 +10,14 @@
  * Do not edit the class manually.
  */
 
-export class PaginatedDocumentKeyIdPair {
+export class CodeStubDto {
   constructor(json: JSON | any) {
-    Object.assign(this as PaginatedDocumentKeyIdPair, json)
+    Object.assign(this as CodeStubDto, json)
   }
 
-  startKey?: any
-  startKeyDocId?: string
+  id?: string
+  type?: string
+  code?: string
+  version?: string
+  label?: { [key: string]: string }
 }

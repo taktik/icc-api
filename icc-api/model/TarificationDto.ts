@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { LetterValue } from "./LetterValue"
-import { Periodicity } from "./Periodicity"
+import { LetterValueDto } from "./LetterValueDto"
+import { PeriodicityDto } from "./PeriodicityDto"
 import { ValorisationDto } from "./ValorisationDto"
 
 export class TarificationDto {
@@ -21,21 +21,20 @@ export class TarificationDto {
   id?: string
   rev?: string
   deletionDate?: number
-  parent?: string
+  label?: { [key: string]: string }
+  type?: string
+  code?: string
+  version?: string
   author?: string
   regions?: Array<string>
-  type?: string
-  version?: string
-  code?: string
+  periodicity?: Array<PeriodicityDto>
   level?: number
-  label?: { [key: string]: string }
-  searchTerms?: { [key: string]: Array<string> }
   links?: Array<string>
   qualifiedLinks?: { [key: string]: Array<string> }
   flags?: Array<TarificationDto.FlagsEnum>
+  searchTerms?: { [key: string]: Array<string> }
   data?: string
   appendices?: { [key: string]: string }
-  periodicity?: Array<Periodicity>
   disabled?: boolean
   valorisations?: Array<ValorisationDto>
   category?: { [key: string]: string }
@@ -43,8 +42,9 @@ export class TarificationDto {
   hasRelatedCode?: boolean
   needsPrescriber?: boolean
   relatedCodes?: Array<string>
-  getnGroup?: string
-  letterValues?: Array<LetterValue>
+  nGroup?: string
+  letterValues?: Array<LetterValueDto>
+  ngroup?: string
 }
 export namespace TarificationDto {
   export type FlagsEnum =

@@ -10,11 +10,10 @@
  * Do not edit the class manually.
  */
 
-export class FormGroupDto {
+export class FilterDtoHealthElement {
   constructor(json: JSON | any) {
-    Object.assign(this as FormGroupDto, json)
+    Object.assign(this as FilterDtoHealthElement, json)
   }
 
-  guid?: string
-  name?: string
+  desc?: string
 }

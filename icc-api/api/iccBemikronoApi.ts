@@ -16,7 +16,7 @@ import { EmailOrSmsMessageDto } from "../model/EmailOrSmsMessageDto"
 import { MikronoAppointmentTypeRestDto } from "../model/MikronoAppointmentTypeRestDto"
 import { MikronoCredentialsDto } from "../model/MikronoCredentialsDto"
 import { Unit } from "../model/Unit"
-import { User } from "../model/User"
+import { UserDto } from "../model/UserDto"
 
 export class iccBemikronoApi {
   host: string
@@ -155,7 +155,7 @@ export class iccBemikronoApi {
    * @param body
    * @param userId
    */
-  register(userId: string, body?: MikronoCredentialsDto): Promise<User | any> {
+  register(userId: string, body?: MikronoCredentialsDto): Promise<UserDto | any> {
     let _body = null
     _body = body
 
@@ -169,7 +169,7 @@ export class iccBemikronoApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new User(doc.body as JSON))
+      .then(doc => new UserDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 
@@ -198,7 +198,7 @@ export class iccBemikronoApi {
    * @param body
    * @param userId
    */
-  setUserCredentials(userId: string, body?: MikronoCredentialsDto): Promise<User | any> {
+  setUserCredentials(userId: string, body?: MikronoCredentialsDto): Promise<UserDto | any> {
     let _body = null
     _body = body
 
@@ -212,7 +212,7 @@ export class iccBemikronoApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new User(doc.body as JSON))
+      .then(doc => new UserDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 }

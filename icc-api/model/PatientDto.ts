@@ -10,8 +10,7 @@
  * Do not edit the class manually.
  */
 import { AddressDto } from "./AddressDto"
-import { CodeDto } from "./CodeDto"
-import { CodeStub } from "./CodeStub"
+import { CodeStubDto } from "./CodeStubDto"
 import { DelegationDto } from "./DelegationDto"
 import { EmploymentInfoDto } from "./EmploymentInfoDto"
 import { FinancialInstitutionInformationDto } from "./FinancialInstitutionInformationDto"
@@ -19,7 +18,7 @@ import { InsurabilityDto } from "./InsurabilityDto"
 import { MedicalHouseContractDto } from "./MedicalHouseContractDto"
 import { PartnershipDto } from "./PartnershipDto"
 import { PatientHealthCarePartyDto } from "./PatientHealthCarePartyDto"
-import { Property } from "./Property"
+import { PropertyStubDto } from "./PropertyStubDto"
 import { SchoolingInfoDto } from "./SchoolingInfoDto"
 
 export class PatientDto {
@@ -29,36 +28,34 @@ export class PatientDto {
 
   id?: string
   rev?: string
-  deletionDate?: number
   created?: number
   modified?: number
-  endOfLife?: number
   author?: string
   responsible?: string
   medicalLocationId?: string
-  encryptedSelf?: string
-  codes?: Array<CodeDto>
-  tags?: Array<CodeDto>
-  secretForeignKeys?: Array<string>
-  cryptedForeignKeys?: { [key: string]: Array<DelegationDto> }
-  delegations?: { [key: string]: Array<DelegationDto> }
-  encryptionKeys?: { [key: string]: Array<DelegationDto> }
+  tags?: Array<CodeStubDto>
+  codes?: Array<CodeStubDto>
+  endOfLife?: number
+  deletionDate?: number
+  firstName?: string
+  lastName?: string
+  companyName?: string
+  languages?: Array<string>
+  addresses?: Array<AddressDto>
+  civility?: string
+  gender?: PatientDto.GenderEnum
   mergeToPatientId?: string
   mergedIds?: Array<string>
   nonDuplicateIds?: Array<string>
-  firstName?: string
-  lastName?: string
+  encryptedAdministrativesDocuments?: Array<string>
   alias?: string
   active?: boolean
   deactivationReason?: PatientDto.DeactivationReasonEnum
-  chronicalDisease?: string
   ssin?: string
-  civility?: string
-  gender?: string
   maidenName?: string
   spouseName?: string
   partnerName?: string
-  personalStatus?: string
+  personalStatus?: PatientDto.PersonalStatusEnum
   dateOfBirth?: number
   dateOfDeath?: number
   placeOfBirth?: string
@@ -67,35 +64,47 @@ export class PatientDto {
   profession?: string
   note?: string
   administrativeNote?: string
+  comment?: string
   warning?: string
   nationality?: string
   preferredUserId?: string
-  comment?: string
-  encryptedAdministrativesDocuments?: Array<string>
-  picture?: string
-  userId?: string
+  picture?: Array<string>
   externalId?: string
-  hcPartyKeys?: { [key: string]: Array<string> }
-  publicKey?: string
-  addresses?: Array<AddressDto>
   insurabilities?: Array<InsurabilityDto>
-  languages?: Array<string>
   partnerships?: Array<PartnershipDto>
   patientHealthCareParties?: Array<PatientHealthCarePartyDto>
-  medicalHouseContracts?: Array<MedicalHouseContractDto>
   financialInstitutionInformation?: Array<FinancialInstitutionInformationDto>
+  medicalHouseContracts?: Array<MedicalHouseContractDto>
   parameters?: { [key: string]: Array<string> }
-  patientProfessions?: Array<CodeDto>
-  fatherBirthCountry?: CodeStub
-  birthCountry?: CodeStub
-  nativeCountry?: CodeStub
-  socialStatus?: CodeStub
-  mainSourceOfIncome?: CodeStub
+  patientProfessions?: Array<CodeStubDto>
+  fatherBirthCountry?: CodeStubDto
+  birthCountry?: CodeStubDto
+  nativeCountry?: CodeStubDto
+  socialStatus?: CodeStubDto
+  mainSourceOfIncome?: CodeStubDto
   schoolingInfos?: Array<SchoolingInfoDto>
   employementInfos?: Array<EmploymentInfoDto>
-  properties?: Array<Property>
+  properties?: Array<PropertyStubDto>
+  hcPartyKeys?: { [key: string]: Array<string> }
+  privateKeyShamirPartitions?: { [key: string]: string }
+  publicKey?: string
+  secretForeignKeys?: Array<string>
+  cryptedForeignKeys?: { [key: string]: Array<DelegationDto> }
+  delegations?: { [key: string]: Array<DelegationDto> }
+  encryptionKeys?: { [key: string]: Array<DelegationDto> }
+  encryptedSelf?: string
 }
 export namespace PatientDto {
+  export type GenderEnum = "M" | "F" | "I" | "C" | "Y" | "X" | "U"
+  export const GenderEnum = {
+    M: "M" as GenderEnum,
+    F: "F" as GenderEnum,
+    I: "I" as GenderEnum,
+    C: "C" as GenderEnum,
+    Y: "Y" as GenderEnum,
+    X: "X" as GenderEnum,
+    U: "U" as GenderEnum
+  }
   export type DeactivationReasonEnum =
     | "deceased"
     | "moved"
@@ -112,5 +121,32 @@ export namespace PatientDto {
     NoContact: "no_contact" as DeactivationReasonEnum,
     Unknown: "unknown" as DeactivationReasonEnum,
     None: "none" as DeactivationReasonEnum
+  }
+  export type PersonalStatusEnum =
+    | "single"
+    | "in_couple"
+    | "married"
+    | "separated"
+    | "divorced"
+    | "divorcing"
+    | "widowed"
+    | "widower"
+    | "complicated"
+    | "unknown"
+    | "contract"
+    | "other"
+  export const PersonalStatusEnum = {
+    Single: "single" as PersonalStatusEnum,
+    InCouple: "in_couple" as PersonalStatusEnum,
+    Married: "married" as PersonalStatusEnum,
+    Separated: "separated" as PersonalStatusEnum,
+    Divorced: "divorced" as PersonalStatusEnum,
+    Divorcing: "divorcing" as PersonalStatusEnum,
+    Widowed: "widowed" as PersonalStatusEnum,
+    Widower: "widower" as PersonalStatusEnum,
+    Complicated: "complicated" as PersonalStatusEnum,
+    Unknown: "unknown" as PersonalStatusEnum,
+    Contract: "contract" as PersonalStatusEnum,
+    Other: "other" as PersonalStatusEnum
   }
 }

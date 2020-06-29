@@ -14,6 +14,4 @@ export class Predicate {
   constructor(json: JSON | any) {
     Object.assign(this as Predicate, json)
   }
-
-  desc?: string
 }

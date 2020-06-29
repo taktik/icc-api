@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Periodicity } from "./Periodicity"
+import { PeriodicityDto } from "./PeriodicityDto"
 
 export class CodeDto {
   constructor(json: JSON | any) {
@@ -19,21 +19,20 @@ export class CodeDto {
   id?: string
   rev?: string
   deletionDate?: number
-  parent?: string
+  type?: string
+  code?: string
+  version?: string
+  label?: { [key: string]: string }
   author?: string
   regions?: Array<string>
-  type?: string
-  version?: string
-  code?: string
+  periodicity?: Array<PeriodicityDto>
   level?: number
-  label?: { [key: string]: string }
-  searchTerms?: { [key: string]: Array<string> }
   links?: Array<string>
   qualifiedLinks?: { [key: string]: Array<string> }
   flags?: Array<CodeDto.FlagsEnum>
+  searchTerms?: { [key: string]: Array<string> }
   data?: string
   appendices?: { [key: string]: string }
-  periodicity?: Array<Periodicity>
   disabled?: boolean
 }
 export namespace CodeDto {

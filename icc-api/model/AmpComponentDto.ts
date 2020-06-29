@@ -28,13 +28,12 @@ export class AmpComponentDto {
   scored?: string
   crushable?: AmpComponentDto.CrushableEnum
   containsAlcohol?: AmpComponentDto.ContainsAlcoholEnum
-  isSugarFree?: boolean
+  sugarFree?: boolean
   modifiedReleaseType?: number
   specificDrugDevice?: number
   dimensions?: string
   name?: SamTextDto
   note?: SamTextDto
-  sugarFree?: boolean
 }
 export namespace AmpComponentDto {
   export type CrushableEnum = "Y" | "N" | "X"

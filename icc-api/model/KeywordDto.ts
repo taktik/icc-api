@@ -9,6 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { CodeStubDto } from "./CodeStubDto"
 import { KeywordSubwordDto } from "./KeywordSubwordDto"
 
 export class KeywordDto {
@@ -18,6 +19,14 @@ export class KeywordDto {
 
   id?: string
   rev?: string
+  created?: number
+  modified?: number
+  author?: string
+  responsible?: string
+  medicalLocationId?: string
+  tags?: Array<CodeStubDto>
+  codes?: Array<CodeStubDto>
+  endOfLife?: number
   deletionDate?: number
   value?: string
   subWords?: Array<KeywordSubwordDto>

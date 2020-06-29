@@ -15,7 +15,6 @@ import { HealthcarePartyDto } from "../model/HealthcarePartyDto"
 import { ListOfIdsDto } from "../model/ListOfIdsDto"
 import { PaginatedListHealthcarePartyDto } from "../model/PaginatedListHealthcarePartyDto"
 import { PublicKeyDto } from "../model/PublicKeyDto"
-import { SignUpDto } from "../model/SignUpDto"
 
 export class iccHcpartyApi {
   host: string
@@ -78,25 +77,6 @@ export class iccHcpartyApi {
       `/hcparty/inGroup/${encodeURIComponent(String(groupId))}` +
       "?ts=" +
       new Date().getTime()
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new HealthcarePartyDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
-  }
-
-  /**
-   * Email, Last name, First name and Nihii are required
-   * @summary Create a healthcare party sign up procedure
-   * @param body
-   */
-  createHealthcarePartySignUp(body?: SignUpDto): Promise<HealthcarePartyDto | any> {
-    let _body = null
-    _body = body
-
-    const _url = this.host + `/hcparty/signup` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")

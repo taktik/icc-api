@@ -8,18 +8,18 @@ import * as moment from "moment"
 
 import {
   EntityReference,
-  FilterChain,
-  FilterDto,
+  FilterChainPatient,
+  FilterDtoPatient,
   HealthcarePartyDto,
   InsuranceDto,
   InvoiceDto,
   ListOfIdsDto,
   MessageDto,
+  PaginatedListPatientDto,
   PatientDto,
   PatientHealthCarePartyDto,
-  PatientPaginatedList,
   ReceiptDto,
-  ReferralPeriod,
+  ReferralPeriodDto,
   UserDto
 } from "../icc-api/model/models"
 
@@ -57,6 +57,7 @@ import { IccPatientXApi } from "./icc-patient-x-api"
 import { HcpartyType } from "fhc-api"
 import { IDHCPARTY } from "fhc-api"
 import { GenAsyncResponse } from "fhc-api"
+import { FilterDto } from "../dist/icc-api/model/FilterDto"
 
 interface StructError {
   itemId: string | null
@@ -413,15 +414,15 @@ export class IccMessageXApi extends iccMessageApi {
               0,
               undefined,
               false,
-              new FilterChain({
-                filter: new FilterDto({
+              new FilterChainPatient({
+                filter: new FilterDtoPatient({
                   $type: "PatientByHcPartyAndSsinsFilter",
                   healthcarePartyId: user.healthcarePartyId,
                   ssins: ssins
                 })
               })
             )
-            .then((pats: PatientPaginatedList) =>
+            .then((pats: PaginatedListPatientDto) =>
               this.patientApi.bulkUpdatePatients(
                 (pats.rows || []).map(p => {
                   const actions = _.sortBy(patsDmgs[p.ssin!!], a =>
@@ -448,7 +449,7 @@ export class IccMessageXApi extends iccMessageApi {
 
                   const rp =
                     (phcp.referralPeriods && phcp.referralPeriods.find(per => !per.endDate)) ||
-                    (phcp.referralPeriods[phcp.referralPeriods.length] = new ReferralPeriod({}))
+                    (phcp.referralPeriods[phcp.referralPeriods.length] = new ReferralPeriodDto({}))
 
                   const actionDate = Number(
                     moment(latestAction.date, "DD/MM/YYYY").format("YYYYMMDD")
@@ -461,7 +462,7 @@ export class IccMessageXApi extends iccMessageApi {
                     } else {
                       if (actionDate > (rp.startDate || 0)) {
                         rp.endDate = actionDate
-                        phcp.referralPeriods.push(new ReferralPeriod({ startDate: actionDate }))
+                        phcp.referralPeriods.push(new ReferralPeriodDto({ startDate: actionDate }))
                       }
                     }
                   }

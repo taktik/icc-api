@@ -23,8 +23,8 @@ export class DiaryNoteExportInfoDto {
   softwareVersion?: string
   tags?: Array<string>
   contexts?: Array<string>
+  psy?: boolean
   documentId?: string
   attachmentId?: string
   note?: string
-  psy?: boolean
 }

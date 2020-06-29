@@ -15,23 +15,23 @@ export class InvoicingCodeDto {
     Object.assign(this as InvoicingCodeDto, json)
   }
 
-  dateCode?: number
   id?: string
+  dateCode?: number
   logicalId?: string
+  label?: string
+  userId?: string
   contactId?: string
   serviceId?: string
   tarificationId?: string
-  label?: string
+  code?: string
   paymentType?: InvoicingCodeDto.PaymentTypeEnum
   paid?: number
   totalAmount?: number
   reimbursement?: number
   patientIntervention?: number
-  conventionAmount?: number
   doctorSupplement?: number
+  conventionAmount?: number
   vat?: number
-  transplantationCode?: number
-  code?: string
   error?: string
   contract?: string
   contractDate?: number
@@ -42,11 +42,19 @@ export class InvoicingCodeDto {
   eidReadingValue?: string
   override3rdPayerCode?: number
   override3rdPayerReason?: string
+  transplantationCode?: number
   prescriberNorm?: number
   percentNorm?: number
-  derogationMaxNumber?: number
   prescriberNihii?: string
   relatedCode?: string
+  prescriptionDate?: number
+  derogationMaxNumber?: number
+  prescriberSsin?: string
+  prescriberLastName?: string
+  prescriberFirstName?: string
+  prescriberCdHcParty?: string
+  locationNihii?: string
+  locationCdHcParty?: string
   canceled?: boolean
   accepted?: boolean
   pending?: boolean
@@ -55,32 +63,27 @@ export class InvoicingCodeDto {
   lost?: boolean
   insuranceJustification?: number
   cancelPatientInterventionReason?: number
-  prescriberSsin?: string
-  prescriberLastName?: string
-  prescriberFirstName?: string
-  prescriberCdHcParty?: string
-  locationNihii?: string
-  locationCdHcParty?: string
-  locationService?: number
-  prescriptionDate?: number
   status?: number
+  encryptedSelf?: string
 }
 export namespace InvoicingCodeDto {
   export type PaymentTypeEnum =
-    | "wired"
     | "cash"
+    | "wired"
     | "insurance"
     | "creditcard"
     | "debitcard"
     | "paypal"
     | "bitcoin"
+    | "other"
   export const PaymentTypeEnum = {
-    Wired: "wired" as PaymentTypeEnum,
     Cash: "cash" as PaymentTypeEnum,
+    Wired: "wired" as PaymentTypeEnum,
     Insurance: "insurance" as PaymentTypeEnum,
     Creditcard: "creditcard" as PaymentTypeEnum,
     Debitcard: "debitcard" as PaymentTypeEnum,
     Paypal: "paypal" as PaymentTypeEnum,
-    Bitcoin: "bitcoin" as PaymentTypeEnum
+    Bitcoin: "bitcoin" as PaymentTypeEnum,
+    Other: "other" as PaymentTypeEnum
   }
 }

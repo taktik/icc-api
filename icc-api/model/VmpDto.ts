@@ -9,9 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Attachment } from "./Attachment"
 import { CommentedClassificationDto } from "./CommentedClassificationDto"
-import { RevisionInfo } from "./RevisionInfo"
 import { SamTextDto } from "./SamTextDto"
 import { VmpComponentDto } from "./VmpComponentDto"
 import { VmpGroupStubDto } from "./VmpGroupStubDto"
@@ -24,6 +22,8 @@ export class VmpDto {
   }
 
   id?: string
+  rev?: string
+  deletionDate?: number
   from?: number
   to?: number
   code?: string
@@ -34,11 +34,4 @@ export class VmpDto {
   wadas?: Array<WadaDto>
   components?: Array<VmpComponentDto>
   commentedClassifications?: Array<CommentedClassificationDto>
-  attachments?: { [key: string]: Attachment }
-  deleted?: number
-  rev?: string
-  revsInfo?: Array<RevisionInfo>
-  conflicts?: Array<string>
-  javaType?: string
-  revHistory?: { [key: string]: string }
 }

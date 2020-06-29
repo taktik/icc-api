@@ -9,14 +9,14 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { PermissionCriterion } from "./PermissionCriterion"
 
-export class Permission {
+export class RightDto {
   constructor(json: JSON | any) {
-    Object.assign(this as Permission, json)
+    Object.assign(this as RightDto, json)
   }
 
-  grant?: number
-  revoke?: number
-  criteria?: Array<PermissionCriterion>
+  userId?: string
+  read?: boolean
+  write?: boolean
+  administration?: boolean
 }

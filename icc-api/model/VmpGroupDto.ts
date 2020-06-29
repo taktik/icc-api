@@ -9,10 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Attachment } from "./Attachment"
 import { NoGenericPrescriptionReasonDto } from "./NoGenericPrescriptionReasonDto"
 import { NoSwitchReasonDto } from "./NoSwitchReasonDto"
-import { RevisionInfo } from "./RevisionInfo"
 import { SamTextDto } from "./SamTextDto"
 
 export class VmpGroupDto {
@@ -21,17 +19,12 @@ export class VmpGroupDto {
   }
 
   id?: string
+  rev?: string
+  deletionDate?: number
   from?: number
   to?: number
   code?: string
   name?: SamTextDto
   noGenericPrescriptionReason?: NoGenericPrescriptionReasonDto
   noSwitchReason?: NoSwitchReasonDto
-  attachments?: { [key: string]: Attachment }
-  deleted?: number
-  rev?: string
-  revsInfo?: Array<RevisionInfo>
-  conflicts?: Array<string>
-  javaType?: string
-  revHistory?: { [key: string]: string }
 }

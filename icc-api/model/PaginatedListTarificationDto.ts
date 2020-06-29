@@ -9,16 +9,16 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { PaginatedDocumentKeyIdPair } from "./PaginatedDocumentKeyIdPair"
+import { PaginatedDocumentKeyIdPairObject } from "./PaginatedDocumentKeyIdPairObject"
 import { TarificationDto } from "./TarificationDto"
 
-export class TarificationPaginatedList {
+export class PaginatedListTarificationDto {
   constructor(json: JSON | any) {
-    Object.assign(this as TarificationPaginatedList, json)
+    Object.assign(this as PaginatedListTarificationDto, json)
   }
 
-  totalSize?: number
   pageSize?: number
-  nextKeyPair?: PaginatedDocumentKeyIdPair
+  totalSize?: number
   rows?: Array<TarificationDto>
+  nextKeyPair?: PaginatedDocumentKeyIdPairObject
 }

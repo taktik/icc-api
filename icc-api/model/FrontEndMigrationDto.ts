@@ -19,11 +19,11 @@ export class FrontEndMigrationDto {
   rev?: string
   deletionDate?: number
   name?: string
-  userId?: string
   startDate?: number
   endDate?: number
   status?: FrontEndMigrationDto.StatusEnum
   logs?: string
+  userId?: string
   startKey?: string
   startKeyDocId?: string
   processCount?: number

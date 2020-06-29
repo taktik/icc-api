@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeDto } from "./CodeDto"
-import { FormGroupDto } from "./FormGroupDto"
+import { CodeStubDto } from "./CodeStubDto"
+import { DocumentGroupDto } from "./DocumentGroupDto"
 import { FormLayout } from "./FormLayout"
 
 export class FormTemplateDto {
@@ -21,18 +21,19 @@ export class FormTemplateDto {
   id?: string
   rev?: string
   deletionDate?: number
-  group?: FormGroupDto
-  name?: string
-  descr?: string
-  hidden?: boolean
-  specialty?: CodeDto
-  guid?: string
   layout?: FormLayout
+  name?: string
+  guid?: string
+  group?: DocumentGroupDto
+  descr?: string
+  disabled?: string
+  specialty?: CodeStubDto
+  author?: string
   formInstancePreferredLocation?: string
   keyboardShortcut?: string
   shortReport?: string
   mediumReport?: string
   longReport?: string
-  disabled?: string
   reports?: Array<string>
+  layoutAttachmentId?: string
 }

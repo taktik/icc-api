@@ -21,4 +21,6 @@ export class FinancialInstitutionInformationDto {
   bic?: string
   proxyBankAccount?: string
   proxyBic?: string
+  preferredFiiForPartners?: Array<string>
+  encryptedSelf?: string
 }

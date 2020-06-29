@@ -21,13 +21,13 @@ export class MedicalLocationDto {
   deletionDate?: number
   name?: string
   description?: string
-  address?: AddressDto
+  responsible?: string
+  guardPost?: boolean
   cbe?: string
   bic?: string
   bankAccount?: string
   nihii?: string
   ssin?: string
-  responsible?: string
+  address?: AddressDto
   agendaIds?: Array<string>
-  guardPost?: boolean
 }

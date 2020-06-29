@@ -17,9 +17,10 @@ export class FlatRateTarificationDto {
   }
 
   code?: string
+  flatRateType?: FlatRateTarificationDto.FlatRateTypeEnum
   label?: { [key: string]: string }
   valorisations?: Array<ValorisationDto>
-  flatRateType?: FlatRateTarificationDto.FlatRateTypeEnum
+  encryptedSelf?: string
 }
 export namespace FlatRateTarificationDto {
   export type FlatRateTypeEnum = "physician" | "physiotherapist" | "nurse"

@@ -12,10 +12,11 @@
 import { XHR } from "./XHR"
 import { DelegationDto } from "../model/DelegationDto"
 import { DocIdentifier } from "../model/DocIdentifier"
+import { IcureStubDto } from "../model/IcureStubDto"
 import { ListOfIdsDto } from "../model/ListOfIdsDto"
 import { MessageDto } from "../model/MessageDto"
-import { MessagePaginatedList } from "../model/MessagePaginatedList"
 import { MessagesReadStatusUpdate } from "../model/MessagesReadStatusUpdate"
+import { PaginatedListMessageDto } from "../model/PaginatedListMessageDto"
 
 export class iccMessageApi {
   host: string
@@ -131,7 +132,7 @@ export class iccMessageApi {
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<MessagePaginatedList | any> {
+  ): Promise<PaginatedListMessageDto | any> {
     let _body = null
 
     const _url =
@@ -144,7 +145,7 @@ export class iccMessageApi {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new MessagePaginatedList(doc.body as JSON))
+      .then(doc => new PaginatedListMessageDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 
@@ -163,7 +164,7 @@ export class iccMessageApi {
     startDocumentId?: string,
     limit?: number,
     hcpId?: string
-  ): Promise<MessagePaginatedList | any> {
+  ): Promise<PaginatedListMessageDto | any> {
     let _body = null
 
     const _url =
@@ -178,7 +179,7 @@ export class iccMessageApi {
       (hcpId ? "&hcpId=" + encodeURIComponent(String(hcpId)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new MessagePaginatedList(doc.body as JSON))
+      .then(doc => new PaginatedListMessageDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 
@@ -219,7 +220,7 @@ export class iccMessageApi {
     limit?: number,
     reverse?: boolean,
     hcpId?: string
-  ): Promise<MessagePaginatedList | any> {
+  ): Promise<PaginatedListMessageDto | any> {
     let _body = null
 
     const _url =
@@ -235,7 +236,7 @@ export class iccMessageApi {
       (hcpId ? "&hcpId=" + encodeURIComponent(String(hcpId)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new MessagePaginatedList(doc.body as JSON))
+      .then(doc => new PaginatedListMessageDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 
@@ -256,7 +257,7 @@ export class iccMessageApi {
     startDocumentId?: string,
     limit?: number,
     hcpId?: string
-  ): Promise<MessagePaginatedList | any> {
+  ): Promise<PaginatedListMessageDto | any> {
     let _body = null
 
     const _url =
@@ -272,7 +273,7 @@ export class iccMessageApi {
       (hcpId ? "&hcpId=" + encodeURIComponent(String(hcpId)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new MessagePaginatedList(doc.body as JSON))
+      .then(doc => new PaginatedListMessageDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 
@@ -295,7 +296,7 @@ export class iccMessageApi {
     startDocumentId?: string,
     limit?: number,
     hcpId?: string
-  ): Promise<MessagePaginatedList | any> {
+  ): Promise<PaginatedListMessageDto | any> {
     let _body = null
 
     const _url =
@@ -312,7 +313,7 @@ export class iccMessageApi {
       (hcpId ? "&hcpId=" + encodeURIComponent(String(hcpId)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new MessagePaginatedList(doc.body as JSON))
+      .then(doc => new PaginatedListMessageDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 
@@ -417,7 +418,10 @@ export class iccMessageApi {
    * @param body
    * @param messageId
    */
-  newMessageDelegations(messageId: string, body?: Array<DelegationDto>): Promise<MessageDto | any> {
+  newMessageDelegations(
+    messageId: string,
+    body?: Array<DelegationDto>
+  ): Promise<IcureStubDto | any> {
     let _body = null
     _body = body
 
@@ -431,7 +435,7 @@ export class iccMessageApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new MessageDto(doc.body as JSON))
+      .then(doc => new IcureStubDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 

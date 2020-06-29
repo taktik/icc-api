@@ -20,4 +20,5 @@ export class EpisodeDto {
   comment?: string
   startDate?: number
   endDate?: number
+  encryptedSelf?: string
 }

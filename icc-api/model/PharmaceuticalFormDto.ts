@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Code } from "./Code"
+import { CodeStubDto } from "./CodeStubDto"
 import { SamTextDto } from "./SamTextDto"
 
 export class PharmaceuticalFormDto {
@@ -19,5 +19,5 @@ export class PharmaceuticalFormDto {
 
   code?: string
   name?: SamTextDto
-  standardForms?: Array<Code>
+  standardForms?: Array<CodeStubDto>
 }

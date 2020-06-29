@@ -21,7 +21,7 @@ export class EntityTemplateDto {
   userId?: string
   descr?: string
   entityType?: string
-  defaultTemplate?: boolean
   subType?: string
+  defaultTemplate?: boolean
   entity?: Array<{ [key: string]: any }>
 }

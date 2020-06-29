@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStub } from "./CodeStub"
+import { CodeStubDto } from "./CodeStubDto"
 
 export class CareTeamMemberDto {
   constructor(json: JSON | any) {
@@ -19,7 +19,8 @@ export class CareTeamMemberDto {
   id?: string
   careTeamMemberType?: CareTeamMemberDto.CareTeamMemberTypeEnum
   healthcarePartyId?: string
-  quality?: CodeStub
+  quality?: CodeStubDto
+  encryptedSelf?: string
 }
 export namespace CareTeamMemberDto {
   export type CareTeamMemberTypeEnum = "physician" | "specialist" | "other"

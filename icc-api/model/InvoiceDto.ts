@@ -9,11 +9,11 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeDto } from "./CodeDto"
+import { CodeStubDto } from "./CodeStubDto"
 import { DelegationDto } from "./DelegationDto"
-import { IdentityDocumentReader } from "./IdentityDocumentReader"
+import { IdentityDocumentReaderDto } from "./IdentityDocumentReaderDto"
 import { InvoicingCodeDto } from "./InvoicingCodeDto"
-import { Payment } from "./Payment"
+import { PaymentDto } from "./PaymentDto"
 
 export class InvoiceDto {
   constructor(json: JSON | any) {
@@ -22,33 +22,20 @@ export class InvoiceDto {
 
   id?: string
   rev?: string
-  deletionDate?: number
   created?: number
   modified?: number
-  endOfLife?: number
   author?: string
   responsible?: string
   medicalLocationId?: string
-  encryptedSelf?: string
-  codes?: Array<CodeDto>
-  tags?: Array<CodeDto>
-  secretForeignKeys?: Array<string>
-  cryptedForeignKeys?: { [key: string]: Array<DelegationDto> }
-  delegations?: { [key: string]: Array<DelegationDto> }
-  encryptionKeys?: { [key: string]: Array<DelegationDto> }
+  tags?: Array<CodeStubDto>
+  codes?: Array<CodeStubDto>
+  endOfLife?: number
+  deletionDate?: number
   invoiceDate?: number
   sentDate?: number
   printedDate?: number
-  paid?: number
-  paymentType?: InvoiceDto.PaymentTypeEnum
-  payments?: Array<Payment>
   invoicingCodes?: Array<InvoicingCodeDto>
-  invoiceType?: string
-  sentMediumType?: string
-  interventionType?: string
-  groupId?: string
-  correctiveInvoiceId?: string
-  correctedInvoiceId?: string
+  receipts?: { [key: string]: string }
   recipientType?: string
   recipientId?: string
   invoiceReference?: string
@@ -56,12 +43,20 @@ export class InvoiceDto {
   thirdPartyPaymentJustification?: string
   thirdPartyPaymentReason?: string
   reason?: string
+  invoiceType?: InvoiceDto.InvoiceTypeEnum
+  sentMediumType?: InvoiceDto.SentMediumTypeEnum
+  interventionType?: InvoiceDto.InterventionTypeEnum
+  groupId?: string
+  paymentType?: InvoiceDto.PaymentTypeEnum
+  paid?: number
+  payments?: Array<PaymentDto>
   gnotionNihii?: string
   gnotionSsin?: string
   gnotionLastName?: string
   gnotionFirstName?: string
   gnotionCdHcParty?: string
   invoicePeriod?: number
+  careProviderType?: string
   internshipNihii?: string
   internshipSsin?: string
   internshipLastName?: string
@@ -74,35 +69,71 @@ export class InvoiceDto {
   supervisorFirstName?: string
   supervisorCdHcParty?: string
   supervisorCbe?: string
-  longDelayJustification?: number
-  creditNote?: boolean
-  creditNoteRelatedInvoiceId?: string
-  careProviderType?: string
   error?: string
   encounterLocationName?: string
   encounterLocationNihii?: string
   encounterLocationNorm?: number
+  longDelayJustification?: number
+  correctiveInvoiceId?: string
+  correctedInvoiceId?: string
+  creditNote?: boolean
+  creditNoteRelatedInvoiceId?: string
+  idDocument?: IdentityDocumentReaderDto
   cancelReason?: string
   cancelDate?: number
-  receipts?: { [key: string]: string }
-  idDocument?: IdentityDocumentReader
+  secretForeignKeys?: Array<string>
+  cryptedForeignKeys?: { [key: string]: Array<DelegationDto> }
+  delegations?: { [key: string]: Array<DelegationDto> }
+  encryptionKeys?: { [key: string]: Array<DelegationDto> }
+  encryptedSelf?: string
 }
 export namespace InvoiceDto {
+  export type InvoiceTypeEnum =
+    | "patient"
+    | "mutualfund"
+    | "payingagency"
+    | "insurance"
+    | "efact"
+    | "other"
+  export const InvoiceTypeEnum = {
+    Patient: "patient" as InvoiceTypeEnum,
+    Mutualfund: "mutualfund" as InvoiceTypeEnum,
+    Payingagency: "payingagency" as InvoiceTypeEnum,
+    Insurance: "insurance" as InvoiceTypeEnum,
+    Efact: "efact" as InvoiceTypeEnum,
+    Other: "other" as InvoiceTypeEnum
+  }
+  export type SentMediumTypeEnum = "cdrom" | "eattest" | "efact" | "email" | "mediprima" | "paper"
+  export const SentMediumTypeEnum = {
+    Cdrom: "cdrom" as SentMediumTypeEnum,
+    Eattest: "eattest" as SentMediumTypeEnum,
+    Efact: "efact" as SentMediumTypeEnum,
+    Email: "email" as SentMediumTypeEnum,
+    Mediprima: "mediprima" as SentMediumTypeEnum,
+    Paper: "paper" as SentMediumTypeEnum
+  }
+  export type InterventionTypeEnum = "total" | "userfees"
+  export const InterventionTypeEnum = {
+    Total: "total" as InterventionTypeEnum,
+    Userfees: "userfees" as InterventionTypeEnum
+  }
   export type PaymentTypeEnum =
-    | "wired"
     | "cash"
+    | "wired"
     | "insurance"
     | "creditcard"
     | "debitcard"
     | "paypal"
     | "bitcoin"
+    | "other"
   export const PaymentTypeEnum = {
-    Wired: "wired" as PaymentTypeEnum,
     Cash: "cash" as PaymentTypeEnum,
+    Wired: "wired" as PaymentTypeEnum,
     Insurance: "insurance" as PaymentTypeEnum,
     Creditcard: "creditcard" as PaymentTypeEnum,
     Debitcard: "debitcard" as PaymentTypeEnum,
     Paypal: "paypal" as PaymentTypeEnum,
-    Bitcoin: "bitcoin" as PaymentTypeEnum
+    Bitcoin: "bitcoin" as PaymentTypeEnum,
+    Other: "other" as PaymentTypeEnum
   }
 }

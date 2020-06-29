@@ -9,14 +9,14 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { FilterDto } from "./FilterDto"
-import { Predicate } from "./Predicate"
 
-export class FilterChain {
+export class LetterValueDto {
   constructor(json: JSON | any) {
-    Object.assign(this as FilterChain, json)
+    Object.assign(this as LetterValueDto, json)
   }
 
-  filter?: FilterDto
-  predicate?: Predicate
+  letter?: string
+  index?: string
+  coefficient?: number
+  value?: number
 }

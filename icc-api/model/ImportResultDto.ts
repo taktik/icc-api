@@ -9,6 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { Attachment } from "./Attachment"
 import { ContactDto } from "./ContactDto"
 import { DocumentDto } from "./DocumentDto"
 import { FormDto } from "./FormDto"
@@ -29,4 +30,5 @@ export class ImportResultDto {
   forms?: Array<FormDto>
   hcps?: Array<HealthcarePartyDto>
   documents?: Array<DocumentDto>
+  attachments?: { [key: string]: Attachment }
 }

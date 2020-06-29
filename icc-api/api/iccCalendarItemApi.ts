@@ -234,7 +234,7 @@ export class iccCalendarItemApi {
    * @summary Update delegations in calendarItems
    * @param body
    */
-  setCalendarItemsDelegations(body?: Array<IcureStubDto>): Promise<Array<IcureStubDto> | any> {
+  setCalendarItemsDelegations(body?: Array<IcureStubDto>): Promise<Array<CalendarItemDto> | any> {
     let _body = null
     _body = body
 
@@ -244,7 +244,7 @@ export class iccCalendarItemApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new IcureStubDto(it)))
+      .then(doc => (doc.body as Array<JSON>).map(it => new CalendarItemDto(it)))
       .catch(err => this.handleError(err))
   }
 }

@@ -18,6 +18,9 @@ export class ParagraphAgreementDto {
 
   timestamp?: number
   paragraph?: string
+  accepted?: boolean
+  inTreatment?: boolean
+  canceled?: boolean
   careProviderReference?: string
   decisionReference?: string
   start?: number
@@ -33,12 +36,6 @@ export class ParagraphAgreementDto {
   unitNumber?: number
   strength?: number
   strengthUnit?: string
-  restUnitNumber?: number
-  restStrength?: number
-  restStrengthUnit?: string
   agreementAppendices?: Array<AgreementAppendixDto>
   documentId?: string
-  canceled?: boolean
-  accepted?: boolean
-  inTreatment?: boolean
 }

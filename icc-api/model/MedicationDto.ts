@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeDto } from "./CodeDto"
+import { CodeStubDto } from "./CodeStubDto"
 import { DurationDto } from "./DurationDto"
 import { MedicinalproductDto } from "./MedicinalproductDto"
 import { ParagraphAgreementDto } from "./ParagraphAgreementDto"
@@ -32,20 +32,19 @@ export class MedicationDto {
   commentForDelivery?: string
   drugRoute?: string
   temporality?: string
-  duration?: DurationDto
-  renewal?: RenewalDto
+  frequency?: CodeStubDto
+  reimbursementReason?: CodeStubDto
+  substitutionAllowed?: boolean
   beginMoment?: number
   endMoment?: number
   deliveryMoment?: number
   endExecutionMoment?: number
+  duration?: DurationDto
+  renewal?: RenewalDto
   knownUsage?: boolean
-  frequency?: CodeDto
-  reimbursementReason?: CodeDto
-  substitutionAllowed?: boolean
   regimen?: Array<RegimenItemDto>
   posology?: string
   agreements?: { [key: string]: ParagraphAgreementDto }
-  suspension?: Array<SuspensionDto>
   medicationSchemeIdOnSafe?: string
   medicationSchemeSafeVersion?: number
   medicationSchemeTimeStampOnSafe?: number
@@ -61,6 +60,7 @@ export class MedicationDto {
   origin?: string
   medicationChanged?: boolean
   posologyChanged?: boolean
+  suspension?: Array<SuspensionDto>
   prescriptionRID?: string
   status?: number
 }

@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeDto } from "./CodeDto"
+import { CodeStubDto } from "./CodeStubDto"
 import { DelegationDto } from "./DelegationDto"
 import { ServiceDto } from "./ServiceDto"
 import { SubContactDto } from "./SubContactDto"
@@ -21,29 +21,29 @@ export class ContactDto {
 
   id?: string
   rev?: string
-  deletionDate?: number
   created?: number
   modified?: number
-  endOfLife?: number
   author?: string
   responsible?: string
   medicalLocationId?: string
-  encryptedSelf?: string
-  codes?: Array<CodeDto>
-  tags?: Array<CodeDto>
-  secretForeignKeys?: Array<string>
-  cryptedForeignKeys?: { [key: string]: Array<DelegationDto> }
-  delegations?: { [key: string]: Array<DelegationDto> }
-  encryptionKeys?: { [key: string]: Array<DelegationDto> }
-  groupId?: string
+  tags?: Array<CodeStubDto>
+  codes?: Array<CodeStubDto>
+  endOfLife?: number
+  deletionDate?: number
   openingDate?: number
+  groupId?: string
   closingDate?: number
   descr?: string
   location?: string
   healthcarePartyId?: string
   externalId?: string
   modifiedContactId?: string
-  encounterType?: CodeDto
+  encounterType?: CodeStubDto
   subContacts?: Array<SubContactDto>
   services?: Array<ServiceDto>
+  secretForeignKeys?: Array<string>
+  cryptedForeignKeys?: { [key: string]: Array<DelegationDto> }
+  delegations?: { [key: string]: Array<DelegationDto> }
+  encryptionKeys?: { [key: string]: Array<DelegationDto> }
+  encryptedSelf?: string
 }

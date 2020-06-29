@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeDto } from "./CodeDto"
+import { CodeStubDto } from "./CodeStubDto"
 import { DelegationDto } from "./DelegationDto"
 
 export class FormDto {
@@ -19,27 +19,26 @@ export class FormDto {
 
   id?: string
   rev?: string
-  deletionDate?: number
   created?: number
   modified?: number
-  endOfLife?: number
   author?: string
   responsible?: string
   medicalLocationId?: string
-  encryptedSelf?: string
-  codes?: Array<CodeDto>
-  tags?: Array<CodeDto>
-  secretForeignKeys?: Array<string>
-  cryptedForeignKeys?: { [key: string]: Array<DelegationDto> }
-  delegations?: { [key: string]: Array<DelegationDto> }
-  encryptionKeys?: { [key: string]: Array<DelegationDto> }
+  tags?: Array<CodeStubDto>
+  codes?: Array<CodeStubDto>
+  endOfLife?: number
+  deletionDate?: number
+  openingDate?: number
+  groupId?: string
   descr?: string
   formTemplateId?: string
   contactId?: string
   healthElementId?: string
   planOfActionId?: string
-  dataJXPath?: string
-  dashboardIds?: Array<string>
   parent?: string
-  hasBeenInitialized?: boolean
+  secretForeignKeys?: Array<string>
+  cryptedForeignKeys?: { [key: string]: Array<DelegationDto> }
+  delegations?: { [key: string]: Array<DelegationDto> }
+  encryptionKeys?: { [key: string]: Array<DelegationDto> }
+  encryptedSelf?: string
 }

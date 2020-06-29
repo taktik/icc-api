@@ -10,16 +10,16 @@
  * Do not edit the class manually.
  */
 
-export class Payment {
+export class PaymentDto {
   constructor(json: JSON | any) {
-    Object.assign(this as Payment, json)
+    Object.assign(this as PaymentDto, json)
   }
 
   paymentDate?: number
-  paymentType?: Payment.PaymentTypeEnum
+  paymentType?: PaymentDto.PaymentTypeEnum
   paid?: number
 }
-export namespace Payment {
+export namespace PaymentDto {
   export type PaymentTypeEnum =
     | "cash"
     | "wired"

@@ -10,17 +10,17 @@
  * Do not edit the class manually.
  */
 
-export class Telecom {
+export class TelecomDto {
   constructor(json: JSON | any) {
-    Object.assign(this as Telecom, json)
+    Object.assign(this as TelecomDto, json)
   }
 
-  telecomType?: Telecom.TelecomTypeEnum
+  telecomType?: TelecomDto.TelecomTypeEnum
   telecomNumber?: string
   telecomDescription?: string
   encryptedSelf?: string
 }
-export namespace Telecom {
+export namespace TelecomDto {
   export type TelecomTypeEnum =
     | "mobile"
     | "phone"
@@ -34,6 +34,7 @@ export namespace Telecom {
     | "web"
     | "print"
     | "disk"
+    | "other"
   export const TelecomTypeEnum = {
     Mobile: "mobile" as TelecomTypeEnum,
     Phone: "phone" as TelecomTypeEnum,
@@ -46,6 +47,7 @@ export namespace Telecom {
     Apicrypt: "apicrypt" as TelecomTypeEnum,
     Web: "web" as TelecomTypeEnum,
     Print: "print" as TelecomTypeEnum,
-    Disk: "disk" as TelecomTypeEnum
+    Disk: "disk" as TelecomTypeEnum,
+    Other: "other" as TelecomTypeEnum
   }
 }

@@ -10,19 +10,15 @@
  * Do not edit the class manually.
  */
 
-export class TypedValue {
+export class PropertyTypeStubDto {
   constructor(json: JSON | any) {
-    Object.assign(this as TypedValue, json)
+    Object.assign(this as PropertyTypeStubDto, json)
   }
 
-  type?: TypedValue.TypeEnum
-  booleanValue?: boolean
-  integerValue?: number
-  doubleValue?: number
-  stringValue?: string
-  dateValue?: number
+  identifier?: string
+  type?: PropertyTypeStubDto.TypeEnum
 }
-export namespace TypedValue {
+export namespace PropertyTypeStubDto {
   export type TypeEnum = "BOOLEAN" | "INTEGER" | "DOUBLE" | "STRING" | "DATE" | "CLOB" | "JSON"
   export const TypeEnum = {
     BOOLEAN: "BOOLEAN" as TypeEnum,

@@ -10,11 +10,10 @@
  * Do not edit the class manually.
  */
 
-export class MessageReadStatus {
+export class FilterDtoService {
   constructor(json: JSON | any) {
-    Object.assign(this as MessageReadStatus, json)
+    Object.assign(this as FilterDtoService, json)
   }
 
-  time?: number
-  read?: boolean
+  desc?: string
 }

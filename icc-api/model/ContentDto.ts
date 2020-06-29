@@ -22,8 +22,8 @@ export class ContentDto {
   booleanValue?: boolean
   instantValue?: number
   fuzzyDateValue?: number
+  binaryValue?: Array<string>
   documentId?: string
   measureValue?: MeasureDto
   medicationValue?: MedicationDto
-  binaryValue?: Array<string>
 }

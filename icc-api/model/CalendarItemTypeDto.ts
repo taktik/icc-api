@@ -21,7 +21,6 @@ export class CalendarItemTypeDto {
   name?: string
   color?: string
   duration?: number
-  visit?: boolean
   externalRef?: string
   mikronoId?: string
   docIds?: Array<string>

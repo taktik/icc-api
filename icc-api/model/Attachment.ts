@@ -15,10 +15,7 @@ export class Attachment {
     Object.assign(this as Attachment, json)
   }
 
-  length?: number
-  stub?: boolean
-  revpos?: number
-  digest?: string
-  contentType?: string
-  data?: string
+  data?: Array<string>
+  fileName?: string
+  mimeType?: string
 }

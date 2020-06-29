@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 import { CareTeamMemberDto } from "./CareTeamMemberDto"
-import { CodeDto } from "./CodeDto"
+import { CodeStubDto } from "./CodeStubDto"
 import { DelegationDto } from "./DelegationDto"
 import { EpisodeDto } from "./EpisodeDto"
 import { PlanOfActionDto } from "./PlanOfActionDto"
@@ -22,35 +22,35 @@ export class HealthElementDto {
 
   id?: string
   rev?: string
-  deletionDate?: number
   created?: number
   modified?: number
-  endOfLife?: number
   author?: string
   responsible?: string
   medicalLocationId?: string
-  encryptedSelf?: string
-  codes?: Array<CodeDto>
-  tags?: Array<CodeDto>
-  secretForeignKeys?: Array<string>
-  cryptedForeignKeys?: { [key: string]: Array<DelegationDto> }
-  delegations?: { [key: string]: Array<DelegationDto> }
-  encryptionKeys?: { [key: string]: Array<DelegationDto> }
+  tags?: Array<CodeStubDto>
+  codes?: Array<CodeStubDto>
+  endOfLife?: number
+  deletionDate?: number
   healthElementId?: string
-  descr?: string
-  note?: string
-  relevant?: boolean
   valueDate?: number
   openingDate?: number
   closingDate?: number
+  descr?: string
+  note?: string
+  relevant?: boolean
   idOpeningContact?: string
   idClosingContact?: string
-  status?: number
   idService?: string
+  status?: number
   laterality?: HealthElementDto.LateralityEnum
   plansOfAction?: Array<PlanOfActionDto>
   episodes?: Array<EpisodeDto>
   careTeam?: Array<CareTeamMemberDto>
+  secretForeignKeys?: Array<string>
+  cryptedForeignKeys?: { [key: string]: Array<DelegationDto> }
+  delegations?: { [key: string]: Array<DelegationDto> }
+  encryptionKeys?: { [key: string]: Array<DelegationDto> }
+  encryptedSelf?: string
 }
 export namespace HealthElementDto {
   export type LateralityEnum = "left" | "right"

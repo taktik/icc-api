@@ -9,17 +9,14 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { HealthcarePartyDto } from "./HealthcarePartyDto"
-import { UserDto } from "./UserDto"
+import { PropertyTypeStubDto } from "./PropertyTypeStubDto"
+import { TypedValueDtoObject } from "./TypedValueDtoObject"
 
-export class SignUpDto {
+export class PropertyStubDto {
   constructor(json: JSON | any) {
-    Object.assign(this as SignUpDto, json)
+    Object.assign(this as PropertyStubDto, json)
   }
 
-  id?: string
-  rev?: string
-  deletionDate?: number
-  userDto?: UserDto
-  healthcarePartyDto?: HealthcarePartyDto
+  type?: PropertyTypeStubDto
+  typedValue?: TypedValueDtoObject
 }

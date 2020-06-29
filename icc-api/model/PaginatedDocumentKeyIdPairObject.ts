@@ -10,13 +10,11 @@
  * Do not edit the class manually.
  */
 
-export class LetterValue {
+export class PaginatedDocumentKeyIdPairObject {
   constructor(json: JSON | any) {
-    Object.assign(this as LetterValue, json)
+    Object.assign(this as PaginatedDocumentKeyIdPairObject, json)
   }
 
-  letter?: string
-  index?: string
-  coefficient?: number
-  value?: number
+  startKey?: any
+  startKeyDocId?: string
 }

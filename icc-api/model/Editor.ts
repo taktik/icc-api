@@ -9,6 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { Data } from "./Data"
 
 export class Editor {
   constructor(json: JSON | any) {
@@ -22,6 +23,7 @@ export class Editor {
   multiline?: boolean
   labelPosition?: Editor.LabelPositionEnum
   readOnly?: boolean
+  defaultValue?: Data
   key?: string
 }
 export namespace Editor {

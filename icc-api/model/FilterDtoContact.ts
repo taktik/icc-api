@@ -10,14 +10,10 @@
  * Do not edit the class manually.
  */
 
-export class LocalizedStringDto {
+export class FilterDtoContact {
   constructor(json: JSON | any) {
-    Object.assign(this as LocalizedStringDto, json)
+    Object.assign(this as FilterDtoContact, json)
   }
 
-  id?: string
-  rev?: string
-  deletionDate?: number
-  values?: { [key: string]: string }
-  identifier?: string
+  desc?: string
 }

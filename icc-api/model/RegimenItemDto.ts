@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 import { AdministrationQuantity } from "./AdministrationQuantity"
-import { CodeDto } from "./CodeDto"
+import { CodeStubDto } from "./CodeStubDto"
 import { Weekday } from "./Weekday"
 
 export class RegimenItemDto {
@@ -21,7 +21,7 @@ export class RegimenItemDto {
   date?: number
   dayNumber?: number
   weekday?: Weekday
-  dayPeriod?: CodeDto
+  dayPeriod?: CodeStubDto
   timeOfDay?: number
   administratedQuantity?: AdministrationQuantity
 }

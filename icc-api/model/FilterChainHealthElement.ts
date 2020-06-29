@@ -9,17 +9,14 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { PropertyTypeDto } from "./PropertyTypeDto"
-import { TypedValueDto } from "./TypedValueDto"
+import { FilterDtoHealthElement } from "./FilterDtoHealthElement"
+import { Predicate } from "./Predicate"
 
-export class PropertyDto {
+export class FilterChainHealthElement {
   constructor(json: JSON | any) {
-    Object.assign(this as PropertyDto, json)
+    Object.assign(this as FilterChainHealthElement, json)
   }
 
-  id?: string
-  rev?: string
-  deletionDate?: number
-  type?: PropertyTypeDto
-  typedValue?: TypedValueDto
+  filter?: FilterDtoHealthElement
+  predicate?: Predicate
 }

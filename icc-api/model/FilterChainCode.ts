@@ -9,16 +9,14 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { PaginatedDocumentKeyIdPair } from "./PaginatedDocumentKeyIdPair"
-import { PatientDto } from "./PatientDto"
+import { FilterDtoCode } from "./FilterDtoCode"
+import { Predicate } from "./Predicate"
 
-export class PatientPaginatedList {
+export class FilterChainCode {
   constructor(json: JSON | any) {
-    Object.assign(this as PatientPaginatedList, json)
+    Object.assign(this as FilterChainCode, json)
   }
 
-  totalSize?: number
-  pageSize?: number
-  nextKeyPair?: PaginatedDocumentKeyIdPair
-  rows?: Array<PatientDto>
+  filter?: FilterDtoCode
+  predicate?: Predicate
 }

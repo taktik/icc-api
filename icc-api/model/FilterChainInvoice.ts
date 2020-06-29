@@ -9,11 +9,14 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { FilterDtoInvoice } from "./FilterDtoInvoice"
+import { Predicate } from "./Predicate"
 
-export class ServiceLink {
+export class FilterChainInvoice {
   constructor(json: JSON | any) {
-    Object.assign(this as ServiceLink, json)
+    Object.assign(this as FilterChainInvoice, json)
   }
 
-  serviceId?: string
+  filter?: FilterDtoInvoice
+  predicate?: Predicate
 }

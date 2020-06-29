@@ -10,13 +10,10 @@
  * Do not edit the class manually.
  */
 
-export class Right {
+export class FilterDtoPatient {
   constructor(json: JSON | any) {
-    Object.assign(this as Right, json)
+    Object.assign(this as FilterDtoPatient, json)
   }
 
-  userId?: string
-  read?: boolean
-  write?: boolean
-  administration?: boolean
+  desc?: string
 }

@@ -188,7 +188,7 @@ export class IccPatientXApi extends iccPatientApi {
     skip?: number,
     sort?: string,
     desc?: boolean,
-    body?: models.FilterChain
+    body?: models.FilterChainPatient
   ): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
@@ -203,8 +203,8 @@ export class IccPatientXApi extends iccPatientApi {
     skip?: number,
     sort?: string,
     desc?: boolean,
-    body?: models.FilterChain
-  ): Promise<models.PatientPaginatedList | any> {
+    body?: models.FilterChainPatient
+  ): Promise<models.PaginatedListPatientDto | any> {
     return super
       .filterPatientsBy(startKey, startDocumentId, limit, skip, sort, desc, body)
       .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
@@ -231,7 +231,7 @@ export class IccPatientXApi extends iccPatientApi {
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<models.PatientPaginatedList | any> {
+  ): Promise<models.PaginatedListPatientDto | any> {
     return super
       .findByAccessLogUserAfterDate(userId, accessType, startDate, startKey, startDocumentId, limit)
       .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
@@ -271,7 +271,7 @@ export class IccPatientXApi extends iccPatientApi {
     startDocumentId?: string,
     limit?: number,
     sortDirection?: string
-  ): Promise<models.PatientPaginatedList | any> {
+  ): Promise<models.PaginatedListPatientDto | any> {
     return super
       .findByNameBirthSsinAuto(
         healthcarePartyId,
@@ -350,7 +350,7 @@ export class IccPatientXApi extends iccPatientApi {
     desc?: boolean,
     startDocumentId?: string,
     limit?: number
-  ): Promise<models.PatientPaginatedList | any> {
+  ): Promise<models.PaginatedListPatientDto | any> {
     return super
       .listDeletedPatients(startDate, endDate, desc, startDocumentId, limit)
       .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
@@ -366,7 +366,7 @@ export class IccPatientXApi extends iccPatientApi {
     user: models.UserDto,
     firstName?: string,
     lastName?: string
-  ): Promise<Array<models.PatientPaginatedList> | any> {
+  ): Promise<Array<models.PaginatedListPatientDto> | any> {
     return super
       .listDeletedPatientsByName(firstName, lastName)
       .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
@@ -402,7 +402,7 @@ export class IccPatientXApi extends iccPatientApi {
     startKey?: number,
     startDocumentId?: string,
     limit?: number
-  ): Promise<models.PatientPaginatedList | any> {
+  ): Promise<models.PaginatedListPatientDto | any> {
     return super
       .listOfPatientsModifiedAfter(date, startKey, startDocumentId, limit)
       .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
@@ -429,7 +429,7 @@ export class IccPatientXApi extends iccPatientApi {
     startDocumentId?: string,
     limit?: number,
     sortDirection?: string
-  ): Promise<models.PatientPaginatedList | any> {
+  ): Promise<models.PaginatedListPatientDto | any> {
     return super
       .listPatients(hcPartyId, sortField, startKey, startDocumentId, limit, sortDirection)
       .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
@@ -456,7 +456,7 @@ export class IccPatientXApi extends iccPatientApi {
     startDocumentId?: string,
     limit?: number,
     sortDirection?: string
-  ): Promise<models.PatientPaginatedList | any> {
+  ): Promise<models.PaginatedListPatientDto | any> {
     return super
       .listPatientsByHcParty(hcPartyId, sortField, startKey, startDocumentId, limit, sortDirection)
       .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
@@ -483,7 +483,7 @@ export class IccPatientXApi extends iccPatientApi {
     startDocumentId?: string,
     limit?: number,
     sortDirection?: string
-  ): Promise<models.PatientPaginatedList | any> {
+  ): Promise<models.PaginatedListPatientDto | any> {
     return super
       .listPatientsOfHcParty(hcPartyId, sortField, startKey, startDocumentId, limit, sortDirection)
       .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))

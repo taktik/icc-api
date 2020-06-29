@@ -78,6 +78,7 @@ export class iccKeywordApi {
   /**
    *
    * @summary Get a keyword
+   * @param keywordId
    */
   getKeyword(keywordId: string): Promise<KeywordDto | any> {
     let _body = null

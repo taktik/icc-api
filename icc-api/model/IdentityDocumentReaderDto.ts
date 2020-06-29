@@ -10,15 +10,15 @@
  * Do not edit the class manually.
  */
 
-export class IdentityDocumentReader {
+export class IdentityDocumentReaderDto {
   constructor(json: JSON | any) {
-    Object.assign(this as IdentityDocumentReader, json)
+    Object.assign(this as IdentityDocumentReaderDto, json)
   }
 
   justificatifDocumentNumber?: string
+  supportSerialNumber?: string
   timeReadingEIdDocument?: number
-  geteIdDocumentSupportType?: number
+  eidDocumentSupportType?: number
   reasonManualEncoding?: number
   reasonUsingVignette?: number
-  supportSerialNumber?: string
 }

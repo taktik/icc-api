@@ -11,9 +11,7 @@
  */
 import { AmpComponentDto } from "./AmpComponentDto"
 import { AmppDto } from "./AmppDto"
-import { Attachment } from "./Attachment"
 import { CompanyDto } from "./CompanyDto"
-import { RevisionInfo } from "./RevisionInfo"
 import { SamTextDto } from "./SamTextDto"
 import { VmpStubDto } from "./VmpStubDto"
 
@@ -23,6 +21,8 @@ export class AmpDto {
   }
 
   id?: string
+  rev?: string
+  deletionDate?: number
   from?: number
   to?: number
   code?: string
@@ -38,13 +38,6 @@ export class AmpDto {
   prescriptionName?: SamTextDto
   ampps?: Array<AmppDto>
   components?: Array<AmpComponentDto>
-  attachments?: { [key: string]: Attachment }
-  deleted?: number
-  rev?: string
-  revsInfo?: Array<RevisionInfo>
-  conflicts?: Array<string>
-  javaType?: string
-  revHistory?: { [key: string]: string }
 }
 export namespace AmpDto {
   export type StatusEnum = "AUTHORIZED" | "SUSPENDED" | "REVOKED"

@@ -13,7 +13,6 @@ import { XHR } from "./XHR"
 import { DelegationDto } from "../model/DelegationDto"
 import { DocIdentifier } from "../model/DocIdentifier"
 import { FormDto } from "../model/FormDto"
-import { FormLayout } from "../model/FormLayout"
 import { FormTemplateDto } from "../model/FormTemplateDto"
 import { IcureStubDto } from "../model/IcureStubDto"
 import { ListOfIdsDto } from "../model/ListOfIdsDto"
@@ -40,25 +39,6 @@ export class iccFormApi {
   handleError(e: XHR.Data) {
     if (e.status == 401) throw Error("auth-failed")
     else throw Error("api-error" + e.status)
-  }
-
-  /**
-   * Returns the converted layouts.
-   * @summary Convert legacy format layouts to a list of FormLayout
-   * @param body
-   */
-  convertLegacyFormTemplates(body?: Array<string>): Promise<Array<FormLayout> | any> {
-    let _body = null
-    _body = body
-
-    const _url = this.host + `/form/template/legacy` + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/octet-stream"))
-    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new FormLayout(it)))
-      .catch(err => this.handleError(err))
   }
 
   /**

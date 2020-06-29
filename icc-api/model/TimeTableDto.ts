@@ -9,8 +9,6 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeDto } from "./CodeDto"
-import { DelegationDto } from "./DelegationDto"
 import { TimeTableItemDto } from "./TimeTableItemDto"
 
 export class TimeTableDto {
@@ -21,19 +19,6 @@ export class TimeTableDto {
   id?: string
   rev?: string
   deletionDate?: number
-  created?: number
-  modified?: number
-  endOfLife?: number
-  author?: string
-  responsible?: string
-  medicalLocationId?: string
-  encryptedSelf?: string
-  codes?: Array<CodeDto>
-  tags?: Array<CodeDto>
-  secretForeignKeys?: Array<string>
-  cryptedForeignKeys?: { [key: string]: Array<DelegationDto> }
-  delegations?: { [key: string]: Array<DelegationDto> }
-  encryptionKeys?: { [key: string]: Array<DelegationDto> }
   name?: string
   agendaId?: string
   startTime?: number

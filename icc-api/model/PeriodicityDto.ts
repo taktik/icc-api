@@ -9,16 +9,13 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { MessageDto } from "./MessageDto"
-import { PaginatedDocumentKeyIdPair } from "./PaginatedDocumentKeyIdPair"
+import { CodeStubDto } from "./CodeStubDto"
 
-export class MessagePaginatedList {
+export class PeriodicityDto {
   constructor(json: JSON | any) {
-    Object.assign(this as MessagePaginatedList, json)
+    Object.assign(this as PeriodicityDto, json)
   }
 
-  totalSize?: number
-  pageSize?: number
-  nextKeyPair?: PaginatedDocumentKeyIdPair
-  rows?: Array<MessageDto>
+  relatedCode?: CodeStubDto
+  relatedPeriodicity?: CodeStubDto
 }

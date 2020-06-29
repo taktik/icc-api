@@ -19,6 +19,7 @@ export class CareTeamMembershipDto {
   endDate?: number
   careTeamMemberId?: string
   membershipType?: CareTeamMembershipDto.MembershipTypeEnum
+  encryptedSelf?: string
 }
 export namespace CareTeamMembershipDto {
   export type MembershipTypeEnum = "doctor" | "mutuality" | "patient" | "specialist" | "other"

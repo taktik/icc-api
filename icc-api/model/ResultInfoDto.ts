@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeDto } from "./CodeDto"
+import { CodeStubDto } from "./CodeStubDto"
 import { ServiceDto } from "./ServiceDto"
 
 export class ResultInfoDto {
@@ -28,6 +28,6 @@ export class ResultInfoDto {
   demandDate?: number
   labo?: string
   engine?: string
-  codes?: Array<CodeDto>
+  codes?: Array<CodeStubDto>
   services?: Array<ServiceDto>
 }

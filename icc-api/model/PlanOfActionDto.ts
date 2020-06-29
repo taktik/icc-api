@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 import { CareTeamMembershipDto } from "./CareTeamMembershipDto"
-import { CodeDto } from "./CodeDto"
+import { CodeStubDto } from "./CodeStubDto"
 
 export class PlanOfActionDto {
   constructor(json: JSON | any) {
@@ -18,25 +18,28 @@ export class PlanOfActionDto {
   }
 
   id?: string
-  name?: string
-  descr?: string
+  created?: number
+  modified?: number
+  author?: string
+  responsible?: string
+  medicalLocationId?: string
+  tags?: Array<CodeStubDto>
+  codes?: Array<CodeStubDto>
+  endOfLife?: number
   valueDate?: number
   openingDate?: number
   closingDate?: number
   deadlineDate?: number
+  name?: string
+  descr?: string
+  note?: string
+  relevant?: boolean
   idOpeningContact?: string
   idClosingContact?: string
-  author?: string
-  responsible?: string
-  created?: number
-  modified?: number
-  endOfLife?: number
-  codes?: Array<CodeDto>
-  tags?: Array<CodeDto>
+  status?: number
   documentIds?: Array<string>
   prescriberId?: string
   numberOfCares?: number
-  status?: number
   careTeamMemberships?: Array<CareTeamMembershipDto>
   encryptedSelf?: string
 }

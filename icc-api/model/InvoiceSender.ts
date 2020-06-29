@@ -25,5 +25,4 @@ export class InvoiceSender {
   phoneNumber?: number
   conventionCode?: number
   isSpecialist?: boolean
-  specialist?: boolean
 }

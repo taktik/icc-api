@@ -9,9 +9,9 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeDto } from "./CodeDto"
+import { CodeStubDto } from "./CodeStubDto"
 import { DelegationDto } from "./DelegationDto"
-import { MessageReadStatus } from "./MessageReadStatus"
+import { MessageReadStatusDto } from "./MessageReadStatusDto"
 
 export class MessageDto {
   constructor(json: JSON | any) {
@@ -20,20 +20,15 @@ export class MessageDto {
 
   id?: string
   rev?: string
-  deletionDate?: number
   created?: number
   modified?: number
-  endOfLife?: number
   author?: string
   responsible?: string
   medicalLocationId?: string
-  encryptedSelf?: string
-  codes?: Array<CodeDto>
-  tags?: Array<CodeDto>
-  secretForeignKeys?: Array<string>
-  cryptedForeignKeys?: { [key: string]: Array<DelegationDto> }
-  delegations?: { [key: string]: Array<DelegationDto> }
-  encryptionKeys?: { [key: string]: Array<DelegationDto> }
+  tags?: Array<CodeStubDto>
+  codes?: Array<CodeStubDto>
+  endOfLife?: number
+  deletionDate?: number
   fromAddress?: string
   fromHealthcarePartyId?: string
   formId?: string
@@ -44,7 +39,7 @@ export class MessageDto {
   received?: number
   sent?: number
   metas?: { [key: string]: string }
-  readStatus?: { [key: string]: MessageReadStatus }
+  readStatus?: { [key: string]: MessageReadStatusDto }
   transportGuid?: string
   remark?: string
   conversationGuid?: string
@@ -52,7 +47,12 @@ export class MessageDto {
   invoiceIds?: Array<string>
   parentId?: string
   externalRef?: string
-  senderReferences?: { [key: string]: string }
   unassignedResults?: Array<string>
   assignedResults?: { [key: string]: string }
+  senderReferences?: { [key: string]: string }
+  secretForeignKeys?: Array<string>
+  cryptedForeignKeys?: { [key: string]: Array<DelegationDto> }
+  delegations?: { [key: string]: Array<DelegationDto> }
+  encryptionKeys?: { [key: string]: Array<DelegationDto> }
+  encryptedSelf?: string
 }

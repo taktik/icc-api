@@ -10,15 +10,15 @@
  * Do not edit the class manually.
  */
 import { HealthcarePartyDto } from "./HealthcarePartyDto"
-import { PaginatedDocumentKeyIdPair } from "./PaginatedDocumentKeyIdPair"
+import { PaginatedDocumentKeyIdPairObject } from "./PaginatedDocumentKeyIdPairObject"
 
 export class PaginatedListHealthcarePartyDto {
   constructor(json: JSON | any) {
     Object.assign(this as PaginatedListHealthcarePartyDto, json)
   }
 
-  totalSize?: number
   pageSize?: number
-  nextKeyPair?: PaginatedDocumentKeyIdPair
+  totalSize?: number
   rows?: Array<HealthcarePartyDto>
+  nextKeyPair?: PaginatedDocumentKeyIdPairObject
 }

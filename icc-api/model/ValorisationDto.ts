@@ -24,4 +24,5 @@ export class ValorisationDto {
   doctorSupplement?: number
   vat?: number
   label?: { [key: string]: string }
+  encryptedSelf?: string
 }

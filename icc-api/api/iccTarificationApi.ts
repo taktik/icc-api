@@ -11,8 +11,8 @@
  */
 import { XHR } from "./XHR"
 import { ListOfIdsDto } from "../model/ListOfIdsDto"
+import { PaginatedListTarificationDto } from "../model/PaginatedListTarificationDto"
 import { TarificationDto } from "../model/TarificationDto"
-import { TarificationPaginatedList } from "../model/TarificationPaginatedList"
 
 export class iccTarificationApi {
   host: string
@@ -74,7 +74,7 @@ export class iccTarificationApi {
     version?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<TarificationPaginatedList | any> {
+  ): Promise<PaginatedListTarificationDto | any> {
     let _body = null
 
     const _url =
@@ -90,7 +90,7 @@ export class iccTarificationApi {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new TarificationPaginatedList(doc.body as JSON))
+      .then(doc => new PaginatedListTarificationDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 
@@ -111,7 +111,7 @@ export class iccTarificationApi {
     label?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<TarificationPaginatedList | any> {
+  ): Promise<PaginatedListTarificationDto | any> {
     let _body = null
 
     const _url =
@@ -127,7 +127,7 @@ export class iccTarificationApi {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new TarificationPaginatedList(doc.body as JSON))
+      .then(doc => new PaginatedListTarificationDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 
@@ -165,6 +165,7 @@ export class iccTarificationApi {
   /**
    * Get a tarification based on ID or (tarification,type,version) as query strings. (tarification,type,version) is unique.
    * @summary Get a tarification
+   * @param tarificationId Tarification id
    */
   getTarification(tarificationId: string): Promise<TarificationDto | any> {
     let _body = null
@@ -183,6 +184,9 @@ export class iccTarificationApi {
   /**
    * Get a tarification based on ID or (tarification,type,version) as query strings. (tarification,type,version) is unique.
    * @summary Get a tarification
+   * @param type Tarification type
+   * @param tarification Tarification tarification
+   * @param version Tarification version
    */
   getTarificationWithParts(
     type: string,

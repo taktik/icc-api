@@ -15,30 +15,73 @@ export class PartnershipDto {
     Object.assign(this as PartnershipDto, json)
   }
 
-  partnershipDescription?: string
   type?: PartnershipDto.TypeEnum
   status?: PartnershipDto.StatusEnum
+  partnerId?: string
   meToOtherRelationshipDescription?: string
   otherToMeRelationshipDescription?: string
-  partnerId?: string
 }
 export namespace PartnershipDto {
   export type TypeEnum =
     | "primary_contact"
     | "primary_contact_for"
-    | "tutor"
     | "family"
     | "friend"
     | "counselor"
     | "contact"
+    | "brother"
+    | "brotherinlaw"
+    | "child"
+    | "daughter"
+    | "employer"
+    | "father"
+    | "grandchild"
+    | "grandparent"
+    | "husband"
+    | "lawyer"
+    | "mother"
+    | "neighbour"
+    | "notary"
+    | "partner"
+    | "sister"
+    | "sisterinlaw"
+    | "son"
+    | "spouse"
+    | "stepdaughter"
+    | "stepfather"
+    | "stepmother"
+    | "stepson"
+    | "tutor"
   export const TypeEnum = {
     PrimaryContact: "primary_contact" as TypeEnum,
     PrimaryContactFor: "primary_contact_for" as TypeEnum,
-    Tutor: "tutor" as TypeEnum,
     Family: "family" as TypeEnum,
     Friend: "friend" as TypeEnum,
     Counselor: "counselor" as TypeEnum,
-    Contact: "contact" as TypeEnum
+    Contact: "contact" as TypeEnum,
+    Brother: "brother" as TypeEnum,
+    Brotherinlaw: "brotherinlaw" as TypeEnum,
+    Child: "child" as TypeEnum,
+    Daughter: "daughter" as TypeEnum,
+    Employer: "employer" as TypeEnum,
+    Father: "father" as TypeEnum,
+    Grandchild: "grandchild" as TypeEnum,
+    Grandparent: "grandparent" as TypeEnum,
+    Husband: "husband" as TypeEnum,
+    Lawyer: "lawyer" as TypeEnum,
+    Mother: "mother" as TypeEnum,
+    Neighbour: "neighbour" as TypeEnum,
+    Notary: "notary" as TypeEnum,
+    Partner: "partner" as TypeEnum,
+    Sister: "sister" as TypeEnum,
+    Sisterinlaw: "sisterinlaw" as TypeEnum,
+    Son: "son" as TypeEnum,
+    Spouse: "spouse" as TypeEnum,
+    Stepdaughter: "stepdaughter" as TypeEnum,
+    Stepfather: "stepfather" as TypeEnum,
+    Stepmother: "stepmother" as TypeEnum,
+    Stepson: "stepson" as TypeEnum,
+    Tutor: "tutor" as TypeEnum
   }
   export type StatusEnum = "active" | "complicated" | "past"
   export const StatusEnum = {

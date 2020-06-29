@@ -12,11 +12,11 @@
 import { XHR } from "./XHR"
 import { DocIdentifier } from "../model/DocIdentifier"
 import { EmailTemplateDto } from "../model/EmailTemplateDto"
-import { PropertyDto } from "../model/PropertyDto"
+import { PaginatedListUserDto } from "../model/PaginatedListUserDto"
+import { PropertyStubDto } from "../model/PropertyStubDto"
 import { Unit } from "../model/Unit"
 import { UserDto } from "../model/UserDto"
 import { UserGroupDto } from "../model/UserGroupDto"
-import { UserPaginatedList } from "../model/UserPaginatedList"
 
 export class iccUserApi {
   host: string
@@ -301,7 +301,7 @@ export class iccUserApi {
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<UserPaginatedList | any> {
+  ): Promise<PaginatedListUserDto | any> {
     let _body = null
 
     const _url =
@@ -314,7 +314,7 @@ export class iccUserApi {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new UserPaginatedList(doc.body as JSON))
+      .then(doc => new PaginatedListUserDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 
@@ -331,7 +331,7 @@ export class iccUserApi {
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<UserPaginatedList | any> {
+  ): Promise<PaginatedListUserDto | any> {
     let _body = null
 
     const _url =
@@ -344,7 +344,7 @@ export class iccUserApi {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new UserPaginatedList(doc.body as JSON))
+      .then(doc => new PaginatedListUserDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 
@@ -354,7 +354,7 @@ export class iccUserApi {
    * @param body
    * @param userId
    */
-  modifyProperties(userId: string, body?: Array<PropertyDto>): Promise<UserDto | any> {
+  modifyProperties(userId: string, body?: Array<PropertyStubDto>): Promise<UserDto | any> {
     let _body = null
     _body = body
 

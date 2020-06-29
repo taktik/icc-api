@@ -9,13 +9,11 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStub } from "./CodeStub"
 
-export class Periodicity {
+export class ServiceLinkDto {
   constructor(json: JSON | any) {
-    Object.assign(this as Periodicity, json)
+    Object.assign(this as ServiceLinkDto, json)
   }
 
-  relatedCode?: CodeStub
-  relatedPeriodicity?: CodeStub
+  serviceId?: string
 }

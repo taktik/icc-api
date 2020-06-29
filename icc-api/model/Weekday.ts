@@ -9,13 +9,13 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeDto } from "./CodeDto"
+import { CodeStubDto } from "./CodeStubDto"
 
 export class Weekday {
   constructor(json: JSON | any) {
     Object.assign(this as Weekday, json)
   }
 
-  weekday?: CodeDto
+  weekday?: CodeStubDto
   weekNumber?: number
 }

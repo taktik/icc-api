@@ -17,13 +17,13 @@ export class EntityReference {
     Object.assign(this as EntityReference, json)
   }
 
-  docId?: string
-  attachments?: { [key: string]: Attachment }
-  deleted?: number
   id?: string
   rev?: string
+  deleted?: number
+  docId?: string
+  attachments?: { [key: string]: Attachment }
   revsInfo?: Array<RevisionInfo>
   conflicts?: Array<string>
-  javaType?: string
   revHistory?: { [key: string]: string }
+  javaType?: string
 }

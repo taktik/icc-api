@@ -9,14 +9,13 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { FormColumn } from "./FormColumn"
 
-export class FormSection {
+export class ReferralPeriodDto {
   constructor(json: JSON | any) {
-    Object.assign(this as FormSection, json)
+    Object.assign(this as ReferralPeriodDto, json)
   }
 
-  title?: string
-  columns?: number
-  formColumns?: Array<FormColumn>
+  startDate?: number
+  endDate?: number
+  comment?: string
 }

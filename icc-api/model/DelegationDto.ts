@@ -18,5 +18,5 @@ export class DelegationDto {
   owner?: string
   delegatedTo?: string
   key?: string
-  tag?: string
+  tags?: Array<string>
 }

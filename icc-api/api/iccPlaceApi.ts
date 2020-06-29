@@ -75,6 +75,7 @@ export class iccPlaceApi {
   /**
    *
    * @summary Gets an place
+   * @param placeId
    */
   getPlace(placeId: string): Promise<PlaceDto | any> {
     let _body = null

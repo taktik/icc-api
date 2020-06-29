@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStub } from "./CodeStub"
+import { CodeStubDto } from "./CodeStubDto"
 
 export class SchoolingInfoDto {
   constructor(json: JSON | any) {
@@ -19,5 +19,5 @@ export class SchoolingInfoDto {
   startDate?: number
   endDate?: number
   school?: string
-  typeOfEducation?: CodeStub
+  typeOfEducation?: CodeStubDto
 }

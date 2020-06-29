@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeDto } from "./CodeDto"
+import { CodeStubDto } from "./CodeStubDto"
 
 export class MeasureDto {
   constructor(json: JSON | any) {
@@ -20,8 +20,9 @@ export class MeasureDto {
   min?: number
   max?: number
   ref?: number
-  unit?: string
-  unitCodes?: Array<CodeDto>
-  comment?: string
   severity?: number
+  severityCode?: string
+  unit?: string
+  unitCodes?: Array<CodeStubDto>
+  comment?: string
 }

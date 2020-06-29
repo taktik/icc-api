@@ -10,20 +10,19 @@
  * Do not edit the class manually.
  */
 
-export class TypedValueDto {
+export class TypedValueDtoObject {
   constructor(json: JSON | any) {
-    Object.assign(this as TypedValueDto, json)
+    Object.assign(this as TypedValueDtoObject, json)
   }
 
-  type?: TypedValueDto.TypeEnum
+  type?: TypedValueDtoObject.TypeEnum
   booleanValue?: boolean
   integerValue?: number
   doubleValue?: number
   stringValue?: string
-  dateValue?: Date
-  valueType?: TypedValueDto.ValueTypeEnum
+  dateValue?: number
 }
-export namespace TypedValueDto {
+export namespace TypedValueDtoObject {
   export type TypeEnum = "BOOLEAN" | "INTEGER" | "DOUBLE" | "STRING" | "DATE" | "CLOB" | "JSON"
   export const TypeEnum = {
     BOOLEAN: "BOOLEAN" as TypeEnum,
@@ -33,15 +32,5 @@ export namespace TypedValueDto {
     DATE: "DATE" as TypeEnum,
     CLOB: "CLOB" as TypeEnum,
     JSON: "JSON" as TypeEnum
-  }
-  export type ValueTypeEnum = "BOOLEAN" | "INTEGER" | "DOUBLE" | "STRING" | "DATE" | "CLOB" | "JSON"
-  export const ValueTypeEnum = {
-    BOOLEAN: "BOOLEAN" as ValueTypeEnum,
-    INTEGER: "INTEGER" as ValueTypeEnum,
-    DOUBLE: "DOUBLE" as ValueTypeEnum,
-    STRING: "STRING" as ValueTypeEnum,
-    DATE: "DATE" as ValueTypeEnum,
-    CLOB: "CLOB" as ValueTypeEnum,
-    JSON: "JSON" as ValueTypeEnum
   }
 }

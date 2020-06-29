@@ -240,7 +240,7 @@ export class IccContactXApi extends iccContactApi {
     startKey?: string,
     startDocumentId?: string,
     limit?: number,
-    body?: models.FilterChain
+    body?: models.FilterChainContact
   ): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
@@ -316,7 +316,7 @@ export class IccContactXApi extends iccContactApi {
     user: models.UserDto,
     startDocumentId?: string,
     limit?: number,
-    body?: models.FilterChain
+    body?: models.FilterChainContact
   ): Promise<PaginatedListContactDto | any> {
     return super
       .filterContactsBy(startDocumentId, limit, body)

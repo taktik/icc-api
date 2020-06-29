@@ -9,14 +9,13 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { TelecomDtoEmbed } from "./TelecomDtoEmbed"
+import { TelecomDto } from "./TelecomDto"
 
 export class AddressDto {
   constructor(json: JSON | any) {
     Object.assign(this as AddressDto, json)
   }
 
-  objectType?: string
   addressType?: AddressDto.AddressTypeEnum
   descr?: string
   street?: string
@@ -25,9 +24,9 @@ export class AddressDto {
   postalCode?: string
   city?: string
   country?: string
-  encryptedSelf?: string
   note?: string
-  telecoms?: Array<TelecomDtoEmbed>
+  telecoms?: Array<TelecomDto>
+  encryptedSelf?: string
 }
 export namespace AddressDto {
   export type AddressTypeEnum =

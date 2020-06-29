@@ -10,13 +10,8 @@
  * Do not edit the class manually.
  */
 
-export class CodeStub {
+export class Data {
   constructor(json: JSON | any) {
-    Object.assign(this as CodeStub, json)
+    Object.assign(this as Data, json)
   }
-
-  code?: string
-  type?: string
-  version?: string
-  id?: string
 }

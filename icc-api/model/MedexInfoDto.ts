@@ -17,6 +17,8 @@ export class MedexInfoDto {
     Object.assign(this as MedexInfoDto, json)
   }
 
+  beginDate?: number
+  endDate?: number
   author?: HealthcarePartyDto
   patient?: PatientDto
   patientLanguage?: string
@@ -25,8 +27,6 @@ export class MedexInfoDto {
   outOfHomeAllowed?: boolean
   certificateDate?: number
   contentDate?: number
-  beginDate?: number
-  endDate?: number
   diagnosisICPC?: string
   diagnosisICD?: string
   diagnosisDescr?: string

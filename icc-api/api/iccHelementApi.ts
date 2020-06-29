@@ -12,7 +12,7 @@
 import { XHR } from "./XHR"
 import { DelegationDto } from "../model/DelegationDto"
 import { DocIdentifier } from "../model/DocIdentifier"
-import { FilterChain } from "../model/FilterChain"
+import { FilterChainHealthElement } from "../model/FilterChainHealthElement"
 import { HealthElementDto } from "../model/HealthElementDto"
 import { IcureStubDto } from "../model/IcureStubDto"
 
@@ -83,7 +83,7 @@ export class iccHelementApi {
    * @summary Filter health elements for the current user (HcParty)
    * @param body
    */
-  filterHealthElementsBy(body?: FilterChain): Promise<Array<HealthElementDto> | any> {
+  filterHealthElementsBy(body?: FilterChainHealthElement): Promise<Array<HealthElementDto> | any> {
     let _body = null
     _body = body
 
@@ -236,7 +236,7 @@ export class iccHelementApi {
    * @summary Update delegations in healthElements.
    * @param body
    */
-  setHealthElementsDelegations(body?: Array<IcureStubDto>): Promise<Array<IcureStubDto> | any> {
+  setHealthElementsDelegations(body?: Array<IcureStubDto>): Promise<Array<HealthElementDto> | any> {
     let _body = null
     _body = body
 
@@ -246,7 +246,7 @@ export class iccHelementApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new IcureStubDto(it)))
+      .then(doc => (doc.body as Array<JSON>).map(it => new HealthElementDto(it)))
       .catch(err => this.handleError(err))
   }
 }

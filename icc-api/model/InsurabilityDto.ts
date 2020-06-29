@@ -21,7 +21,8 @@ export class InsurabilityDto {
   dental?: boolean
   identificationNumber?: string
   insuranceId?: string
-  titularyId?: string
   startDate?: number
   endDate?: number
+  titularyId?: string
+  encryptedSelf?: string
 }

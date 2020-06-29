@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CalendarItemDto } from "./CalendarItemDto"
-import { Right } from "./Right"
+import { CodeStubDto } from "./CodeStubDto"
+import { RightDto } from "./RightDto"
 
 export class AgendaDto {
   constructor(json: JSON | any) {
@@ -19,9 +19,16 @@ export class AgendaDto {
 
   id?: string
   rev?: string
+  created?: number
+  modified?: number
+  author?: string
+  responsible?: string
+  medicalLocationId?: string
+  tags?: Array<CodeStubDto>
+  codes?: Array<CodeStubDto>
+  endOfLife?: number
   deletionDate?: number
   name?: string
   userId?: string
-  events?: Array<CalendarItemDto>
-  rights?: Array<Right>
+  rights?: Array<RightDto>
 }

@@ -14,7 +14,8 @@ import { ContactDto } from "../model/ContactDto"
 import { ContentDto } from "../model/ContentDto"
 import { DelegationDto } from "../model/DelegationDto"
 import { DocIdentifier } from "../model/DocIdentifier"
-import { FilterChain } from "../model/FilterChain"
+import { FilterChainContact } from "../model/FilterChainContact"
+import { FilterChainService } from "../model/FilterChainService"
 import { FilterDtoObject } from "../model/FilterDtoObject"
 import { IcureStubDto } from "../model/IcureStubDto"
 import { LabelledOccurenceDto } from "../model/LabelledOccurenceDto"
@@ -119,7 +120,7 @@ export class iccContactApi {
   filterContactsBy(
     startDocumentId?: string,
     limit?: number,
-    body?: FilterChain
+    body?: FilterChainContact
   ): Promise<PaginatedListContactDto | any> {
     let _body = null
     _body = body
@@ -150,7 +151,7 @@ export class iccContactApi {
   filterServicesBy(
     startDocumentId?: string,
     limit?: number,
-    body?: FilterChain
+    body?: FilterChainService
   ): Promise<PaginatedListServiceDto | any> {
     let _body = null
     _body = body
@@ -503,7 +504,7 @@ export class iccContactApi {
    * @summary Update delegations in healthElements.
    * @param body
    */
-  setContactsDelegations(body?: Array<IcureStubDto>): Promise<Array<IcureStubDto> | any> {
+  setContactsDelegations(body?: Array<IcureStubDto>): Promise<Array<ContactDto> | any> {
     let _body = null
     _body = body
 
@@ -513,7 +514,7 @@ export class iccContactApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new IcureStubDto(it)))
+      .then(doc => (doc.body as Array<JSON>).map(it => new ContactDto(it)))
       .catch(err => this.handleError(err))
   }
 }

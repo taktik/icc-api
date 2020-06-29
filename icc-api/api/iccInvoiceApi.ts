@@ -12,13 +12,12 @@
 import { XHR } from "./XHR"
 import { DelegationDto } from "../model/DelegationDto"
 import { DocIdentifier } from "../model/DocIdentifier"
-import { FilterChain } from "../model/FilterChain"
+import { FilterChainInvoice } from "../model/FilterChainInvoice"
 import { IcureStubDto } from "../model/IcureStubDto"
 import { InvoiceDto } from "../model/InvoiceDto"
 import { InvoicingCodeDto } from "../model/InvoicingCodeDto"
 import { LabelledOccurenceDto } from "../model/LabelledOccurenceDto"
 import { ListOfIdsDto } from "../model/ListOfIdsDto"
-import { MessageDto } from "../model/MessageDto"
 import { PaginatedListInvoiceDto } from "../model/PaginatedListInvoiceDto"
 
 export class iccInvoiceApi {
@@ -133,7 +132,7 @@ export class iccInvoiceApi {
    * @summary Filter invoices for the current user (HcParty)
    * @param body
    */
-  filterInvoicesBy(body?: FilterChain): Promise<Array<InvoiceDto> | any> {
+  filterInvoicesBy(body?: FilterChainInvoice): Promise<Array<InvoiceDto> | any> {
     let _body = null
     _body = body
 
@@ -622,7 +621,7 @@ export class iccInvoiceApi {
    * @param body
    * @param invoiceId
    */
-  newInvoiceDelegations(invoiceId: string, body?: Array<DelegationDto>): Promise<MessageDto | any> {
+  newInvoiceDelegations(invoiceId: string, body?: Array<DelegationDto>): Promise<InvoiceDto | any> {
     let _body = null
     _body = body
 
@@ -636,7 +635,7 @@ export class iccInvoiceApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new MessageDto(doc.body as JSON))
+      .then(doc => new InvoiceDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 

@@ -10,18 +10,10 @@
  * Do not edit the class manually.
  */
 
-export class VirtualHostDto {
+export class FilterDtoInvoice {
   constructor(json: JSON | any) {
-    Object.assign(this as VirtualHostDto, json)
+    Object.assign(this as FilterDtoInvoice, json)
   }
 
-  id?: string
-  rev?: string
-  deletionDate?: number
-  identifier?: string
-  hostnames?: string
-  anonymousRole?: string
-  configuration?: string
-  roles?: Array<string>
-  hostnamesList?: Array<string>
+  desc?: string
 }

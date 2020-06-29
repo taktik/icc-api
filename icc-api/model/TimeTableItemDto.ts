@@ -21,6 +21,6 @@ export class TimeTableItemDto {
   recurrenceTypes?: Array<string>
   calendarItemTypeId?: string
   homeVisit?: boolean
-  unavailable?: boolean
   placeId?: string
+  unavailable?: boolean
 }

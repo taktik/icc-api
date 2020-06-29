@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 import { AddressDto } from "./AddressDto"
-import { CodeDto } from "./CodeDto"
+import { CodeStubDto } from "./CodeStubDto"
 import { FinancialInstitutionInformationDto } from "./FinancialInstitutionInformationDto"
 import { FlatRateTarificationDto } from "./FlatRateTarificationDto"
 
@@ -27,58 +27,50 @@ export class HealthcarePartyDto {
   firstName?: string
   gender?: HealthcarePartyDto.GenderEnum
   civility?: string
-  speciality?: string
   companyName?: string
+  speciality?: string
   bankAccount?: string
   bic?: string
   proxyBankAccount?: string
   proxyBic?: string
   invoiceHeader?: string
-  userName?: string
-  publicKey?: string
-  nihii?: string
-  ssin?: string
-  picture?: Array<string>
   cbe?: string
   ehp?: string
-  convention?: number
   userId?: string
   parentId?: string
-  supervisorId?: string
-  notes?: string
-  sendFormats?: { [key: string]: string }
+  convention?: number
+  nihii?: string
+  nihiiSpecCode?: string
+  ssin?: string
   addresses?: Array<AddressDto>
   languages?: Array<string>
+  picture?: Array<string>
   statuses?: Array<HealthcarePartyDto.StatusesEnum>
-  specialityCodes?: Array<CodeDto>
-  hcPartyKeys?: { [key: string]: Array<string> }
-  privateKeyShamirPartitions?: { [key: string]: string }
+  specialityCodes?: Array<CodeStubDto>
+  sendFormats?: { [key: string]: string }
+  notes?: string
   financialInstitutionInformation?: Array<FinancialInstitutionInformationDto>
-  options?: { [key: string]: string }
   billingType?: string
   type?: string
   contactPerson?: string
   contactPersonHcpId?: string
   flatRateTarifications?: Array<FlatRateTarificationDto>
   importedData?: { [key: string]: string }
+  options?: { [key: string]: string }
+  hcPartyKeys?: { [key: string]: Array<string> }
+  privateKeyShamirPartitions?: { [key: string]: string }
+  publicKey?: string
 }
 export namespace HealthcarePartyDto {
-  export type GenderEnum =
-    | "male"
-    | "female"
-    | "unknown"
-    | "indeterminate"
-    | "changed"
-    | "changedToMale"
-    | "changedToFemale"
+  export type GenderEnum = "M" | "F" | "I" | "C" | "Y" | "X" | "U"
   export const GenderEnum = {
-    Male: "male" as GenderEnum,
-    Female: "female" as GenderEnum,
-    Unknown: "unknown" as GenderEnum,
-    Indeterminate: "indeterminate" as GenderEnum,
-    Changed: "changed" as GenderEnum,
-    ChangedToMale: "changedToMale" as GenderEnum,
-    ChangedToFemale: "changedToFemale" as GenderEnum
+    M: "M" as GenderEnum,
+    F: "F" as GenderEnum,
+    I: "I" as GenderEnum,
+    C: "C" as GenderEnum,
+    Y: "Y" as GenderEnum,
+    X: "X" as GenderEnum,
+    U: "U" as GenderEnum
   }
   export type StatusesEnum = "trainee" | "withconvention" | "accreditated"
   export const StatusesEnum = {

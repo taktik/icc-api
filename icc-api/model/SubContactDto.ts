@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeDto } from "./CodeDto"
-import { ServiceLink } from "./ServiceLink"
+import { CodeStubDto } from "./CodeStubDto"
+import { ServiceLinkDto } from "./ServiceLinkDto"
 
 export class SubContactDto {
   constructor(json: JSON | any) {
@@ -18,22 +18,21 @@ export class SubContactDto {
   }
 
   id?: string
-  openingDate?: number
+  created?: number
+  modified?: number
+  author?: string
+  responsible?: string
+  medicalLocationId?: string
+  tags?: Array<CodeStubDto>
+  codes?: Array<CodeStubDto>
+  endOfLife?: number
   descr?: string
   protocol?: string
   status?: number
-  hasBeenInitialized?: boolean
   formId?: string
   planOfActionId?: string
   healthElementId?: string
   classificationId?: string
-  created?: number
-  modified?: number
-  endOfLife?: number
-  author?: string
-  responsible?: string
-  codes?: Array<CodeDto>
-  tags?: Array<CodeDto>
-  services?: Array<ServiceLink>
+  services?: Array<ServiceLinkDto>
   encryptedSelf?: string
 }

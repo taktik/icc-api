@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeDto } from "./CodeDto"
+import { CodeStubDto } from "./CodeStubDto"
 
 export class AdministrationQuantity {
   constructor(json: JSON | any) {
@@ -17,6 +17,6 @@ export class AdministrationQuantity {
   }
 
   quantity?: number
-  administrationUnit?: CodeDto
+  administrationUnit?: CodeStubDto
   unit?: string
 }

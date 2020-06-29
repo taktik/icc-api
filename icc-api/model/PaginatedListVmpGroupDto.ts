@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { PaginatedDocumentKeyIdPair } from "./PaginatedDocumentKeyIdPair"
+import { PaginatedDocumentKeyIdPairObject } from "./PaginatedDocumentKeyIdPairObject"
 import { VmpGroupDto } from "./VmpGroupDto"
 
 export class PaginatedListVmpGroupDto {
@@ -17,8 +17,8 @@ export class PaginatedListVmpGroupDto {
     Object.assign(this as PaginatedListVmpGroupDto, json)
   }
 
-  totalSize?: number
   pageSize?: number
-  nextKeyPair?: PaginatedDocumentKeyIdPair
+  totalSize?: number
   rows?: Array<VmpGroupDto>
+  nextKeyPair?: PaginatedDocumentKeyIdPairObject
 }

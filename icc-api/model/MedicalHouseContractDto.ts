@@ -20,6 +20,7 @@ export class MedicalHouseContractDto {
   validTo?: number
   mmNihii?: string
   hcpId?: string
+  changeType?: MedicalHouseContractDto.ChangeTypeEnum
   parentContractId?: string
   changedBy?: string
   startOfContract?: number
@@ -29,18 +30,29 @@ export class MedicalHouseContractDto {
   kine?: boolean
   gp?: boolean
   nurse?: boolean
-  unsubscriptionReasonId?: number
   noKine?: boolean
   noGp?: boolean
   noNurse?: boolean
+  unsubscriptionReasonId?: number
   startOfSuspension?: number
   endOfSuspension?: number
   suspensionReason?: MedicalHouseContractDto.SuspensionReasonEnum
   suspensionSource?: string
   forcedSuspension?: boolean
-  changeType?: MedicalHouseContractDto.ChangeTypeEnum
+  encryptedSelf?: string
 }
 export namespace MedicalHouseContractDto {
+  export type ChangeTypeEnum =
+    | "inscriptionStart"
+    | "inscriptionEnd"
+    | "suspension"
+    | "coverageChange"
+  export const ChangeTypeEnum = {
+    InscriptionStart: "inscriptionStart" as ChangeTypeEnum,
+    InscriptionEnd: "inscriptionEnd" as ChangeTypeEnum,
+    Suspension: "suspension" as ChangeTypeEnum,
+    CoverageChange: "coverageChange" as ChangeTypeEnum
+  }
   export type SuspensionReasonEnum =
     | "notInsured"
     | "noReasonGiven"
@@ -53,16 +65,5 @@ export namespace MedicalHouseContractDto {
     IsHospitalized: "isHospitalized" as SuspensionReasonEnum,
     OutsideOfCountry: "outsideOfCountry" as SuspensionReasonEnum,
     ChangeOfMutuality: "changeOfMutuality" as SuspensionReasonEnum
-  }
-  export type ChangeTypeEnum =
-    | "inscriptionStart"
-    | "inscriptionEnd"
-    | "suspension"
-    | "coverageChange"
-  export const ChangeTypeEnum = {
-    InscriptionStart: "inscriptionStart" as ChangeTypeEnum,
-    InscriptionEnd: "inscriptionEnd" as ChangeTypeEnum,
-    Suspension: "suspension" as ChangeTypeEnum,
-    CoverageChange: "coverageChange" as ChangeTypeEnum
   }
 }

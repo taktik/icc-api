@@ -10,15 +10,15 @@
  * Do not edit the class manually.
  */
 import { ClassificationTemplateDto } from "./ClassificationTemplateDto"
-import { PaginatedDocumentKeyIdPair } from "./PaginatedDocumentKeyIdPair"
+import { PaginatedDocumentKeyIdPairObject } from "./PaginatedDocumentKeyIdPairObject"
 
 export class PaginatedListClassificationTemplateDto {
   constructor(json: JSON | any) {
     Object.assign(this as PaginatedListClassificationTemplateDto, json)
   }
 
-  totalSize?: number
   pageSize?: number
-  nextKeyPair?: PaginatedDocumentKeyIdPair
+  totalSize?: number
   rows?: Array<ClassificationTemplateDto>
+  nextKeyPair?: PaginatedDocumentKeyIdPairObject
 }

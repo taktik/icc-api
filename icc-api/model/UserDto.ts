@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 import { PermissionDto } from "./PermissionDto"
-import { PropertyDto } from "./PropertyDto"
+import { PropertyStubDto } from "./PropertyStubDto"
 
 export class UserDto {
   constructor(json: JSON | any) {
@@ -21,16 +21,19 @@ export class UserDto {
   rev?: string
   deletionDate?: number
   name?: string
-  properties?: Array<PropertyDto>
+  properties?: Array<PropertyStubDto>
   permissions?: Array<PermissionDto>
+  roles?: Array<string>
   type?: UserDto.TypeEnum
   status?: UserDto.StatusEnum
-  groupId?: string
   login?: string
-  password?: string
   passwordHash?: string
   secret?: string
   use2fa?: boolean
+  groupId?: string
+  healthcarePartyId?: string
+  patientId?: string
+  autoDelegations?: { [key: string]: Array<string> }
   createdDate?: number
   lastLoginDate?: number
   expirationDate?: number
@@ -39,14 +42,8 @@ export class UserDto {
   passwordToken?: string
   passwordTokenExpirationDate?: number
   termsOfUseDate?: number
-  healthcarePartyId?: string
-  patientId?: string
-  roles?: Array<string>
   email?: string
-  autoDelegations?: { [key: string]: Array<string> }
   applicationTokens?: { [key: string]: string }
-  virtualHostDependency?: UserDto.VirtualHostDependencyEnum
-  virtualHosts?: Array<string>
 }
 export namespace UserDto {
   export type TypeEnum = "database" | "ldap" | "token"
@@ -60,11 +57,5 @@ export namespace UserDto {
     ACTIVE: "ACTIVE" as StatusEnum,
     DISABLED: "DISABLED" as StatusEnum,
     REGISTERING: "REGISTERING" as StatusEnum
-  }
-  export type VirtualHostDependencyEnum = "NONE" | "DIRECT" | "FULL"
-  export const VirtualHostDependencyEnum = {
-    NONE: "NONE" as VirtualHostDependencyEnum,
-    DIRECT: "DIRECT" as VirtualHostDependencyEnum,
-    FULL: "FULL" as VirtualHostDependencyEnum
   }
 }

@@ -11,7 +11,7 @@
  */
 import { AddressDto } from "./AddressDto"
 import { CalendarItemTagDto } from "./CalendarItemTagDto"
-import { CodeDto } from "./CodeDto"
+import { CodeStubDto } from "./CodeStubDto"
 import { DelegationDto } from "./DelegationDto"
 import { FlowItemDto } from "./FlowItemDto"
 
@@ -22,20 +22,15 @@ export class CalendarItemDto {
 
   id?: string
   rev?: string
-  deletionDate?: number
   created?: number
   modified?: number
-  endOfLife?: number
   author?: string
   responsible?: string
   medicalLocationId?: string
-  encryptedSelf?: string
-  codes?: Array<CodeDto>
-  tags?: Array<CodeDto>
-  secretForeignKeys?: Array<string>
-  cryptedForeignKeys?: { [key: string]: Array<DelegationDto> }
-  delegations?: { [key: string]: Array<DelegationDto> }
-  encryptionKeys?: { [key: string]: Array<DelegationDto> }
+  tags?: Array<CodeStubDto>
+  codes?: Array<CodeStubDto>
+  endOfLife?: number
+  deletionDate?: number
   title?: string
   calendarItemTypeId?: string
   masterCalendarItemId?: string
@@ -53,8 +48,13 @@ export class CalendarItemDto {
   duration?: number
   allDay?: boolean
   details?: string
-  agendaId?: string
   wasMigrated?: boolean
+  agendaId?: string
   meetingTags?: Array<CalendarItemTagDto>
   flowItem?: FlowItemDto
+  secretForeignKeys?: Array<string>
+  cryptedForeignKeys?: { [key: string]: Array<DelegationDto> }
+  delegations?: { [key: string]: Array<DelegationDto> }
+  encryptionKeys?: { [key: string]: Array<DelegationDto> }
+  encryptedSelf?: string
 }

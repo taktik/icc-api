@@ -17,5 +17,14 @@ export class DatabaseSynchronizationDto {
 
   source?: string
   target?: string
-  localTarget?: string
+  filter?: string
+  localTarget?: DatabaseSynchronizationDto.LocalTargetEnum
+}
+export namespace DatabaseSynchronizationDto {
+  export type LocalTargetEnum = "base" | "healthdata" | "patient"
+  export const LocalTargetEnum = {
+    Base: "base" as LocalTargetEnum,
+    Healthdata: "healthdata" as LocalTargetEnum,
+    Patient: "patient" as LocalTargetEnum
+  }
 }

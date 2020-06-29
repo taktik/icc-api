@@ -19,6 +19,7 @@ export class InsuranceDto {
   id?: string
   rev?: string
   deletionDate?: number
+  name?: { [key: string]: string }
   privateInsurance?: boolean
   hospitalisationInsurance?: boolean
   ambulatoryInsurance?: boolean
@@ -26,5 +27,4 @@ export class InsuranceDto {
   agreementNumber?: string
   parent?: string
   address?: AddressDto
-  name?: { [key: string]: string }
 }

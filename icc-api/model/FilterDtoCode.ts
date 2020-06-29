@@ -10,12 +10,10 @@
  * Do not edit the class manually.
  */
 
-export class ReferralPeriod {
+export class FilterDtoCode {
   constructor(json: JSON | any) {
-    Object.assign(this as ReferralPeriod, json)
+    Object.assign(this as FilterDtoCode, json)
   }
 
-  startDate?: number
-  endDate?: number
-  comment?: string
+  desc?: string
 }

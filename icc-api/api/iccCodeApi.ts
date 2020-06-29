@@ -11,7 +11,7 @@
  */
 import { XHR } from "./XHR"
 import { CodeDto } from "../model/CodeDto"
-import { FilterChain } from "../model/FilterChain"
+import { FilterChainCode } from "../model/FilterChainCode"
 import { PaginatedListCodeDto } from "../model/PaginatedListCodeDto"
 
 export class iccCodeApi {
@@ -75,7 +75,7 @@ export class iccCodeApi {
     skip?: number,
     sort?: string,
     desc?: boolean,
-    body?: FilterChain
+    body?: FilterChainCode
   ): Promise<PaginatedListCodeDto | any> {
     let _body = null
     _body = body

@@ -25,7 +25,7 @@ export class AmppDto {
   from?: number
   to?: number
   ctiExtended?: string
-  isOrphan?: boolean
+  orphan?: boolean
   leafletLink?: SamTextDto
   spcLink?: SamTextDto
   rmaPatientLink?: SamTextDto
@@ -42,7 +42,7 @@ export class AmppDto {
   deliveryModus?: SamTextDto
   deliveryModusSpecification?: SamTextDto
   distributorCompany?: CompanyDto
-  isSingleUse?: boolean
+  singleUse?: boolean
   speciallyRegulated?: number
   abbreviatedName?: SamTextDto
   prescriptionName?: SamTextDto
@@ -58,8 +58,7 @@ export class AmppDto {
   components?: Array<AmppComponentDto>
   commercializations?: Array<CommercializationDto>
   dmpps?: Array<DmppDto>
-  orphan?: boolean
-  singleUse?: boolean
+  vaccineIndicationCodes?: Array<string>
 }
 export namespace AmppDto {
   export type StatusEnum = "AUTHORIZED" | "SUSPENDED" | "REVOKED"

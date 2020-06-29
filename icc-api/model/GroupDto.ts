@@ -9,8 +9,6 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeDto } from "./CodeDto"
-import { DelegationDto } from "./DelegationDto"
 
 export class GroupDto {
   constructor(json: JSON | any) {
@@ -20,21 +18,9 @@ export class GroupDto {
   id?: string
   rev?: string
   deletionDate?: number
-  created?: number
-  modified?: number
-  endOfLife?: number
-  author?: string
-  responsible?: string
-  medicalLocationId?: string
-  encryptedSelf?: string
-  codes?: Array<CodeDto>
-  tags?: Array<CodeDto>
-  secretForeignKeys?: Array<string>
-  cryptedForeignKeys?: { [key: string]: Array<DelegationDto> }
-  delegations?: { [key: string]: Array<DelegationDto> }
-  encryptionKeys?: { [key: string]: Array<DelegationDto> }
   name?: string
   password?: string
+  servers?: Array<string>
   superAdmin?: boolean
   superGroup?: string
 }

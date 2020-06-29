@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Address } from "./Address"
+import { AddressDto } from "./AddressDto"
 
 export class EmployerDto {
   constructor(json: JSON | any) {
@@ -17,5 +17,5 @@ export class EmployerDto {
   }
 
   name?: string
-  addresse?: Address
+  addresse?: AddressDto
 }

@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStub } from "./CodeStub"
+import { CodeStubDto } from "./CodeStubDto"
 import { EmployerDto } from "./EmployerDto"
 
 export class EmploymentInfoDto {
@@ -19,6 +19,6 @@ export class EmploymentInfoDto {
 
   startDate?: number
   endDate?: number
-  professionType?: CodeStub
+  professionType?: CodeStubDto
   employer?: EmployerDto
 }

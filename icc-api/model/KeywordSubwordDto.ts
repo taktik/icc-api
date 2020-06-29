@@ -16,4 +16,5 @@ export class KeywordSubwordDto {
   }
 
   value?: string
+  subWords?: Array<KeywordSubwordDto>
 }

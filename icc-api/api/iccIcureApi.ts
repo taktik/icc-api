@@ -13,7 +13,7 @@ import { XHR } from "./XHR"
 import { IndexingInfoDto } from "../model/IndexingInfoDto"
 import { ReplicationInfoDto } from "../model/ReplicationInfoDto"
 import { Unit } from "../model/Unit"
-import { UserStubDto } from "../model/UserStubDto"
+import { UserDto } from "../model/UserDto"
 
 export class iccIcureApi {
   host: string
@@ -104,13 +104,13 @@ export class iccIcureApi {
    *
    * @summary Get users stubs
    */
-  getUsers(): Promise<Array<UserStubDto> | any> {
+  getUsers(): Promise<Array<UserDto> | any> {
     let _body = null
 
     const _url = this.host + `/icure/u` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new UserStubDto(it)))
+      .then(doc => (doc.body as Array<JSON>).map(it => new UserDto(it)))
       .catch(err => this.handleError(err))
   }
 
