@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { FilterDtoCode } from "./FilterDtoCode"
+import { AbstractFilterDtoCode } from "./AbstractFilterDtoCode"
 import { Predicate } from "./Predicate"
 
 export class FilterChainCode {
@@ -17,6 +17,6 @@ export class FilterChainCode {
     Object.assign(this as FilterChainCode, json)
   }
 
-  filter?: FilterDtoCode
+  filter?: AbstractFilterDtoCode
   predicate?: Predicate
 }

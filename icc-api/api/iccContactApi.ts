@@ -10,13 +10,13 @@
  * Do not edit the class manually.
  */
 import { XHR } from "./XHR"
+import { AbstractFilterDtoContact } from "../model/AbstractFilterDtoContact"
 import { ContactDto } from "../model/ContactDto"
 import { ContentDto } from "../model/ContentDto"
 import { DelegationDto } from "../model/DelegationDto"
 import { DocIdentifier } from "../model/DocIdentifier"
 import { FilterChainContact } from "../model/FilterChainContact"
 import { FilterChainService } from "../model/FilterChainService"
-import { FilterDtoContact } from "../model/FilterDtoContact"
 import { IcureStubDto } from "../model/IcureStubDto"
 import { LabelledOccurenceDto } from "../model/LabelledOccurenceDto"
 import { ListOfIdsDto } from "../model/ListOfIdsDto"
@@ -423,7 +423,7 @@ export class iccContactApi {
    * @summary Get ids of contacts matching the provided filter for the current user (HcParty)
    * @param body
    */
-  matchContactsBy(body?: FilterDtoContact): Promise<Array<string> | any> {
+  matchContactsBy(body?: AbstractFilterDtoContact): Promise<Array<string> | any> {
     let _body = null
     _body = body
 

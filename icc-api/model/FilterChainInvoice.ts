@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { FilterDtoInvoice } from "./FilterDtoInvoice"
+import { AbstractFilterDtoInvoice } from "./AbstractFilterDtoInvoice"
 import { Predicate } from "./Predicate"
 
 export class FilterChainInvoice {
@@ -17,6 +17,6 @@ export class FilterChainInvoice {
     Object.assign(this as FilterChainInvoice, json)
   }
 
-  filter?: FilterDtoInvoice
+  filter?: AbstractFilterDtoInvoice
   predicate?: Predicate
 }

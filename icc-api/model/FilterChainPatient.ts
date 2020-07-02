@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { FilterDtoPatient } from "./FilterDtoPatient"
+import { AbstractFilterDtoPatient } from "./AbstractFilterDtoPatient"
 import { Predicate } from "./Predicate"
 
 export class FilterChainPatient {
@@ -17,6 +17,6 @@ export class FilterChainPatient {
     Object.assign(this as FilterChainPatient, json)
   }
 
-  filter?: FilterDtoPatient
+  filter?: AbstractFilterDtoPatient
   predicate?: Predicate
 }

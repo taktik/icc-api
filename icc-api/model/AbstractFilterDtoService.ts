@@ -10,9 +10,9 @@
  * Do not edit the class manually.
  */
 
-export class FilterDtoHealthElement {
+export class AbstractFilterDtoService {
   constructor(json: JSON | any) {
-    Object.assign(this as FilterDtoHealthElement, json)
+    Object.assign(this as AbstractFilterDtoService, json)
   }
 
   desc?: string

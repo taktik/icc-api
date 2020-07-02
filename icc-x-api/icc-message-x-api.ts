@@ -7,9 +7,9 @@ import * as _ from "lodash"
 import * as moment from "moment"
 
 import {
+  AbstractFilterDtoPatient,
   EntityReference,
   FilterChainPatient,
-  FilterDtoPatient,
   HealthcarePartyDto,
   InsuranceDto,
   InvoiceDto,
@@ -415,7 +415,7 @@ export class IccMessageXApi extends iccMessageApi {
               undefined,
               false,
               new FilterChainPatient({
-                filter: new FilterDtoPatient({
+                filter: new AbstractFilterDtoPatient({
                   $type: "PatientByHcPartyAndSsinsFilter",
                   healthcarePartyId: user.healthcarePartyId,
                   ssins: ssins

@@ -17,8 +17,8 @@ export class WebSessionMaxIdleTime {
   }
 
   seconds?: number
-  nano?: number
-  negative?: boolean
-  zero?: boolean
   units?: Array<WebSessionMaxIdleTimeUnits>
+  zero?: boolean
+  negative?: boolean
+  nano?: number
 }

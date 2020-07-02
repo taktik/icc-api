@@ -20,6 +20,7 @@ export class UserDto {
   id?: string
   rev?: string
   deletionDate?: number
+  created?: number
   name?: string
   properties?: Array<PropertyStubDto>
   permissions?: Array<PermissionDto>
