@@ -8,7 +8,7 @@ import * as moment from "moment"
 
 import {
   AbstractFilterDtoPatient,
-  EntityReference,
+  EntityReferenceDto,
   FilterChainPatient,
   HealthcarePartyDto,
   InsuranceDto,
@@ -57,7 +57,6 @@ import { IccPatientXApi } from "./icc-patient-x-api"
 import { HcpartyType } from "fhc-api"
 import { IDHCPARTY } from "fhc-api"
 import { GenAsyncResponse } from "fhc-api"
-import { FilterDto } from "../dist/icc-api/model/FilterDto"
 
 interface StructError {
   itemId: string | null
@@ -1074,13 +1073,13 @@ export class IccMessageXApi extends iccMessageApi {
       ).then(prefix => {
         return this.entityReferenceApi
           .getLatest(prefix)
-          .then((er: EntityReference) => {
+          .then((er: EntityReferenceDto) => {
             let nextSeqNumber =
               er && er.id && er.id!.startsWith(prefix)
                 ? (Number(er.id!.split(":").pop()) || 0) + 1
                 : 1
             return this.entityReferenceApi.createEntityReference(
-              new EntityReference({
+              new EntityReferenceDto({
                 id: prefix + _.padStart("" + (nextSeqNumber % 1000000000), 9, "0"),
                 docId: uuid
               })

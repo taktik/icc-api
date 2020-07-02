@@ -9,21 +9,14 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Attachment } from "./Attachment"
-import { RevisionInfo } from "./RevisionInfo"
 
-export class EntityReference {
+export class EntityReferenceDto {
   constructor(json: JSON | any) {
-    Object.assign(this as EntityReference, json)
+    Object.assign(this as EntityReferenceDto, json)
   }
 
   id?: string
   rev?: string
-  deleted?: number
+  deletionDate?: number
   docId?: string
-  attachments?: { [key: string]: Attachment }
-  revsInfo?: Array<RevisionInfo>
-  conflicts?: Array<string>
-  revHistory?: { [key: string]: string }
-  javaType?: string
 }

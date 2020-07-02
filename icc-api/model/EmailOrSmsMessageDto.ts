@@ -9,14 +9,14 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { AttachmentDto } from "./AttachmentDto"
+import { MimeAttachmentDto } from "./MimeAttachmentDto"
 
 export class EmailOrSmsMessageDto {
   constructor(json: JSON | any) {
     Object.assign(this as EmailOrSmsMessageDto, json)
   }
 
-  attachments?: Array<AttachmentDto>
+  attachments?: Array<MimeAttachmentDto>
   destination?: string
   destinationIsNotPatient?: boolean
   destinationName?: string

@@ -10,15 +10,12 @@
  * Do not edit the class manually.
  */
 
-export class Attachment {
+export class MimeAttachmentDto {
   constructor(json: JSON | any) {
-    Object.assign(this as Attachment, json)
+    Object.assign(this as MimeAttachmentDto, json)
   }
 
-  length?: number
-  stub?: boolean
-  revpos?: number
-  digest?: string
-  contentType?: string
-  data?: string
+  data?: Array<string>
+  fileName?: string
+  mimeType?: string
 }

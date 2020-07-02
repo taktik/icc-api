@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 import { XHR } from "./XHR"
-import { EntityReference } from "../model/EntityReference"
+import { EntityReferenceDto } from "../model/EntityReferenceDto"
 
 export class iccEntityrefApi {
   host: string
@@ -41,7 +41,7 @@ export class iccEntityrefApi {
    * @summary Create an entity reference
    * @param body
    */
-  createEntityReference(body?: EntityReference): Promise<EntityReference | any> {
+  createEntityReference(body?: EntityReferenceDto): Promise<EntityReferenceDto | any> {
     let _body = null
     _body = body
 
@@ -51,7 +51,7 @@ export class iccEntityrefApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new EntityReference(doc.body as JSON))
+      .then(doc => new EntityReferenceDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 
@@ -60,7 +60,7 @@ export class iccEntityrefApi {
    * @summary Find latest reference for a prefix
    * @param prefix
    */
-  getLatest(prefix: string): Promise<EntityReference | any> {
+  getLatest(prefix: string): Promise<EntityReferenceDto | any> {
     let _body = null
 
     const _url =
@@ -70,7 +70,7 @@ export class iccEntityrefApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new EntityReference(doc.body as JSON))
+      .then(doc => new EntityReferenceDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 }
