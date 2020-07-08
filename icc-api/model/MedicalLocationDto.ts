@@ -30,4 +30,5 @@ export class MedicalLocationDto {
   ssin?: string
   address?: AddressDto
   agendaIds?: Array<string>
+  options?: { [key: string]: string }
 }

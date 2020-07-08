@@ -9,16 +9,14 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStubDto } from "./CodeStubDto"
 
-export class SubstanceproductDto {
+export class SamVersionDto {
   constructor(json: JSON | any) {
-    Object.assign(this as SubstanceproductDto, json)
+    Object.assign(this as SamVersionDto, json)
   }
 
-  intendedcds?: Array<CodeStubDto>
-  deliveredcds?: Array<CodeStubDto>
-  intendedname?: string
-  deliveredname?: string
-  productId?: string
+  id?: string
+  rev?: string
+  deletionDate?: number
+  version?: string
 }

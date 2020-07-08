@@ -21,6 +21,7 @@ export class TypedValueDtoObject {
   doubleValue?: number
   stringValue?: string
   dateValue?: number
+  encryptedSelf?: string
 }
 export namespace TypedValueDtoObject {
   export type TypeEnum = "BOOLEAN" | "INTEGER" | "DOUBLE" | "STRING" | "DATE" | "CLOB" | "JSON"

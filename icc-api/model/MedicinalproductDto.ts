@@ -20,4 +20,5 @@ export class MedicinalproductDto {
   deliveredcds?: Array<CodeStubDto>
   intendedname?: string
   deliveredname?: string
+  productId?: string
 }

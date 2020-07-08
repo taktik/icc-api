@@ -14,6 +14,7 @@ import { AmpDto } from "../model/AmpDto"
 import { PaginatedListAmpDto } from "../model/PaginatedListAmpDto"
 import { PaginatedListVmpDto } from "../model/PaginatedListVmpDto"
 import { PaginatedListVmpGroupDto } from "../model/PaginatedListVmpGroupDto"
+import { SamVersionDto } from "../model/SamVersionDto"
 
 export class iccBesamv2Api {
   host: string
@@ -337,6 +338,20 @@ export class iccBesamv2Api {
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PaginatedListVmpDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   * Returns a list of codes matched with given input. If several types are provided, paginantion is not supported
+   * @summary Get Samv2 version.
+   */
+  getVersion1(): Promise<SamVersionDto | any> {
+    let _body = null
+
+    const _url = this.host + `/be_samv2/v` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => new SamVersionDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 }

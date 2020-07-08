@@ -23,6 +23,8 @@ export class AppointmentImportDto {
   endTime?: Date
   startTime?: Date
   type?: string
+  appointmentTypeId?: string
+  ownerRef?: string
   customerName?: string
   customerFirstname?: string
   customerEmail?: string
@@ -30,6 +32,7 @@ export class AppointmentImportDto {
   postcode?: string
   street?: string
   sex?: string
+  externalId?: string
   customerBirthDate?: Date
   customerGsm?: string
   customerFixPhone?: string

@@ -23,10 +23,11 @@ export class FlatRateTarificationDto {
   encryptedSelf?: string
 }
 export namespace FlatRateTarificationDto {
-  export type FlatRateTypeEnum = "physician" | "physiotherapist" | "nurse"
+  export type FlatRateTypeEnum = "physician" | "physiotherapist" | "nurse" | "ptd"
   export const FlatRateTypeEnum = {
     Physician: "physician" as FlatRateTypeEnum,
     Physiotherapist: "physiotherapist" as FlatRateTypeEnum,
-    Nurse: "nurse" as FlatRateTypeEnum
+    Nurse: "nurse" as FlatRateTypeEnum,
+    Ptd: "ptd" as FlatRateTypeEnum
   }
 }

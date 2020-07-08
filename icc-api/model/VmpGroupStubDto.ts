@@ -19,4 +19,5 @@ export class VmpGroupStubDto {
   id?: string
   code?: string
   name?: SamTextDto
+  productId?: string
 }

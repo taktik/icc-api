@@ -19,4 +19,5 @@ export class PropertyStubDto {
 
   type?: PropertyTypeStubDto
   typedValue?: TypedValueDtoObject
+  encryptedSelf?: string
 }

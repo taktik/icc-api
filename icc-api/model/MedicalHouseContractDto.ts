@@ -39,6 +39,9 @@ export class MedicalHouseContractDto {
   suspensionReason?: MedicalHouseContractDto.SuspensionReasonEnum
   suspensionSource?: string
   forcedSuspension?: boolean
+  signatureType?: MedicalHouseContractDto.SignatureTypeEnum
+  status?: number
+  receipts?: { [key: string]: string }
   encryptedSelf?: string
 }
 export namespace MedicalHouseContractDto {
@@ -65,5 +68,16 @@ export namespace MedicalHouseContractDto {
     IsHospitalized: "isHospitalized" as SuspensionReasonEnum,
     OutsideOfCountry: "outsideOfCountry" as SuspensionReasonEnum,
     ChangeOfMutuality: "changeOfMutuality" as SuspensionReasonEnum
+  }
+  export type SignatureTypeEnum =
+    | "holderEid"
+    | "holderPaper"
+    | "legalrepresentativeEid"
+    | "legalrepresentativePaper"
+  export const SignatureTypeEnum = {
+    HolderEid: "holderEid" as SignatureTypeEnum,
+    HolderPaper: "holderPaper" as SignatureTypeEnum,
+    LegalrepresentativeEid: "legalrepresentativeEid" as SignatureTypeEnum,
+    LegalrepresentativePaper: "legalrepresentativePaper" as SignatureTypeEnum
   }
 }

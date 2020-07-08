@@ -23,6 +23,7 @@ export class VmpGroupDto {
   deletionDate?: number
   from?: number
   to?: number
+  productId?: string
   code?: string
   name?: SamTextDto
   noGenericPrescriptionReason?: NoGenericPrescriptionReasonDto

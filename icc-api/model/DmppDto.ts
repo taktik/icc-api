@@ -16,6 +16,7 @@ export class DmppDto {
     Object.assign(this as DmppDto, json)
   }
 
+  id?: string
   from?: number
   to?: number
   deliveryEnvironment?: DmppDto.DeliveryEnvironmentEnum
@@ -26,6 +27,7 @@ export class DmppDto {
   cheapest?: boolean
   reimbursable?: boolean
   reimbursements?: Array<ReimbursementDto>
+  productId?: string
 }
 export namespace DmppDto {
   export type DeliveryEnvironmentEnum = "P" | "A" | "H" | "R"

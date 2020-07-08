@@ -90,6 +90,7 @@ export class iccBekmehrApi {
    * @param date
    * @param language
    * @param recipientNihii
+   * @param recipientSsin
    * @param recipientFirstName
    * @param recipientLastName
    * @param mimeType
@@ -100,6 +101,7 @@ export class iccBekmehrApi {
     date: number,
     language: string,
     recipientNihii: string,
+    recipientSsin: string,
     recipientFirstName: string,
     recipientLastName: string,
     mimeType: string,
@@ -118,6 +120,7 @@ export class iccBekmehrApi {
       (date ? "&date=" + encodeURIComponent(String(date)) : "") +
       (language ? "&language=" + encodeURIComponent(String(language)) : "") +
       (recipientNihii ? "&recipientNihii=" + encodeURIComponent(String(recipientNihii)) : "") +
+      (recipientSsin ? "&recipientSsin=" + encodeURIComponent(String(recipientSsin)) : "") +
       (recipientFirstName
         ? "&recipientFirstName=" + encodeURIComponent(String(recipientFirstName))
         : "") +
@@ -173,6 +176,7 @@ export class iccBekmehrApi {
    * @param date
    * @param language
    * @param recipientNihii
+   * @param recipientSsin
    * @param recipientFirstName
    * @param recipientLastName
    * @param mimeType
@@ -183,6 +187,7 @@ export class iccBekmehrApi {
     date: number,
     language: string,
     recipientNihii: string,
+    recipientSsin: string,
     recipientFirstName: string,
     recipientLastName: string,
     mimeType: string,
@@ -201,6 +206,7 @@ export class iccBekmehrApi {
       (date ? "&date=" + encodeURIComponent(String(date)) : "") +
       (language ? "&language=" + encodeURIComponent(String(language)) : "") +
       (recipientNihii ? "&recipientNihii=" + encodeURIComponent(String(recipientNihii)) : "") +
+      (recipientSsin ? "&recipientSsin=" + encodeURIComponent(String(recipientSsin)) : "") +
       (recipientFirstName
         ? "&recipientFirstName=" + encodeURIComponent(String(recipientFirstName))
         : "") +
@@ -262,6 +268,7 @@ export class iccBekmehrApi {
    * @param date
    * @param language
    * @param recipientNihii
+   * @param recipientSsin
    * @param recipientFirstName
    * @param recipientLastName
    * @param mimeType
@@ -272,6 +279,7 @@ export class iccBekmehrApi {
     date: number,
     language: string,
     recipientNihii: string,
+    recipientSsin: string,
     recipientFirstName: string,
     recipientLastName: string,
     mimeType: string,
@@ -290,6 +298,7 @@ export class iccBekmehrApi {
       (date ? "&date=" + encodeURIComponent(String(date)) : "") +
       (language ? "&language=" + encodeURIComponent(String(language)) : "") +
       (recipientNihii ? "&recipientNihii=" + encodeURIComponent(String(recipientNihii)) : "") +
+      (recipientSsin ? "&recipientSsin=" + encodeURIComponent(String(recipientSsin)) : "") +
       (recipientFirstName
         ? "&recipientFirstName=" + encodeURIComponent(String(recipientFirstName))
         : "") +
@@ -315,6 +324,7 @@ export class iccBekmehrApi {
    * @param date
    * @param language
    * @param recipientNihii
+   * @param recipientSsin
    * @param recipientFirstName
    * @param recipientLastName
    * @param mimeType
@@ -325,6 +335,7 @@ export class iccBekmehrApi {
     date: number,
     language: string,
     recipientNihii: string,
+    recipientSsin: string,
     recipientFirstName: string,
     recipientLastName: string,
     mimeType: string,
@@ -343,6 +354,7 @@ export class iccBekmehrApi {
       (date ? "&date=" + encodeURIComponent(String(date)) : "") +
       (language ? "&language=" + encodeURIComponent(String(language)) : "") +
       (recipientNihii ? "&recipientNihii=" + encodeURIComponent(String(recipientNihii)) : "") +
+      (recipientSsin ? "&recipientSsin=" + encodeURIComponent(String(recipientSsin)) : "") +
       (recipientFirstName
         ? "&recipientFirstName=" + encodeURIComponent(String(recipientFirstName))
         : "") +
@@ -368,6 +380,7 @@ export class iccBekmehrApi {
    * @param date
    * @param language
    * @param recipientNihii
+   * @param recipientSsin
    * @param recipientFirstName
    * @param recipientLastName
    * @param mimeType
@@ -378,6 +391,7 @@ export class iccBekmehrApi {
     date: number,
     language: string,
     recipientNihii: string,
+    recipientSsin: string,
     recipientFirstName: string,
     recipientLastName: string,
     mimeType: string,
@@ -396,6 +410,7 @@ export class iccBekmehrApi {
       (date ? "&date=" + encodeURIComponent(String(date)) : "") +
       (language ? "&language=" + encodeURIComponent(String(language)) : "") +
       (recipientNihii ? "&recipientNihii=" + encodeURIComponent(String(recipientNihii)) : "") +
+      (recipientSsin ? "&recipientSsin=" + encodeURIComponent(String(recipientSsin)) : "") +
       (recipientFirstName
         ? "&recipientFirstName=" + encodeURIComponent(String(recipientFirstName))
         : "") +
@@ -421,6 +436,7 @@ export class iccBekmehrApi {
    * @param date
    * @param language
    * @param recipientNihii
+   * @param recipientSsin
    * @param recipientFirstName
    * @param recipientLastName
    * @param mimeType
@@ -431,6 +447,7 @@ export class iccBekmehrApi {
     date: number,
     language: string,
     recipientNihii: string,
+    recipientSsin: string,
     recipientFirstName: string,
     recipientLastName: string,
     mimeType: string,
@@ -449,6 +466,7 @@ export class iccBekmehrApi {
       (date ? "&date=" + encodeURIComponent(String(date)) : "") +
       (language ? "&language=" + encodeURIComponent(String(language)) : "") +
       (recipientNihii ? "&recipientNihii=" + encodeURIComponent(String(recipientNihii)) : "") +
+      (recipientSsin ? "&recipientSsin=" + encodeURIComponent(String(recipientSsin)) : "") +
       (recipientFirstName
         ? "&recipientFirstName=" + encodeURIComponent(String(recipientFirstName))
         : "") +
@@ -474,6 +492,7 @@ export class iccBekmehrApi {
    * @param date
    * @param language
    * @param recipientNihii
+   * @param recipientSsin
    * @param recipientFirstName
    * @param recipientLastName
    * @param mimeType
@@ -484,6 +503,7 @@ export class iccBekmehrApi {
     date: number,
     language: string,
     recipientNihii: string,
+    recipientSsin: string,
     recipientFirstName: string,
     recipientLastName: string,
     mimeType: string,
@@ -502,6 +522,7 @@ export class iccBekmehrApi {
       (date ? "&date=" + encodeURIComponent(String(date)) : "") +
       (language ? "&language=" + encodeURIComponent(String(language)) : "") +
       (recipientNihii ? "&recipientNihii=" + encodeURIComponent(String(recipientNihii)) : "") +
+      (recipientSsin ? "&recipientSsin=" + encodeURIComponent(String(recipientSsin)) : "") +
       (recipientFirstName
         ? "&recipientFirstName=" + encodeURIComponent(String(recipientFirstName))
         : "") +

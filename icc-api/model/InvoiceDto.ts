@@ -81,6 +81,7 @@ export class InvoiceDto {
   idDocument?: IdentityDocumentReaderDto
   cancelReason?: string
   cancelDate?: number
+  options?: { [key: string]: string }
   secretForeignKeys?: Array<string>
   cryptedForeignKeys?: { [key: string]: Array<DelegationDto> }
   delegations?: { [key: string]: Array<DelegationDto> }
