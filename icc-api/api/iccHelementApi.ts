@@ -35,9 +35,8 @@ export class iccHelementApi {
     this.headers = h
   }
 
-  handleError(e: XHR.Data) {
-    if (e.status == 401) throw Error("auth-failed")
-    else throw Error("api-error" + e.status)
+  handleError(e: XHR.XHRError) {
+    throw e
   }
 
   /**
