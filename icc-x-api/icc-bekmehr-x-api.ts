@@ -1,10 +1,10 @@
 import * as models from "../icc-api/model/models"
-import { iccAuthApi, iccBeKmehrApi } from "../icc-api/iccApi"
+import { iccAuthApi, iccBekmehrApi } from "../icc-api/iccApi"
 import { IccContactXApi } from "./icc-contact-x-api"
 import { IccHelementXApi } from "./icc-helement-x-api"
 import { utils } from "./crypto/utils"
 
-export class IccBekmehrXApi extends iccBeKmehrApi {
+export class IccBekmehrXApi extends iccBekmehrApi {
   private readonly ctcApi: IccContactXApi
   private readonly helementApi: IccHelementXApi
   private readonly wssHost: string
@@ -77,12 +77,12 @@ export class IccBekmehrXApi extends iccBeKmehrApi {
         var subBlob = blob.slice(0, 1)
         const br = new FileReader()
         br.onload = function(e) {
-          const firstChar = e.target && new Uint8Array(e.target.result)[0]
+          const firstChar = e.target && new Uint8Array(e.target.result as ArrayBuffer)[0]
 
           if (firstChar === 0x7b) {
             const tr = new FileReader()
             tr.onload = function(e) {
-              const msg = e.target && JSON.parse(e.target.result)
+              const msg = e.target && JSON.parse(e.target.result as string)
               messageHandler(msg)
             }
             tr.readAsBinaryString(blob)

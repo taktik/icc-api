@@ -105,8 +105,8 @@ export class IccClassificationXApi extends iccClassificationApi {
     return this.crypto
       .extractDelegationsSFKs(patient, hcpartyId)
       .then(secretForeignKeys =>
-        this.findByHCPartyPatientSecretFKeys(
-          secretForeignKeys.hcpartyId,
+        this.findClassificationsByHCPartyPatientForeignKeys(
+          secretForeignKeys.hcpartyId!,
           secretForeignKeys.extractedKeys.join(",")
         )
       )

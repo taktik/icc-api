@@ -188,7 +188,7 @@ export class IccPatientXApi extends iccPatientApi {
     skip?: number,
     sort?: string,
     desc?: boolean,
-    body?: models.FilterChain
+    body?: models.FilterChainPatient
   ): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
@@ -203,10 +203,10 @@ export class IccPatientXApi extends iccPatientApi {
     skip?: number,
     sort?: string,
     desc?: boolean,
-    body?: models.FilterChain
-  ): Promise<models.PatientPaginatedList | any> {
+    body?: models.FilterChainPatient
+  ): Promise<models.PaginatedListPatientDto | any> {
     return super
-      .filterBy(startKey, startDocumentId, limit, skip, sort, desc, body)
+      .filterPatientsBy(startKey, startDocumentId, limit, skip, sort, desc, body)
       .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
   }
 
@@ -231,7 +231,7 @@ export class IccPatientXApi extends iccPatientApi {
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<models.PatientPaginatedList | any> {
+  ): Promise<models.PaginatedListPatientDto | any> {
     return super
       .findByAccessLogUserAfterDate(userId, accessType, startDate, startKey, startDocumentId, limit)
       .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
@@ -271,7 +271,7 @@ export class IccPatientXApi extends iccPatientApi {
     startDocumentId?: string,
     limit?: number,
     sortDirection?: string
-  ): Promise<models.PatientPaginatedList | any> {
+  ): Promise<models.PaginatedListPatientDto | any> {
     return super
       .findByNameBirthSsinAuto(
         healthcarePartyId,
@@ -350,7 +350,7 @@ export class IccPatientXApi extends iccPatientApi {
     desc?: boolean,
     startDocumentId?: string,
     limit?: number
-  ): Promise<models.PatientPaginatedList | any> {
+  ): Promise<models.PaginatedListPatientDto | any> {
     return super
       .listDeletedPatients(startDate, endDate, desc, startDocumentId, limit)
       .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
@@ -366,7 +366,7 @@ export class IccPatientXApi extends iccPatientApi {
     user: models.UserDto,
     firstName?: string,
     lastName?: string
-  ): Promise<Array<models.PatientPaginatedList> | any> {
+  ): Promise<Array<models.PaginatedListPatientDto> | any> {
     return super
       .listDeletedPatientsByName(firstName, lastName)
       .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
@@ -402,7 +402,7 @@ export class IccPatientXApi extends iccPatientApi {
     startKey?: number,
     startDocumentId?: string,
     limit?: number
-  ): Promise<models.PatientPaginatedList | any> {
+  ): Promise<models.PaginatedListPatientDto | any> {
     return super
       .listOfPatientsModifiedAfter(date, startKey, startDocumentId, limit)
       .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
@@ -429,7 +429,7 @@ export class IccPatientXApi extends iccPatientApi {
     startDocumentId?: string,
     limit?: number,
     sortDirection?: string
-  ): Promise<models.PatientPaginatedList | any> {
+  ): Promise<models.PaginatedListPatientDto | any> {
     return super
       .listPatients(hcPartyId, sortField, startKey, startDocumentId, limit, sortDirection)
       .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
@@ -456,7 +456,7 @@ export class IccPatientXApi extends iccPatientApi {
     startDocumentId?: string,
     limit?: number,
     sortDirection?: string
-  ): Promise<models.PatientPaginatedList | any> {
+  ): Promise<models.PaginatedListPatientDto | any> {
     return super
       .listPatientsByHcParty(hcPartyId, sortField, startKey, startDocumentId, limit, sortDirection)
       .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
@@ -483,7 +483,7 @@ export class IccPatientXApi extends iccPatientApi {
     startDocumentId?: string,
     limit?: number,
     sortDirection?: string
-  ): Promise<models.PatientPaginatedList | any> {
+  ): Promise<models.PaginatedListPatientDto | any> {
     return super
       .listPatientsOfHcParty(hcPartyId, sortField, startKey, startDocumentId, limit, sortDirection)
       .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
@@ -813,12 +813,15 @@ export class IccPatientXApi extends iccPatientApi {
                 ? Promise.all([
                     retry(() =>
                       this.helementApi
-                        .findDelegationsStubsByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
+                        .findHealthElementsDelegationsStubsByHCPartyPatientForeignKeys(
+                          ownerId,
+                          delSfks.join(",")
+                        )
                         .then(
                           hes =>
                             parentId
                               ? this.helementApi
-                                  .findDelegationsStubsByHCPartyPatientSecretFKeys(
+                                  .findHealthElementsDelegationsStubsByHCPartyPatientForeignKeys(
                                     parentId,
                                     delSfks.join(",")
                                   )
@@ -828,12 +831,15 @@ export class IccPatientXApi extends iccPatientApi {
                     ) as Promise<Array<models.IcureStubDto>>,
                     retry(() =>
                       this.formApi
-                        .findDelegationsStubsByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
+                        .findFormsDelegationsStubsByHCPartyPatientForeignKeys(
+                          ownerId,
+                          delSfks.join(",")
+                        )
                         .then(
                           frms =>
                             parentId
                               ? this.formApi
-                                  .findDelegationsStubsByHCPartyPatientSecretFKeys(
+                                  .findFormsDelegationsStubsByHCPartyPatientForeignKeys(
                                     parentId,
                                     delSfks.join(",")
                                   )
@@ -855,12 +861,15 @@ export class IccPatientXApi extends iccPatientApi {
                     ) as Promise<Array<models.ContactDto>>,
                     retry(() =>
                       this.invoiceApi
-                        .findDelegationsStubsByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
+                        .findInvoicesDelegationsStubsByHCPartyPatientForeignKeys(
+                          ownerId,
+                          delSfks.join(",")
+                        )
                         .then(
                           ivs =>
                             parentId
                               ? this.invoiceApi
-                                  .findDelegationsStubsByHCPartyPatientSecretFKeys(
+                                  .findInvoicesDelegationsStubsByHCPartyPatientForeignKeys(
                                     parentId,
                                     delSfks.join(",")
                                   )
@@ -870,12 +879,15 @@ export class IccPatientXApi extends iccPatientApi {
                     ) as Promise<Array<models.IcureStubDto>>,
                     retry(() =>
                       this.classificationApi
-                        .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
+                        .findClassificationsByHCPartyPatientForeignKeys(ownerId, delSfks.join(","))
                         .then(
                           cls =>
                             parentId
                               ? this.classificationApi
-                                  .findByHCPartyPatientSecretFKeys(parentId, delSfks.join(","))
+                                  .findClassificationsByHCPartyPatientForeignKeys(
+                                    parentId,
+                                    delSfks.join(",")
+                                  )
                                   .then(moreCls => _.uniqBy(cls.concat(moreCls), "id"))
                               : cls
                         )
@@ -1260,12 +1272,12 @@ export class IccPatientXApi extends iccPatientApi {
                     ) as Promise<Array<models.IcureStubDto>>,
                     retry(() =>
                       this.formApi
-                        .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
+                        .findFormsByHCPartyPatientForeignKeys(ownerId, delSfks.join(","))
                         .then(
                           frms =>
                             parentId
                               ? this.formApi
-                                  .findByHCPartyPatientSecretFKeys(parentId, delSfks.join(","))
+                                  .findFormsByHCPartyPatientForeignKeys(parentId, delSfks.join(","))
                                   .then(moreFrms => _.uniqBy(frms.concat(moreFrms), "id"))
                               : frms
                         )
@@ -1284,24 +1296,30 @@ export class IccPatientXApi extends iccPatientApi {
                     ) as Promise<Array<models.ContactDto>>,
                     retry(() =>
                       this.invoiceApi
-                        .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
+                        .findInvoicesByHCPartyPatientForeignKeys(ownerId, delSfks.join(","))
                         .then(
                           ivs =>
                             parentId
                               ? this.invoiceApi
-                                  .findByHCPartyPatientSecretFKeys(parentId, delSfks.join(","))
+                                  .findInvoicesByHCPartyPatientForeignKeys(
+                                    parentId,
+                                    delSfks.join(",")
+                                  )
                                   .then(moreIvs => _.uniqBy(ivs.concat(moreIvs), "id"))
                               : ivs
                         )
                     ) as Promise<Array<models.IcureStubDto>>,
                     retry(() =>
                       this.classificationApi
-                        .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
+                        .findClassificationsByHCPartyPatientForeignKeys(ownerId, delSfks.join(","))
                         .then(
                           cls =>
                             parentId
                               ? this.classificationApi
-                                  .findByHCPartyPatientSecretFKeys(parentId, delSfks.join(","))
+                                  .findClassificationsByHCPartyPatientForeignKeys(
+                                    parentId,
+                                    delSfks.join(",")
+                                  )
                                   .then(moreCls => _.uniqBy(cls.concat(moreCls), "id"))
                               : cls
                         )
