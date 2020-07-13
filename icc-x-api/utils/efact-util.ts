@@ -300,7 +300,7 @@ function toInvoice(
   invoice.reason = Invoice.ReasonEnum.Other
   invoice.creditNote = invoiceDto.creditNote
   if (flatrateInvoice) {
-    invoice.startOfCoveragePeriod = invoiceDto.invoicingCodes[0].contractDate
+    invoice.startOfCoveragePeriod = invoiceDto.invoicingCodes!![0].contractDate
   }
   return invoice
 }
