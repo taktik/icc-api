@@ -471,17 +471,6 @@ export class IccContactXApi extends iccContactApi {
                       return ctc
                     })
                 )
-                .then(ctc => {
-                  console.log("Try to decrypt ")
-                  this.decrypt(hcpartyId, [ctc]).then(c => {
-                    console.log("With key:", c[0])
-                  })
-                  this.decrypt("cbafa3bc-67d2-48dc-a806-880f745fd346", [ctc]).then(c => {
-                    console.log("With key:", c[0])
-                  })
-
-                  return ctc
-                })
       )
     )
   }
