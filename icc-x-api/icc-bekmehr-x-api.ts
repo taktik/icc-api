@@ -43,7 +43,6 @@ export class IccBekmehrXApi extends iccBekmehrApi {
     const send = (command: string, uuid: string, body: any) => {
       const data = JSON.stringify({ command, uuid, body })
       socket.send(data.length > 65000 ? utils.text2ua(data).buffer : data)
-      socket.send(data)
     }
 
     const messageHandler = (msg: any) => {
