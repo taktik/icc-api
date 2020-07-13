@@ -1065,7 +1065,11 @@ export class IccMessageXApi extends iccMessageApi {
     return getFederaton(invoices, this.insuranceApi).then(fed => {
       return (prefixer
         ? prefixer(fed, hcp.id!)
-        : Promise.resolve(`efact:${hcp.id}:${year}:${fed.code === "306" ? "300" : fed.code}:`)
+        : Promise.resolve(
+            `efact:${hcp.id}:${year}:${
+              fed.code === "306" ? "300" : fed.code === "675" ? "600" : fed.code
+            }:`
+          )
       ).then(prefix => {
         return this.entityReferenceApi
           .getLatest(prefix)
@@ -1090,7 +1094,8 @@ export class IccMessageXApi extends iccMessageApi {
               smallBase36,
               this.insuranceApi,
               this.invoiceXApi,
-              this
+              this,
+              medicalLocationId === "medicalhouse"
             )
           )
           .then(batch =>
@@ -1100,6 +1105,7 @@ export class IccMessageXApi extends iccMessageApi {
                 xFHCTokenId,
                 xFHCPassPhrase,
                 batch,
+                medicalLocationId,
                 isConnectedAsPmg
               )
               //.then(() => { throw "ERREUR FORCEE" })

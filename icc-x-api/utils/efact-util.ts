@@ -164,7 +164,8 @@ export function toInvoiceBatch(
   fileRef: string,
   insuranceApi: iccInsuranceApi,
   invoiceXApi: IccInvoiceXApi,
-  messageXApi: IccMessageXApi
+  messageXApi: IccMessageXApi,
+  flatrateInvoice: boolean = false
 ): Promise<InvoicesBatch> {
   return insuranceApi
     .getInsurances(
@@ -196,6 +197,10 @@ export function toInvoiceBatch(
 
             invoicesBatch.batchRef = batchRef
             invoicesBatch.fileRef = fileRef
+            invoicesBatch.magneticInvoice = flatrateInvoice
+            if (flatrateInvoice) {
+              invoicesBatch.invoiceContent = 0
+            }
             invoicesBatch.invoices = _.map(
               invoicesWithPatient,
               (invWithPat: InvoiceWithPatient) => {
@@ -214,7 +219,8 @@ export function toInvoiceBatch(
                   invoice,
                   invWithPat.patientDto,
                   insurance,
-                  relatedInvoiceInfo
+                  relatedInvoiceInfo,
+                  flatrateInvoice
                 )
               }
             )
@@ -252,7 +258,8 @@ function toInvoice(
   invoiceDto: InvoiceDto,
   patientDto: PatientDto,
   insurance: InsuranceDto,
-  relatedInvoiceInfo: RelatedInvoiceInfo | undefined
+  relatedInvoiceInfo: RelatedInvoiceInfo | undefined,
+  flatrateInvoice: boolean = false
 ): Invoice {
   const invoice = new Invoice({})
   const invoiceYear = moment(invoiceDto.created)
@@ -270,7 +277,8 @@ function toInvoice(
       invoiceDto.supervisorNihii || nihiiHealthcareProvider,
       patientDto,
       invoiceDto,
-      invoicingCodeDto
+      invoicingCodeDto,
+      flatrateInvoice
     )
   })
   invoice.patient = toPatient(patientDto)
@@ -291,7 +299,9 @@ function toInvoice(
   // TODO : fix me later
   invoice.reason = Invoice.ReasonEnum.Other
   invoice.creditNote = invoiceDto.creditNote
-
+  if (flatrateInvoice) {
+    invoice.startOfCoveragePeriod = invoiceDto.invoicingCodes[0].contractDate
+  }
   return invoice
 }
 
@@ -299,11 +309,20 @@ function toInvoiceItem(
   nihiiHealthcareProvider: string,
   patientDto: PatientDto,
   invoiceDto: InvoiceDto,
-  invoicingCode: InvoicingCodeDto
+  invoicingCode: InvoicingCodeDto,
+  flatrateInvoice: boolean = false
 ): InvoiceItem {
   const invoiceItem = new InvoiceItem({})
   invoiceItem.codeNomenclature = Number(invoicingCode.tarificationId!!.split("|")[1])
   invoiceItem.dateCode = dateEncode(toMoment(invoicingCode.dateCode!!)!!.toDate())
+  invoiceItem.endDateCode =
+    invoiceItem.codeNomenclature === 109594
+      ? dateEncode(toMoment(invoicingCode!!.dateCode!!)!!.toDate())
+      : dateEncode(
+          toMoment(invoicingCode!!.dateCode!!)!!
+            .endOf("month")
+            .toDate()
+        )
   invoiceItem.doctorIdentificationNumber = nihiiHealthcareProvider
   invoiceItem.doctorSupplement = Number(((invoicingCode.doctorSupplement || 0) * 100).toFixed(0))
   if (invoicingCode.eidReadingHour && invoicingCode.eidReadingValue) {
