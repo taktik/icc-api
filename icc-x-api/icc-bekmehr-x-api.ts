@@ -4,17 +4,20 @@ import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
 import { IccContactXApi } from "./icc-contact-x-api"
 import { IccHelementXApi } from "./icc-helement-x-api"
+import { utils } from "./crypto/utils"
 
 export class IccBekmehrXApi extends iccBeKmehrApi {
   private readonly ctcApi: IccContactXApi
   private readonly helementApi: IccHelementXApi
   private readonly wssHost: string
+  private preferBinaryForLargeMessages: boolean
 
   constructor(
     host: string,
     headers: { [key: string]: string },
     ctcApi: IccContactXApi,
     helementApi: IccHelementXApi,
+    preferBinaryForLargeMessages: boolean = false,
     fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
     "undefined"
       ? window.fetch
@@ -23,6 +26,7 @@ export class IccBekmehrXApi extends iccBeKmehrApi {
     super(host, headers, fetchImpl)
     this.ctcApi = ctcApi
     this.helementApi = helementApi
+    this.preferBinaryForLargeMessages = preferBinaryForLargeMessages
 
     const auth = this.headers.find(h => h.header === "Authorization")
     this.wssHost = new URL(this.host, window.location.href).href
@@ -41,7 +45,9 @@ export class IccBekmehrXApi extends iccBeKmehrApi {
 
     const send = (command: string, uuid: string, body: any) => {
       const data = JSON.stringify({ command, uuid, body })
-      //socket.send(data.length > 65000 ? utils.text2ua(data).buffer : data)
+      socket.send(
+        data.length > 65000 && this.preferBinaryForLargeMessages ? utils.text2ua(data).buffer : data
+      )
       socket.send(data)
     }
 
