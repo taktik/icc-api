@@ -48,7 +48,6 @@ export class IccBekmehrXApi extends iccBeKmehrApi {
       socket.send(
         data.length > 65000 && this.preferBinaryForLargeMessages ? utils.text2ua(data).buffer : data
       )
-      socket.send(data)
     }
 
     const messageHandler = (msg: any) => {
