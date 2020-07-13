@@ -679,8 +679,9 @@ export class IccMessageXApi extends iccMessageApi {
     invoicePrefix?: string,
     invoicePrefixer?: (invoice: InvoiceDto, hcpId: string) => Promise<string>
   ): Promise<{ message: MessageDto; invoices: Array<InvoiceDto> }> {
-    const ref = Number(efactMessage.commonOutput!!.inputReference!!) % 10000000000
-
+    const ref = efactMessage.commonOutput!!.inputReference
+      ? Number(efactMessage.commonOutput!!.inputReference) % 10000000000
+      : Number(efactMessage.commonOutput!!.outputReference!!.replace(/\D+/g, "")) % 10000000000
     return this.findMessagesByTransportGuid(
       "EFACT:BATCH:" + ref,
       false,
