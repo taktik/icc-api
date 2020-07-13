@@ -5,22 +5,24 @@ import { IccInvoiceXApi } from "./icc-invoice-x-api"
 
 import * as _ from "lodash"
 import * as moment from "moment"
-import * as models from "../icc-api/model/models"
+
 import {
-  EntityReference,
-  Filter,
-  FilterChain,
+  AbstractFilterDtoPatient,
+  EntityReferenceDto,
+  FilterChainPatient,
   HealthcarePartyDto,
   InsuranceDto,
   InvoiceDto,
   ListOfIdsDto,
   MessageDto,
+  PaginatedListPatientDto,
+  PatientDto,
   PatientHealthCarePartyDto,
-  PatientPaginatedList,
   ReceiptDto,
-  ReferralPeriod,
+  ReferralPeriodDto,
   UserDto
 } from "../icc-api/model/models"
+
 import {
   decodeBase36Uuid,
   getFederaton,
@@ -104,11 +106,11 @@ export class IccMessageXApi extends iccMessageApi {
   }
 
   // noinspection JSUnusedGlobalSymbols
-  newInstance(user: models.UserDto, m: any) {
+  newInstance(user: UserDto, m: any) {
     return this.newInstanceWithPatient(user, null, m)
   }
 
-  newInstanceWithPatient(user: models.UserDto, patient: models.PatientDto | null, m: any) {
+  newInstanceWithPatient(user: UserDto, patient: PatientDto | null, m: any) {
     const message = _.extend(
       {
         id: this.crypto.randomUuid(),
@@ -173,7 +175,7 @@ export class IccMessageXApi extends iccMessageApi {
   }
 
   saveDmgsListRequest(
-    user: models.UserDto,
+    user: UserDto,
     req: GenAsyncResponse,
     requestDate?: number
   ): Promise<MessageDto> {
@@ -205,7 +207,7 @@ export class IccMessageXApi extends iccMessageApi {
           })
           .then(doc => this.documentXApi.createDocument(doc))
           .then(doc =>
-            this.documentXApi.setAttachment(
+            this.documentXApi.setDocumentAttachment(
               doc.id!!,
               undefined /*TODO provide keys for encryption*/,
               <any>utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(req)))
@@ -411,15 +413,15 @@ export class IccMessageXApi extends iccMessageApi {
               0,
               undefined,
               false,
-              new FilterChain({
-                filter: new Filter({
+              new FilterChainPatient({
+                filter: new AbstractFilterDtoPatient({
                   $type: "PatientByHcPartyAndSsinsFilter",
                   healthcarePartyId: user.healthcarePartyId,
                   ssins: ssins
                 })
               })
             )
-            .then((pats: PatientPaginatedList) =>
+            .then((pats: PaginatedListPatientDto) =>
               this.patientApi.bulkUpdatePatients(
                 (pats.rows || []).map(p => {
                   const actions = _.sortBy(patsDmgs[p.ssin!!], a =>
@@ -446,7 +448,7 @@ export class IccMessageXApi extends iccMessageApi {
 
                   const rp =
                     (phcp.referralPeriods && phcp.referralPeriods.find(per => !per.endDate)) ||
-                    (phcp.referralPeriods[phcp.referralPeriods.length] = new ReferralPeriod({}))
+                    (phcp.referralPeriods[phcp.referralPeriods.length] = new ReferralPeriodDto({}))
 
                   const actionDate = Number(
                     moment(latestAction.date, "DD/MM/YYYY").format("YYYYMMDD")
@@ -459,7 +461,7 @@ export class IccMessageXApi extends iccMessageApi {
                     } else {
                       if (actionDate > (rp.startDate || 0)) {
                         rp.endDate = actionDate
-                        phcp.referralPeriods.push(new ReferralPeriod({ startDate: actionDate }))
+                        phcp.referralPeriods.push(new ReferralPeriodDto({ startDate: actionDate }))
                       }
                     }
                   }
@@ -522,9 +524,11 @@ export class IccMessageXApi extends iccMessageApi {
           })
           .then(doc => docXApi.createDocument(doc))
           .then(doc =>
-            docXApi.setAttachment(doc.id!!, undefined /*TODO provide keys for encryption*/, <any>(
-              utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(dmgMessage)))
-            ))
+            docXApi.setDocumentAttachment(
+              doc.id!!,
+              undefined /*TODO provide keys for encryption*/,
+              <any>utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(dmgMessage)))
+            )
           )
           .then(() => msg)
       })
@@ -654,7 +658,7 @@ export class IccMessageXApi extends iccMessageApi {
           })
         )
         .then(rcpt =>
-          this.receiptXApi.setAttachment(rcpt.id, "tack", undefined, <any>(
+          this.receiptXApi.setReceiptAttachment(rcpt.id, "tack", "", <any>(
             utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(efactMessage)))
           ))
         )
@@ -679,8 +683,9 @@ export class IccMessageXApi extends iccMessageApi {
     invoicePrefix?: string,
     invoicePrefixer?: (invoice: InvoiceDto, hcpId: string) => Promise<string>
   ): Promise<{ message: MessageDto; invoices: Array<InvoiceDto> }> {
-    const ref = Number(efactMessage.commonOutput!!.inputReference!!) % 10000000000
-
+    const ref = efactMessage.commonOutput!!.inputReference
+      ? Number(efactMessage.commonOutput!!.inputReference) % 10000000000
+      : Number(efactMessage.commonOutput!!.outputReference!!.replace(/\D+/g, "")) % 10000000000
     return this.findMessagesByTransportGuid(
       "EFACT:BATCH:" + ref,
       false,
@@ -843,17 +848,17 @@ export class IccMessageXApi extends iccMessageApi {
             )
             .then(([doc, jsonDoc, jsonParsedDoc]) =>
               Promise.all([
-                this.documentXApi.setAttachment(
+                this.documentXApi.setDocumentAttachment(
                   doc.id!!,
                   undefined /*TODO provide keys for encryption*/,
                   <any>utils.ua2ArrayBuffer(utils.text2ua(efactMessage.detail!!))
                 ),
-                this.documentXApi.setAttachment(
+                this.documentXApi.setDocumentAttachment(
                   jsonDoc.id!!,
                   undefined /*TODO provide keys for encryption*/,
                   <any>utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(efactMessage)))
                 ),
-                this.documentXApi.setAttachment(
+                this.documentXApi.setDocumentAttachment(
                   jsonParsedDoc.id!!,
                   undefined /*TODO provide keys for encryption*/,
                   <any>utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(parsedRecords)))
@@ -868,7 +873,7 @@ export class IccMessageXApi extends iccMessageApi {
                     )
                   : Promise.resolve([])
             )
-            .then((invoices: Array<models.InvoiceDto>) => {
+            .then((invoices: Array<InvoiceDto>) => {
               // RejectAll if "920999", "920099"
               const rejectAll = (statuses & (1 << 17)) /*STATUS_ERROR*/ > 0
 
@@ -1054,7 +1059,7 @@ export class IccMessageXApi extends iccMessageApi {
     prefixer?: (fed: InsuranceDto, hcpId: string) => Promise<string>,
     isConnectedAsPmg: boolean = false,
     medicalLocationId?: string
-  ): Promise<models.MessageDto> {
+  ): Promise<MessageDto> {
     const uuid = this.crypto.randomUuid()
     const smallBase36 = uuidBase36Half(uuid)
     const fullBase36 = uuidBase36(uuid)
@@ -1069,13 +1074,13 @@ export class IccMessageXApi extends iccMessageApi {
       ).then(prefix => {
         return this.entityReferenceApi
           .getLatest(prefix)
-          .then((er: EntityReference) => {
+          .then((er: EntityReferenceDto) => {
             let nextSeqNumber =
               er && er.id && er.id!.startsWith(prefix)
                 ? (Number(er.id!.split(":").pop()) || 0) + 1
                 : 1
             return this.entityReferenceApi.createEntityReference(
-              new EntityReference({
+              new EntityReferenceDto({
                 id: prefix + _.padStart("" + (nextSeqNumber % 1000000000), 9, "0"),
                 docId: uuid
               })
@@ -1210,12 +1215,12 @@ export class IccMessageXApi extends iccMessageApi {
       )
       .then(([jsonDoc, doc]) =>
         Promise.all([
-          this.documentXApi.setAttachment(
+          this.documentXApi.setDocumentAttachment(
             jsonDoc.id!!,
             undefined /*TODO provide keys for encryption*/,
             <any>utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(res.records!!)))
           ),
-          this.documentXApi.setAttachment(
+          this.documentXApi.setDocumentAttachment(
             doc.id!!,
             undefined /*TODO provide keys for encryption*/,
             <any>utils.ua2ArrayBuffer(utils.text2ua(res.detail!!))

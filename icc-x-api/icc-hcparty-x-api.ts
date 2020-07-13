@@ -1,14 +1,12 @@
 import { iccHcpartyApi } from "../icc-api/iccApi"
-
-import { XHR } from "../icc-api/api/XHR"
 import { HealthcarePartyDto } from "../icc-api/model/HealthcarePartyDto"
 import * as _ from "lodash"
-import { HcPartyDto } from "fhc-api"
 
 // noinspection JSUnusedGlobalSymbols
 export class IccHcpartyXApi extends iccHcpartyApi {
   hcPartyKeysCache: { [key: string]: string } = {}
-  cache: { [key: string]: [number, Promise<HealthcarePartyDto>] } = {}
+  hcPartyCache: { [key: string]: [number, Promise<HealthcarePartyDto>] } = {}
+
   private CACHE_RETENTION_IN_MS: number = 300_000
   constructor(
     host: string,
@@ -21,63 +19,79 @@ export class IccHcpartyXApi extends iccHcpartyApi {
     super(host, headers, fetchImpl)
   }
 
+  private getHcPartyFromCache(key: string) {
+    const hcpInCache = this.hcPartyCache[key]
+    const now = Date.now()
+    if (hcpInCache && hcpInCache[0] > now) {
+      return hcpInCache[1]
+    }
+    if (!hcpInCache) {
+      console.log(`Cache miss for key ${key} because not in cache`)
+    } else {
+      console.log(`Cache miss for key ${key} because ${hcpInCache[0]} > ${now}`)
+    }
+    return null
+  }
+
+  putHcPartyInCache(
+    key: string,
+    value: Promise<HealthcarePartyDto> | null = null
+  ): Promise<HealthcarePartyDto> {
+    const hcp =
+      value ||
+      super.getHealthcareParty(key).catch(e => {
+        console.log(`Evict key ${key} because of error`)
+        delete this.hcPartyCache[key]
+        throw e
+      })
+    this.hcPartyCache[key] = [Date.now() + this.CACHE_RETENTION_IN_MS, hcp]
+    return hcp
+  }
+
   modifyHealthcareParty(body?: HealthcarePartyDto): Promise<HealthcarePartyDto | any> {
-    body && body.id && delete this.cache[body.id]
+    if (body && body.id) {
+      console.log(`Evict key ${body.id} because of modification`)
+      delete this.hcPartyCache[body.id]
+    }
+
     return super
       .modifyHealthcareParty(body)
-      .then(
-        hcp =>
-          (this.cache[hcp.id] = [Date.now() + this.CACHE_RETENTION_IN_MS, Promise.resolve(hcp)])[1]
-      )
+      .then(hcp => this.putHcPartyInCache(hcp.id, Promise.resolve(hcp)))
   }
 
   getHealthcareParty(
     healthcarePartyId: string,
     bypassCache: boolean = false
   ): Promise<HealthcarePartyDto | any> {
-    const fromCache = bypassCache ? undefined : this.cache[healthcarePartyId]
-    return !fromCache || Date.now() > fromCache[0]
-      ? (this.cache[healthcarePartyId] = [
-          Date.now() + this.CACHE_RETENTION_IN_MS,
-          super.getHealthcareParty(healthcarePartyId).catch(e => {
-            delete this.cache[healthcarePartyId]
-            throw e
-          })
-        ])[1]
-      : fromCache[1]
+    const fromCache = bypassCache ? undefined : this.getHcPartyFromCache(healthcarePartyId)
+    return fromCache || this.putHcPartyInCache(healthcarePartyId)
   }
 
   getHealthcareParties(healthcarePartyIds: string): Promise<Array<HealthcarePartyDto> | any> {
     const ids = healthcarePartyIds.split(",").filter(x => !!x)
-    const cached = ids.map(x => {
-      const c = this.cache[x]
-      return c && c[0] > Date.now() ? c : null
-    })
-    const toFetch = _.compact(ids.map((id, idx) => (!cached[idx] ? id : null)))
+    const cached: Array<[string, Promise<HealthcarePartyDto> | null]> = ids.map(id => [
+      id,
+      this.getHcPartyFromCache(id)
+    ])
+    const toFetch = cached.filter(x => !x[1]).map(x => x[0])
 
     if (!toFetch.length) {
-      return Promise.all(cached.map(c => c![1]))
+      return Promise.all(cached.map(x => x[1]!!))
     }
 
     const prom: Promise<HealthcarePartyDto[]> = super.getHealthcareParties(toFetch.join(","))
-
-    ids.forEach((id, idx) => {
-      if (!cached[idx]) {
-        this.cache[id] = [
-          Date.now() + this.CACHE_RETENTION_IN_MS,
-          prom.then(hcps => hcps.find(h => h.id === id)!)
-        ]
-      }
-    })
-
-    return Promise.all(ids.map(id => this.cache[id][1])).then(hcps => hcps.filter(x => !!x))
+    return Promise.all(
+      cached.map(
+        x =>
+          x[1] || this.putHcPartyInCache(x[0], prom.then(hcps => hcps.find(h => h.id === x[0])!!))
+      )
+    )
   }
 
   getCurrentHealthcareParty(): Promise<HealthcarePartyDto | any> {
-    return super.getCurrentHealthcareParty().then(hcp => {
-      this.cache[hcp.id] = [Date.now() + this.CACHE_RETENTION_IN_MS, Promise.resolve(hcp)]
-      return hcp
-    })
+    return super
+      .getCurrentHealthcareParty()
+      .then(hcp => this.putHcPartyInCache(hcp.id, Promise.resolve(hcp)))
   }
 
   getHcPartyKeysForDelegate(healthcarePartyId: string) {
@@ -93,6 +107,6 @@ export class IccHcpartyXApi extends iccHcpartyApi {
     cbe = cbe.replace(new RegExp("[^(0-9)]", "g"), "")
     cbe = cbe.length == 9 ? "0" + cbe : cbe
 
-    return 97 - (Number(cbe.substr(0, 8)) % 97) === Number(cbe.substr(8, 2)) ? true : false
+    return 97 - (Number(cbe.substr(0, 8)) % 97) === Number(cbe.substr(8, 2))
   }
 }

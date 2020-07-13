@@ -154,7 +154,7 @@ export class IccInvoiceXApi extends iccInvoiceApi {
   }
 
   getNextInvoiceReference(prefix: string, entityrefApi: iccEntityrefApi): Promise<number> {
-    return entityrefApi.getLatest(prefix).then((entRef: models.EntityReference) => {
+    return entityrefApi.getLatest(prefix).then((entRef: models.EntityReferenceDto) => {
       if (!entRef || !entRef.id || !entRef.id!.startsWith(prefix)) return 1
       const sequenceNumber = entRef.id!.split(":").pop() || 0
       return Number(sequenceNumber) + 1
@@ -166,10 +166,10 @@ export class IccInvoiceXApi extends iccInvoiceApi {
     docId: string,
     prefix: string,
     entityrefApi: iccEntityrefApi
-  ): Promise<models.EntityReference> {
+  ): Promise<models.EntityReferenceDto> {
     return entityrefApi
       .createEntityReference(
-        new models.EntityReference({
+        new models.EntityReferenceDto({
           id: prefix + nextReference.toString().padStart(6, "0"),
           docId
         })
@@ -199,8 +199,8 @@ export class IccInvoiceXApi extends iccInvoiceApi {
     return this.crypto
       .extractDelegationsSFKs(patient, hcpartyId)
       .then(secretForeignKeys =>
-        this.findByHCPartyPatientSecretFKeys(
-          secretForeignKeys.hcpartyId,
+        this.findInvoicesByHCPartyPatientForeignKeys(
+          secretForeignKeys.hcpartyId!,
           secretForeignKeys.extractedKeys.join(",")
         )
       )

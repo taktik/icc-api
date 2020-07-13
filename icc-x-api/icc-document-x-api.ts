@@ -666,8 +666,8 @@ export class IccDocumentXApi extends iccDocumentApi {
     return this.crypto
       .extractDelegationsSFKs(message, hcpartyId)
       .then(secretForeignKeys =>
-        this.findByHCPartyMessageSecretFKeys(
-          secretForeignKeys.hcpartyId,
+        this.findDocumentsByHCPartyPatientForeignKeys(
+          secretForeignKeys.hcpartyId!,
           secretForeignKeys.extractedKeys.join(",")
         )
       )

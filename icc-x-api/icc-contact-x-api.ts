@@ -1,5 +1,5 @@
 import { iccContactApi } from "../icc-api/iccApi"
-import { IccCryptoXApi } from "../icc-x-api/icc-crypto-x-api"
+import { IccCryptoXApi } from "./icc-crypto-x-api"
 
 import i18n from "./rsrc/contact.i18n"
 import { utils } from "./crypto/utils"
@@ -8,6 +8,7 @@ import * as moment from "moment"
 import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
 import { ContactDto } from "../icc-api/model/models"
+import { PaginatedListContactDto } from "../icc-api/model/PaginatedListContactDto"
 
 export class IccContactXApi extends iccContactApi {
   i18n: any = i18n
@@ -222,7 +223,7 @@ export class IccContactXApi extends iccContactApi {
       _.flatMap(
         await Promise.all(
           Object.keys(perHcpId).map(hcpId =>
-            this.findByHCPartyPatientForeignKeys(
+            this.findContactsByHCPartyPatientForeignKeys(
               hcpartyId,
               new models.ListOfIdsDto({
                 ids: perHcpId[hcpId]
@@ -239,7 +240,7 @@ export class IccContactXApi extends iccContactApi {
     startKey?: string,
     startDocumentId?: string,
     limit?: number,
-    body?: models.FilterChain
+    body?: models.FilterChainContact
   ): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
@@ -302,7 +303,7 @@ export class IccContactXApi extends iccContactApi {
 
   findByHCPartyPatientSecretFKeys(
     hcPartyId: string,
-    secretFKeys?: string,
+    secretFKeys: string,
     planOfActionIds?: string,
     skipClosedContacts?: boolean
   ): Promise<Array<models.ContactDto> | any> {
@@ -313,13 +314,12 @@ export class IccContactXApi extends iccContactApi {
 
   filterByWithUser(
     user: models.UserDto,
-    startKey?: string,
     startDocumentId?: string,
     limit?: number,
-    body?: models.FilterChain
-  ): Promise<models.ContactPaginatedList | any> {
+    body?: models.FilterChainContact
+  ): Promise<PaginatedListContactDto | any> {
     return super
-      .filterBy(startKey, startDocumentId, limit, body)
+      .filterContactsBy(startDocumentId, limit, body)
       .then(ctcs =>
         this.decrypt(user.healthcarePartyId!, ctcs.rows).then(decryptedRows =>
           Object.assign(ctcs, { rows: decryptedRows })
@@ -334,7 +334,7 @@ export class IccContactXApi extends iccContactApi {
     hcpartyid: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<models.ContactPaginatedList | any> {
+  ): Promise<PaginatedListContactDto | any> {
     return super
       .listContactsByOpeningDate(startKey, endKey, hcpartyid, startDocumentId, limit)
       .then(ctcs => {
@@ -345,8 +345,8 @@ export class IccContactXApi extends iccContactApi {
 
   findByHCPartyFormIdWithUser(
     user: models.UserDto,
-    hcPartyId?: string,
-    formId?: string
+    hcPartyId: string,
+    formId: string
   ): Promise<Array<models.ContactDto> | any> {
     return super
       .findByHCPartyFormId(hcPartyId, formId)
@@ -355,8 +355,8 @@ export class IccContactXApi extends iccContactApi {
 
   findByHCPartyFormIdsWithUser(
     user: models.UserDto,
-    hcPartyId?: string,
-    body?: models.ListOfIdsDto
+    hcPartyId: string,
+    body: models.ListOfIdsDto
   ): Promise<Array<models.ContactDto> | any> {
     return super
       .findByHCPartyFormIds(hcPartyId, body)
@@ -471,17 +471,6 @@ export class IccContactXApi extends iccContactApi {
                       return ctc
                     })
                 )
-                .then(ctc => {
-                  console.log("Try to decrypt ")
-                  this.decrypt(hcpartyId, [ctc]).then(c => {
-                    console.log("With key:", c[0])
-                  })
-                  this.decrypt("cbafa3bc-67d2-48dc-a806-880f745fd346", [ctc]).then(c => {
-                    console.log("With key:", c[0])
-                  })
-
-                  return ctc
-                })
       )
     )
   }
