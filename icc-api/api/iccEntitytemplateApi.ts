@@ -62,6 +62,27 @@ export class iccEntitytemplateApi {
       .then(doc => new models.EntityTemplateDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+
+  deleteEntityTemplate(entityTemplateIds: string): Promise<models.DocumentDto | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/entityTemplate/{entityTemplateIds}".replace(
+        "{entityTemplateIds}",
+        entityTemplateIds + ""
+      ) +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
+      .then(doc => new models.DocumentDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+
   findAllEntityTemplates(
     type: string,
     searchString?: string,
