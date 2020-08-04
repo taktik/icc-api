@@ -75,32 +75,4 @@ export class IccDoctemplateXApi extends iccDoctemplateApi {
     )
   }
 
-  getAttachmentText(documentTemplateId: string, attachmentId: string): Promise<any | Boolean> {
-    const _body = null
-
-    const _url =
-      this.host +
-      "/doctemplate/{documentTemplateId}/attachmentText/{attachmentId}"
-        .replace("{documentTemplateId}", documentTemplateId + "")
-        .replace("{attachmentId}", attachmentId + "") +
-      "?ts=" +
-      new Date().getTime()
-
-    return XHR.sendCommand("GET", _url, this.headers, _body, this.fetchImpl)
-      .then(doc => {
-        if (doc.contentType.startsWith("application/octet-stream")) {
-          const enc = new TextDecoder("utf-8")
-          const arr = new Uint8Array(doc.body)
-          return enc.decode(arr)
-        } else if (
-          doc.contentType.startsWith("text/plain") ||
-          doc.contentType.startsWith("text/html")
-        ) {
-          return doc.body
-        } else {
-          return false
-        }
-      })
-      .catch(err => this.handleError(err))
-  }
 }
