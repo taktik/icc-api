@@ -1,12 +1,11 @@
-import { iccHcpartyApi, iccPatientApi } from "../icc-api/iccApi"
-import { AES, AESUtils } from "./crypto/AES"
-import { RSA, RSAUtils } from "./crypto/RSA"
-import { utils, UtilsClass } from "./crypto/utils"
-import { shamir, ShamirClass } from "./crypto/shamir"
-
 import * as _ from "lodash"
+import { iccHcpartyApi, iccPatientApi } from "../icc-api/iccApi"
 import * as models from "../icc-api/model/models"
 import { DelegationDto, HealthcarePartyDto, PatientDto } from "../icc-api/model/models"
+import { AESUtils } from "./crypto/AES"
+import { RSAUtils } from "./crypto/RSA"
+import { ShamirClass } from "./crypto/shamir"
+import { utils, UtilsClass } from "./crypto/utils"
 
 export class IccCryptoXApi {
   get shamir(): ShamirClass {
@@ -102,7 +101,9 @@ export class IccCryptoXApi {
   keychainLocalStoreIdPrefix = "org.taktik.icure.ehealth.keychain."
   keychainValidityDateLocalStoreIdPrefix = "org.taktik.icure.ehealth.keychain-date."
   hcpPreferenceKeyEhealthCert = "eHealthCRT"
+  hcpPreferenceKeyEhealthCertEncrypted = "eHealthCRT_encrypted"
   hcpPreferenceKeyEhealthCertDate = "eHealthCRTDate"
+  hcpPreferenceKeyEhealthCertDateEncrypted = "eHealthCRTDate_encrypted"
 
   private hcpartyBaseApi: iccHcpartyApi
   private patientBaseApi: iccPatientApi
@@ -121,8 +122,8 @@ export class IccCryptoXApi {
     crypto: Crypto = typeof window !== "undefined"
       ? window.crypto
       : typeof self !== "undefined"
-        ? self.crypto
-        : ({} as Crypto)
+      ? self.crypto
+      : ({} as Crypto)
   ) {
     this.hcpartyBaseApi = hcpartyBaseApi
     this.patientBaseApi = patientBaseApi
@@ -343,11 +344,10 @@ export class IccCryptoXApi {
         delegatorIds[delegationItem.owner!] = true //TODO: why is set to true?
       })
     } else if (fallbackOnParent) {
-      return this.getHcpOrPatient(healthcarePartyId).then(
-        hcp =>
-          (hcp as any).parentId
-            ? this.decryptAndImportAesHcPartyKeysInDelegations((hcp as any).parentId, delegations)
-            : Promise.resolve([])
+      return this.getHcpOrPatient(healthcarePartyId).then(hcp =>
+        (hcp as any).parentId
+          ? this.decryptAndImportAesHcPartyKeysInDelegations((hcp as any).parentId, delegations)
+          : Promise.resolve([])
       )
     }
 
@@ -517,9 +517,7 @@ export class IccCryptoXApi {
                   .decrypt(importedAESHcPartyKey.key, this._utils.hex2ua(d.key))
                   .catch(() => {
                     console.log(
-                      `Cannot decrypt delegation from ${d.owner} to ${
-                        d.delegatedTo
-                      } for object with id ${modifiedObject.id}:`,
+                      `Cannot decrypt delegation from ${d.owner} to ${d.delegatedTo} for object with id ${modifiedObject.id}:`,
                       modifiedObject
                     )
                     return null
@@ -535,9 +533,7 @@ export class IccCryptoXApi {
                   .decrypt(importedAESHcPartyKey.key, this._utils.hex2ua(d.key))
                   .catch(() => {
                     console.log(
-                      `Cannot decrypt cryptedForeignKeys from ${d.owner} to ${
-                        d.delegatedTo
-                      } for object with id ${modifiedObject.id}:`,
+                      `Cannot decrypt cryptedForeignKeys from ${d.owner} to ${d.delegatedTo} for object with id ${modifiedObject.id}:`,
                       modifiedObject
                     )
                     return null
@@ -741,9 +737,7 @@ export class IccCryptoXApi {
                 d.owner === ownerId &&
                 this._AES.decrypt(decryptedHcPartyKey.key, this._utils.hex2ua(d.key)).catch(() => {
                   console.log(
-                    `Cannot decrypt encryption key from ${d.owner} to ${
-                      d.delegatedTo
-                    } for object with id ${modifiedObject.id}:`,
+                    `Cannot decrypt encryption key from ${d.owner} to ${d.delegatedTo} for object with id ${modifiedObject.id}:`,
                     modifiedObject
                   )
                   return null
@@ -871,20 +865,19 @@ export class IccCryptoXApi {
         )
       : Promise.resolve({ delegations: {}, cryptedForeignKeys: {} })
     )
-      .then(
-        extendedChildObjectSPKsAndCFKs =>
-          secretEncryptionKey
-            ? this.appendEncryptionKeys(child, ownerId, delegateId, secretEncryptionKey).then(
-                //TODO: extendedDelegationsAndCryptedForeignKeys and appendEncryptionKeys can be done in parallel
-                extendedChildObjectEKs => ({
-                  extendedSPKsAndCFKs: extendedChildObjectSPKsAndCFKs,
-                  extendedEKs: extendedChildObjectEKs
-                })
-              )
-            : Promise.resolve({
+      .then(extendedChildObjectSPKsAndCFKs =>
+        secretEncryptionKey
+          ? this.appendEncryptionKeys(child, ownerId, delegateId, secretEncryptionKey).then(
+              //TODO: extendedDelegationsAndCryptedForeignKeys and appendEncryptionKeys can be done in parallel
+              extendedChildObjectEKs => ({
                 extendedSPKsAndCFKs: extendedChildObjectSPKsAndCFKs,
-                extendedEKs: { encryptionKeys: {} }
+                extendedEKs: extendedChildObjectEKs
               })
+            )
+          : Promise.resolve({
+              extendedSPKsAndCFKs: extendedChildObjectSPKsAndCFKs,
+              extendedEKs: { encryptionKeys: {} }
+            })
       )
       .then(
         ({
@@ -1130,17 +1123,16 @@ export class IccCryptoXApi {
             }
           )
         : Promise.resolve([])
-      ).then(
-        extractedKeys =>
-          (hcp as HealthcarePartyDto).parentId
-            ? this.extractKeysHierarchyFromDelegationLikes(
-                (hcp as HealthcarePartyDto).parentId!,
-                objectId,
-                delegations
-              ).then(parentResponse =>
-                parentResponse.concat({ extractedKeys: extractedKeys, hcpartyId: hcpartyId })
-              )
-            : [{ extractedKeys: extractedKeys, hcpartyId: hcpartyId }]
+      ).then(extractedKeys =>
+        (hcp as HealthcarePartyDto).parentId
+          ? this.extractKeysHierarchyFromDelegationLikes(
+              (hcp as HealthcarePartyDto).parentId!,
+              objectId,
+              delegations
+            ).then(parentResponse =>
+              parentResponse.concat({ extractedKeys: extractedKeys, hcpartyId: hcpartyId })
+            )
+          : [{ extractedKeys: extractedKeys, hcpartyId: hcpartyId }]
       )
     )
   }
@@ -1180,19 +1172,18 @@ export class IccCryptoXApi {
             }
           )
         : Promise.resolve([])
-      ).then(
-        extractedKeys =>
-          (hcp as HealthcarePartyDto).parentId
-            ? this.extractKeysFromDelegationsForHcpHierarchy(
-                (hcp as HealthcarePartyDto).parentId!,
-                objectId,
-                delegations
-              ).then(parentResponse =>
-                _.assign(parentResponse, {
-                  extractedKeys: parentResponse.extractedKeys.concat(extractedKeys)
-                })
-              )
-            : { extractedKeys: extractedKeys, hcpartyId: hcpartyId }
+      ).then(extractedKeys =>
+        (hcp as HealthcarePartyDto).parentId
+          ? this.extractKeysFromDelegationsForHcpHierarchy(
+              (hcp as HealthcarePartyDto).parentId!,
+              objectId,
+              delegations
+            ).then(parentResponse =>
+              _.assign(parentResponse, {
+                extractedKeys: parentResponse.extractedKeys.concat(extractedKeys)
+              })
+            )
+          : { extractedKeys: extractedKeys, hcpartyId: hcpartyId }
       )
     )
   }
@@ -1253,9 +1244,7 @@ export class IccCryptoXApi {
           })
           .catch(err => {
             console.log(
-              `Could not decrypt generic delegation in object with ID: ${masterId} from ${
-                genericDelegationItem.owner
-              } to ${genericDelegationItem.delegatedTo}: ${err}`
+              `Could not decrypt generic delegation in object with ID: ${masterId} from ${genericDelegationItem.owner} to ${genericDelegationItem.delegatedTo}: ${err}`
             )
             return undefined
           })
@@ -1361,15 +1350,62 @@ export class IccCryptoXApi {
   saveKeyChainInHCPFromLocalStorage(hcpId: string): Promise<HealthcarePartyDto> {
     return this.hcpartyBaseApi
       .getHealthcareParty(hcpId)
-      .then(hcp => {
+      .then(async (hcp: HealthcarePartyDto) => {
+        let encryptionKey = null
+        try {
+          encryptionKey = _.find(
+            await this.decryptAndImportAesHcPartyKeysForDelegators([hcp.id!], hcp.id!),
+            delegator => delegator.delegatorId === hcp.id
+          )!.key
+        } catch (e) {
+          console.error("Error while importing the AES key.")
+        }
+        if (!encryptionKey) {
+          console.error("No encryption key!")
+        }
+
         const opts = hcp.options || {}
 
         const crt = this.getKeychainInBrowserLocalStorageAsBase64(hcp.id!!)
         _.set(opts, this.hcpPreferenceKeyEhealthCert, crt)
 
+        if (!!encryptionKey && !!crt) {
+          let crtEncrypted: ArrayBuffer | null = null
+          try {
+            crtEncrypted = await this.AES.encrypt(
+              encryptionKey,
+              new Uint8Array(utils.text2ua(atob(crt)))
+            )
+          } catch (e) {
+            console.error("Error while encrypting the certificate", e)
+          }
+          _.set(
+            opts,
+            this.hcpPreferenceKeyEhealthCertEncrypted,
+            utils.ua2text(new Uint8Array(crtEncrypted!))
+          )
+        }
+
         const crtValidityDate = this.getKeychainValidityDateInBrowserLocalStorage(hcp.id!!)
         if (!!crtValidityDate) {
           _.set(opts, this.hcpPreferenceKeyEhealthCertDate, crtValidityDate)
+
+          if (!!encryptionKey) {
+            let crtValidityDateEncrypted: ArrayBuffer | null = null
+            try {
+              crtValidityDateEncrypted = await this.AES.encrypt(
+                encryptionKey,
+                utils.hex2ua(utils.text2hex(crtValidityDate))
+              )
+            } catch (e) {
+              console.error("Error while encrypting the certificate date", e)
+            }
+            _.set(
+              opts,
+              this.hcpPreferenceKeyEhealthCertDateEncrypted,
+              utils.ua2text(new Uint8Array(crtValidityDateEncrypted!))
+            )
+          }
         }
 
         hcp.options = opts
@@ -1381,16 +1417,73 @@ export class IccCryptoXApi {
   }
 
   importKeychainInBrowserFromHCP(hcpId: string): Promise<void> {
-    return this.hcpartyBaseApi.getHealthcareParty(hcpId).then(hcp => {
-      const crt = _.get(hcp.options, this.hcpPreferenceKeyEhealthCert)
-      const crtValidityDate = _.get(hcp.options, this.hcpPreferenceKeyEhealthCertDate)
-      if (crt) {
-        this.saveKeychainInBrowserLocalStorageAsBase64(hcp.id!!, crt)
+    return this.hcpartyBaseApi.getHealthcareParty(hcpId).then(async hcp => {
+      const crtCryp: ArrayBuffer = _.get(hcp.options, this.hcpPreferenceKeyEhealthCertEncrypted)
+      const crtValidityDateCryp: ArrayBuffer = _.get(
+        hcp.options,
+        this.hcpPreferenceKeyEhealthCertDateEncrypted
+      )
+
+      let crt: ArrayBuffer | null = null
+      let crtValidityDate: ArrayBuffer | null = null
+
+      let decryptionKey: CryptoKey | null = null
+      try {
+        decryptionKey = _.find(
+          await this.decryptAndImportAesHcPartyKeysForDelegators([hcp.id!], hcp.id!),
+          delegator => delegator.delegatorId === hcp.id
+        )!.key
+      } catch (e) {
+        console.error("Error while importing the AES key.")
+      }
+      if (!decryptionKey) {
+        console.error("No encryption key!")
       }
 
-      if (crtValidityDate) {
-        this.saveKeychainValidityDateInBrowserLocalStorage(hcp.id!!, crtValidityDate)
+      const errors = []
+
+      if (crtCryp && decryptionKey) {
+        crt = await this.AES.decrypt(
+          decryptionKey,
+          new Uint8Array(utils.base64toArrayBuffer(btoa(utils.ua2text(new Uint8Array(crtCryp)))))
+        )
+      } else {
+        crt = _.get(hcp.options, this.hcpPreferenceKeyEhealthCert)
       }
+
+      if (!crt) {
+        errors.push(
+          new Error(
+            `Error while saving certificate in browser local storage! Hcp ${hcp.id} has no certificate.`
+          )
+        )
+      } else {
+        this.saveKeychainInBrowserLocalStorageAsBase64(
+          hcp.id!!,
+          utils.base64url(new Uint8Array(crt))
+        )
+      }
+
+      if (crtValidityDateCryp && decryptionKey) {
+        crtValidityDate = await this.AES.decrypt(decryptionKey, new Uint8Array(crtValidityDateCryp))
+      } else {
+        crtValidityDate = _.get(hcp.options, this.hcpPreferenceKeyEhealthCert)
+      }
+
+      if (!crtValidityDate) {
+        errors.push(
+          new Error(
+            `Error while saving certificate validity date in browser local storage! Hcp ${hcp.id} has no certificate.`
+          )
+        )
+      } else {
+        this.saveKeychainValidityDateInBrowserLocalStorage(
+          hcp.id!!,
+          utils.hex2text(utils.ua2hex(crtValidityDate))
+        )
+      }
+
+      return errors.length ? Promise.reject(errors) : Promise.resolve()
     })
   }
 
@@ -1400,7 +1493,7 @@ export class IccCryptoXApi {
    */
   syncEhealthCertificate(hcpId: string): Promise<boolean> {
     return this.hcpartyBaseApi.getHealthcareParty(hcpId).then(hcp => {
-      const crtHCP = _.get(hcp.options, this.hcpPreferenceKeyEhealthCert)
+      const crtHCP = _.get(hcp.options, this.hcpPreferenceKeyEhealthCertEncrypted)
       const crtLC = this.getKeychainInBrowserLocalStorageAsBase64(hcp.id!!)
       const xor_hcp_localstorage = !(crtHCP && crtLC) && (crtHCP || crtLC)
 
