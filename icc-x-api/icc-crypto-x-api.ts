@@ -106,7 +106,7 @@ export class IccCryptoXApi {
 
   keychainLocalStoreIdPrefix = "org.taktik.icure.ehealth.keychain."
   keychainValidityDateLocalStoreIdPrefix = "org.taktik.icure.ehealth.keychain-date."
-  hcpPreferenceKeyEhealthCertEncrypted = "eHealthCRT_encrypted"
+  hcpPreferenceKeyEhealthCertEncrypted = "eHealthCRTCrypt"
   hcpPreferenceKeyEhealthCertDate = "eHealthCRTDate"
 
   private hcpartyBaseApi: iccHcpartyApi
