@@ -1409,9 +1409,14 @@ export class IccCryptoXApi {
   importKeychainInBrowserFromHCP(hcpId: string): Promise<void> {
     return this.hcpartyBaseApi.getHealthcareParty(hcpId).then(async hcp => {
       const crtCryp: ArrayBuffer = _.get(hcp.options, this.hcpPreferenceKeyEhealthCertEncrypted)
-      const crtValidityDate: ArrayBuffer = _.get(hcp.options, this.hcpPreferenceKeyEhealthCertDate)
-      let crt: ArrayBuffer | null = null
+      const crtValidityDate = _.get(hcp.options, this.hcpPreferenceKeyEhealthCertDate)
 
+      // store the validity date
+      if (!!crtValidityDate) {
+        this.saveKeychainValidityDateInBrowserLocalStorage(hcp.id!!, crtValidityDate)
+      }
+
+      let crt: ArrayBuffer | null = null
       let decryptionKey: CryptoKey | null = null
       try {
         decryptionKey = _.find(
@@ -1422,23 +1427,20 @@ export class IccCryptoXApi {
         console.error("Error while importing the AES key.")
       }
       if (!decryptionKey) {
-        console.error("No encryption key!")
+        return Promise.reject(
+          new Error("No encryption key! eHealth certificate cannot be decrypted.")
+        )
       }
 
-      let error = null
-
-      if (crtCryp && decryptionKey) {
-        crt = await this.AES.decrypt(
-          decryptionKey,
-          new Uint8Array(utils.base64toArrayBuffer(btoa(utils.ua2text(new Uint8Array(crtCryp)))))
-        )
-      } else {
-        crt = _.get(hcp.options, this.hcpPreferenceKeyEhealthCert)
+      if (!!crtCryp && decryptionKey) {
+        crt = await this.AES.decrypt(decryptionKey, crtCryp)
       }
 
       if (!crt) {
-        error = new Error(
-          `Error while saving certificate in browser local storage! Hcp ${hcp.id} has no certificate.`
+        return Promise.reject(
+          new Error(
+            `Error while saving certificate in browser local storage! Hcp ${hcp.id} has no certificate.`
+          )
         )
       } else {
         this.saveKeychainInBrowserLocalStorageAsBase64(
@@ -1447,11 +1449,7 @@ export class IccCryptoXApi {
         )
       }
 
-      if (!!crtValidityDate) {
-        this.saveKeychainValidityDateInBrowserLocalStorage(hcp.id!!, utils.ua2text(crtValidityDate))
-      }
-
-      return !!error ? Promise.reject(error) : Promise.resolve()
+      return Promise.resolve()
     })
   }
 
