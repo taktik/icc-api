@@ -1347,20 +1347,20 @@ export class IccCryptoXApi {
     }
   }
 
-  saveKeyChainInHCPFromLocalStorage(hcpId: string): Promise<HealthcarePartyDto> {
-    return this.hcpartyBaseApi
+  async saveKeyChainInHCPFromLocalStorage(hcpId: string): Promise<HealthcarePartyDto> {
+    return await this.hcpartyBaseApi
       .getHealthcareParty(hcpId)
       .then(async (hcp: HealthcarePartyDto) => {
-        let encryptionKey = null
+        let aesKey: CryptoKey | null = null
         try {
-          encryptionKey = _.find(
+          aesKey = _.find(
             await this.decryptAndImportAesHcPartyKeysForDelegators([hcp.id!], hcp.id!),
             delegator => delegator.delegatorId === hcp.id
           )!.key
         } catch (e) {
           console.error("Error while importing the AES key.")
         }
-        if (!encryptionKey) {
+        if (!aesKey) {
           console.error("No encryption key!")
         }
 
@@ -1369,13 +1369,10 @@ export class IccCryptoXApi {
         const crt = this.getKeychainInBrowserLocalStorageAsBase64(hcp.id!!)
         _.set(opts, this.hcpPreferenceKeyEhealthCert, crt)
 
-        if (!!encryptionKey && !!crt) {
+        if (!!aesKey && !!crt) {
           let crtEncrypted: ArrayBuffer | null = null
           try {
-            crtEncrypted = await this.AES.encrypt(
-              encryptionKey,
-              new Uint8Array(utils.text2ua(atob(crt)))
-            )
+            crtEncrypted = await this.AES.encrypt(aesKey, new Uint8Array(utils.text2ua(atob(crt))))
           } catch (e) {
             console.error("Error while encrypting the certificate", e)
           }
@@ -1390,11 +1387,11 @@ export class IccCryptoXApi {
         if (!!crtValidityDate) {
           _.set(opts, this.hcpPreferenceKeyEhealthCertDate, crtValidityDate)
 
-          if (!!encryptionKey) {
+          if (!!aesKey) {
             let crtValidityDateEncrypted: ArrayBuffer | null = null
             try {
               crtValidityDateEncrypted = await this.AES.encrypt(
-                encryptionKey,
+                aesKey,
                 utils.hex2ua(utils.text2hex(crtValidityDate))
               )
             } catch (e) {
@@ -1411,8 +1408,12 @@ export class IccCryptoXApi {
         hcp.options = opts
         return hcp
       })
-      .then(hcp => {
-        return this.hcpartyBaseApi.modifyHealthcareParty(hcp)
+      .then(async hcp => {
+        return await this.hcpartyBaseApi.getHealthcareParty(hcp.id!).then(async fetchedHCP => {
+          return await this.hcpartyBaseApi.modifyHealthcareParty(
+            _.set(fetchedHCP, "options", hcp.options)
+          )
+        })
       })
   }
 
