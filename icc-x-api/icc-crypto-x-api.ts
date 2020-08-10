@@ -1355,7 +1355,8 @@ export class IccCryptoXApi {
    * Populate the HCP.options dict with an encrypted eHealth certificate and unencryped expiry date.
    * Any potentially unencrypted certificates will be pruned from the HCP.
    * @param hcpId Id of the hcp to modify
-   * @returns modified HCP, without publishing the modifications to the back-end
+   * @returns modified HCP, without publishing the modifications to the back-end. To also publish
+   * the modifications, use the EhAuthenticationService#saveKeyChainInHCPFromLocalStorage
    */
   async saveKeyChainInHCPFromLocalStorage(hcpId: string): Promise<HealthcarePartyDto> {
     return await this.hcpartyBaseApi
