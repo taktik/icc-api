@@ -1347,7 +1347,17 @@ export class IccCryptoXApi {
     }
   }
 
-  async saveKeyChainInHCPFromLocalStorage(hcpId: string): Promise<HealthcarePartyDto> {
+  /**
+   * Save eHealth certificate and validity in the encrypted fields of the HCP.
+   * @param hcpId Id of the hcp to modify
+   * @param autoupdateHCP update the HCP using the base HCP service; if false simply return the new HCP,
+   * without publishing the modifications on the db (this way this can be handled elsewhere e.g. by the
+   * HCP x api service, which makes use of caching).
+   */
+  async saveKeyChainInHCPFromLocalStorage(
+    hcpId: string,
+    autoupdateHCP = true
+  ): Promise<HealthcarePartyDto> {
     return await this.hcpartyBaseApi
       .getHealthcareParty(hcpId)
       .then(async (hcp: HealthcarePartyDto) => {
@@ -1409,11 +1419,11 @@ export class IccCryptoXApi {
         return hcp
       })
       .then(async hcp => {
-        return await this.hcpartyBaseApi.getHealthcareParty(hcp.id!).then(async fetchedHCP => {
-          return await this.hcpartyBaseApi.modifyHealthcareParty(
-            _.set(fetchedHCP, "options", hcp.options)
-          )
-        })
+        if (autoupdateHCP) {
+          return await this.hcpartyBaseApi.modifyHealthcareParty(hcp)
+        } else {
+          return hcp
+        }
       })
   }
 
