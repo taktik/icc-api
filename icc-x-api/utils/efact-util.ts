@@ -318,7 +318,7 @@ function toInvoiceItem(
   invoiceItem.codeNomenclature = Number(invoicingCode.tarificationId!!.split("|")[1])
   invoiceItem.dateCode = dateEncode(toMoment(invoicingCode.dateCode!!)!!.toDate())
   invoiceItem.endDateCode =
-    invoiceItem.codeNomenclature === "109594"
+    invoiceItem.codeNomenclature === 109594
       ? dateEncode(toMoment(invoicingCode.dateCode!!)!!.toDate())
       : dateEncode(
           toMoment(invoicingCode.dateCode!!)!!
