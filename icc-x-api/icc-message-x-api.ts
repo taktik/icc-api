@@ -1058,7 +1058,7 @@ export class IccMessageXApi extends iccMessageApi {
     fhcServer: string | undefined = undefined,
     prefixer?: (fed: InsuranceDto, hcpId: string) => Promise<string>,
     isConnectedAsPmg: boolean = false,
-    medicalLocationId?: string
+    medicalLocationId?: String = null
   ): Promise<MessageDto> {
     const uuid = this.crypto.randomUuid()
     const smallBase36 = uuidBase36Half(uuid)
@@ -1070,7 +1070,7 @@ export class IccMessageXApi extends iccMessageApi {
     return getFederaton(invoices, this.insuranceApi).then(fed => {
       return (prefixer
         ? prefixer(fed, hcp.id!)
-        : Promise.resolve(`efact:${hcp.id}:${year}:${fed.code === "306" ? "300" : fed.code}:`)
+        : Promise.resolve(`efact:${hcp.id}:${year}:${fed.code === "306" ? "300" : (fed.code === "675" ? "600" : fed.code)}:`)
       ).then(prefix => {
         return this.entityReferenceApi
           .getLatest(prefix)

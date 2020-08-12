@@ -184,7 +184,20 @@ export class iccDoctemplateApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => true)
+      .then(doc => {
+        if (doc.contentType.startsWith("application/octet-stream")) {
+          const enc = new TextDecoder("utf-8")
+          const arr = new Uint8Array(doc.body)
+          return enc.decode(arr)
+        } else if (
+          doc.contentType.startsWith("text/plain") ||
+          doc.contentType.startsWith("text/html")
+        ) {
+          return doc.body
+        } else {
+          return false
+        }
+      })
       .catch(err => this.handleError(err))
   }
 
