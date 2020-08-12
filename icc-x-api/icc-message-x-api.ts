@@ -1057,7 +1057,8 @@ export class IccMessageXApi extends iccMessageApi {
     efactApi: fhcEfactcontrollerApi,
     fhcServer: string | undefined = undefined,
     prefixer?: (fed: InsuranceDto, hcpId: string) => Promise<string>,
-    isConnectedAsPmg: boolean = false
+    isConnectedAsPmg: boolean = false,
+    medicalLocationId?: String = null
   ): Promise<MessageDto> {
     const uuid = this.crypto.randomUuid()
     const smallBase36 = uuidBase36Half(uuid)
