@@ -263,15 +263,17 @@ export class iccIcureApi {
    *
    * @summary Force update design doc
    * @param entityName
+   * @param warmup
    */
-  updateDesignDoc(entityName: string): Promise<boolean | any> {
+  updateDesignDoc(entityName: string, warmup: boolean): Promise<boolean | any> {
     let _body = null
 
     const _url =
       this.host +
       `/icure/dd/${encodeURIComponent(String(entityName))}` +
       "?ts=" +
-      new Date().getTime()
+      new Date().getTime() +
+      (warmup ? "&warmup=" + encodeURIComponent(String(warmup)) : "")
     let headers = this.headers
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => JSON.parse(JSON.stringify(doc.body)))

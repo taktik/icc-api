@@ -344,7 +344,7 @@ export class iccBesamv2Api {
    * Returns a list of codes matched with given input. If several types are provided, paginantion is not supported
    * @summary Get Samv2 version.
    */
-  getVersion1(): Promise<SamVersionDto | any> {
+  getSamVersion(): Promise<SamVersionDto | any> {
     let _body = null
 
     const _url = this.host + `/be_samv2/v` + "?ts=" + new Date().getTime()

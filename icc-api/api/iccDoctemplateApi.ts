@@ -172,7 +172,10 @@ export class iccDoctemplateApi {
    * @param documentTemplateId
    * @param attachmentId
    */
-  getAttachmentText(documentTemplateId: string, attachmentId: string): Promise<any | Boolean> {
+  getAttachmentText(
+    documentTemplateId: string,
+    attachmentId: string
+  ): Promise<Array<string> | any> {
     let _body = null
 
     const _url =
@@ -184,7 +187,7 @@ export class iccDoctemplateApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => true)
+      .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
       .catch(err => this.handleError(err))
   }
 
