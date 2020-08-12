@@ -172,10 +172,7 @@ export class iccDoctemplateApi {
    * @param documentTemplateId
    * @param attachmentId
    */
-  getAttachmentText(
-    documentTemplateId: string,
-    attachmentId: string
-  ): Promise<Array<string> | any> {
+  getAttachmentText(documentTemplateId: string, attachmentId: string): Promise<ArrayBuffer | any> {
     let _body = null
 
     const _url =
@@ -187,20 +184,7 @@ export class iccDoctemplateApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => {
-        if (doc.contentType.startsWith("application/octet-stream")) {
-          const enc = new TextDecoder("utf-8")
-          const arr = new Uint8Array(doc.body)
-          return enc.decode(arr)
-        } else if (
-          doc.contentType.startsWith("text/plain") ||
-          doc.contentType.startsWith("text/html")
-        ) {
-          return doc.body
-        } else {
-          return false
-        }
-      })
+      .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }
 
@@ -232,7 +216,7 @@ export class iccDoctemplateApi {
   getDocumentTemplateAttachment(
     documentTemplateId: string,
     attachmentId: string
-  ): Promise<Array<string> | any> {
+  ): Promise<ArrayBuffer | any> {
     let _body = null
 
     const _url =
@@ -244,7 +228,7 @@ export class iccDoctemplateApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
+      .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }
 
