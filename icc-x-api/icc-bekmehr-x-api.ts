@@ -76,12 +76,12 @@ export class IccBekmehrXApi extends iccBekmehrApi {
         var subBlob = blob.slice(0, 1)
         const br = new FileReader()
         br.onload = function(e) {
-          const firstChar = e.target && new Uint8Array(e.target.result as ArrayBuffer)[0]
+          const firstChar = e.target && new Uint8Array((e.target as any).result as ArrayBuffer)[0]
 
           if (firstChar === 0x7b) {
             const tr = new FileReader()
             tr.onload = function(e) {
-              const msg = e.target && JSON.parse(e.target.result as string)
+              const msg = e.target && JSON.parse((e.target as any).result as string)
               messageHandler(msg)
             }
             tr.readAsBinaryString(blob)
