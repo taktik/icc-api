@@ -37,7 +37,7 @@ export class iccMessageApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -46,7 +46,7 @@ export class iccMessageApi {
    * @summary Creates a message
    * @param body
    */
-  createMessage(body?: MessageDto): Promise<MessageDto | any> {
+  createMessage(body?: MessageDto): Promise<MessageDto> {
     let _body = null
     _body = body
 
@@ -66,7 +66,7 @@ export class iccMessageApi {
    * @param messageId
    * @param delegateId
    */
-  deleteDelegation(messageId: string, delegateId: string): Promise<MessageDto | any> {
+  deleteDelegation(messageId: string, delegateId: string): Promise<MessageDto> {
     let _body = null
 
     const _url =
@@ -87,7 +87,7 @@ export class iccMessageApi {
    * @summary Deletes multiple messages
    * @param messageIds
    */
-  deleteMessages(messageIds: string): Promise<Array<DocIdentifier> | any> {
+  deleteMessages(messageIds: string): Promise<Array<DocIdentifier>> {
     let _body = null
 
     const _url =
@@ -106,7 +106,7 @@ export class iccMessageApi {
    * @summary Deletes multiple messages
    * @param body
    */
-  deleteMessagesBatch(body?: ListOfIdsDto): Promise<Array<DocIdentifier> | any> {
+  deleteMessagesBatch(body?: ListOfIdsDto): Promise<Array<DocIdentifier>> {
     let _body = null
     _body = body
 
@@ -131,7 +131,7 @@ export class iccMessageApi {
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<PaginatedListMessageDto | any> {
+  ): Promise<PaginatedListMessageDto> {
     let _body = null
 
     const _url =
@@ -163,7 +163,7 @@ export class iccMessageApi {
     startDocumentId?: string,
     limit?: number,
     hcpId?: string
-  ): Promise<PaginatedListMessageDto | any> {
+  ): Promise<PaginatedListMessageDto> {
     let _body = null
 
     const _url =
@@ -187,7 +187,7 @@ export class iccMessageApi {
    * @summary List messages found By Healthcare Party and secret foreign keys.
    * @param secretFKeys
    */
-  findMessagesByHCPartyPatientForeignKeys(secretFKeys: string): Promise<Array<MessageDto> | any> {
+  findMessagesByHCPartyPatientForeignKeys(secretFKeys: string): Promise<Array<MessageDto>> {
     let _body = null
 
     const _url =
@@ -219,7 +219,7 @@ export class iccMessageApi {
     limit?: number,
     reverse?: boolean,
     hcpId?: string
-  ): Promise<PaginatedListMessageDto | any> {
+  ): Promise<PaginatedListMessageDto> {
     let _body = null
 
     const _url =
@@ -256,7 +256,7 @@ export class iccMessageApi {
     startDocumentId?: string,
     limit?: number,
     hcpId?: string
-  ): Promise<PaginatedListMessageDto | any> {
+  ): Promise<PaginatedListMessageDto> {
     let _body = null
 
     const _url =
@@ -295,7 +295,7 @@ export class iccMessageApi {
     startDocumentId?: string,
     limit?: number,
     hcpId?: string
-  ): Promise<PaginatedListMessageDto | any> {
+  ): Promise<PaginatedListMessageDto> {
     let _body = null
 
     const _url =
@@ -321,7 +321,7 @@ export class iccMessageApi {
    * @summary Get children messages of provided message
    * @param messageId
    */
-  getChildrenMessages(messageId: string): Promise<Array<MessageDto> | any> {
+  getChildrenMessages(messageId: string): Promise<Array<MessageDto>> {
     let _body = null
 
     const _url =
@@ -340,7 +340,7 @@ export class iccMessageApi {
    * @summary Get children messages of provided message
    * @param body
    */
-  getChildrenMessagesOfList(body?: ListOfIdsDto): Promise<Array<MessageDto> | any> {
+  getChildrenMessagesOfList(body?: ListOfIdsDto): Promise<Array<MessageDto>> {
     let _body = null
     _body = body
 
@@ -359,7 +359,7 @@ export class iccMessageApi {
    * @summary Gets a message
    * @param messageId
    */
-  getMessage(messageId: string): Promise<MessageDto | any> {
+  getMessage(messageId: string): Promise<MessageDto> {
     let _body = null
 
     const _url =
@@ -378,7 +378,7 @@ export class iccMessageApi {
    * @summary Get children messages of provided message
    * @param body
    */
-  listMessagesByInvoiceIds(body?: ListOfIdsDto): Promise<Array<MessageDto> | any> {
+  listMessagesByInvoiceIds(body?: ListOfIdsDto): Promise<Array<MessageDto>> {
     let _body = null
     _body = body
 
@@ -397,7 +397,7 @@ export class iccMessageApi {
    * @summary Updates a message
    * @param body
    */
-  modifyMessage(body?: MessageDto): Promise<MessageDto | any> {
+  modifyMessage(body?: MessageDto): Promise<MessageDto> {
     let _body = null
     _body = body
 
@@ -417,10 +417,7 @@ export class iccMessageApi {
    * @param body
    * @param messageId
    */
-  newMessageDelegations(
-    messageId: string,
-    body?: Array<DelegationDto>
-  ): Promise<IcureStubDto | any> {
+  newMessageDelegations(messageId: string, body?: Array<DelegationDto>): Promise<IcureStubDto> {
     let _body = null
     _body = body
 
@@ -443,7 +440,7 @@ export class iccMessageApi {
    * @summary Set read status for given list of messages
    * @param body
    */
-  setMessagesReadStatus(body?: MessagesReadStatusUpdate): Promise<Array<MessageDto> | any> {
+  setMessagesReadStatus(body?: MessagesReadStatusUpdate): Promise<Array<MessageDto>> {
     let _body = null
     _body = body
 
@@ -463,7 +460,7 @@ export class iccMessageApi {
    * @param body
    * @param status
    */
-  setMessagesStatusBits(status: number, body?: ListOfIdsDto): Promise<Array<MessageDto> | any> {
+  setMessagesStatusBits(status: number, body?: ListOfIdsDto): Promise<Array<MessageDto>> {
     let _body = null
     _body = body
 

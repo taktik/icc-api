@@ -34,7 +34,7 @@ export class iccCalendarItemApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -43,7 +43,7 @@ export class iccCalendarItemApi {
    * @summary Creates a calendarItem
    * @param body
    */
-  createCalendarItem(body?: CalendarItemDto): Promise<CalendarItemDto | any> {
+  createCalendarItem(body?: CalendarItemDto): Promise<CalendarItemDto> {
     let _body = null
     _body = body
 
@@ -62,7 +62,7 @@ export class iccCalendarItemApi {
    * @summary Deletes an calendarItem
    * @param calendarItemIds
    */
-  deleteCalendarItem(calendarItemIds: string): Promise<Array<DocIdentifier> | any> {
+  deleteCalendarItem(calendarItemIds: string): Promise<Array<DocIdentifier>> {
     let _body = null
 
     const _url =
@@ -85,7 +85,7 @@ export class iccCalendarItemApi {
   findCalendarItemsByHCPartyPatientForeignKeys(
     hcPartyId: string,
     secretFKeys: string
-  ): Promise<Array<CalendarItemDto> | any> {
+  ): Promise<Array<CalendarItemDto>> {
     let _body = null
 
     const _url =
@@ -106,7 +106,7 @@ export class iccCalendarItemApi {
    * @summary Gets an calendarItem
    * @param calendarItemId
    */
-  getCalendarItem(calendarItemId: string): Promise<CalendarItemDto | any> {
+  getCalendarItem(calendarItemId: string): Promise<CalendarItemDto> {
     let _body = null
 
     const _url =
@@ -124,7 +124,7 @@ export class iccCalendarItemApi {
    *
    * @summary Gets all calendarItems
    */
-  getCalendarItems(): Promise<Array<CalendarItemDto> | any> {
+  getCalendarItems(): Promise<Array<CalendarItemDto>> {
     let _body = null
 
     const _url = this.host + `/calendarItem` + "?ts=" + new Date().getTime()
@@ -145,7 +145,7 @@ export class iccCalendarItemApi {
     startDate: number,
     endDate: number,
     hcPartyId: string
-  ): Promise<Array<CalendarItemDto> | any> {
+  ): Promise<Array<CalendarItemDto>> {
     let _body = null
 
     const _url =
@@ -167,7 +167,7 @@ export class iccCalendarItemApi {
    * @summary Get calendarItems by id
    * @param body
    */
-  getCalendarItemsWithIds(body?: ListOfIdsDto): Promise<Array<CalendarItemDto> | any> {
+  getCalendarItemsWithIds(body?: ListOfIdsDto): Promise<Array<CalendarItemDto>> {
     let _body = null
     _body = body
 
@@ -192,7 +192,7 @@ export class iccCalendarItemApi {
     startDate: number,
     endDate: number,
     agendaId: string
-  ): Promise<Array<CalendarItemDto> | any> {
+  ): Promise<Array<CalendarItemDto>> {
     let _body = null
 
     const _url =
@@ -214,7 +214,7 @@ export class iccCalendarItemApi {
    * @summary Modifies an calendarItem
    * @param body
    */
-  modifyCalendarItem(body?: CalendarItemDto): Promise<CalendarItemDto | any> {
+  modifyCalendarItem(body?: CalendarItemDto): Promise<CalendarItemDto> {
     let _body = null
     _body = body
 
@@ -233,7 +233,7 @@ export class iccCalendarItemApi {
    * @summary Update delegations in calendarItems
    * @param body
    */
-  setCalendarItemsDelegations(body?: Array<IcureStubDto>): Promise<Array<CalendarItemDto> | any> {
+  setCalendarItemsDelegations(body?: Array<IcureStubDto>): Promise<Array<CalendarItemDto>> {
     let _body = null
     _body = body
 

@@ -34,7 +34,7 @@ export class iccIcureApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -42,7 +42,7 @@ export class iccIcureApi {
    *
    * @summary Get index info
    */
-  getIndexingInfo(): Promise<IndexingInfoDto | any> {
+  getIndexingInfo(): Promise<IndexingInfoDto> {
     let _body = null
 
     const _url = this.host + `/icure/i` + "?ts=" + new Date().getTime()
@@ -56,7 +56,7 @@ export class iccIcureApi {
    *
    * @summary Get process info
    */
-  getProcessInfo(): Promise<string | any> {
+  getProcessInfo(): Promise<string> {
     let _body = null
 
     const _url = this.host + `/icure/p` + "?ts=" + new Date().getTime()
@@ -71,7 +71,7 @@ export class iccIcureApi {
    * @summary Get property types
    * @param type
    */
-  getPropertyTypes(type: string): Promise<Array<string> | any> {
+  getPropertyTypes(type: string): Promise<Array<string>> {
     let _body = null
 
     const _url =
@@ -89,7 +89,7 @@ export class iccIcureApi {
    *
    * @summary Get index info
    */
-  getReplicationInfo(): Promise<ReplicationInfoDto | any> {
+  getReplicationInfo(): Promise<ReplicationInfoDto> {
     let _body = null
 
     const _url = this.host + `/icure/r` + "?ts=" + new Date().getTime()
@@ -103,7 +103,7 @@ export class iccIcureApi {
    *
    * @summary Get users stubs
    */
-  getUsers(): Promise<Array<UserDto> | any> {
+  getUsers(): Promise<Array<UserDto>> {
     let _body = null
 
     const _url = this.host + `/icure/u` + "?ts=" + new Date().getTime()
@@ -117,7 +117,7 @@ export class iccIcureApi {
    *
    * @summary Get version
    */
-  getVersion(): Promise<string | any> {
+  getVersion(): Promise<string> {
     let _body = null
 
     const _url = this.host + `/icure/v` + "?ts=" + new Date().getTime()
@@ -131,7 +131,7 @@ export class iccIcureApi {
    *
    * @summary Check if a patient exists
    */
-  isPatientReady(): Promise<string | any> {
+  isPatientReady(): Promise<string> {
     let _body = null
 
     const _url = this.host + `/icure/pok` + "?ts=" + new Date().getTime()
@@ -145,7 +145,7 @@ export class iccIcureApi {
    *
    * @summary Check if a user exists
    */
-  isReady(): Promise<string | any> {
+  isReady(): Promise<string> {
     let _body = null
 
     const _url = this.host + `/icure/ok` + "?ts=" + new Date().getTime()
@@ -159,7 +159,7 @@ export class iccIcureApi {
    *
    * @summary Resolve contacts conflicts
    */
-  resolveContactsConflicts(): Promise<Unit | any> {
+  resolveContactsConflicts(): Promise<Unit> {
     let _body = null
 
     const _url = this.host + `/icure/conflicts/contact` + "?ts=" + new Date().getTime()
@@ -174,7 +174,7 @@ export class iccIcureApi {
    * @summary resolve documents conflicts
    * @param ids
    */
-  resolveDocumentsConflicts(ids?: string): Promise<Unit | any> {
+  resolveDocumentsConflicts(ids?: string): Promise<Unit> {
     let _body = null
 
     const _url =
@@ -193,7 +193,7 @@ export class iccIcureApi {
    *
    * @summary resolve forms conflicts
    */
-  resolveFormsConflicts(): Promise<Unit | any> {
+  resolveFormsConflicts(): Promise<Unit> {
     let _body = null
 
     const _url = this.host + `/icure/conflicts/form` + "?ts=" + new Date().getTime()
@@ -207,7 +207,7 @@ export class iccIcureApi {
    *
    * @summary resolve health elements conflicts
    */
-  resolveHealthElementsConflicts(): Promise<Unit | any> {
+  resolveHealthElementsConflicts(): Promise<Unit> {
     let _body = null
 
     const _url = this.host + `/icure/conflicts/healthelement` + "?ts=" + new Date().getTime()
@@ -221,7 +221,7 @@ export class iccIcureApi {
    *
    * @summary resolve invoices conflicts
    */
-  resolveInvoicesConflicts(): Promise<Unit | any> {
+  resolveInvoicesConflicts(): Promise<Unit> {
     let _body = null
 
     const _url = this.host + `/icure/conflicts/invoice` + "?ts=" + new Date().getTime()
@@ -235,7 +235,7 @@ export class iccIcureApi {
    *
    * @summary resolve messages conflicts
    */
-  resolveMessagesConflicts(): Promise<Unit | any> {
+  resolveMessagesConflicts(): Promise<Unit> {
     let _body = null
 
     const _url = this.host + `/icure/conflicts/message` + "?ts=" + new Date().getTime()
@@ -249,7 +249,7 @@ export class iccIcureApi {
    *
    * @summary Resolve patients conflicts
    */
-  resolvePatientsConflicts(): Promise<Unit | any> {
+  resolvePatientsConflicts(): Promise<Unit> {
     let _body = null
 
     const _url = this.host + `/icure/conflicts/patient` + "?ts=" + new Date().getTime()
@@ -265,7 +265,7 @@ export class iccIcureApi {
    * @param entityName
    * @param warmup
    */
-  updateDesignDoc(entityName: string, warmup: boolean): Promise<boolean | any> {
+  updateDesignDoc(entityName: string, warmup: boolean): Promise<boolean> {
     let _body = null
 
     const _url =

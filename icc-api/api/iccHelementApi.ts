@@ -35,7 +35,7 @@ export class iccHelementApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -44,7 +44,7 @@ export class iccHelementApi {
    * @summary Create a health element with the current user
    * @param body
    */
-  createHealthElement(body?: HealthElementDto): Promise<HealthElementDto | any> {
+  createHealthElement(body?: HealthElementDto): Promise<HealthElementDto> {
     let _body = null
     _body = body
 
@@ -63,7 +63,7 @@ export class iccHelementApi {
    * @summary Delete health elements.
    * @param healthElementIds
    */
-  deleteHealthElements(healthElementIds: string): Promise<Array<DocIdentifier> | any> {
+  deleteHealthElements(healthElementIds: string): Promise<Array<DocIdentifier>> {
     let _body = null
 
     const _url =
@@ -82,7 +82,7 @@ export class iccHelementApi {
    * @summary Filter health elements for the current user (HcParty)
    * @param body
    */
-  filterHealthElementsBy(body?: FilterChainHealthElement): Promise<Array<HealthElementDto> | any> {
+  filterHealthElementsBy(body?: FilterChainHealthElement): Promise<Array<HealthElementDto>> {
     let _body = null
     _body = body
 
@@ -105,7 +105,7 @@ export class iccHelementApi {
   findHealthElementsByHCPartyPatientForeignKeys(
     hcPartyId: string,
     secretFKeys: string
-  ): Promise<Array<HealthElementDto> | any> {
+  ): Promise<Array<HealthElementDto>> {
     let _body = null
 
     const _url =
@@ -130,7 +130,7 @@ export class iccHelementApi {
   findHealthElementsDelegationsStubsByHCPartyPatientForeignKeys(
     hcPartyId: string,
     secretFKeys: string
-  ): Promise<Array<IcureStubDto> | any> {
+  ): Promise<Array<IcureStubDto>> {
     let _body = null
 
     const _url =
@@ -151,7 +151,7 @@ export class iccHelementApi {
    * @summary Get a health element
    * @param healthElementId
    */
-  getHealthElement(healthElementId: string): Promise<HealthElementDto | any> {
+  getHealthElement(healthElementId: string): Promise<HealthElementDto> {
     let _body = null
 
     const _url =
@@ -170,7 +170,7 @@ export class iccHelementApi {
    * @summary Modify a health element
    * @param body
    */
-  modifyHealthElement(body?: HealthElementDto): Promise<HealthElementDto | any> {
+  modifyHealthElement(body?: HealthElementDto): Promise<HealthElementDto> {
     let _body = null
     _body = body
 
@@ -189,7 +189,7 @@ export class iccHelementApi {
    * @summary Modify a batch of health elements
    * @param body
    */
-  modifyHealthElements(body?: Array<HealthElementDto>): Promise<Array<HealthElementDto> | any> {
+  modifyHealthElements(body?: Array<HealthElementDto>): Promise<Array<HealthElementDto>> {
     let _body = null
     _body = body
 
@@ -212,7 +212,7 @@ export class iccHelementApi {
   newHealthElementDelegations(
     healthElementId: string,
     body?: Array<DelegationDto>
-  ): Promise<HealthElementDto | any> {
+  ): Promise<HealthElementDto> {
     let _body = null
     _body = body
 
@@ -235,7 +235,7 @@ export class iccHelementApi {
    * @summary Update delegations in healthElements.
    * @param body
    */
-  setHealthElementsDelegations(body?: Array<IcureStubDto>): Promise<Array<HealthElementDto> | any> {
+  setHealthElementsDelegations(body?: Array<IcureStubDto>): Promise<Array<HealthElementDto>> {
     let _body = null
     _body = body
 

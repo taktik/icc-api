@@ -32,7 +32,7 @@ export class iccGroupApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -55,7 +55,7 @@ export class iccGroupApi {
     q?: number,
     n?: number,
     body?: DatabaseInitialisationDto
-  ): Promise<GroupDto | any> {
+  ): Promise<GroupDto> {
     let _body = null
     _body = body
 
@@ -82,7 +82,7 @@ export class iccGroupApi {
    * Create a new gorup with associated dbs
    * @summary List groups
    */
-  listGroups(): Promise<Array<GroupDto> | any> {
+  listGroups(): Promise<Array<GroupDto>> {
     let _body = null
 
     const _url = this.host + `/group` + "?ts=" + new Date().getTime()
@@ -98,7 +98,7 @@ export class iccGroupApi {
    * @param id The id of the group
    * @param password The new password for the group (can only contain digits, letters, - and _)
    */
-  setGroupPassword(id: string, password: string): Promise<GroupDto | any> {
+  setGroupPassword(id: string, password: string): Promise<GroupDto> {
     let _body = null
 
     const _url =

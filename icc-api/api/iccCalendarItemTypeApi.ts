@@ -32,7 +32,7 @@ export class iccCalendarItemTypeApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -41,7 +41,7 @@ export class iccCalendarItemTypeApi {
    * @summary Creates a calendarItemType
    * @param body
    */
-  createCalendarItemType(body?: CalendarItemTypeDto): Promise<CalendarItemTypeDto | any> {
+  createCalendarItemType(body?: CalendarItemTypeDto): Promise<CalendarItemTypeDto> {
     let _body = null
     _body = body
 
@@ -60,7 +60,7 @@ export class iccCalendarItemTypeApi {
    * @summary Deletes an calendarItemType
    * @param calendarItemTypeIds
    */
-  deleteCalendarItemType(calendarItemTypeIds: string): Promise<Array<DocIdentifier> | any> {
+  deleteCalendarItemType(calendarItemTypeIds: string): Promise<Array<DocIdentifier>> {
     let _body = null
 
     const _url =
@@ -79,7 +79,7 @@ export class iccCalendarItemTypeApi {
    * @summary Gets an calendarItemType
    * @param calendarItemTypeId
    */
-  getCalendarItemType(calendarItemTypeId: string): Promise<CalendarItemTypeDto | any> {
+  getCalendarItemType(calendarItemTypeId: string): Promise<CalendarItemTypeDto> {
     let _body = null
 
     const _url =
@@ -97,7 +97,7 @@ export class iccCalendarItemTypeApi {
    *
    * @summary Gets all calendarItemTypes
    */
-  getCalendarItemTypes(): Promise<Array<CalendarItemTypeDto> | any> {
+  getCalendarItemTypes(): Promise<Array<CalendarItemTypeDto>> {
     let _body = null
 
     const _url = this.host + `/calendarItemType` + "?ts=" + new Date().getTime()
@@ -111,7 +111,7 @@ export class iccCalendarItemTypeApi {
    *
    * @summary Gets all calendarItemTypes include deleted
    */
-  getCalendarItemTypesIncludeDeleted(): Promise<Array<CalendarItemTypeDto> | any> {
+  getCalendarItemTypesIncludeDeleted(): Promise<Array<CalendarItemTypeDto>> {
     let _body = null
 
     const _url = this.host + `/calendarItemType/includeDeleted` + "?ts=" + new Date().getTime()
@@ -126,7 +126,7 @@ export class iccCalendarItemTypeApi {
    * @summary Modifies an calendarItemType
    * @param body
    */
-  modifyCalendarItemType(body?: CalendarItemTypeDto): Promise<CalendarItemTypeDto | any> {
+  modifyCalendarItemType(body?: CalendarItemTypeDto): Promise<CalendarItemTypeDto> {
     let _body = null
     _body = body
 

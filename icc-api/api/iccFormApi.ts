@@ -36,7 +36,7 @@ export class iccFormApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -45,7 +45,7 @@ export class iccFormApi {
    * @summary Create a form with the current user
    * @param body
    */
-  createForm(body?: FormDto): Promise<FormDto | any> {
+  createForm(body?: FormDto): Promise<FormDto> {
     let _body = null
     _body = body
 
@@ -64,7 +64,7 @@ export class iccFormApi {
    * @summary Create a form template with the current user
    * @param body
    */
-  createFormTemplate(body?: FormTemplateDto): Promise<FormTemplateDto | any> {
+  createFormTemplate(body?: FormTemplateDto): Promise<FormTemplateDto> {
     let _body = null
     _body = body
 
@@ -83,7 +83,7 @@ export class iccFormApi {
    * @summary Delete a form template
    * @param formTemplateId
    */
-  deleteFormTemplate(formTemplateId: string): Promise<DocIdentifier | any> {
+  deleteFormTemplate(formTemplateId: string): Promise<DocIdentifier> {
     let _body = null
 
     const _url =
@@ -102,7 +102,7 @@ export class iccFormApi {
    * @summary Delete forms.
    * @param formIds
    */
-  deleteForms(formIds: string): Promise<Array<DocIdentifier> | any> {
+  deleteForms(formIds: string): Promise<Array<DocIdentifier>> {
     let _body = null
 
     const _url =
@@ -118,7 +118,7 @@ export class iccFormApi {
    * @summary Gets all form templates for current user
    * @param loadLayout
    */
-  findFormTemplates(loadLayout?: boolean): Promise<Array<FormTemplateDto> | any> {
+  findFormTemplates(loadLayout?: boolean): Promise<Array<FormTemplateDto>> {
     let _body = null
 
     const _url =
@@ -142,7 +142,7 @@ export class iccFormApi {
   findFormTemplatesBySpeciality(
     specialityCode: string,
     loadLayout?: boolean
-  ): Promise<Array<FormTemplateDto> | any> {
+  ): Promise<Array<FormTemplateDto>> {
     let _body = null
 
     const _url =
@@ -172,7 +172,7 @@ export class iccFormApi {
     healthElementId?: string,
     planOfActionId?: string,
     formTemplateId?: string
-  ): Promise<Array<FormDto> | any> {
+  ): Promise<Array<FormDto>> {
     let _body = null
 
     const _url =
@@ -200,7 +200,7 @@ export class iccFormApi {
   findFormsDelegationsStubsByHCPartyPatientForeignKeys(
     hcPartyId: string,
     secretFKeys: string
-  ): Promise<Array<IcureStubDto> | any> {
+  ): Promise<Array<IcureStubDto>> {
     let _body = null
 
     const _url =
@@ -222,7 +222,7 @@ export class iccFormApi {
    * @param formId
    * @param hcPartyId
    */
-  getChildrenForms(formId: string, hcPartyId: string): Promise<Array<FormDto> | any> {
+  getChildrenForms(formId: string, hcPartyId: string): Promise<Array<FormDto>> {
     let _body = null
 
     const _url =
@@ -243,7 +243,7 @@ export class iccFormApi {
    * @summary Gets a form
    * @param formId
    */
-  getForm(formId: string): Promise<FormDto | any> {
+  getForm(formId: string): Promise<FormDto> {
     let _body = null
 
     const _url =
@@ -259,7 +259,7 @@ export class iccFormApi {
    * @summary Gets a form template by guid
    * @param formTemplateId
    */
-  getFormTemplate(formTemplateId: string): Promise<FormTemplateDto | any> {
+  getFormTemplate(formTemplateId: string): Promise<FormTemplateDto> {
     let _body = null
 
     const _url =
@@ -282,7 +282,7 @@ export class iccFormApi {
   getFormTemplatesByGuid(
     formTemplateGuid: string,
     specialityCode: string
-  ): Promise<Array<FormTemplateDto> | any> {
+  ): Promise<Array<FormTemplateDto>> {
     let _body = null
 
     const _url =
@@ -303,7 +303,7 @@ export class iccFormApi {
    * @summary Get a list of forms by ids
    * @param body
    */
-  getForms(body?: ListOfIdsDto): Promise<Array<FormDto> | any> {
+  getForms(body?: ListOfIdsDto): Promise<Array<FormDto>> {
     let _body = null
     _body = body
 
@@ -322,7 +322,7 @@ export class iccFormApi {
    * @summary Modify a form
    * @param body
    */
-  modifyForm(body?: FormDto): Promise<FormDto | any> {
+  modifyForm(body?: FormDto): Promise<FormDto> {
     let _body = null
     _body = body
 
@@ -341,7 +341,7 @@ export class iccFormApi {
    * @summary Modify a batch of forms
    * @param body
    */
-  modifyForms(body?: Array<FormDto>): Promise<Array<FormDto> | any> {
+  modifyForms(body?: Array<FormDto>): Promise<Array<FormDto>> {
     let _body = null
     _body = body
 
@@ -361,7 +361,7 @@ export class iccFormApi {
    * @param body
    * @param formId
    */
-  newFormDelegations(formId: string, body?: Array<DelegationDto>): Promise<FormDto | any> {
+  newFormDelegations(formId: string, body?: Array<DelegationDto>): Promise<FormDto> {
     let _body = null
     _body = body
 
@@ -384,7 +384,7 @@ export class iccFormApi {
    * @summary Update delegations in form.
    * @param body
    */
-  setFormsDelegations(body?: Array<IcureStubDto>): Promise<Array<IcureStubDto> | any> {
+  setFormsDelegations(body?: Array<IcureStubDto>): Promise<Array<IcureStubDto>> {
     let _body = null
     _body = body
 
@@ -403,7 +403,7 @@ export class iccFormApi {
    * @summary Update a form template's layout
    * @param formTemplateId
    */
-  setTemplateAttachmentMulti(formTemplateId: string): Promise<string | any> {
+  setTemplateAttachmentMulti(formTemplateId: string): Promise<string> {
     let _body = null
 
     const _url =
@@ -426,10 +426,7 @@ export class iccFormApi {
    * @param body
    * @param formTemplateId
    */
-  updateFormTemplate(
-    formTemplateId: string,
-    body?: FormTemplateDto
-  ): Promise<FormTemplateDto | any> {
+  updateFormTemplate(formTemplateId: string, body?: FormTemplateDto): Promise<FormTemplateDto> {
     let _body = null
     _body = body
 

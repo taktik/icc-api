@@ -32,7 +32,7 @@ export class iccBeresultimportApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -42,7 +42,7 @@ export class iccBeresultimportApi {
    * @param id
    * @param enckeys
    */
-  canHandle(id: string, enckeys: string): Promise<boolean | any> {
+  canHandle(id: string, enckeys: string): Promise<boolean> {
     let _body = null
 
     const _url =
@@ -78,7 +78,7 @@ export class iccBeresultimportApi {
     planOfActionId: string,
     enckeys: string,
     ctc: ContactDto
-  ): Promise<ContactDto | any> {
+  ): Promise<ContactDto> {
     let _body = null
 
     const _url =
@@ -112,7 +112,7 @@ export class iccBeresultimportApi {
     language: string,
     enckeys: string,
     full?: boolean
-  ): Promise<Array<ResultInfoDto> | any> {
+  ): Promise<Array<ResultInfoDto>> {
     let _body = null
 
     const _url =

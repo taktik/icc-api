@@ -30,7 +30,7 @@ export class iccBeresultexportApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -51,7 +51,7 @@ export class iccBeresultexportApi {
     date: number,
     ref: string,
     body?: Array<string>
-  ): Promise<ArrayBuffer | any> {
+  ): Promise<ArrayBuffer> {
     let _body = null
     _body = body
 
@@ -92,7 +92,7 @@ export class iccBeresultexportApi {
     ref: string,
     mimeType?: boolean,
     body?: Array<string>
-  ): Promise<ArrayBuffer | any> {
+  ): Promise<ArrayBuffer> {
     let _body = null
     _body = body
 
@@ -132,7 +132,7 @@ export class iccBeresultexportApi {
     date: number,
     ref: string,
     body?: Array<string>
-  ): Promise<ArrayBuffer | any> {
+  ): Promise<ArrayBuffer> {
     let _body = null
     _body = body
 

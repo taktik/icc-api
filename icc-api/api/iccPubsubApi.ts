@@ -30,7 +30,7 @@ export class iccPubsubApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -40,7 +40,7 @@ export class iccPubsubApi {
    * @param body
    * @param bucket
    */
-  offerAuth(bucket: string, body?: Array<string>): Promise<{ [key: string]: boolean } | any> {
+  offerAuth(bucket: string, body?: Array<string>): Promise<{ [key: string]: boolean }> {
     let _body = null
     _body = body
 
@@ -64,7 +64,7 @@ export class iccPubsubApi {
    * @param body
    * @param key
    */
-  pub(key: string, body?: Array<string>): Promise<{ [key: string]: boolean } | any> {
+  pub(key: string, body?: Array<string>): Promise<{ [key: string]: boolean }> {
     let _body = null
     _body = body
 
@@ -84,7 +84,7 @@ export class iccPubsubApi {
    * @summary Recover auth data from secret bucket
    * @param bucket
    */
-  recoverAuth(bucket: string): Promise<ArrayBuffer | any> {
+  recoverAuth(bucket: string): Promise<ArrayBuffer> {
     let _body = null
 
     const _url =
@@ -103,7 +103,7 @@ export class iccPubsubApi {
    * @summary subscribe to data
    * @param key
    */
-  sub(key: string): Promise<ArrayBuffer | any> {
+  sub(key: string): Promise<ArrayBuffer> {
     let _body = null
 
     const _url =

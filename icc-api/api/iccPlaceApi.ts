@@ -32,7 +32,7 @@ export class iccPlaceApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -41,7 +41,7 @@ export class iccPlaceApi {
    * @summary Creates a place
    * @param body
    */
-  createPlace(body?: PlaceDto): Promise<PlaceDto | any> {
+  createPlace(body?: PlaceDto): Promise<PlaceDto> {
     let _body = null
     _body = body
 
@@ -60,7 +60,7 @@ export class iccPlaceApi {
    * @summary Deletes an place
    * @param placeIds
    */
-  deletePlace(placeIds: string): Promise<Array<DocIdentifier> | any> {
+  deletePlace(placeIds: string): Promise<Array<DocIdentifier>> {
     let _body = null
 
     const _url =
@@ -76,7 +76,7 @@ export class iccPlaceApi {
    * @summary Gets an place
    * @param placeId
    */
-  getPlace(placeId: string): Promise<PlaceDto | any> {
+  getPlace(placeId: string): Promise<PlaceDto> {
     let _body = null
 
     const _url =
@@ -91,7 +91,7 @@ export class iccPlaceApi {
    *
    * @summary Gets all places
    */
-  getPlaces(): Promise<Array<PlaceDto> | any> {
+  getPlaces(): Promise<Array<PlaceDto>> {
     let _body = null
 
     const _url = this.host + `/place` + "?ts=" + new Date().getTime()
@@ -106,7 +106,7 @@ export class iccPlaceApi {
    * @summary Modifies an place
    * @param body
    */
-  modifyPlace(body?: PlaceDto): Promise<PlaceDto | any> {
+  modifyPlace(body?: PlaceDto): Promise<PlaceDto> {
     let _body = null
     _body = body
 

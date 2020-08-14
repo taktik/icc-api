@@ -33,7 +33,7 @@ export class iccTarificationApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -42,7 +42,7 @@ export class iccTarificationApi {
    * @summary Create a Tarification
    * @param body
    */
-  createTarification(body?: TarificationDto): Promise<TarificationDto | any> {
+  createTarification(body?: TarificationDto): Promise<TarificationDto> {
     let _body = null
     _body = body
 
@@ -73,7 +73,7 @@ export class iccTarificationApi {
     version?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<PaginatedListTarificationDto | any> {
+  ): Promise<PaginatedListTarificationDto> {
     let _body = null
 
     const _url =
@@ -110,7 +110,7 @@ export class iccTarificationApi {
     label?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<PaginatedListTarificationDto | any> {
+  ): Promise<PaginatedListTarificationDto> {
     let _body = null
 
     const _url =
@@ -143,7 +143,7 @@ export class iccTarificationApi {
     type?: string,
     tarification?: string,
     version?: string
-  ): Promise<Array<TarificationDto> | any> {
+  ): Promise<Array<TarificationDto>> {
     let _body = null
 
     const _url =
@@ -166,7 +166,7 @@ export class iccTarificationApi {
    * @summary Get a tarification
    * @param tarificationId Tarification id
    */
-  getTarification(tarificationId: string): Promise<TarificationDto | any> {
+  getTarification(tarificationId: string): Promise<TarificationDto> {
     let _body = null
 
     const _url =
@@ -191,7 +191,7 @@ export class iccTarificationApi {
     type: string,
     tarification: string,
     version: string
-  ): Promise<TarificationDto | any> {
+  ): Promise<TarificationDto> {
     let _body = null
 
     const _url =
@@ -212,7 +212,7 @@ export class iccTarificationApi {
    * @summary Get a list of tarifications by ids
    * @param body
    */
-  getTarifications(body?: ListOfIdsDto): Promise<Array<TarificationDto> | any> {
+  getTarifications(body?: ListOfIdsDto): Promise<Array<TarificationDto>> {
     let _body = null
     _body = body
 
@@ -231,7 +231,7 @@ export class iccTarificationApi {
    * @summary Modify a tarification
    * @param body
    */
-  modifyTarification(body?: TarificationDto): Promise<TarificationDto | any> {
+  modifyTarification(body?: TarificationDto): Promise<TarificationDto> {
     let _body = null
     _body = body
 

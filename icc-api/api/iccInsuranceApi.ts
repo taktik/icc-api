@@ -33,7 +33,7 @@ export class iccInsuranceApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -42,7 +42,7 @@ export class iccInsuranceApi {
    * @summary Creates an insurance
    * @param body
    */
-  createInsurance(body?: InsuranceDto): Promise<InsuranceDto | any> {
+  createInsurance(body?: InsuranceDto): Promise<InsuranceDto> {
     let _body = null
     _body = body
 
@@ -61,7 +61,7 @@ export class iccInsuranceApi {
    * @summary Deletes an insurance
    * @param insuranceId
    */
-  deleteInsurance(insuranceId: string): Promise<DocIdentifier | any> {
+  deleteInsurance(insuranceId: string): Promise<DocIdentifier> {
     let _body = null
 
     const _url =
@@ -80,7 +80,7 @@ export class iccInsuranceApi {
    * @summary Gets an insurance
    * @param insuranceId
    */
-  getInsurance(insuranceId: string): Promise<InsuranceDto | any> {
+  getInsurance(insuranceId: string): Promise<InsuranceDto> {
     let _body = null
 
     const _url =
@@ -99,7 +99,7 @@ export class iccInsuranceApi {
    * @summary Gets insurances by id
    * @param body
    */
-  getInsurances(body?: ListOfIdsDto): Promise<Array<InsuranceDto> | any> {
+  getInsurances(body?: ListOfIdsDto): Promise<Array<InsuranceDto>> {
     let _body = null
     _body = body
 
@@ -118,7 +118,7 @@ export class iccInsuranceApi {
    * @summary Gets an insurance
    * @param insuranceCode
    */
-  listInsurancesByCode(insuranceCode: string): Promise<Array<InsuranceDto> | any> {
+  listInsurancesByCode(insuranceCode: string): Promise<Array<InsuranceDto>> {
     let _body = null
 
     const _url =
@@ -137,7 +137,7 @@ export class iccInsuranceApi {
    * @summary Gets an insurance
    * @param insuranceName
    */
-  listInsurancesByName(insuranceName: string): Promise<Array<InsuranceDto> | any> {
+  listInsurancesByName(insuranceName: string): Promise<Array<InsuranceDto>> {
     let _body = null
 
     const _url =
@@ -156,7 +156,7 @@ export class iccInsuranceApi {
    * @summary Modifies an insurance
    * @param body
    */
-  modifyInsurance(body?: InsuranceDto): Promise<InsuranceDto | any> {
+  modifyInsurance(body?: InsuranceDto): Promise<InsuranceDto> {
     let _body = null
     _body = body
 

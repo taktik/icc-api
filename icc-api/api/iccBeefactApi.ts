@@ -32,7 +32,7 @@ export class iccBeefactApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -49,7 +49,7 @@ export class iccBeefactApi {
     newMessageId: string,
     numericalRef: number,
     body?: MapOfIdsDto
-  ): Promise<MessageWithBatch | any> {
+  ): Promise<MessageWithBatch> {
     let _body = null
     _body = body
 

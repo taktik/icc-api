@@ -40,7 +40,7 @@ export class iccPatientApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -49,7 +49,7 @@ export class iccPatientApi {
    * @summary Modify a patient
    * @param body
    */
-  bulkUpdatePatients(body?: Array<PatientDto>): Promise<Array<IdWithRevDto> | any> {
+  bulkUpdatePatients(body?: Array<PatientDto>): Promise<Array<IdWithRevDto>> {
     let _body = null
     _body = body
 
@@ -68,7 +68,7 @@ export class iccPatientApi {
    * @summary Get count of patients for a specific HcParty or for the current HcParty
    * @param hcPartyId Healthcare party id
    */
-  countOfPatients(hcPartyId: string): Promise<ContentDto | any> {
+  countOfPatients(hcPartyId: string): Promise<ContentDto> {
     let _body = null
 
     const _url =
@@ -87,7 +87,7 @@ export class iccPatientApi {
    * @summary Create a patient
    * @param body
    */
-  createPatient(body?: PatientDto): Promise<PatientDto | any> {
+  createPatient(body?: PatientDto): Promise<PatientDto> {
     let _body = null
     _body = body
 
@@ -106,7 +106,7 @@ export class iccPatientApi {
    * @summary Delete patients.
    * @param patientIds
    */
-  deletePatient(patientIds: string): Promise<Array<DocIdentifier> | any> {
+  deletePatient(patientIds: string): Promise<Array<DocIdentifier>> {
     let _body = null
 
     const _url =
@@ -139,7 +139,7 @@ export class iccPatientApi {
     sort?: string,
     desc?: boolean,
     body?: FilterChainPatient
-  ): Promise<PaginatedListPatientDto | any> {
+  ): Promise<PaginatedListPatientDto> {
     let _body = null
     _body = body
 
@@ -180,7 +180,7 @@ export class iccPatientApi {
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<PaginatedListPatientDto | any> {
+  ): Promise<PaginatedListPatientDto> {
     let _body = null
 
     const _url =
@@ -204,7 +204,7 @@ export class iccPatientApi {
    * @summary Get Paginated List of Patients sorted by Access logs descending
    * @param externalId A external ID
    */
-  findByExternalId(externalId: string): Promise<PatientDto | any> {
+  findByExternalId(externalId: string): Promise<PatientDto> {
     let _body = null
 
     const _url =
@@ -235,7 +235,7 @@ export class iccPatientApi {
     startDocumentId?: string,
     limit?: number,
     sortDirection?: string
-  ): Promise<PaginatedListPatientDto | any> {
+  ): Promise<PaginatedListPatientDto> {
     let _body = null
 
     const _url =
@@ -268,7 +268,7 @@ export class iccPatientApi {
     firstName?: string,
     lastName?: string,
     dateOfBirth?: number
-  ): Promise<Array<PatientDto> | any> {
+  ): Promise<Array<PatientDto>> {
     let _body = null
 
     const _url =
@@ -290,7 +290,7 @@ export class iccPatientApi {
    * @summary Get patient
    * @param patientId
    */
-  getPatient(patientId: string): Promise<PatientDto | any> {
+  getPatient(patientId: string): Promise<PatientDto> {
     let _body = null
 
     const _url =
@@ -309,9 +309,7 @@ export class iccPatientApi {
    * @summary Get the HcParty encrypted AES keys indexed by owner
    * @param healthcarePartyId
    */
-  getPatientHcPartyKeysForDelegate(
-    healthcarePartyId: string
-  ): Promise<{ [key: string]: string } | any> {
+  getPatientHcPartyKeysForDelegate(healthcarePartyId: string): Promise<{ [key: string]: string }> {
     let _body = null
 
     const _url =
@@ -330,7 +328,7 @@ export class iccPatientApi {
    * @summary Get patients by id
    * @param body
    */
-  getPatients(body?: ListOfIdsDto): Promise<Array<PatientDto> | any> {
+  getPatients(body?: ListOfIdsDto): Promise<Array<PatientDto>> {
     let _body = null
     _body = body
 
@@ -359,7 +357,7 @@ export class iccPatientApi {
     desc?: boolean,
     startDocumentId?: string,
     limit?: number
-  ): Promise<PaginatedListPatientDto | any> {
+  ): Promise<PaginatedListPatientDto> {
     let _body = null
 
     const _url =
@@ -384,10 +382,7 @@ export class iccPatientApi {
    * @param firstName First name prefix
    * @param lastName Last name prefix
    */
-  listDeletedPatientsByName(
-    firstName?: string,
-    lastName?: string
-  ): Promise<Array<PatientDto> | any> {
+  listDeletedPatientsByName(firstName?: string, lastName?: string): Promise<Array<PatientDto>> {
     let _body = null
 
     const _url =
@@ -408,7 +403,7 @@ export class iccPatientApi {
    * @summary List patients that have been merged towards another patient
    * @param date
    */
-  listOfMergesAfter(date: number): Promise<Array<PatientDto> | any> {
+  listOfMergesAfter(date: number): Promise<Array<PatientDto>> {
     let _body = null
 
     const _url =
@@ -435,7 +430,7 @@ export class iccPatientApi {
     startKey?: number,
     startDocumentId?: string,
     limit?: number
-  ): Promise<PaginatedListPatientDto | any> {
+  ): Promise<PaginatedListPatientDto> {
     let _body = null
 
     const _url =
@@ -469,7 +464,7 @@ export class iccPatientApi {
     startDocumentId?: string,
     limit?: number,
     sortDirection?: string
-  ): Promise<PaginatedListPatientDto | any> {
+  ): Promise<PaginatedListPatientDto> {
     let _body = null
 
     const _url =
@@ -506,7 +501,7 @@ export class iccPatientApi {
     startDocumentId?: string,
     limit?: number,
     sortDirection?: string
-  ): Promise<PaginatedListPatientDto | any> {
+  ): Promise<PaginatedListPatientDto> {
     let _body = null
 
     const _url =
@@ -538,7 +533,7 @@ export class iccPatientApi {
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<PaginatedListString | any> {
+  ): Promise<PaginatedListString> {
     let _body = null
 
     const _url =
@@ -573,7 +568,7 @@ export class iccPatientApi {
     startDocumentId?: string,
     limit?: number,
     sortDirection?: string
-  ): Promise<PaginatedListPatientDto | any> {
+  ): Promise<PaginatedListPatientDto> {
     let _body = null
 
     const _url =
@@ -597,7 +592,7 @@ export class iccPatientApi {
    * @summary Get ids of patients matching the provided filter for the current user (HcParty)
    * @param body
    */
-  matchPatientsBy(body?: AbstractFilterDtoPatient): Promise<Array<string> | any> {
+  matchPatientsBy(body?: AbstractFilterDtoPatient): Promise<Array<string>> {
     let _body = null
     _body = body
 
@@ -617,7 +612,7 @@ export class iccPatientApi {
    * @param toId
    * @param fromIds
    */
-  mergeInto(toId: string, fromIds: string): Promise<PatientDto | any> {
+  mergeInto(toId: string, fromIds: string): Promise<PatientDto> {
     let _body = null
 
     const _url =
@@ -638,7 +633,7 @@ export class iccPatientApi {
    * @summary Modify a patient
    * @param body
    */
-  modifyPatient(body?: PatientDto): Promise<PatientDto | any> {
+  modifyPatient(body?: PatientDto): Promise<PatientDto> {
     let _body = null
     _body = body
 
@@ -665,7 +660,7 @@ export class iccPatientApi {
     referralId: string,
     start?: number,
     end?: number
-  ): Promise<PatientDto | any> {
+  ): Promise<PatientDto> {
     let _body = null
 
     const _url =
@@ -689,7 +684,7 @@ export class iccPatientApi {
    * @param body
    * @param patientId
    */
-  newPatientDelegations(patientId: string, body?: Array<DelegationDto>): Promise<PatientDto | any> {
+  newPatientDelegations(patientId: string, body?: Array<DelegationDto>): Promise<PatientDto> {
     let _body = null
     _body = body
 
@@ -712,7 +707,7 @@ export class iccPatientApi {
    * @summary undelete previously deleted patients
    * @param patientIds
    */
-  undeletePatient(patientIds: string): Promise<Array<DocIdentifier> | any> {
+  undeletePatient(patientIds: string): Promise<Array<DocIdentifier>> {
     let _body = null
 
     const _url =

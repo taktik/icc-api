@@ -32,7 +32,7 @@ export class iccKeywordApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -41,7 +41,7 @@ export class iccKeywordApi {
    * @summary Create a keyword with the current user
    * @param body
    */
-  createKeyword(body?: KeywordDto): Promise<KeywordDto | any> {
+  createKeyword(body?: KeywordDto): Promise<KeywordDto> {
     let _body = null
     _body = body
 
@@ -60,7 +60,7 @@ export class iccKeywordApi {
    * @summary Delete keywords.
    * @param keywordIds
    */
-  deleteKeywords(keywordIds: string): Promise<Array<DocIdentifier> | any> {
+  deleteKeywords(keywordIds: string): Promise<Array<DocIdentifier>> {
     let _body = null
 
     const _url =
@@ -79,7 +79,7 @@ export class iccKeywordApi {
    * @summary Get a keyword
    * @param keywordId
    */
-  getKeyword(keywordId: string): Promise<KeywordDto | any> {
+  getKeyword(keywordId: string): Promise<KeywordDto> {
     let _body = null
 
     const _url =
@@ -97,7 +97,7 @@ export class iccKeywordApi {
    *
    * @summary Gets all keywords
    */
-  getKeywords(): Promise<Array<KeywordDto> | any> {
+  getKeywords(): Promise<Array<KeywordDto>> {
     let _body = null
 
     const _url = this.host + `/keyword` + "?ts=" + new Date().getTime()
@@ -112,7 +112,7 @@ export class iccKeywordApi {
    * @summary Get keywords by user
    * @param userId
    */
-  getKeywordsByUser(userId: string): Promise<Array<KeywordDto> | any> {
+  getKeywordsByUser(userId: string): Promise<Array<KeywordDto>> {
     let _body = null
 
     const _url =
@@ -131,7 +131,7 @@ export class iccKeywordApi {
    * @summary Modify a keyword
    * @param body
    */
-  modifyKeyword(body?: KeywordDto): Promise<KeywordDto | any> {
+  modifyKeyword(body?: KeywordDto): Promise<KeywordDto> {
     let _body = null
     _body = body
 

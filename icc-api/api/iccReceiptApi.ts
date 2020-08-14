@@ -32,7 +32,7 @@ export class iccReceiptApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -41,7 +41,7 @@ export class iccReceiptApi {
    * @summary Creates a receipt
    * @param body
    */
-  createReceipt(body?: ReceiptDto): Promise<ReceiptDto | any> {
+  createReceipt(body?: ReceiptDto): Promise<ReceiptDto> {
     let _body = null
     _body = body
 
@@ -60,7 +60,7 @@ export class iccReceiptApi {
    * @summary Deletes a receipt
    * @param receiptIds
    */
-  deleteReceipt(receiptIds: string): Promise<Array<DocIdentifier> | any> {
+  deleteReceipt(receiptIds: string): Promise<Array<DocIdentifier>> {
     let _body = null
 
     const _url =
@@ -79,7 +79,7 @@ export class iccReceiptApi {
    * @summary Gets a receipt
    * @param receiptId
    */
-  getReceipt(receiptId: string): Promise<ReceiptDto | any> {
+  getReceipt(receiptId: string): Promise<ReceiptDto> {
     let _body = null
 
     const _url =
@@ -104,7 +104,7 @@ export class iccReceiptApi {
     receiptId: string,
     attachmentId: string,
     enckeys: string
-  ): Promise<Array<string> | any> {
+  ): Promise<Array<string>> {
     let _body = null
 
     const _url =
@@ -126,7 +126,7 @@ export class iccReceiptApi {
    * @summary Gets a receipt
    * @param ref
    */
-  listByReference(ref: string): Promise<Array<ReceiptDto> | any> {
+  listByReference(ref: string): Promise<Array<ReceiptDto>> {
     let _body = null
 
     const _url =
@@ -145,7 +145,7 @@ export class iccReceiptApi {
    * @summary Updates a receipt
    * @param body
    */
-  modifyReceipt(body?: ReceiptDto): Promise<ReceiptDto | any> {
+  modifyReceipt(body?: ReceiptDto): Promise<ReceiptDto> {
     let _body = null
     _body = body
 
@@ -172,7 +172,7 @@ export class iccReceiptApi {
     blobType: string,
     enckeys?: string,
     body?: Array<string>
-  ): Promise<ReceiptDto | any> {
+  ): Promise<ReceiptDto> {
     let _body = null
     _body = body
 

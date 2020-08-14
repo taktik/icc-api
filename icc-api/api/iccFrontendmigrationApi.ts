@@ -32,7 +32,7 @@ export class iccFrontendmigrationApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -41,7 +41,7 @@ export class iccFrontendmigrationApi {
    * @summary Creates a front end migration
    * @param body
    */
-  createFrontEndMigration(body?: FrontEndMigrationDto): Promise<FrontEndMigrationDto | any> {
+  createFrontEndMigration(body?: FrontEndMigrationDto): Promise<FrontEndMigrationDto> {
     let _body = null
     _body = body
 
@@ -60,7 +60,7 @@ export class iccFrontendmigrationApi {
    * @summary Deletes a front end migration
    * @param frontEndMigrationId
    */
-  deleteFrontEndMigration(frontEndMigrationId: string): Promise<DocIdentifier | any> {
+  deleteFrontEndMigration(frontEndMigrationId: string): Promise<DocIdentifier> {
     let _body = null
 
     const _url =
@@ -79,7 +79,7 @@ export class iccFrontendmigrationApi {
    * @summary Gets a front end migration
    * @param frontEndMigrationId
    */
-  getFrontEndMigration(frontEndMigrationId: string): Promise<FrontEndMigrationDto | any> {
+  getFrontEndMigration(frontEndMigrationId: string): Promise<FrontEndMigrationDto> {
     let _body = null
 
     const _url =
@@ -98,9 +98,7 @@ export class iccFrontendmigrationApi {
    * @summary Gets an front end migration
    * @param frontEndMigrationName
    */
-  getFrontEndMigrationByName(
-    frontEndMigrationName: string
-  ): Promise<Array<FrontEndMigrationDto> | any> {
+  getFrontEndMigrationByName(frontEndMigrationName: string): Promise<Array<FrontEndMigrationDto>> {
     let _body = null
 
     const _url =
@@ -118,7 +116,7 @@ export class iccFrontendmigrationApi {
    *
    * @summary Gets a front end migration
    */
-  getFrontEndMigrations(): Promise<Array<FrontEndMigrationDto> | any> {
+  getFrontEndMigrations(): Promise<Array<FrontEndMigrationDto>> {
     let _body = null
 
     const _url = this.host + `/frontendmigration` + "?ts=" + new Date().getTime()
@@ -133,7 +131,7 @@ export class iccFrontendmigrationApi {
    * @summary Modifies a front end migration
    * @param body
    */
-  modifyFrontEndMigration(body?: FrontEndMigrationDto): Promise<FrontEndMigrationDto | any> {
+  modifyFrontEndMigration(body?: FrontEndMigrationDto): Promise<FrontEndMigrationDto> {
     let _body = null
     _body = body
 

@@ -32,7 +32,7 @@ export class iccAuthApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -41,7 +41,7 @@ export class iccAuthApi {
    * @summary login
    * @param body
    */
-  login(body?: WebSession): Promise<AuthenticationResponse | any> {
+  login(body?: WebSession): Promise<AuthenticationResponse> {
     let _body = null
     _body = body
 
@@ -59,7 +59,7 @@ export class iccAuthApi {
    * Logout
    * @summary logout
    */
-  logout(): Promise<AuthenticationResponse | any> {
+  logout(): Promise<AuthenticationResponse> {
     let _body = null
 
     const _url = this.host + `/auth/logout` + "?ts=" + new Date().getTime()
@@ -73,7 +73,7 @@ export class iccAuthApi {
    * Logout
    * @summary logout
    */
-  logoutPost(): Promise<AuthenticationResponse | any> {
+  logoutPost(): Promise<AuthenticationResponse> {
     let _body = null
 
     const _url = this.host + `/auth/logout` + "?ts=" + new Date().getTime()
@@ -89,7 +89,7 @@ export class iccAuthApi {
    * @param method
    * @param path
    */
-  token(method: string, path: string): Promise<string | any> {
+  token(method: string, path: string): Promise<string> {
     let _body = null
 
     const _url =

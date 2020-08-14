@@ -33,7 +33,7 @@ export class iccAccesslogApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -42,7 +42,7 @@ export class iccAccesslogApi {
    * @summary Creates an access log
    * @param body
    */
-  createAccessLog(body?: AccessLogDto): Promise<AccessLogDto | any> {
+  createAccessLog(body?: AccessLogDto): Promise<AccessLogDto> {
     let _body = null
     _body = body
 
@@ -61,7 +61,7 @@ export class iccAccesslogApi {
    * @summary Deletes an access log
    * @param accessLogIds
    */
-  deleteAccessLog(accessLogIds: string): Promise<Array<DocIdentifier> | any> {
+  deleteAccessLog(accessLogIds: string): Promise<Array<DocIdentifier>> {
     let _body = null
 
     const _url =
@@ -84,7 +84,7 @@ export class iccAccesslogApi {
   findAccessLogsByHCPartyPatientForeignKeys(
     hcPartyId: string,
     secretFKeys: string
-  ): Promise<Array<AccessLogDto> | any> {
+  ): Promise<Array<AccessLogDto>> {
     let _body = null
 
     const _url =
@@ -119,7 +119,7 @@ export class iccAccesslogApi {
     startDocumentId?: string,
     limit?: number,
     descending?: boolean
-  ): Promise<PaginatedListAccessLogDto | any> {
+  ): Promise<PaginatedListAccessLogDto> {
     let _body = null
 
     const _url =
@@ -145,7 +145,7 @@ export class iccAccesslogApi {
    * @summary Gets an access log
    * @param accessLogId
    */
-  getAccessLog(accessLogId: string): Promise<AccessLogDto | any> {
+  getAccessLog(accessLogId: string): Promise<AccessLogDto> {
     let _body = null
 
     const _url =
@@ -176,7 +176,7 @@ export class iccAccesslogApi {
     startDocumentId?: string,
     limit?: number,
     descending?: boolean
-  ): Promise<PaginatedListAccessLogDto | any> {
+  ): Promise<PaginatedListAccessLogDto> {
     let _body = null
 
     const _url =
@@ -201,7 +201,7 @@ export class iccAccesslogApi {
    * @summary Modifies an access log
    * @param body
    */
-  modifyAccessLog(body?: AccessLogDto): Promise<AccessLogDto | any> {
+  modifyAccessLog(body?: AccessLogDto): Promise<AccessLogDto> {
     let _body = null
     _body = body
 

@@ -33,7 +33,7 @@ export class iccDoctemplateApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -42,7 +42,7 @@ export class iccDoctemplateApi {
    * @summary Create a document template with the current user
    * @param body
    */
-  createDocumentTemplate(body?: DocumentTemplateDto): Promise<DocumentTemplateDto | any> {
+  createDocumentTemplate(body?: DocumentTemplateDto): Promise<DocumentTemplateDto> {
     let _body = null
     _body = body
 
@@ -61,7 +61,7 @@ export class iccDoctemplateApi {
    * @summary Deletes a document template
    * @param documentTemplateIds
    */
-  deleteDocumentTemplate(documentTemplateIds: string): Promise<Array<DocIdentifier> | any> {
+  deleteDocumentTemplate(documentTemplateIds: string): Promise<Array<DocIdentifier>> {
     let _body = null
 
     const _url =
@@ -79,7 +79,7 @@ export class iccDoctemplateApi {
    *
    * @summary Gets all document templates for all users
    */
-  findAllDocumentTemplates(): Promise<Array<DocumentTemplateDto> | any> {
+  findAllDocumentTemplates(): Promise<Array<DocumentTemplateDto>> {
     let _body = null
 
     const _url = this.host + `/doctemplate/find/all` + "?ts=" + new Date().getTime()
@@ -93,7 +93,7 @@ export class iccDoctemplateApi {
    *
    * @summary Gets all document templates for current user
    */
-  findDocumentTemplates(): Promise<Array<DocumentTemplateDto> | any> {
+  findDocumentTemplates(): Promise<Array<DocumentTemplateDto>> {
     let _body = null
 
     const _url = this.host + `/doctemplate` + "?ts=" + new Date().getTime()
@@ -110,7 +110,7 @@ export class iccDoctemplateApi {
    */
   findDocumentTemplatesByDocumentType(
     documentTypeCode: string
-  ): Promise<Array<DocumentTemplateDto> | any> {
+  ): Promise<Array<DocumentTemplateDto>> {
     let _body = null
 
     const _url =
@@ -131,7 +131,7 @@ export class iccDoctemplateApi {
    */
   findDocumentTemplatesByDocumentTypeForCurrentUser(
     documentTypeCode: string
-  ): Promise<Array<DocumentTemplateDto> | any> {
+  ): Promise<Array<DocumentTemplateDto>> {
     let _body = null
 
     const _url =
@@ -150,9 +150,7 @@ export class iccDoctemplateApi {
    * @summary Gets all document templates
    * @param specialityCode
    */
-  findDocumentTemplatesBySpeciality(
-    specialityCode: string
-  ): Promise<Array<DocumentTemplateDto> | any> {
+  findDocumentTemplatesBySpeciality(specialityCode: string): Promise<Array<DocumentTemplateDto>> {
     let _body = null
 
     const _url =
@@ -172,7 +170,7 @@ export class iccDoctemplateApi {
    * @param documentTemplateId
    * @param attachmentId
    */
-  getAttachmentText(documentTemplateId: string, attachmentId: string): Promise<ArrayBuffer | any> {
+  getAttachmentText(documentTemplateId: string, attachmentId: string): Promise<ArrayBuffer> {
     let _body = null
 
     const _url =
@@ -193,7 +191,7 @@ export class iccDoctemplateApi {
    * @summary Gets a document template
    * @param documentTemplateId
    */
-  getDocumentTemplate(documentTemplateId: string): Promise<DocumentTemplateDto | any> {
+  getDocumentTemplate(documentTemplateId: string): Promise<DocumentTemplateDto> {
     let _body = null
 
     const _url =
@@ -216,7 +214,7 @@ export class iccDoctemplateApi {
   getDocumentTemplateAttachment(
     documentTemplateId: string,
     attachmentId: string
-  ): Promise<ArrayBuffer | any> {
+  ): Promise<ArrayBuffer> {
     let _body = null
 
     const _url =
@@ -241,7 +239,7 @@ export class iccDoctemplateApi {
   setDocumentTemplateAttachment(
     documentTemplateId: string,
     body?: Array<string>
-  ): Promise<DocumentTemplateDto | any> {
+  ): Promise<DocumentTemplateDto> {
     let _body = null
     _body = body
 
@@ -268,7 +266,7 @@ export class iccDoctemplateApi {
   setDocumentTemplateAttachmentJson(
     documentTemplateId: string,
     body?: ByteArrayDto
-  ): Promise<DocumentTemplateDto | any> {
+  ): Promise<DocumentTemplateDto> {
     let _body = null
     _body = body
 
@@ -295,7 +293,7 @@ export class iccDoctemplateApi {
   updateDocumentTemplate(
     documentTemplateId: string,
     body?: DocumentTemplateDto
-  ): Promise<DocumentTemplateDto | any> {
+  ): Promise<DocumentTemplateDto> {
     let _body = null
     _body = body
 

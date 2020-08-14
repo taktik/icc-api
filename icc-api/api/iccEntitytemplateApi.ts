@@ -31,7 +31,7 @@ export class iccEntitytemplateApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -40,7 +40,7 @@ export class iccEntitytemplateApi {
    * @summary Create a EntityTemplate
    * @param body
    */
-  createEntityTemplate(body?: EntityTemplateDto): Promise<EntityTemplateDto | any> {
+  createEntityTemplate(body?: EntityTemplateDto): Promise<EntityTemplateDto> {
     let _body = null
     _body = body
 
@@ -65,7 +65,7 @@ export class iccEntitytemplateApi {
     type: string,
     searchString?: string,
     includeEntities?: boolean
-  ): Promise<Array<EntityTemplateDto> | any> {
+  ): Promise<Array<EntityTemplateDto>> {
     let _body = null
 
     const _url =
@@ -94,7 +94,7 @@ export class iccEntitytemplateApi {
     type: string,
     searchString?: string,
     includeEntities?: boolean
-  ): Promise<Array<EntityTemplateDto> | any> {
+  ): Promise<Array<EntityTemplateDto>> {
     let _body = null
 
     const _url =
@@ -117,7 +117,7 @@ export class iccEntitytemplateApi {
    * @summary Get a entityTemplate
    * @param entityTemplateId EntityTemplate id
    */
-  getEntityTemplate(entityTemplateId: string): Promise<EntityTemplateDto | any> {
+  getEntityTemplate(entityTemplateId: string): Promise<EntityTemplateDto> {
     let _body = null
 
     const _url =
@@ -136,7 +136,7 @@ export class iccEntitytemplateApi {
    * @summary Get a list of entityTemplates by ids
    * @param entityTemplateIds
    */
-  getEntityTemplates(entityTemplateIds: string): Promise<Array<EntityTemplateDto> | any> {
+  getEntityTemplates(entityTemplateIds: string): Promise<Array<EntityTemplateDto>> {
     let _body = null
 
     const _url =
@@ -155,7 +155,7 @@ export class iccEntitytemplateApi {
    * @summary Modify a entityTemplate
    * @param body
    */
-  modifyEntityTemplate(body?: EntityTemplateDto): Promise<EntityTemplateDto | any> {
+  modifyEntityTemplate(body?: EntityTemplateDto): Promise<EntityTemplateDto> {
     let _body = null
     _body = body
 

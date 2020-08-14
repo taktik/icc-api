@@ -31,7 +31,7 @@ export class iccApplicationsettingsApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -39,7 +39,7 @@ export class iccApplicationsettingsApi {
    *
    * @summary Gets all application settings
    */
-  getApplicationSettings(): Promise<Array<ApplicationSettingsDto> | any> {
+  getApplicationSettings(): Promise<Array<ApplicationSettingsDto>> {
     let _body = null
 
     const _url = this.host + `/appsettings` + "?ts=" + new Date().getTime()

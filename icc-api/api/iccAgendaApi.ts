@@ -32,7 +32,7 @@ export class iccAgendaApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -41,7 +41,7 @@ export class iccAgendaApi {
    * @summary Creates a agenda
    * @param body
    */
-  createAgenda(body?: AgendaDto): Promise<AgendaDto | any> {
+  createAgenda(body?: AgendaDto): Promise<AgendaDto> {
     let _body = null
     _body = body
 
@@ -60,7 +60,7 @@ export class iccAgendaApi {
    * @summary Deletes an agenda
    * @param agendaIds
    */
-  deleteAgenda(agendaIds: string): Promise<Array<DocIdentifier> | any> {
+  deleteAgenda(agendaIds: string): Promise<Array<DocIdentifier>> {
     let _body = null
 
     const _url =
@@ -76,7 +76,7 @@ export class iccAgendaApi {
    * @summary Gets an agenda
    * @param agendaId
    */
-  getAgenda(agendaId: string): Promise<AgendaDto | any> {
+  getAgenda(agendaId: string): Promise<AgendaDto> {
     let _body = null
 
     const _url =
@@ -91,7 +91,7 @@ export class iccAgendaApi {
    *
    * @summary Gets all agendas
    */
-  getAgendas(): Promise<Array<AgendaDto> | any> {
+  getAgendas(): Promise<Array<AgendaDto>> {
     let _body = null
 
     const _url = this.host + `/agenda` + "?ts=" + new Date().getTime()
@@ -106,7 +106,7 @@ export class iccAgendaApi {
    * @summary Gets all agendas for user
    * @param userId
    */
-  getAgendasForUser(userId: string): Promise<AgendaDto | any> {
+  getAgendasForUser(userId: string): Promise<AgendaDto> {
     let _body = null
 
     const _url =
@@ -126,7 +126,7 @@ export class iccAgendaApi {
    * @summary Gets readable agendas for user
    * @param userId
    */
-  getReadableAgendasForUser(userId: string): Promise<Array<AgendaDto> | any> {
+  getReadableAgendasForUser(userId: string): Promise<Array<AgendaDto>> {
     let _body = null
 
     const _url =
@@ -146,7 +146,7 @@ export class iccAgendaApi {
    * @summary Modifies an agenda
    * @param body
    */
-  modifyAgenda(body?: AgendaDto): Promise<AgendaDto | any> {
+  modifyAgenda(body?: AgendaDto): Promise<AgendaDto> {
     let _body = null
     _body = body
 

@@ -33,7 +33,7 @@ export class iccCodeApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -42,7 +42,7 @@ export class iccCodeApi {
    * @summary Create a Code
    * @param body
    */
-  createCode(body?: CodeDto): Promise<CodeDto | any> {
+  createCode(body?: CodeDto): Promise<CodeDto> {
     let _body = null
     _body = body
 
@@ -75,7 +75,7 @@ export class iccCodeApi {
     sort?: string,
     desc?: boolean,
     body?: FilterChainCode
-  ): Promise<PaginatedListCodeDto | any> {
+  ): Promise<PaginatedListCodeDto> {
     let _body = null
     _body = body
 
@@ -105,7 +105,7 @@ export class iccCodeApi {
    * @param region Code region
    * @param type Code type
    */
-  findCodeTypes(region?: string, type?: string): Promise<Array<string> | any> {
+  findCodeTypes(region?: string, type?: string): Promise<Array<string>> {
     let _body = null
 
     const _url =
@@ -134,7 +134,7 @@ export class iccCodeApi {
     type?: string,
     code?: string,
     version?: string
-  ): Promise<Array<CodeDto> | any> {
+  ): Promise<Array<CodeDto>> {
     let _body = null
 
     const _url =
@@ -169,7 +169,7 @@ export class iccCodeApi {
     version?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<PaginatedListCodeDto | any> {
+  ): Promise<PaginatedListCodeDto> {
     let _body = null
 
     const _url =
@@ -208,7 +208,7 @@ export class iccCodeApi {
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<PaginatedListCodeDto | any> {
+  ): Promise<PaginatedListCodeDto> {
     let _body = null
 
     const _url =
@@ -244,7 +244,7 @@ export class iccCodeApi {
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<PaginatedListCodeDto | any> {
+  ): Promise<PaginatedListCodeDto> {
     let _body = null
 
     const _url =
@@ -268,7 +268,7 @@ export class iccCodeApi {
    * @param region Code region
    * @param type Code type
    */
-  findTagTypes(region?: string, type?: string): Promise<Array<string> | any> {
+  findTagTypes(region?: string, type?: string): Promise<Array<string>> {
     let _body = null
 
     const _url =
@@ -289,7 +289,7 @@ export class iccCodeApi {
    * @summary Get a code
    * @param codeId Code id
    */
-  getCode(codeId: string): Promise<CodeDto | any> {
+  getCode(codeId: string): Promise<CodeDto> {
     let _body = null
 
     const _url =
@@ -307,7 +307,7 @@ export class iccCodeApi {
    * @param code Code code
    * @param version Code version
    */
-  getCodeWithParts(type: string, code: string, version: string): Promise<CodeDto | any> {
+  getCodeWithParts(type: string, code: string, version: string): Promise<CodeDto> {
     let _body = null
 
     const _url =
@@ -328,7 +328,7 @@ export class iccCodeApi {
    * @summary Get a list of codes by ids
    * @param codeIds
    */
-  getCodes(codeIds: string): Promise<Array<CodeDto> | any> {
+  getCodes(codeIds: string): Promise<Array<CodeDto>> {
     let _body = null
 
     const _url =
@@ -347,7 +347,7 @@ export class iccCodeApi {
    * @summary Modify a code
    * @param body
    */
-  modifyCode(body?: CodeDto): Promise<CodeDto | any> {
+  modifyCode(body?: CodeDto): Promise<CodeDto> {
     let _body = null
     _body = body
 

@@ -32,7 +32,7 @@ export class iccTimeTableApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -41,7 +41,7 @@ export class iccTimeTableApi {
    * @summary Creates a timeTable
    * @param body
    */
-  createTimeTable(body?: TimeTableDto): Promise<TimeTableDto | any> {
+  createTimeTable(body?: TimeTableDto): Promise<TimeTableDto> {
     let _body = null
     _body = body
 
@@ -60,7 +60,7 @@ export class iccTimeTableApi {
    * @summary Deletes an timeTable
    * @param timeTableIds
    */
-  deleteTimeTable(timeTableIds: string): Promise<Array<DocIdentifier> | any> {
+  deleteTimeTable(timeTableIds: string): Promise<Array<DocIdentifier>> {
     let _body = null
 
     const _url =
@@ -79,7 +79,7 @@ export class iccTimeTableApi {
    * @summary Gets a timeTable
    * @param timeTableId
    */
-  getTimeTable(timeTableId: string): Promise<TimeTableDto | any> {
+  getTimeTable(timeTableId: string): Promise<TimeTableDto> {
     let _body = null
 
     const _url =
@@ -98,7 +98,7 @@ export class iccTimeTableApi {
    * @summary Get TimeTables by AgendaId
    * @param agendaId
    */
-  getTimeTablesByAgendaId(agendaId: string): Promise<Array<TimeTableDto> | any> {
+  getTimeTablesByAgendaId(agendaId: string): Promise<Array<TimeTableDto>> {
     let _body = null
 
     const _url =
@@ -124,7 +124,7 @@ export class iccTimeTableApi {
     startDate: number,
     endDate: number,
     agendaId: string
-  ): Promise<Array<TimeTableDto> | any> {
+  ): Promise<Array<TimeTableDto>> {
     let _body = null
 
     const _url =
@@ -146,7 +146,7 @@ export class iccTimeTableApi {
    * @summary Modifies an timeTable
    * @param body
    */
-  modifyTimeTable(body?: TimeTableDto): Promise<TimeTableDto | any> {
+  modifyTimeTable(body?: TimeTableDto): Promise<TimeTableDto> {
     let _body = null
     _body = body
 

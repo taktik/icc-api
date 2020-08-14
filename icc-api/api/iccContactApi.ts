@@ -42,7 +42,7 @@ export class iccContactApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -55,7 +55,7 @@ export class iccContactApi {
   closeForHCPartyPatientForeignKeys(
     hcPartyId: string,
     secretFKeys: string
-  ): Promise<Array<ContactDto> | any> {
+  ): Promise<Array<ContactDto>> {
     let _body = null
 
     const _url =
@@ -76,7 +76,7 @@ export class iccContactApi {
    * @summary Create a contact with the current user
    * @param body
    */
-  createContact(body?: ContactDto): Promise<ContactDto | any> {
+  createContact(body?: ContactDto): Promise<ContactDto> {
     let _body = null
     _body = body
 
@@ -95,7 +95,7 @@ export class iccContactApi {
    * @summary Delete contacts.
    * @param contactIds
    */
-  deleteContacts(contactIds: string): Promise<Array<DocIdentifier> | any> {
+  deleteContacts(contactIds: string): Promise<Array<DocIdentifier>> {
     let _body = null
 
     const _url =
@@ -120,7 +120,7 @@ export class iccContactApi {
     startDocumentId?: string,
     limit?: number,
     body?: FilterChainContact
-  ): Promise<PaginatedListContactDto | any> {
+  ): Promise<PaginatedListContactDto> {
     let _body = null
     _body = body
 
@@ -151,7 +151,7 @@ export class iccContactApi {
     startDocumentId?: string,
     limit?: number,
     body?: FilterChainService
-  ): Promise<PaginatedListServiceDto | any> {
+  ): Promise<PaginatedListServiceDto> {
     let _body = null
     _body = body
 
@@ -177,7 +177,7 @@ export class iccContactApi {
    * @param hcPartyId
    * @param formId
    */
-  findByHCPartyFormId(hcPartyId: string, formId: string): Promise<Array<ContactDto> | any> {
+  findByHCPartyFormId(hcPartyId: string, formId: string): Promise<Array<ContactDto>> {
     let _body = null
 
     const _url =
@@ -199,7 +199,7 @@ export class iccContactApi {
    * @param body
    * @param hcPartyId
    */
-  findByHCPartyFormIds(hcPartyId: string, body?: ListOfIdsDto): Promise<Array<ContactDto> | any> {
+  findByHCPartyFormIds(hcPartyId: string, body?: ListOfIdsDto): Promise<Array<ContactDto>> {
     let _body = null
     _body = body
 
@@ -231,7 +231,7 @@ export class iccContactApi {
     secretFKeys: string,
     planOfActionsIds?: string,
     skipClosedContacts?: boolean
-  ): Promise<Array<ContactDto> | any> {
+  ): Promise<Array<ContactDto>> {
     let _body = null
 
     const _url =
@@ -262,7 +262,7 @@ export class iccContactApi {
   findContactsByHCPartyPatientForeignKeys(
     hcPartyId: string,
     body?: ListOfIdsDto
-  ): Promise<Array<ContactDto> | any> {
+  ): Promise<Array<ContactDto>> {
     let _body = null
     _body = body
 
@@ -290,7 +290,7 @@ export class iccContactApi {
   findContactsDelegationsStubsByHCPartyPatientForeignKeys(
     hcPartyId: string,
     secretFKeys: string
-  ): Promise<Array<IcureStubDto> | any> {
+  ): Promise<Array<IcureStubDto>> {
     let _body = null
 
     const _url =
@@ -311,7 +311,7 @@ export class iccContactApi {
    * @summary Get a contact
    * @param contactId
    */
-  getContact(contactId: string): Promise<ContactDto | any> {
+  getContact(contactId: string): Promise<ContactDto> {
     let _body = null
 
     const _url =
@@ -330,7 +330,7 @@ export class iccContactApi {
    * @summary Get contacts
    * @param body
    */
-  getContacts(body?: ListOfIdsDto): Promise<Array<ContactDto> | any> {
+  getContacts(body?: ListOfIdsDto): Promise<Array<ContactDto>> {
     let _body = null
     _body = body
 
@@ -348,7 +348,7 @@ export class iccContactApi {
    *
    * @summary Get an empty content
    */
-  getEmptyContent(): Promise<ContentDto | any> {
+  getEmptyContent(): Promise<ContentDto> {
     let _body = null
 
     const _url = this.host + `/contact/service/content/empty` + "?ts=" + new Date().getTime()
@@ -367,7 +367,7 @@ export class iccContactApi {
   getServiceCodesOccurences(
     codeType: string,
     minOccurences: number
-  ): Promise<Array<LabelledOccurenceDto> | any> {
+  ): Promise<Array<LabelledOccurenceDto>> {
     let _body = null
 
     const _url =
@@ -398,7 +398,7 @@ export class iccContactApi {
     hcpartyid: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<PaginatedListContactDto | any> {
+  ): Promise<PaginatedListContactDto> {
     let _body = null
 
     const _url =
@@ -422,7 +422,7 @@ export class iccContactApi {
    * @summary Get ids of contacts matching the provided filter for the current user (HcParty)
    * @param body
    */
-  matchContactsBy(body?: AbstractFilterDtoContact): Promise<Array<string> | any> {
+  matchContactsBy(body?: AbstractFilterDtoContact): Promise<Array<string>> {
     let _body = null
     _body = body
 
@@ -441,7 +441,7 @@ export class iccContactApi {
    * @summary Modify a contact
    * @param body
    */
-  modifyContact(body?: ContactDto): Promise<ContactDto | any> {
+  modifyContact(body?: ContactDto): Promise<ContactDto> {
     let _body = null
     _body = body
 
@@ -460,7 +460,7 @@ export class iccContactApi {
    * @summary Modify a batch of contacts
    * @param body
    */
-  modifyContacts(body?: Array<ContactDto>): Promise<Array<ContactDto> | any> {
+  modifyContacts(body?: Array<ContactDto>): Promise<Array<ContactDto>> {
     let _body = null
     _body = body
 
@@ -480,7 +480,7 @@ export class iccContactApi {
    * @param body
    * @param contactId
    */
-  newContactDelegations(contactId: string, body?: DelegationDto): Promise<ContactDto | any> {
+  newContactDelegations(contactId: string, body?: DelegationDto): Promise<ContactDto> {
     let _body = null
     _body = body
 
@@ -503,7 +503,7 @@ export class iccContactApi {
    * @summary Update delegations in healthElements.
    * @param body
    */
-  setContactsDelegations(body?: Array<IcureStubDto>): Promise<Array<ContactDto> | any> {
+  setContactsDelegations(body?: Array<IcureStubDto>): Promise<Array<ContactDto>> {
     let _body = null
     _body = body
 

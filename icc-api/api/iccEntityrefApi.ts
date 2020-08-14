@@ -31,7 +31,7 @@ export class iccEntityrefApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -40,7 +40,7 @@ export class iccEntityrefApi {
    * @summary Create an entity reference
    * @param body
    */
-  createEntityReference(body?: EntityReferenceDto): Promise<EntityReferenceDto | any> {
+  createEntityReference(body?: EntityReferenceDto): Promise<EntityReferenceDto> {
     let _body = null
     _body = body
 
@@ -59,7 +59,7 @@ export class iccEntityrefApi {
    * @summary Find latest reference for a prefix
    * @param prefix
    */
-  getLatest(prefix: string): Promise<EntityReferenceDto | any> {
+  getLatest(prefix: string): Promise<EntityReferenceDto> {
     let _body = null
 
     const _url =

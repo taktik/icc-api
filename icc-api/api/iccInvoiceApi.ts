@@ -39,7 +39,7 @@ export class iccInvoiceApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -64,7 +64,7 @@ export class iccInvoiceApi {
     invoiceId?: string,
     gracePeriod?: number,
     body?: Array<InvoicingCodeDto>
-  ): Promise<Array<InvoiceDto> | any> {
+  ): Promise<Array<InvoiceDto>> {
     let _body = null
     _body = body
 
@@ -93,7 +93,7 @@ export class iccInvoiceApi {
    * @summary Creates an invoice
    * @param body
    */
-  createInvoice(body?: InvoiceDto): Promise<InvoiceDto | any> {
+  createInvoice(body?: InvoiceDto): Promise<InvoiceDto> {
     let _body = null
     _body = body
 
@@ -112,7 +112,7 @@ export class iccInvoiceApi {
    * @summary Deletes an invoice
    * @param invoiceId
    */
-  deleteInvoice(invoiceId: string): Promise<DocIdentifier | any> {
+  deleteInvoice(invoiceId: string): Promise<DocIdentifier> {
     let _body = null
 
     const _url =
@@ -131,7 +131,7 @@ export class iccInvoiceApi {
    * @summary Filter invoices for the current user (HcParty)
    * @param body
    */
-  filterInvoicesBy(body?: FilterChainInvoice): Promise<Array<InvoiceDto> | any> {
+  filterInvoicesBy(body?: FilterChainInvoice): Promise<Array<InvoiceDto>> {
     let _body = null
     _body = body
 
@@ -162,7 +162,7 @@ export class iccInvoiceApi {
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<PaginatedListInvoiceDto | any> {
+  ): Promise<PaginatedListInvoiceDto> {
     let _body = null
 
     const _url =
@@ -190,7 +190,7 @@ export class iccInvoiceApi {
   findInvoicesByHCPartyPatientForeignKeys(
     hcPartyId: string,
     secretFKeys: string
-  ): Promise<Array<InvoiceDto> | any> {
+  ): Promise<Array<InvoiceDto>> {
     let _body = null
 
     const _url =
@@ -215,7 +215,7 @@ export class iccInvoiceApi {
   findInvoicesDelegationsStubsByHCPartyPatientForeignKeys(
     hcPartyId: string,
     secretFKeys: string
-  ): Promise<Array<IcureStubDto> | any> {
+  ): Promise<Array<IcureStubDto>> {
     let _body = null
 
     const _url =
@@ -236,7 +236,7 @@ export class iccInvoiceApi {
    * @summary Gets an invoice
    * @param invoiceId
    */
-  getInvoice(invoiceId: string): Promise<InvoiceDto | any> {
+  getInvoice(invoiceId: string): Promise<InvoiceDto> {
     let _body = null
 
     const _url =
@@ -255,7 +255,7 @@ export class iccInvoiceApi {
    * @summary Gets an invoice
    * @param body
    */
-  getInvoices(body?: ListOfIdsDto): Promise<Array<InvoiceDto> | any> {
+  getInvoices(body?: ListOfIdsDto): Promise<Array<InvoiceDto>> {
     let _body = null
     _body = body
 
@@ -274,9 +274,7 @@ export class iccInvoiceApi {
    * @summary Get the list of all used tarifications frequencies in invoices
    * @param minOccurences
    */
-  getTarificationsCodesOccurences(
-    minOccurences: number
-  ): Promise<Array<LabelledOccurenceDto> | any> {
+  getTarificationsCodesOccurences(minOccurences: number): Promise<Array<LabelledOccurenceDto>> {
     let _body = null
 
     const _url =
@@ -303,7 +301,7 @@ export class iccInvoiceApi {
     from?: number,
     to?: number,
     body?: ListOfIdsDto
-  ): Promise<Array<InvoiceDto> | any> {
+  ): Promise<Array<InvoiceDto>> {
     let _body = null
     _body = body
 
@@ -328,7 +326,7 @@ export class iccInvoiceApi {
    * @summary Gets all invoices for author at date
    * @param body
    */
-  listByContactIds(body?: ListOfIdsDto): Promise<Array<InvoiceDto> | any> {
+  listByContactIds(body?: ListOfIdsDto): Promise<Array<InvoiceDto>> {
     let _body = null
     _body = body
 
@@ -348,7 +346,7 @@ export class iccInvoiceApi {
    * @param hcPartyId
    * @param groupId
    */
-  listByHcPartyGroupId(hcPartyId: string, groupId: string): Promise<Array<InvoiceDto> | any> {
+  listByHcPartyGroupId(hcPartyId: string, groupId: string): Promise<Array<InvoiceDto>> {
     let _body = null
 
     const _url =
@@ -381,7 +379,7 @@ export class iccInvoiceApi {
     sent: boolean,
     from?: number,
     to?: number
-  ): Promise<Array<InvoiceDto> | any> {
+  ): Promise<Array<InvoiceDto>> {
     let _body = null
 
     const _url =
@@ -416,7 +414,7 @@ export class iccInvoiceApi {
     status?: string,
     from?: number,
     to?: number
-  ): Promise<Array<InvoiceDto> | any> {
+  ): Promise<Array<InvoiceDto>> {
     let _body = null
 
     const _url =
@@ -439,7 +437,7 @@ export class iccInvoiceApi {
    * @summary Gets all invoices for author at date
    * @param invoiceIds
    */
-  listByIds(invoiceIds: string): Promise<Array<InvoiceDto> | any> {
+  listByIds(invoiceIds: string): Promise<Array<InvoiceDto>> {
     let _body = null
 
     const _url =
@@ -458,7 +456,7 @@ export class iccInvoiceApi {
    * @summary Gets all invoices for author at date
    * @param recipientIds
    */
-  listByRecipientsIds(recipientIds: string): Promise<Array<InvoiceDto> | any> {
+  listByRecipientsIds(recipientIds: string): Promise<Array<InvoiceDto>> {
     let _body = null
 
     const _url =
@@ -477,7 +475,7 @@ export class iccInvoiceApi {
    * @summary Gets all invoices for author at date
    * @param serviceIds
    */
-  listByServiceIds(serviceIds: string): Promise<Array<InvoiceDto> | any> {
+  listByServiceIds(serviceIds: string): Promise<Array<InvoiceDto>> {
     let _body = null
 
     const _url =
@@ -496,7 +494,7 @@ export class iccInvoiceApi {
    * @summary Gets all invoices for author at date
    * @param userIds
    */
-  listToInsurances(userIds?: string): Promise<Array<InvoiceDto> | any> {
+  listToInsurances(userIds?: string): Promise<Array<InvoiceDto>> {
     let _body = null
 
     const _url =
@@ -516,7 +514,7 @@ export class iccInvoiceApi {
    * @summary Gets all invoices for author at date
    * @param userIds
    */
-  listToInsurancesUnsent(userIds?: string): Promise<Array<InvoiceDto> | any> {
+  listToInsurancesUnsent(userIds?: string): Promise<Array<InvoiceDto>> {
     let _body = null
 
     const _url =
@@ -536,7 +534,7 @@ export class iccInvoiceApi {
    * @summary Gets all invoices for author at date
    * @param hcPartyId
    */
-  listToPatients(hcPartyId?: string): Promise<Array<InvoiceDto> | any> {
+  listToPatients(hcPartyId?: string): Promise<Array<InvoiceDto>> {
     let _body = null
 
     const _url =
@@ -556,7 +554,7 @@ export class iccInvoiceApi {
    * @summary Gets all invoices for author at date
    * @param hcPartyId
    */
-  listToPatientsUnsent(hcPartyId?: string): Promise<Array<InvoiceDto> | any> {
+  listToPatientsUnsent(hcPartyId?: string): Promise<Array<InvoiceDto>> {
     let _body = null
 
     const _url =
@@ -577,7 +575,7 @@ export class iccInvoiceApi {
    * @param body
    * @param invoiceId
    */
-  mergeTo(invoiceId: string, body?: ListOfIdsDto): Promise<InvoiceDto | any> {
+  mergeTo(invoiceId: string, body?: ListOfIdsDto): Promise<InvoiceDto> {
     let _body = null
     _body = body
 
@@ -600,7 +598,7 @@ export class iccInvoiceApi {
    * @summary Modifies an invoice
    * @param body
    */
-  modifyInvoice(body?: InvoiceDto): Promise<InvoiceDto | any> {
+  modifyInvoice(body?: InvoiceDto): Promise<InvoiceDto> {
     let _body = null
     _body = body
 
@@ -620,7 +618,7 @@ export class iccInvoiceApi {
    * @param body
    * @param invoiceId
    */
-  newInvoiceDelegations(invoiceId: string, body?: Array<DelegationDto>): Promise<InvoiceDto | any> {
+  newInvoiceDelegations(invoiceId: string, body?: Array<DelegationDto>): Promise<InvoiceDto> {
     let _body = null
     _body = body
 
@@ -643,7 +641,7 @@ export class iccInvoiceApi {
    * @summary Modifies an invoice
    * @param body
    */
-  reassignInvoice(body?: InvoiceDto): Promise<InvoiceDto | any> {
+  reassignInvoice(body?: InvoiceDto): Promise<InvoiceDto> {
     let _body = null
     _body = body
 
@@ -670,7 +668,7 @@ export class iccInvoiceApi {
     serviceId: string,
     secretFKeys: string,
     body?: Array<string>
-  ): Promise<Array<InvoiceDto> | any> {
+  ): Promise<Array<InvoiceDto>> {
     let _body = null
     _body = body
 
@@ -696,7 +694,7 @@ export class iccInvoiceApi {
    * @summary Update delegations in healthElements.
    * @param body
    */
-  setInvoicesDelegations(body?: Array<IcureStubDto>): Promise<Array<IcureStubDto> | any> {
+  setInvoicesDelegations(body?: Array<IcureStubDto>): Promise<Array<IcureStubDto>> {
     let _body = null
     _body = body
 
@@ -717,7 +715,7 @@ export class iccInvoiceApi {
    * @param scheme
    * @param forcedValue
    */
-  validate(invoiceId: string, scheme: string, forcedValue: string): Promise<InvoiceDto | any> {
+  validate(invoiceId: string, scheme: string, forcedValue: string): Promise<InvoiceDto> {
     let _body = null
 
     const _url =

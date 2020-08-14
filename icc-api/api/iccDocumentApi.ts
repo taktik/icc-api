@@ -34,7 +34,7 @@ export class iccDocumentApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -43,7 +43,7 @@ export class iccDocumentApi {
    * @summary Creates a document
    * @param body
    */
-  createDocument(body?: DocumentDto): Promise<DocumentDto | any> {
+  createDocument(body?: DocumentDto): Promise<DocumentDto> {
     let _body = null
     _body = body
 
@@ -62,7 +62,7 @@ export class iccDocumentApi {
    * @summary Deletes a document's attachment
    * @param documentId
    */
-  deleteAttachment(documentId: string): Promise<DocumentDto | any> {
+  deleteAttachment(documentId: string): Promise<DocumentDto> {
     let _body = null
 
     const _url =
@@ -81,7 +81,7 @@ export class iccDocumentApi {
    * @summary Deletes a document
    * @param documentIds
    */
-  deleteDocument(documentIds: string): Promise<Array<DocIdentifier> | any> {
+  deleteDocument(documentIds: string): Promise<Array<DocIdentifier>> {
     let _body = null
 
     const _url =
@@ -106,7 +106,7 @@ export class iccDocumentApi {
     documentTypeCode: string,
     hcPartyId: string,
     secretFKeys: string
-  ): Promise<Array<DocumentDto> | any> {
+  ): Promise<Array<DocumentDto>> {
     let _body = null
 
     const _url =
@@ -134,7 +134,7 @@ export class iccDocumentApi {
   findDocumentsByHCPartyPatientForeignKeys(
     hcPartyId: string,
     secretFKeys: string
-  ): Promise<Array<DocumentDto> | any> {
+  ): Promise<Array<DocumentDto>> {
     let _body = null
 
     const _url =
@@ -155,7 +155,7 @@ export class iccDocumentApi {
    * @summary List documents with no delegation
    * @param limit
    */
-  findWithoutDelegation(limit?: number): Promise<Array<DocumentDto> | any> {
+  findWithoutDelegation(limit?: number): Promise<Array<DocumentDto>> {
     let _body = null
 
     const _url =
@@ -175,7 +175,7 @@ export class iccDocumentApi {
    * @summary Gets a document
    * @param documentId
    */
-  getDocument(documentId: string): Promise<DocumentDto | any> {
+  getDocument(documentId: string): Promise<DocumentDto> {
     let _body = null
 
     const _url =
@@ -202,7 +202,7 @@ export class iccDocumentApi {
     attachmentId: string,
     enckeys?: string,
     fileName?: string
-  ): Promise<ArrayBuffer | any> {
+  ): Promise<ArrayBuffer> {
     let _body = null
 
     const _url =
@@ -225,7 +225,7 @@ export class iccDocumentApi {
    * @summary Gets a document
    * @param body
    */
-  getDocuments(body?: ListOfIdsDto): Promise<Array<DocumentDto> | any> {
+  getDocuments(body?: ListOfIdsDto): Promise<Array<DocumentDto>> {
     let _body = null
     _body = body
 
@@ -244,7 +244,7 @@ export class iccDocumentApi {
    * @summary Updates a document
    * @param body
    */
-  modifyDocument(body?: DocumentDto): Promise<DocumentDto | any> {
+  modifyDocument(body?: DocumentDto): Promise<DocumentDto> {
     let _body = null
     _body = body
 
@@ -263,7 +263,7 @@ export class iccDocumentApi {
    * @summary Updates a batch of documents
    * @param body
    */
-  modifyDocuments(body?: Array<DocumentDto>): Promise<Array<DocumentDto> | any> {
+  modifyDocuments(body?: Array<DocumentDto>): Promise<Array<DocumentDto>> {
     let _body = null
     _body = body
 
@@ -288,7 +288,7 @@ export class iccDocumentApi {
     documentId: string,
     enckeys?: string,
     body?: Array<string>
-  ): Promise<DocumentDto | any> {
+  ): Promise<DocumentDto> {
     let _body = null
     _body = body
 
@@ -313,7 +313,7 @@ export class iccDocumentApi {
    * @param documentId
    * @param enckeys
    */
-  setDocumentAttachmentMulti(documentId: string, enckeys?: string): Promise<DocumentDto | any> {
+  setDocumentAttachmentMulti(documentId: string, enckeys?: string): Promise<DocumentDto> {
     let _body = null
 
     const _url =
@@ -336,7 +336,7 @@ export class iccDocumentApi {
    * @summary Update delegations in healthElements.
    * @param body
    */
-  setDocumentsDelegations(body?: Array<IcureStubDto>): Promise<Array<IcureStubDto> | any> {
+  setDocumentsDelegations(body?: Array<IcureStubDto>): Promise<Array<IcureStubDto>> {
     let _body = null
     _body = body
 

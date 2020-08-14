@@ -37,7 +37,7 @@ export class iccUserApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -46,7 +46,7 @@ export class iccUserApi {
    * @summary Assign a healthcare party ID to current user
    * @param healthcarePartyId
    */
-  assignHealthcareParty(healthcarePartyId: string): Promise<UserDto | any> {
+  assignHealthcareParty(healthcarePartyId: string): Promise<UserDto> {
     let _body = null
 
     const _url =
@@ -64,7 +64,7 @@ export class iccUserApi {
    *
    * @param password
    */
-  checkPassword(password: string): Promise<boolean | any> {
+  checkPassword(password: string): Promise<boolean> {
     let _body = null
 
     const _url = this.host + `/user/checkPassword` + "?ts=" + new Date().getTime()
@@ -80,7 +80,7 @@ export class iccUserApi {
    * @summary Create a user
    * @param body
    */
-  createUser(body?: UserDto): Promise<UserDto | any> {
+  createUser(body?: UserDto): Promise<UserDto> {
     let _body = null
     _body = body
 
@@ -100,7 +100,7 @@ export class iccUserApi {
    * @param body
    * @param groupId
    */
-  createUserInGroup(groupId: string, body?: UserDto): Promise<UserDto | any> {
+  createUserInGroup(groupId: string, body?: UserDto): Promise<UserDto> {
     let _body = null
     _body = body
 
@@ -123,7 +123,7 @@ export class iccUserApi {
    * @summary Delete a User based on his/her ID.
    * @param userId
    */
-  deleteUser(userId: string): Promise<DocIdentifier | any> {
+  deleteUser(userId: string): Promise<DocIdentifier> {
     let _body = null
 
     const _url =
@@ -140,7 +140,7 @@ export class iccUserApi {
    * @param groupId
    * @param userId
    */
-  deleteUserInGroup(groupId: string, userId: string): Promise<Unit | any> {
+  deleteUserInGroup(groupId: string, userId: string): Promise<Unit> {
     let _body = null
 
     const _url =
@@ -158,7 +158,7 @@ export class iccUserApi {
    *
    * @param password
    */
-  encodePassword(password: string): Promise<string | any> {
+  encodePassword(password: string): Promise<string> {
     let _body = null
 
     const _url = this.host + `/user/encodePassword` + "?ts=" + new Date().getTime()
@@ -174,7 +174,7 @@ export class iccUserApi {
    * @summary Get the list of users by healthcare party id
    * @param id
    */
-  findByHcpartyId(id: string): Promise<Array<string> | any> {
+  findByHcpartyId(id: string): Promise<Array<string>> {
     let _body = null
 
     const _url =
@@ -194,7 +194,7 @@ export class iccUserApi {
    * @param body
    * @param email the email of the user
    */
-  forgottenPassword(email: string, body?: EmailTemplateDto): Promise<boolean | any> {
+  forgottenPassword(email: string, body?: EmailTemplateDto): Promise<boolean> {
     let _body = null
     _body = body
 
@@ -216,7 +216,7 @@ export class iccUserApi {
    * Get current user.
    * @summary Get Currently logged-in user session.
    */
-  getCurrentSession(): Promise<string | any> {
+  getCurrentSession(): Promise<string> {
     let _body = null
 
     const _url = this.host + `/user/session` + "?ts=" + new Date().getTime()
@@ -230,7 +230,7 @@ export class iccUserApi {
    * Get current user.
    * @summary Get presently logged-in user.
    */
-  getCurrentUser(): Promise<UserDto | any> {
+  getCurrentUser(): Promise<UserDto> {
     let _body = null
 
     const _url = this.host + `/user/current` + "?ts=" + new Date().getTime()
@@ -244,7 +244,7 @@ export class iccUserApi {
    * Get current user.
    * @summary Get presently logged-in user.
    */
-  getMatchingUsers(): Promise<Array<UserGroupDto> | any> {
+  getMatchingUsers(): Promise<Array<UserGroupDto>> {
     let _body = null
 
     const _url = this.host + `/user/matches` + "?ts=" + new Date().getTime()
@@ -259,7 +259,7 @@ export class iccUserApi {
    * @summary Get a user by his ID
    * @param userId
    */
-  getUser(userId: string): Promise<UserDto | any> {
+  getUser(userId: string): Promise<UserDto> {
     let _body = null
 
     const _url =
@@ -275,7 +275,7 @@ export class iccUserApi {
    * @summary Get a user by his Email/Login
    * @param email
    */
-  getUserByEmail(email: string): Promise<UserDto | any> {
+  getUserByEmail(email: string): Promise<UserDto> {
     let _body = null
 
     const _url =
@@ -300,7 +300,7 @@ export class iccUserApi {
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<PaginatedListUserDto | any> {
+  ): Promise<PaginatedListUserDto> {
     let _body = null
 
     const _url =
@@ -330,7 +330,7 @@ export class iccUserApi {
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<PaginatedListUserDto | any> {
+  ): Promise<PaginatedListUserDto> {
     let _body = null
 
     const _url =
@@ -353,7 +353,7 @@ export class iccUserApi {
    * @param body
    * @param userId
    */
-  modifyProperties(userId: string, body?: Array<PropertyStubDto>): Promise<UserDto | any> {
+  modifyProperties(userId: string, body?: Array<PropertyStubDto>): Promise<UserDto> {
     let _body = null
     _body = body
 
@@ -376,7 +376,7 @@ export class iccUserApi {
    * @summary Modify a user.
    * @param body
    */
-  modifyUser(body?: UserDto): Promise<UserDto | any> {
+  modifyUser(body?: UserDto): Promise<UserDto> {
     let _body = null
     _body = body
 
@@ -396,7 +396,7 @@ export class iccUserApi {
    * @param body
    * @param groupId
    */
-  modifyUserInGroup(groupId: string, body?: UserDto): Promise<UserDto | any> {
+  modifyUserInGroup(groupId: string, body?: UserDto): Promise<UserDto> {
     let _body = null
     _body = body
 

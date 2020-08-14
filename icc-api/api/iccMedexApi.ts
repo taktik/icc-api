@@ -31,7 +31,7 @@ export class iccMedexApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -40,7 +40,7 @@ export class iccMedexApi {
    * @summary Generate a Medex XML String
    * @param body
    */
-  generateMedex(body?: MedexInfoDto): Promise<string | any> {
+  generateMedex(body?: MedexInfoDto): Promise<string> {
     let _body = null
     _body = body
 

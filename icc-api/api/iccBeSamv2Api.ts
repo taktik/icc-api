@@ -35,7 +35,7 @@ export class iccBesamv2Api {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -44,7 +44,7 @@ export class iccBesamv2Api {
    * @summary Finding AMPs by dmpp code
    * @param dmppCode dmppCode
    */
-  findAmpsByDmppCode(dmppCode: string): Promise<Array<AmpDto> | any> {
+  findAmpsByDmppCode(dmppCode: string): Promise<Array<AmpDto>> {
     let _body = null
 
     const _url =
@@ -71,7 +71,7 @@ export class iccBesamv2Api {
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<PaginatedListAmpDto | any> {
+  ): Promise<PaginatedListAmpDto> {
     let _body = null
 
     const _url =
@@ -101,7 +101,7 @@ export class iccBesamv2Api {
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<PaginatedListAmpDto | any> {
+  ): Promise<PaginatedListAmpDto> {
     let _body = null
 
     const _url =
@@ -133,7 +133,7 @@ export class iccBesamv2Api {
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<PaginatedListAmpDto | any> {
+  ): Promise<PaginatedListAmpDto> {
     let _body = null
 
     const _url =
@@ -165,7 +165,7 @@ export class iccBesamv2Api {
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<PaginatedListAmpDto | any> {
+  ): Promise<PaginatedListAmpDto> {
     let _body = null
 
     const _url =
@@ -195,7 +195,7 @@ export class iccBesamv2Api {
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<PaginatedListAmpDto | any> {
+  ): Promise<PaginatedListAmpDto> {
     let _body = null
 
     const _url =
@@ -227,7 +227,7 @@ export class iccBesamv2Api {
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<PaginatedListVmpGroupDto | any> {
+  ): Promise<PaginatedListVmpGroupDto> {
     let _body = null
 
     const _url =
@@ -259,7 +259,7 @@ export class iccBesamv2Api {
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<PaginatedListVmpDto | any> {
+  ): Promise<PaginatedListVmpDto> {
     let _body = null
 
     const _url =
@@ -289,7 +289,7 @@ export class iccBesamv2Api {
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<PaginatedListVmpDto | any> {
+  ): Promise<PaginatedListVmpDto> {
     let _body = null
 
     const _url =
@@ -321,7 +321,7 @@ export class iccBesamv2Api {
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<PaginatedListVmpDto | any> {
+  ): Promise<PaginatedListVmpDto> {
     let _body = null
 
     const _url =
@@ -344,7 +344,7 @@ export class iccBesamv2Api {
    * Returns a list of codes matched with given input. If several types are provided, paginantion is not supported
    * @summary Get Samv2 version.
    */
-  getSamVersion(): Promise<SamVersionDto | any> {
+  getSamVersion(): Promise<SamVersionDto> {
     let _body = null
 
     const _url = this.host + `/be_samv2/v` + "?ts=" + new Date().getTime()

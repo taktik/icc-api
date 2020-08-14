@@ -37,7 +37,7 @@ export class iccBemikronoApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -46,7 +46,7 @@ export class iccBemikronoApi {
    * @summary Get appointments for patient
    * @param calendarDate
    */
-  appointmentsByDate(calendarDate: number): Promise<Array<AppointmentDto> | any> {
+  appointmentsByDate(calendarDate: number): Promise<Array<AppointmentDto>> {
     let _body = null
 
     const _url =
@@ -71,7 +71,7 @@ export class iccBemikronoApi {
     patientId: string,
     from?: number,
     to?: number
-  ): Promise<Array<AppointmentDto> | any> {
+  ): Promise<Array<AppointmentDto>> {
     let _body = null
 
     const _url =
@@ -93,7 +93,7 @@ export class iccBemikronoApi {
    */
   createAppointmentTypes(
     body?: Array<MikronoAppointmentTypeRestDto>
-  ): Promise<Array<MikronoAppointmentTypeRestDto> | any> {
+  ): Promise<Array<MikronoAppointmentTypeRestDto>> {
     let _body = null
     _body = body
 
@@ -112,7 +112,7 @@ export class iccBemikronoApi {
    * @summary Create appointments for owner
    * @param body
    */
-  createAppointments(body?: Array<AppointmentImportDto>): Promise<Array<string> | any> {
+  createAppointments(body?: Array<AppointmentImportDto>): Promise<Array<string>> {
     let _body = null
     _body = body
 
@@ -154,7 +154,7 @@ export class iccBemikronoApi {
    * @param body
    * @param userId
    */
-  register(userId: string, body?: MikronoCredentialsDto): Promise<UserDto | any> {
+  register(userId: string, body?: MikronoCredentialsDto): Promise<UserDto> {
     let _body = null
     _body = body
 
@@ -177,7 +177,7 @@ export class iccBemikronoApi {
    * @summary Send message using mikrono from logged user
    * @param body
    */
-  sendMessage(body?: EmailOrSmsMessageDto): Promise<Unit | any> {
+  sendMessage(body?: EmailOrSmsMessageDto): Promise<Unit> {
     let _body = null
     _body = body
 
@@ -197,7 +197,7 @@ export class iccBemikronoApi {
    * @param body
    * @param userId
    */
-  setUserCredentials(userId: string, body?: MikronoCredentialsDto): Promise<UserDto | any> {
+  setUserCredentials(userId: string, body?: MikronoCredentialsDto): Promise<UserDto> {
     let _body = null
     _body = body
 

@@ -34,7 +34,7 @@ export class iccClassificationTemplateApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -45,7 +45,7 @@ export class iccClassificationTemplateApi {
    */
   createClassificationTemplate(
     body?: ClassificationTemplateDto
-  ): Promise<ClassificationTemplateDto | any> {
+  ): Promise<ClassificationTemplateDto> {
     let _body = null
     _body = body
 
@@ -64,9 +64,7 @@ export class iccClassificationTemplateApi {
    * @summary Delete classification Templates.
    * @param classificationTemplateIds
    */
-  deleteClassificationTemplates(
-    classificationTemplateIds: string
-  ): Promise<Array<DocIdentifier> | any> {
+  deleteClassificationTemplates(classificationTemplateIds: string): Promise<Array<DocIdentifier>> {
     let _body = null
 
     const _url =
@@ -89,7 +87,7 @@ export class iccClassificationTemplateApi {
   findClassificationTemplatesByHCPartyPatientForeignKeys(
     hcPartyId: string,
     secretFKeys: string
-  ): Promise<Array<ClassificationTemplateDto> | any> {
+  ): Promise<Array<ClassificationTemplateDto>> {
     let _body = null
 
     const _url =
@@ -110,9 +108,7 @@ export class iccClassificationTemplateApi {
    * @summary Get a classification Template
    * @param classificationTemplateId
    */
-  getClassificationTemplate(
-    classificationTemplateId: string
-  ): Promise<ClassificationTemplateDto | any> {
+  getClassificationTemplate(classificationTemplateId: string): Promise<ClassificationTemplateDto> {
     let _body = null
 
     const _url =
@@ -131,7 +127,7 @@ export class iccClassificationTemplateApi {
    * @summary Get a list of classifications Templates
    * @param ids
    */
-  getClassificationTemplateByIds(ids: string): Promise<Array<ClassificationTemplateDto> | any> {
+  getClassificationTemplateByIds(ids: string): Promise<Array<ClassificationTemplateDto>> {
     let _body = null
 
     const _url =
@@ -156,7 +152,7 @@ export class iccClassificationTemplateApi {
     startKey: string,
     startDocumentId: string,
     limit: number
-  ): Promise<PaginatedListClassificationTemplateDto | any> {
+  ): Promise<PaginatedListClassificationTemplateDto> {
     let _body = null
 
     const _url =
@@ -180,7 +176,7 @@ export class iccClassificationTemplateApi {
    */
   modifyClassificationTemplate(
     body?: ClassificationTemplateDto
-  ): Promise<ClassificationTemplateDto | any> {
+  ): Promise<ClassificationTemplateDto> {
     let _body = null
     _body = body
 
@@ -203,7 +199,7 @@ export class iccClassificationTemplateApi {
   newClassificationTemplateDelegations(
     classificationTemplateId: string,
     body?: Array<DelegationDto>
-  ): Promise<ClassificationTemplateDto | any> {
+  ): Promise<ClassificationTemplateDto> {
     let _body = null
     _body = body
 

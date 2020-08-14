@@ -35,7 +35,7 @@ export class iccHcpartyApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -44,7 +44,7 @@ export class iccHcpartyApi {
    * @summary Create a healthcare party
    * @param body
    */
-  createHealthcareParty(body?: HealthcarePartyDto): Promise<HealthcarePartyDto | any> {
+  createHealthcareParty(body?: HealthcarePartyDto): Promise<HealthcarePartyDto> {
     let _body = null
     _body = body
 
@@ -67,7 +67,7 @@ export class iccHcpartyApi {
   createHealthcarePartyInGroup(
     groupId: string,
     body?: HealthcarePartyDto
-  ): Promise<HealthcarePartyDto | any> {
+  ): Promise<HealthcarePartyDto> {
     let _body = null
     _body = body
 
@@ -90,7 +90,7 @@ export class iccHcpartyApi {
    * @summary Delete a healthcare party
    * @param healthcarePartyIds
    */
-  deleteHealthcareParties(healthcarePartyIds: string): Promise<Array<DocIdentifier> | any> {
+  deleteHealthcareParties(healthcarePartyIds: string): Promise<Array<DocIdentifier>> {
     let _body = null
 
     const _url =
@@ -113,7 +113,7 @@ export class iccHcpartyApi {
   deleteHealthcarePartiesInGroup(
     groupId: string,
     healthcarePartyIds: string
-  ): Promise<Array<DocIdentifier> | any> {
+  ): Promise<Array<DocIdentifier>> {
     let _body = null
 
     const _url =
@@ -144,7 +144,7 @@ export class iccHcpartyApi {
     startDocumentId?: string,
     limit?: number,
     desc?: boolean
-  ): Promise<PaginatedListHealthcarePartyDto | any> {
+  ): Promise<PaginatedListHealthcarePartyDto> {
     let _body = null
 
     const _url =
@@ -178,7 +178,7 @@ export class iccHcpartyApi {
     firstCode: string,
     lastCode: string,
     limit?: number
-  ): Promise<PaginatedListHealthcarePartyDto | any> {
+  ): Promise<PaginatedListHealthcarePartyDto> {
     let _body = null
 
     const _url =
@@ -210,7 +210,7 @@ export class iccHcpartyApi {
     startDocumentId?: string,
     limit?: number,
     desc?: boolean
-  ): Promise<PaginatedListHealthcarePartyDto | any> {
+  ): Promise<PaginatedListHealthcarePartyDto> {
     let _body = null
 
     const _url =
@@ -232,7 +232,7 @@ export class iccHcpartyApi {
    * General information about the current healthcare Party
    * @summary Get the current healthcare party if logged in.
    */
-  getCurrentHealthcareParty(): Promise<HealthcarePartyDto | any> {
+  getCurrentHealthcareParty(): Promise<HealthcarePartyDto> {
     let _body = null
 
     const _url = this.host + `/hcparty/current` + "?ts=" + new Date().getTime()
@@ -247,7 +247,7 @@ export class iccHcpartyApi {
    * @summary Get the HcParty encrypted AES keys indexed by owner
    * @param healthcarePartyId
    */
-  getHcPartyKeysForDelegate(healthcarePartyId: string): Promise<{ [key: string]: string } | any> {
+  getHcPartyKeysForDelegate(healthcarePartyId: string): Promise<{ [key: string]: string }> {
     let _body = null
 
     const _url =
@@ -266,7 +266,7 @@ export class iccHcpartyApi {
    * @summary Get healthcareParties by their IDs
    * @param healthcarePartyIds
    */
-  getHealthcareParties(healthcarePartyIds: string): Promise<Array<HealthcarePartyDto> | any> {
+  getHealthcareParties(healthcarePartyIds: string): Promise<Array<HealthcarePartyDto>> {
     let _body = null
 
     const _url =
@@ -285,7 +285,7 @@ export class iccHcpartyApi {
    * @summary Find children of an healthcare parties
    * @param parentId
    */
-  getHealthcarePartiesByParentId(parentId: string): Promise<Array<HealthcarePartyDto> | any> {
+  getHealthcarePartiesByParentId(parentId: string): Promise<Array<HealthcarePartyDto>> {
     let _body = null
 
     const _url =
@@ -308,7 +308,7 @@ export class iccHcpartyApi {
   getHealthcarePartiesInGroup(
     groupId: string,
     body?: ListOfIdsDto
-  ): Promise<Array<HealthcarePartyDto> | any> {
+  ): Promise<Array<HealthcarePartyDto>> {
     let _body = null
     _body = body
 
@@ -331,7 +331,7 @@ export class iccHcpartyApi {
    * @summary Get a healthcareParty by his ID
    * @param healthcarePartyId
    */
-  getHealthcareParty(healthcarePartyId: string): Promise<HealthcarePartyDto | any> {
+  getHealthcareParty(healthcarePartyId: string): Promise<HealthcarePartyDto> {
     let _body = null
 
     const _url =
@@ -350,7 +350,7 @@ export class iccHcpartyApi {
    * @summary Get public key of a healthcare party
    * @param healthcarePartyId
    */
-  getPublicKey(healthcarePartyId: string): Promise<PublicKeyDto | any> {
+  getPublicKey(healthcarePartyId: string): Promise<PublicKeyDto> {
     let _body = null
 
     const _url =
@@ -369,7 +369,7 @@ export class iccHcpartyApi {
    * @summary Find healthcare parties by name with(out) pagination
    * @param name The Last name search value
    */
-  listByName(name: string): Promise<Array<HealthcarePartyDto> | any> {
+  listByName(name: string): Promise<Array<HealthcarePartyDto>> {
     let _body = null
 
     const _url =
@@ -396,7 +396,7 @@ export class iccHcpartyApi {
     startDocumentId?: string,
     limit?: number,
     desc?: boolean
-  ): Promise<PaginatedListHealthcarePartyDto | any> {
+  ): Promise<PaginatedListHealthcarePartyDto> {
     let _body = null
 
     const _url =
@@ -419,7 +419,7 @@ export class iccHcpartyApi {
    * @summary Modify a Healthcare Party.
    * @param body
    */
-  modifyHealthcareParty(body?: HealthcarePartyDto): Promise<HealthcarePartyDto | any> {
+  modifyHealthcareParty(body?: HealthcarePartyDto): Promise<HealthcarePartyDto> {
     let _body = null
     _body = body
 
@@ -442,7 +442,7 @@ export class iccHcpartyApi {
   modifyHealthcarePartyInGroup(
     groupId: string,
     body?: HealthcarePartyDto
-  ): Promise<HealthcarePartyDto | any> {
+  ): Promise<HealthcarePartyDto> {
     let _body = null
     _body = body
 

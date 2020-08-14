@@ -34,7 +34,7 @@ export class iccClassificationApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -43,7 +43,7 @@ export class iccClassificationApi {
    * @summary Create a classification with the current user
    * @param body
    */
-  createClassification(body?: ClassificationDto): Promise<ClassificationDto | any> {
+  createClassification(body?: ClassificationDto): Promise<ClassificationDto> {
     let _body = null
     _body = body
 
@@ -62,7 +62,7 @@ export class iccClassificationApi {
    * @summary Delete classification Templates.
    * @param classificationIds
    */
-  deleteClassifications(classificationIds: string): Promise<Array<DocIdentifier> | any> {
+  deleteClassifications(classificationIds: string): Promise<Array<DocIdentifier>> {
     let _body = null
 
     const _url =
@@ -85,7 +85,7 @@ export class iccClassificationApi {
   findClassificationsByHCPartyPatientForeignKeys(
     hcPartyId: string,
     secretFKeys: string
-  ): Promise<Array<ClassificationDto> | any> {
+  ): Promise<Array<ClassificationDto>> {
     let _body = null
 
     const _url =
@@ -106,7 +106,7 @@ export class iccClassificationApi {
    * @summary Get a classification Template
    * @param classificationId
    */
-  getClassification(classificationId: string): Promise<ClassificationDto | any> {
+  getClassification(classificationId: string): Promise<ClassificationDto> {
     let _body = null
 
     const _url =
@@ -125,7 +125,7 @@ export class iccClassificationApi {
    * @summary Get a list of classifications
    * @param ids
    */
-  getClassificationByHcPartyId(ids: string): Promise<Array<ClassificationDto> | any> {
+  getClassificationByHcPartyId(ids: string): Promise<Array<ClassificationDto>> {
     let _body = null
 
     const _url =
@@ -144,7 +144,7 @@ export class iccClassificationApi {
    * @summary Modify a classification Template
    * @param body
    */
-  modifyClassification(body?: ClassificationDto): Promise<ClassificationDto | any> {
+  modifyClassification(body?: ClassificationDto): Promise<ClassificationDto> {
     let _body = null
     _body = body
 
@@ -167,7 +167,7 @@ export class iccClassificationApi {
   newClassificationDelegations(
     classificationId: string,
     body?: Array<DelegationDto>
-  ): Promise<ClassificationDto | any> {
+  ): Promise<ClassificationDto> {
     let _body = null
     _body = body
 
@@ -190,7 +190,7 @@ export class iccClassificationApi {
    * @summary Update delegations in classification
    * @param body
    */
-  setClassificationsDelegations(body?: Array<IcureStubDto>): Promise<Array<IcureStubDto> | any> {
+  setClassificationsDelegations(body?: Array<IcureStubDto>): Promise<Array<IcureStubDto>> {
     let _body = null
     _body = body
 

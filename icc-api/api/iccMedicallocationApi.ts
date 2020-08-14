@@ -32,7 +32,7 @@ export class iccMedicallocationApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -41,7 +41,7 @@ export class iccMedicallocationApi {
    * @summary Creates a medical location
    * @param body
    */
-  createMedicalLocation(body?: MedicalLocationDto): Promise<MedicalLocationDto | any> {
+  createMedicalLocation(body?: MedicalLocationDto): Promise<MedicalLocationDto> {
     let _body = null
     _body = body
 
@@ -60,7 +60,7 @@ export class iccMedicallocationApi {
    * @summary Deletes a medical location
    * @param locationIds
    */
-  deleteMedicalLocation(locationIds: string): Promise<Array<DocIdentifier> | any> {
+  deleteMedicalLocation(locationIds: string): Promise<Array<DocIdentifier>> {
     let _body = null
 
     const _url =
@@ -79,7 +79,7 @@ export class iccMedicallocationApi {
    * @summary Gets a medical location
    * @param locationId
    */
-  getMedicalLocation(locationId: string): Promise<MedicalLocationDto | any> {
+  getMedicalLocation(locationId: string): Promise<MedicalLocationDto> {
     let _body = null
 
     const _url =
@@ -97,7 +97,7 @@ export class iccMedicallocationApi {
    *
    * @summary Gets all medical locations
    */
-  getMedicalLocations(): Promise<Array<MedicalLocationDto> | any> {
+  getMedicalLocations(): Promise<Array<MedicalLocationDto>> {
     let _body = null
 
     const _url = this.host + `/medicallocation` + "?ts=" + new Date().getTime()
@@ -112,7 +112,7 @@ export class iccMedicallocationApi {
    * @summary Modifies a medical location
    * @param body
    */
-  modifyMedicalLocation(body?: MedicalLocationDto): Promise<MedicalLocationDto | any> {
+  modifyMedicalLocation(body?: MedicalLocationDto): Promise<MedicalLocationDto> {
     let _body = null
     _body = body
 

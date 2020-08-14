@@ -40,7 +40,7 @@ export class iccBekmehrApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -59,7 +59,7 @@ export class iccBekmehrApi {
     patientId?: string,
     language?: string,
     body?: { [key: string]: Array<ImportMapping> }
-  ): Promise<Array<CheckSMFPatientResult> | any> {
+  ): Promise<Array<CheckSMFPatientResult>> {
     let _body = null
     _body = body
 
@@ -105,7 +105,7 @@ export class iccBekmehrApi {
     recipientLastName: string,
     mimeType: string,
     body?: Array<string>
-  ): Promise<ArrayBuffer | any> {
+  ): Promise<ArrayBuffer> {
     let _body = null
     _body = body
 
@@ -147,7 +147,7 @@ export class iccBekmehrApi {
     patientId: string,
     language: string,
     body?: DiaryNoteExportInfoDto
-  ): Promise<ArrayBuffer | any> {
+  ): Promise<ArrayBuffer> {
     let _body = null
     _body = body
 
@@ -191,7 +191,7 @@ export class iccBekmehrApi {
     recipientLastName: string,
     mimeType: string,
     body?: Array<string>
-  ): Promise<ArrayBuffer | any> {
+  ): Promise<ArrayBuffer> {
     let _body = null
     _body = body
 
@@ -237,7 +237,7 @@ export class iccBekmehrApi {
     recipientSafe: string,
     version: number,
     body?: MedicationSchemeExportInfoDto
-  ): Promise<ArrayBuffer | any> {
+  ): Promise<ArrayBuffer> {
     let _body = null
     _body = body
 
@@ -283,7 +283,7 @@ export class iccBekmehrApi {
     recipientLastName: string,
     mimeType: string,
     body?: Array<string>
-  ): Promise<ArrayBuffer | any> {
+  ): Promise<ArrayBuffer> {
     let _body = null
     _body = body
 
@@ -339,7 +339,7 @@ export class iccBekmehrApi {
     recipientLastName: string,
     mimeType: string,
     body?: Array<string>
-  ): Promise<ArrayBuffer | any> {
+  ): Promise<ArrayBuffer> {
     let _body = null
     _body = body
 
@@ -395,7 +395,7 @@ export class iccBekmehrApi {
     recipientLastName: string,
     mimeType: string,
     body?: Array<string>
-  ): Promise<ArrayBuffer | any> {
+  ): Promise<ArrayBuffer> {
     let _body = null
     _body = body
 
@@ -451,7 +451,7 @@ export class iccBekmehrApi {
     recipientLastName: string,
     mimeType: string,
     body?: Array<string>
-  ): Promise<ArrayBuffer | any> {
+  ): Promise<ArrayBuffer> {
     let _body = null
     _body = body
 
@@ -507,7 +507,7 @@ export class iccBekmehrApi {
     recipientLastName: string,
     mimeType: string,
     body?: Array<string>
-  ): Promise<ArrayBuffer | any> {
+  ): Promise<ArrayBuffer> {
     let _body = null
     _body = body
 
@@ -549,7 +549,7 @@ export class iccBekmehrApi {
     patientId: string,
     language: string,
     body?: SoftwareMedicalFileExportDto
-  ): Promise<ArrayBuffer | any> {
+  ): Promise<ArrayBuffer> {
     let _body = null
     _body = body
 
@@ -579,7 +579,7 @@ export class iccBekmehrApi {
     patientId: string,
     language: string,
     body?: SumehrExportInfoDto
-  ): Promise<ArrayBuffer | any> {
+  ): Promise<ArrayBuffer> {
     let _body = null
     _body = body
 
@@ -609,7 +609,7 @@ export class iccBekmehrApi {
     patientId: string,
     language: string,
     body?: SumehrExportInfoDto
-  ): Promise<ArrayBuffer | any> {
+  ): Promise<ArrayBuffer> {
     let _body = null
     _body = body
 
@@ -634,7 +634,7 @@ export class iccBekmehrApi {
    * @param body
    * @param patientId
    */
-  getSumehrContent(patientId: string, body?: SumehrExportInfoDto): Promise<SumehrContentDto | any> {
+  getSumehrContent(patientId: string, body?: SumehrExportInfoDto): Promise<SumehrContentDto> {
     let _body = null
     _body = body
 
@@ -658,7 +658,7 @@ export class iccBekmehrApi {
    * @param body
    * @param patientId
    */
-  getSumehrMd5(patientId: string, body?: SumehrExportInfoDto): Promise<ContentDto | any> {
+  getSumehrMd5(patientId: string, body?: SumehrExportInfoDto): Promise<ContentDto> {
     let _body = null
     _body = body
 
@@ -682,10 +682,7 @@ export class iccBekmehrApi {
    * @param body
    * @param patientId
    */
-  getSumehrV2Content(
-    patientId: string,
-    body?: SumehrExportInfoDto
-  ): Promise<SumehrContentDto | any> {
+  getSumehrV2Content(patientId: string, body?: SumehrExportInfoDto): Promise<SumehrContentDto> {
     let _body = null
     _body = body
 
@@ -709,7 +706,7 @@ export class iccBekmehrApi {
    * @param body
    * @param patientId
    */
-  getSumehrV2Md5(patientId: string, body?: SumehrExportInfoDto): Promise<ContentDto | any> {
+  getSumehrV2Md5(patientId: string, body?: SumehrExportInfoDto): Promise<ContentDto> {
     let _body = null
     _body = body
 
@@ -744,7 +741,7 @@ export class iccBekmehrApi {
     patientId?: string,
     language?: string,
     body?: { [key: string]: Array<ImportMapping> }
-  ): Promise<Array<ImportResultDto> | any> {
+  ): Promise<Array<ImportResultDto>> {
     let _body = null
     _body = body
 
@@ -781,7 +778,7 @@ export class iccBekmehrApi {
     patientId?: string,
     language?: string,
     body?: { [key: string]: Array<ImportMapping> }
-  ): Promise<Array<ImportResultDto> | any> {
+  ): Promise<Array<ImportResultDto>> {
     let _body = null
     _body = body
 
@@ -819,7 +816,7 @@ export class iccBekmehrApi {
     patientId?: string,
     language?: string,
     body?: { [key: string]: Array<ImportMapping> }
-  ): Promise<Array<ImportResultDto> | any> {
+  ): Promise<Array<ImportResultDto>> {
     let _body = null
     _body = body
 
@@ -860,7 +857,7 @@ export class iccBekmehrApi {
     patientId?: string,
     language?: string,
     body?: { [key: string]: Array<ImportMapping> }
-  ): Promise<Array<ImportResultDto> | any> {
+  ): Promise<Array<ImportResultDto>> {
     let _body = null
     _body = body
 
@@ -889,7 +886,7 @@ export class iccBekmehrApi {
    * @param body
    * @param patientId
    */
-  isSumehrV2Valid(patientId: string, body?: SumehrExportInfoDto): Promise<SumehrValidityDto | any> {
+  isSumehrV2Valid(patientId: string, body?: SumehrExportInfoDto): Promise<SumehrValidityDto> {
     let _body = null
     _body = body
 
@@ -913,7 +910,7 @@ export class iccBekmehrApi {
    * @param body
    * @param patientId
    */
-  isSumehrValid(patientId: string, body?: SumehrExportInfoDto): Promise<SumehrValidityDto | any> {
+  isSumehrValid(patientId: string, body?: SumehrExportInfoDto): Promise<SumehrValidityDto> {
     let _body = null
     _body = body
 
@@ -942,7 +939,7 @@ export class iccBekmehrApi {
     patientId: string,
     language: string,
     body?: SumehrExportInfoDto
-  ): Promise<ArrayBuffer | any> {
+  ): Promise<ArrayBuffer> {
     let _body = null
     _body = body
 
@@ -972,7 +969,7 @@ export class iccBekmehrApi {
     patientId: string,
     language: string,
     body?: SumehrExportInfoDto
-  ): Promise<ArrayBuffer | any> {
+  ): Promise<ArrayBuffer> {
     let _body = null
     _body = body
 

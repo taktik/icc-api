@@ -32,7 +32,7 @@ export class iccArticleApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError) {
+  handleError(e: XHR.XHRError): never {
     throw e
   }
 
@@ -41,7 +41,7 @@ export class iccArticleApi {
    * @summary Creates a article
    * @param body
    */
-  createArticle(body?: ArticleDto): Promise<ArticleDto | any> {
+  createArticle(body?: ArticleDto): Promise<ArticleDto> {
     let _body = null
     _body = body
 
@@ -60,7 +60,7 @@ export class iccArticleApi {
    * @summary Deletes an article
    * @param articleIds
    */
-  deleteArticle(articleIds: string): Promise<Array<DocIdentifier> | any> {
+  deleteArticle(articleIds: string): Promise<Array<DocIdentifier>> {
     let _body = null
 
     const _url =
@@ -79,7 +79,7 @@ export class iccArticleApi {
    * @summary Gets an article
    * @param articleId
    */
-  getArticle(articleId: string): Promise<ArticleDto | any> {
+  getArticle(articleId: string): Promise<ArticleDto> {
     let _body = null
 
     const _url =
@@ -97,7 +97,7 @@ export class iccArticleApi {
    *
    * @summary Gets all articles
    */
-  getArticles(): Promise<Array<ArticleDto> | any> {
+  getArticles(): Promise<Array<ArticleDto>> {
     let _body = null
 
     const _url = this.host + `/article` + "?ts=" + new Date().getTime()
@@ -112,7 +112,7 @@ export class iccArticleApi {
    * @summary Modifies an article
    * @param body
    */
-  modifyArticle(body?: ArticleDto): Promise<ArticleDto | any> {
+  modifyArticle(body?: ArticleDto): Promise<ArticleDto> {
     let _body = null
     _body = body
 
