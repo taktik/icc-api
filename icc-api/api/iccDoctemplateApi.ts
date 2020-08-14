@@ -238,7 +238,7 @@ export class iccDoctemplateApi {
    */
   setDocumentTemplateAttachment(
     documentTemplateId: string,
-    body?: Array<string>
+    body?: ArrayBuffer
   ): Promise<DocumentTemplateDto> {
     let _body = null
     _body = body

@@ -28,7 +28,7 @@ export class DocumentDto {
   codes?: Array<CodeStubDto>
   endOfLife?: number
   deletionDate?: number
-  attachment?: Array<string>
+  attachment?: ArrayBuffer
   documentLocation?: DocumentDto.DocumentLocationEnum
   documentType?: DocumentDto.DocumentTypeEnum
   documentStatus?: DocumentDto.DocumentStatusEnum

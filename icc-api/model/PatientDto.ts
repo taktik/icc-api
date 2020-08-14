@@ -68,7 +68,7 @@ export class PatientDto {
   warning?: string
   nationality?: string
   preferredUserId?: string
-  picture?: Array<string>
+  picture?: ArrayBuffer
   externalId?: string
   insurabilities?: Array<InsurabilityDto>
   partnerships?: Array<PartnershipDto>

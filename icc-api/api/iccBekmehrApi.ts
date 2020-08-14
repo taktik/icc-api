@@ -104,7 +104,7 @@ export class iccBekmehrApi {
     recipientFirstName: string,
     recipientLastName: string,
     mimeType: string,
-    body?: Array<string>
+    body?: ArrayBuffer
   ): Promise<ArrayBuffer> {
     let _body = null
     _body = body
@@ -190,7 +190,7 @@ export class iccBekmehrApi {
     recipientFirstName: string,
     recipientLastName: string,
     mimeType: string,
-    body?: Array<string>
+    body?: ArrayBuffer
   ): Promise<ArrayBuffer> {
     let _body = null
     _body = body
@@ -282,7 +282,7 @@ export class iccBekmehrApi {
     recipientFirstName: string,
     recipientLastName: string,
     mimeType: string,
-    body?: Array<string>
+    body?: ArrayBuffer
   ): Promise<ArrayBuffer> {
     let _body = null
     _body = body
@@ -338,7 +338,7 @@ export class iccBekmehrApi {
     recipientFirstName: string,
     recipientLastName: string,
     mimeType: string,
-    body?: Array<string>
+    body?: ArrayBuffer
   ): Promise<ArrayBuffer> {
     let _body = null
     _body = body
@@ -394,7 +394,7 @@ export class iccBekmehrApi {
     recipientFirstName: string,
     recipientLastName: string,
     mimeType: string,
-    body?: Array<string>
+    body?: ArrayBuffer
   ): Promise<ArrayBuffer> {
     let _body = null
     _body = body
@@ -450,7 +450,7 @@ export class iccBekmehrApi {
     recipientFirstName: string,
     recipientLastName: string,
     mimeType: string,
-    body?: Array<string>
+    body?: ArrayBuffer
   ): Promise<ArrayBuffer> {
     let _body = null
     _body = body
@@ -506,7 +506,7 @@ export class iccBekmehrApi {
     recipientFirstName: string,
     recipientLastName: string,
     mimeType: string,
-    body?: Array<string>
+    body?: ArrayBuffer
   ): Promise<ArrayBuffer> {
     let _body = null
     _body = body

@@ -28,7 +28,7 @@ export class DocumentTemplateDto {
   codes?: Array<CodeStubDto>
   endOfLife?: number
   deletionDate?: number
-  attachment?: Array<string>
+  attachment?: ArrayBuffer
   mainUti?: string
   name?: string
   otherUtis?: Array<string>

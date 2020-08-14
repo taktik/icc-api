@@ -15,7 +15,7 @@ export class MimeAttachmentDto {
     Object.assign(this as MimeAttachmentDto, json)
   }
 
-  data?: Array<string>
+  data?: ArrayBuffer
   fileName?: string
   mimeType?: string
 }

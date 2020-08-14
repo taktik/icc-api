@@ -104,7 +104,7 @@ export class iccReceiptApi {
     receiptId: string,
     attachmentId: string,
     enckeys: string
-  ): Promise<Array<string>> {
+  ): Promise<ArrayBuffer> {
     let _body = null
 
     const _url =
@@ -171,7 +171,7 @@ export class iccReceiptApi {
     receiptId: string,
     blobType: string,
     enckeys?: string,
-    body?: Array<string>
+    body?: ArrayBuffer
   ): Promise<ReceiptDto> {
     let _body = null
     _body = body

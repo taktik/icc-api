@@ -15,5 +15,5 @@ export class ByteArrayDto {
     Object.assign(this as ByteArrayDto, json)
   }
 
-  data?: Array<string>
+  data?: ArrayBuffer
 }

@@ -50,7 +50,7 @@ export class iccBeresultexportApi {
     patId: string,
     date: number,
     ref: string,
-    body?: Array<string>
+    body?: ArrayBuffer
   ): Promise<ArrayBuffer> {
     let _body = null
     _body = body
@@ -91,7 +91,7 @@ export class iccBeresultexportApi {
     date: number,
     ref: string,
     mimeType?: boolean,
-    body?: Array<string>
+    body?: ArrayBuffer
   ): Promise<ArrayBuffer> {
     let _body = null
     _body = body
@@ -131,7 +131,7 @@ export class iccBeresultexportApi {
     patId: string,
     date: number,
     ref: string,
-    body?: Array<string>
+    body?: ArrayBuffer
   ): Promise<ArrayBuffer> {
     let _body = null
     _body = body

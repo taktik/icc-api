@@ -44,7 +44,7 @@ export class HealthcarePartyDto {
   ssin?: string
   addresses?: Array<AddressDto>
   languages?: Array<string>
-  picture?: Array<string>
+  picture?: ArrayBuffer
   statuses?: Array<HealthcarePartyDto.StatusesEnum>
   specialityCodes?: Array<CodeStubDto>
   sendFormats?: { [key: string]: string }

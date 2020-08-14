@@ -146,7 +146,6 @@ export class IccReceiptXApi extends iccReceiptApi {
   logSCReceipt(
     object:
       | AgreementResponse
-      | DmgConsultation
       | DmgAcknowledge
       | DmgConsultation
       | DmgNotification
