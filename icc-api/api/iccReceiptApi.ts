@@ -117,7 +117,7 @@ export class iccReceiptApi {
       (enckeys ? "&enckeys=" + encodeURIComponent(String(enckeys)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
+      .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }
 
