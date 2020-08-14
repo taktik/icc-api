@@ -35,6 +35,30 @@ export class iccPubsubApi {
   }
 
   /**
+   * Offer auth data on previously agreed on secret bucket, data should be encrypted
+   * @summary Offer auth data on secret bucket
+   * @param body
+   * @param bucket
+   */
+  offerAuth(bucket: string, body?: Array<string>): Promise<{ [key: string]: boolean } | any> {
+    let _body = null
+    _body = body
+
+    const _url =
+      this.host +
+      `/pubsub/auth/${encodeURIComponent(String(bucket))}` +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/octet-stream"))
+    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
+      .then(doc => JSON.parse(JSON.stringify(doc.body)))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
    * Publish value with key
    * @summary publish data
    * @param body
@@ -56,7 +80,26 @@ export class iccPubsubApi {
   }
 
   /**
-   * Login using username and password
+   * Recover auth data from bucket, data should be encrypted
+   * @summary Recover auth data from secret bucket
+   * @param bucket
+   */
+  recoverAuth(bucket: string): Promise<ArrayBuffer | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      `/pubsub/auth/recover/${encodeURIComponent(String(bucket))}` +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => doc.body)
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   * Try to get published data
    * @summary subscribe to data
    * @param key
    */
