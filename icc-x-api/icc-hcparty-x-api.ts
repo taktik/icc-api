@@ -4,7 +4,7 @@ import * as _ from "lodash"
 
 // noinspection JSUnusedGlobalSymbols
 export class IccHcpartyXApi extends iccHcpartyApi {
-  hcPartyKeysCache: { [key: string]: string } = {}
+  hcPartyKeysCache: { [key: string]: { [key: string]: string } } = {}
   hcPartyCache: { [key: string]: [number, Promise<HealthcarePartyDto>] } = {}
 
   private CACHE_RETENTION_IN_MS: number = 300_000
@@ -56,7 +56,7 @@ export class IccHcpartyXApi extends iccHcpartyApi {
 
     return super
       .modifyHealthcareParty(body)
-      .then(hcp => this.putHcPartyInCache(hcp.id, Promise.resolve(hcp)))
+      .then(hcp => this.putHcPartyInCache(hcp.id!, Promise.resolve(hcp)))
   }
 
   getHealthcareParty(
@@ -91,10 +91,10 @@ export class IccHcpartyXApi extends iccHcpartyApi {
   getCurrentHealthcareParty(): Promise<HealthcarePartyDto | any> {
     return super
       .getCurrentHealthcareParty()
-      .then(hcp => this.putHcPartyInCache(hcp.id, Promise.resolve(hcp)))
+      .then(hcp => this.putHcPartyInCache(hcp.id!, Promise.resolve(hcp)))
   }
 
-  getHcPartyKeysForDelegate(healthcarePartyId: string) {
+  getHcPartyKeysForDelegate(healthcarePartyId: string): Promise<{ [key: string]: string }> {
     const cached = this.hcPartyKeysCache[healthcarePartyId]
     return cached
       ? Promise.resolve(cached)

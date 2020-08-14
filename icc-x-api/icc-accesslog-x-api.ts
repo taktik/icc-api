@@ -298,7 +298,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
     return super
       .listAccessLogs(fromEpoch, toEpoch, startKey, startDocumentId, limit, descending)
       .then(accessLog =>
-        this.decrypt((user.healthcarePartyId || user.patientId)!, accessLog.rows).then(dr =>
+        this.decrypt((user.healthcarePartyId || user.patientId)!, accessLog.rows!).then(dr =>
           Object.assign(accessLog, { rows: dr })
         )
       )
@@ -357,7 +357,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
         descending
       )
       .then(accessLog =>
-        this.decrypt((user.healthcarePartyId || user.patientId)!, accessLog.rows).then(dr =>
+        this.decrypt((user.healthcarePartyId || user.patientId)!, accessLog.rows!).then(dr =>
           Object.assign(accessLog, { rows: dr })
         )
       )

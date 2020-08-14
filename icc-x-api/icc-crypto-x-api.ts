@@ -92,7 +92,9 @@ export class IccCryptoXApi {
     )
   }
 
-  private forceGetHcPartyKeysForDelegate(delegateHcPartyId: string) {
+  private forceGetHcPartyKeysForDelegate(
+    delegateHcPartyId: string
+  ): Promise<{ [delegatorId: string]: string } | {}> {
     return Promise.all([
       this.patientBaseApi.getPatientHcPartyKeysForDelegate(delegateHcPartyId).catch(() => {}),
       this.hcpartyBaseApi.getHcPartyKeysForDelegate(delegateHcPartyId).catch(() => {})

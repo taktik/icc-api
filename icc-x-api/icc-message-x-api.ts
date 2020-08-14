@@ -658,7 +658,7 @@ export class IccMessageXApi extends iccMessageApi {
           })
         )
         .then(rcpt =>
-          this.receiptXApi.setReceiptAttachment(rcpt.id, "tack", "", <any>(
+          this.receiptXApi.setReceiptAttachment(rcpt.id!, "tack", "", <any>(
             utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(efactMessage)))
           ))
         )
@@ -1134,7 +1134,7 @@ export class IccMessageXApi extends iccMessageApi {
                         totalAmount += code.reimbursement || 0
                       })
                       iv.invoiceDto.sentDate = sentDate
-                      return this.invoiceXApi.modifyInvoice(iv.invoiceDto).catch(() => {
+                      return !!this.invoiceXApi.modifyInvoice(iv.invoiceDto).catch(() => {
                         errors.push(`efac-management.CANNOT_UPDATE_INVOICE.${iv.invoiceDto.id}`)
                       })
                     })

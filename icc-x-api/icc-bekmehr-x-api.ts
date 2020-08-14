@@ -105,12 +105,12 @@ export class IccBekmehrXApi extends iccBekmehrApi {
   ): Promise<Blob> {
     return (!sessionId
       ? this.authApi.token("GET", "/ws/be_kmehr/generateSmf")
-      : Promise.resolve()
+      : Promise.resolve("")
     ).then(
       token =>
         new Promise<Blob>((resolve, reject) => {
           const socket = new WebSocket(
-            token
+            token.length
               ? `${this.wssHost}/be_kmehr/generateSmf;tokenid=${token}`
               : `${this.wssHost}/be_kmehr/generateSmf;sessionid=${sessionId}`
           )
@@ -140,12 +140,12 @@ export class IccBekmehrXApi extends iccBekmehrApi {
   ): Promise<Blob> {
     return (!sessionId
       ? this.authApi.token("GET", "/ws/be_kmehr/generateSumehr")
-      : Promise.resolve()
+      : Promise.resolve("")
     ).then(
       token =>
         new Promise<Blob>((resolve, reject) => {
           const socket = new WebSocket(
-            token
+            token.length
               ? `${this.wssHost}/be_kmehr/generateSumehr;tokenid=${token}`
               : `${this.wssHost}/be_kmehr/generateSumehr;sessionid=${sessionId}`
           )
@@ -174,12 +174,12 @@ export class IccBekmehrXApi extends iccBekmehrApi {
   ): Promise<Blob> {
     return (!sessionId
       ? this.authApi.token("GET", "/ws/be_kmehr/generateSumehrV2")
-      : Promise.resolve()
+      : Promise.resolve("")
     ).then(
       token =>
         new Promise<Blob>((resolve, reject) => {
           const socket = new WebSocket(
-            token
+            token.length
               ? `${this.wssHost}/be_kmehr/generateSumehrV2;tokenid=${token}`
               : `${this.wssHost}/be_kmehr/generateSumehrV2;sessionid=${sessionId}`
           )
@@ -208,12 +208,12 @@ export class IccBekmehrXApi extends iccBekmehrApi {
   ): Promise<Blob> {
     return (!sessionId
       ? this.authApi.token("GET", "/ws/be_kmehr/generateDiaryNote")
-      : Promise.resolve()
+      : Promise.resolve("")
     ).then(
       token =>
         new Promise<Blob>((resolve, reject) => {
           const socket = new WebSocket(
-            token
+            token.length
               ? `${this.wssHost}/be_kmehr/generateDiaryNote;tokenid=${token}`
               : `${this.wssHost}/be_kmehr/generateDiaryNote;sessionid=${sessionId}`
           )
@@ -244,12 +244,12 @@ export class IccBekmehrXApi extends iccBekmehrApi {
   ): Promise<Blob> {
     return (!sessionId
       ? this.authApi.token("GET", "/ws/be_kmehr/generateMedicationScheme")
-      : Promise.resolve()
+      : Promise.resolve("")
     ).then(
       token =>
         new Promise<Blob>((resolve, reject) => {
           const socket = new WebSocket(
-            token
+            token.length
               ? `${this.wssHost}/be_kmehr/generateMedicationScheme;tokenid=${token}`
               : `${this.wssHost}/be_kmehr/generateMedicationScheme;sessionid=${sessionId}`
           )
