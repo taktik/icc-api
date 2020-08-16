@@ -24,12 +24,6 @@ export class IccCryptoXApi {
   hcPartyKeysCache: {
     [key: string]: { delegatorId: string; key: CryptoKey; rawKey: string }
   } = {}
-  hcPartiesRequestsCache: {
-    [key: string]:
-      | { entityType: null; entity: Promise<models.HealthcarePartyDto | models.PatientDto> }
-      | { entityType: "hcp"; entity: Promise<models.HealthcarePartyDto> }
-      | { entityType: "patient"; entity: Promise<models.PatientDto> }
-  } = {}
 
   //[delegateId][delegatorId] = delegateEncryptedHcPartyKey
   //for each delegate, it stores the list of delegators and the corresponding delegateEncryptedHcPartyKey (shared HcPartyKey, from delegator to delegate, encrypted with the RSA key of the delegate)
@@ -38,39 +32,15 @@ export class IccCryptoXApi {
   } = {}
 
   emptyHcpCache(hcpartyId: string) {
-    delete this.hcPartiesRequestsCache[hcpartyId]
     delete this.hcPartyKeysRequestsCache[hcpartyId]
   }
 
   private getHcpOrPatient(
     hcpartyId: string
   ): Promise<models.HealthcarePartyDto | models.PatientDto> {
-    const cached = this.hcPartiesRequestsCache[hcpartyId]
-
-    return cached
-      ? (cached.entity as Promise<any>).catch(() => {
-          delete this.hcPartiesRequestsCache[hcpartyId]
-          return this.getHcpOrPatient(hcpartyId)
-        })
-      : (this.hcPartiesRequestsCache[hcpartyId] = {
-          entityType: null,
-          entity: this.hcpartyBaseApi
-            .getHealthcareParty(hcpartyId)
-            .then(hcp => {
-              this.hcPartiesRequestsCache[hcpartyId]!.entityType = "hcp"
-              return hcp
-            })
-            .catch(() =>
-              this.patientBaseApi.getPatient(hcpartyId).then(pat => {
-                this.hcPartiesRequestsCache[hcpartyId]!.entityType = "patient"
-                return pat
-              })
-            )
-        }).entity
-  }
-
-  private getCachedHcpOrPatientType(hcpartyId: string): string | null | undefined {
-    return (this.hcPartiesRequestsCache[hcpartyId] || {}).entityType
+    return this.hcpartyBaseApi
+      .getHealthcareParty(hcpartyId)
+      .catch(() => this.patientBaseApi.getPatient(hcpartyId))
   }
 
   /**
@@ -118,7 +88,7 @@ export class IccCryptoXApi {
   constructor(
     host: string,
     headers: { [key: string]: string },
-    hcpartyBaseApi: iccHcpartyApi,
+    hcpartyBaseApi: iccHcpartyApi, //Init with a hcparty x api for better performances
     patientBaseApi: iccPatientApi,
     crypto: Crypto = typeof window !== "undefined"
       ? window.crypto
@@ -1450,8 +1420,8 @@ export class IccCryptoXApi {
           if ((owner.hcPartyKeys || {})[delegateId]) {
             return owner
           }
-          const ownerType = this.getCachedHcpOrPatientType(owner.id!!)
-
+          const ownerType =
+            owner.constructor && owner.constructor.name === "PatientDto" ? "patient" : "hcp"
           const genProm = new Promise<
             [null | "hcp" | "patient", models.HealthcarePartyDto | models.PatientDto]
           >((resolve, reject) => {
@@ -1492,16 +1462,6 @@ export class IccCryptoXApi {
               : reject(new Error(`Missing public key for delegate ${delegateId}`))
           })
 
-          // Those caches are invalidated first so that subsequents call to hcPartiesRequestsCache or hcPartyKeysRequestsCache take into account the newly generated keys
-          // And we do not have parallel processes for keys generations
-          // invalidate the hcp cache for the modified hcp
-          this.hcPartiesRequestsCache[ownerId] = {
-            entityType: null,
-            entity: genProm.then(hcpOrPat => {
-              this.hcPartiesRequestsCache[ownerId].entityType = hcpOrPat[0]
-              return hcpOrPat[1]
-            })
-          }
           // invalidate the hcPartyKeys cache for the delegate hcp (who was not modified, but the view for its
           // id was updated)
           this.hcPartyKeysRequestsCache[delegateId] = genProm.then(() =>
