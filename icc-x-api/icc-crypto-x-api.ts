@@ -1450,6 +1450,8 @@ export class IccCryptoXApi {
           if ((owner.hcPartyKeys || {})[delegateId]) {
             return owner
           }
+          const ownerType = this.getCachedHcpOrPatientType(owner.id!!)
+
           const genProm = new Promise<
             [null | "hcp" | "patient", models.HealthcarePartyDto | models.PatientDto]
           >((resolve, reject) => {
