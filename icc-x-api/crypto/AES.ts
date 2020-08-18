@@ -42,7 +42,13 @@ export class AESUtils {
       }
       this._debug && console.log(`encrypt ${plainData} with ${rawKey}`)
       this.crypto.subtle
-        .encrypt(aesAlgorithmEncrypt, cryptoKey, plainData)
+        .encrypt(
+          {
+            ...aesAlgorithmEncrypt
+          } /* some ill behaved implementations change the values in place */,
+          cryptoKey,
+          plainData
+        )
         .then(
           cipherData =>
             resolve(utils.appendBuffer(aesAlgorithmEncrypt.iv!.buffer! as ArrayBuffer, cipherData)),
