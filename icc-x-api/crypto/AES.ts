@@ -130,7 +130,7 @@ export class AESUtils {
 
   // noinspection JSMethodCanBeStatic
   generateIV(ivByteLength: number) {
-    return this.crypto.getRandomValues(new Uint8Array(ivByteLength))
+    return new Uint8Array(this.crypto.getRandomValues(new Uint8Array(ivByteLength)))
   }
 
   /**
