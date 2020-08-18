@@ -1431,9 +1431,7 @@ export class IccCryptoXApi {
         console.error("Error while importing the AES key.")
       }
       if (!decryptionKey) {
-        return Promise.reject(
-          new Error("No encryption key! eHealth certificate cannot be decrypted.")
-        )
+        throw new Error("No encryption key! eHealth certificate cannot be decrypted.")
       }
 
       if (!!crtCryp && decryptionKey) {
@@ -1445,11 +1443,9 @@ export class IccCryptoXApi {
       }
 
       if (!crt) {
-        return Promise.reject(
-          new Error(
+        throw new Error(
             `Error while saving certificate in browser local storage! Hcp ${hcp.id} has no certificate.`
-          )
-        )
+          )   
       } else {
         this.saveKeychainInBrowserLocalStorageAsBase64(
           hcp.id!!,
@@ -1457,7 +1453,7 @@ export class IccCryptoXApi {
         )
       }
 
-      return Promise.resolve()
+      return
     })
   }
 
