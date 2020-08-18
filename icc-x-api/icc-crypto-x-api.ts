@@ -1355,8 +1355,7 @@ export class IccCryptoXApi {
    * Populate the HCP.options dict with an encrypted eHealth certificate and unencryped expiry date.
    * Any potentially unencrypted certificates will be pruned from the HCP.
    * @param hcpId Id of the hcp to modify
-   * @returns modified HCP, without publishing the modifications to the back-end. To also publish
-   * the modifications, use the EhAuthenticationService#saveKeyChainInHCPFromLocalStorage
+   * @returns modified HCP
    */
   async saveKeyChainInHCPFromLocalStorage(hcpId: string): Promise<HealthcarePartyDto> {
     return await this.hcpartyBaseApi
@@ -1408,8 +1407,12 @@ export class IccCryptoXApi {
   }
 
   importKeychainInBrowserFromHCP(hcpId: string): Promise<void> {
-    return this.hcpartyBaseApi.getHealthcareParty(hcpId).then(async hcp => {
-      const crtCryp: ArrayBuffer = _.get(hcp.options, this.hcpPreferenceKeyEhealthCertEncrypted)
+    return this.hcpartyBaseApi.getHealthcareParty(hcpId).then(async (hcp: HealthcarePartyDto) => {
+      let crtCryp: Uint8Array | null = null;
+      if (!!hcp.options && !!hcp.options[this.hcpPreferenceKeyEhealthCertEncrypted]) {
+        crtCryp = this.utils.text2ua(hcp.options[this.hcpPreferenceKeyEhealthCertEncrypted]);
+      }
+
       const crtValidityDate = _.get(hcp.options, this.hcpPreferenceKeyEhealthCertDate)
 
       // store the validity date
@@ -1434,7 +1437,11 @@ export class IccCryptoXApi {
       }
 
       if (!!crtCryp && decryptionKey) {
-        crt = await this.AES.decrypt(decryptionKey, crtCryp)
+        try {
+          crt = await this.AES.decrypt(decryptionKey, crtCryp)
+        } catch (e) {
+          console.error(e)
+        }
       }
 
       if (!crt) {
@@ -1446,7 +1453,7 @@ export class IccCryptoXApi {
       } else {
         this.saveKeychainInBrowserLocalStorageAsBase64(
           hcp.id!!,
-          utils.base64url(new Uint8Array(crt))
+          btoa(String.fromCharCode.apply(null, new Uint8Array(crt)))
         )
       }
 
