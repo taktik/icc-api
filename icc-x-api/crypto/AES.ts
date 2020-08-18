@@ -166,7 +166,7 @@ export class AESUtils {
       var extractable = true
       var keyUsages = ["decrypt", "encrypt"]
       return this.crypto.subtle
-        .importKey(format, aesKey, this.aesKeyGenParams.name, extractable, keyUsages)
+        .importKey(format, aesKey, this.aesKeyGenParams, extractable, keyUsages)
         .then(resolve, reject)
     })
   }
