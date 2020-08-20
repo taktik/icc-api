@@ -19,4 +19,5 @@ export class SamVersionDto {
   rev?: string
   deletionDate?: number
   version?: string
+  date?: number
 }

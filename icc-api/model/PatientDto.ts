@@ -58,6 +58,7 @@ export class PatientDto {
   personalStatus?: PatientDto.PersonalStatusEnum
   dateOfBirth?: number
   dateOfDeath?: number
+  timestampOfLatestEidReading?: number
   placeOfBirth?: string
   placeOfDeath?: string
   education?: string

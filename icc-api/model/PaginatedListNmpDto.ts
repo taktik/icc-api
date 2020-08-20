@@ -9,14 +9,16 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { FormLayoutData } from "./FormLayoutData"
+import { NmpDto } from "./NmpDto"
+import { PaginatedDocumentKeyIdPairObject } from "./PaginatedDocumentKeyIdPairObject"
 
-export class FormColumn {
+export class PaginatedListNmpDto {
   constructor(json: JSON | any) {
-    Object.assign(this as FormColumn, json)
+    Object.assign(this as PaginatedListNmpDto, json)
   }
 
-  formDataList?: Array<FormLayoutData>
-  columns?: string
-  shouldDisplay?: boolean
+  pageSize?: number
+  totalSize?: number
+  rows?: Array<NmpDto>
+  nextKeyPair?: PaginatedDocumentKeyIdPairObject
 }

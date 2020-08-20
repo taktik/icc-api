@@ -17,6 +17,9 @@ export class SubstanceDto {
     Object.assign(this as SubstanceDto, json)
   }
 
+  id?: string
+  rev?: string
+  deletionDate?: number
   code?: string
   chemicalForm?: string
   name?: SamTextDto

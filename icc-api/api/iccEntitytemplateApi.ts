@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 import { XHR } from "./XHR"
+import { DocIdentifier } from "../model/DocIdentifier"
 import { EntityTemplateDto } from "../model/EntityTemplateDto"
 
 export class iccEntitytemplateApi {
@@ -51,6 +52,25 @@ export class iccEntitytemplateApi {
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => new EntityTemplateDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   *
+   * @summary Delete entity templates
+   * @param entityTemplateIds
+   */
+  deleteEntityTemplate(entityTemplateIds: string): Promise<Array<DocIdentifier>> {
+    let _body = null
+
+    const _url =
+      this.host +
+      `/entitytemplate/${encodeURIComponent(String(entityTemplateIds))}` +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new DocIdentifier(it)))
       .catch(err => this.handleError(err))
   }
 

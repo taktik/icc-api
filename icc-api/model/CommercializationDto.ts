@@ -9,6 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { SamTextDto } from "./SamTextDto"
 
 export class CommercializationDto {
   constructor(json: JSON | any) {
@@ -17,4 +18,8 @@ export class CommercializationDto {
 
   from?: number
   to?: number
+  reason?: SamTextDto
+  endOfComercialization?: SamTextDto
+  impact?: SamTextDto
+  additionalInformation?: SamTextDto
 }

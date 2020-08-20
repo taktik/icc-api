@@ -16,6 +16,7 @@ import { CompanyDto } from "./CompanyDto"
 import { DmppDto } from "./DmppDto"
 import { QuantityDto } from "./QuantityDto"
 import { SamTextDto } from "./SamTextDto"
+import { SupplyProblemDto } from "./SupplyProblemDto"
 
 export class AmppDto {
   constructor(json: JSON | any) {
@@ -57,6 +58,7 @@ export class AmppDto {
   pricingInformationDecisionDate?: number
   components?: Array<AmppComponentDto>
   commercializations?: Array<CommercializationDto>
+  supplyProblems?: Array<SupplyProblemDto>
   dmpps?: Array<DmppDto>
   vaccineIndicationCodes?: Array<string>
 }

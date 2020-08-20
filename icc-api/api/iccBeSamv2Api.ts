@@ -12,9 +12,12 @@
 import { XHR } from "./XHR"
 import { AmpDto } from "../model/AmpDto"
 import { PaginatedListAmpDto } from "../model/PaginatedListAmpDto"
+import { PaginatedListNmpDto } from "../model/PaginatedListNmpDto"
 import { PaginatedListVmpDto } from "../model/PaginatedListVmpDto"
 import { PaginatedListVmpGroupDto } from "../model/PaginatedListVmpGroupDto"
+import { PharmaceuticalFormDto } from "../model/PharmaceuticalFormDto"
 import { SamVersionDto } from "../model/SamVersionDto"
+import { SubstanceDto } from "../model/SubstanceDto"
 
 export class iccBesamv2Api {
   host: string
@@ -213,6 +216,40 @@ export class iccBesamv2Api {
   }
 
   /**
+   * Returns a paginated list of NMPs by matching label. Matches occur per word
+   * @summary Finding NMPs by label with pagination.
+   * @param language language
+   * @param label label
+   * @param startKey The start key for pagination: a JSON representation of an array containing all the necessary components to form the Complex Key&#x27;s startKey
+   * @param startDocumentId A vmp document ID
+   * @param limit Number of rows
+   */
+  findPaginatedNmpsByLabel(
+    language?: string,
+    label?: string,
+    startKey?: string,
+    startDocumentId?: string,
+    limit?: number
+  ): Promise<PaginatedListNmpDto> {
+    let _body = null
+
+    const _url =
+      this.host +
+      `/be_samv2/nmp` +
+      "?ts=" +
+      new Date().getTime() +
+      (language ? "&language=" + encodeURIComponent(String(language)) : "") +
+      (label ? "&label=" + encodeURIComponent(String(label)) : "") +
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
+    let headers = this.headers
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => new PaginatedListNmpDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
    * Returns a list of codes matched with given input. If several types are provided, paginantion is not supported
    * @summary Finding codes by code, type and version with pagination.
    * @param language language
@@ -307,7 +344,7 @@ export class iccBesamv2Api {
   }
 
   /**
-   * Returns a list of codes matched with given input. If several types are provided, paginantion is not supported
+   * Returns a paginated list of VMPs by matching label. Matches occur per word
    * @summary Finding VMPs by label with pagination.
    * @param language language
    * @param label label
@@ -351,6 +388,34 @@ export class iccBesamv2Api {
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new SamVersionDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   *
+   * @summary List all pharmaceutical forms.
+   */
+  listPharmaceuticalForms(): Promise<Array<PharmaceuticalFormDto>> {
+    let _body = null
+
+    const _url = this.host + `/be_samv2/pharmaform` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new PharmaceuticalFormDto(it)))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   *
+   * @summary List all substances.
+   */
+  listSubstances(): Promise<Array<SubstanceDto>> {
+    let _body = null
+
+    const _url = this.host + `/be_samv2/substance` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new SubstanceDto(it)))
       .catch(err => this.handleError(err))
   }
 }

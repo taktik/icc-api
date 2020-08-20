@@ -17,6 +17,9 @@ export class PharmaceuticalFormDto {
     Object.assign(this as PharmaceuticalFormDto, json)
   }
 
+  id?: string
+  rev?: string
+  deletionDate?: number
   code?: string
   name?: SamTextDto
   standardForms?: Array<CodeStubDto>

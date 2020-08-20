@@ -9,14 +9,22 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { FormLayoutData } from "./FormLayoutData"
+import { SamTextDto } from "./SamTextDto"
 
-export class FormColumn {
+export class NmpDto {
   constructor(json: JSON | any) {
-    Object.assign(this as FormColumn, json)
+    Object.assign(this as NmpDto, json)
   }
 
-  formDataList?: Array<FormLayoutData>
-  columns?: string
-  shouldDisplay?: boolean
+  id?: string
+  rev?: string
+  deletionDate?: number
+  from?: number
+  to?: number
+  code?: string
+  category?: string
+  commercialStatus?: string
+  name?: SamTextDto
+  producer?: SamTextDto
+  distributor?: SamTextDto
 }
