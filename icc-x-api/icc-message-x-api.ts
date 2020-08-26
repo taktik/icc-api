@@ -30,7 +30,7 @@ import {
   uuidBase36Half
 } from "./utils/efact-util"
 import { timeEncode } from "./utils/formatting-util"
-import { fhcEfactControllerApi, EfactSendResponse } from "fhc-api"
+import { fhcEfactApi, EfactSendResponse } from "fhc-api"
 import { utils } from "./crypto/utils"
 import { EfactMessage } from "fhc-api"
 import {
@@ -1049,7 +1049,7 @@ export class IccMessageXApi extends iccMessageApi {
     xFHCKeystoreId: string,
     xFHCTokenId: string,
     xFHCPassPhrase: string,
-    efactApi: fhcEfactControllerApi,
+    efactApi: fhcEfactApi,
     fhcServer: string | undefined = undefined,
     prefixer?: (fed: InsuranceDto, hcpId: string) => Promise<string>,
     isConnectedAsPmg: boolean = false,
