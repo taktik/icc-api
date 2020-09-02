@@ -27,5 +27,5 @@ export class ContentDto {
   documentId?: string
   measureValue?: MeasureDto
   medicationValue?: MedicationDto
-  compoundValue?: ServiceDto[]
+  compoundValue?: Array<ServiceDto>
 }
