@@ -153,7 +153,7 @@ export class iccMessageApi {
     fromAddress?: string,
     startKey?: string,
     startDocumentId?: string,
-    startDocumentId ? "&startDocumentId=" + encodeURIComponent    limit?: number,
+    limit?: number,
     hcpId?: string
   ): Promise<models.MessagePaginatedList | any> {
     let _body = null
