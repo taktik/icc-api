@@ -62,24 +62,22 @@ export class iccEntitytemplateApi {
       .then(doc => new models.EntityTemplateDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-
+  // FIXME: genloc: deleteEntityTemplate not generated with genloc
   deleteEntityTemplate(entityTemplateIds: string): Promise<any> {
     let _body = null
 
     const _url =
       this.host +
-      "/entitytemplate/{entityTemplateIds}".replace(
-        "{entityTemplateIds}",
-        entityTemplateIds + ""
-      ) +
+      "/entitytemplate/{entityTemplateIds}".replace("{entityTemplateIds}", entityTemplateIds + "") +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
-      .catch(err => this.handleError(err))
+    return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl).catch(err =>
+      this.handleError(err)
+    )
   }
 
   findAllEntityTemplates(

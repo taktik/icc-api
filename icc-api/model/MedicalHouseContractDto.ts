@@ -64,6 +64,12 @@ export class MedicalHouseContractDto {
 
   noNurse?: boolean
 
+  // FIXME: genloc: signatureType?: MedicalHouseContractDto.SignatureTypeEnum
+
+  // FIXME: genloc: status?: number
+
+  // FIXME: genloc: receipts?: { [key: string]: string }
+
   startOfSuspension?: number
 
   endOfSuspension?: number
@@ -77,6 +83,7 @@ export class MedicalHouseContractDto {
   changeType?: MedicalHouseContractDto.ChangeTypeEnum
 }
 export namespace MedicalHouseContractDto {
+  // FIXME: genloc: SignatureTypeEnum was removed
   export enum SuspensionReasonEnum {
     NotInsured = <any>"notInsured",
     NoReasonGiven = <any>"noReasonGiven",

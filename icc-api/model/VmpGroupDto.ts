@@ -32,6 +32,8 @@ export class VmpGroupDto {
 
   to?: number
 
+  // FIXME: genloc: productId?: string
+
   code?: string
 
   name?: models.SamTextDto

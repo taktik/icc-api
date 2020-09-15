@@ -28,6 +28,11 @@ export class FormSection {
   constructor(json: JSON | any) {
     Object.assign(this as FormSection, json)
   }
+
+  // FIXME: genloc:  icon?: string
+
+  // FIXME: genloc: title?: string
+
   columns?: number
 
   formColumns?: Array<models.FormColumn>

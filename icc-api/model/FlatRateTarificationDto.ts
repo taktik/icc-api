@@ -41,5 +41,6 @@ export namespace FlatRateTarificationDto {
     Physician = <any>"physician",
     Physiotherapist = <any>"physiotherapist",
     Nurse = <any>"nurse"
+    // FIXME: genloc: Ptd = <any>"ptd"
   }
 }

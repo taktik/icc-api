@@ -28,4 +28,18 @@ export class MikronoAppointmentTypeRestDto {
   constructor(json: JSON | any) {
     Object.assign(this as MikronoAppointmentTypeRestDto, json)
   }
+
+  // FIXME: genloc: color?: string
+
+  // FIXME: genloc: durationInMinutes?: number
+
+  // FIXME: genloc: externalRef?: string
+
+  // FIXME: genloc: mikronoId?: string
+
+  // FIXME: genloc: docIds?: Array<string>
+
+  // FIXME: genloc: otherInfos?: { [key: string]: string }
+
+  // FIXME: genloc: subjectByLanguage?: { [key: string]: string }
 }

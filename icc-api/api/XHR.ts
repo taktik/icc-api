@@ -104,7 +104,7 @@ export namespace XHR {
           : {}
       ),
       timeout,
-      fetchImpl
+      fetchImpl // FIXME: not from genloc
     ).then(function(response) {
       if (response.status >= 400) {
         throw new XHRError(response.statusText, response.status, response.status, response.headers)
@@ -117,7 +117,8 @@ export namespace XHR {
           : response.arrayBuffer
             ? response.arrayBuffer()
             : response.blob().then(blob => new Response(blob).arrayBuffer())
-      ).then(d => new Data(response.status, ct, d))
+      ) // FIXME: not from genloc
+        .then(d => new Data(response.status, ct, d))
     })
   }
 }

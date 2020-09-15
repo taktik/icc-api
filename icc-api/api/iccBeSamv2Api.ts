@@ -290,4 +290,5 @@ export class iccBeSamv2Api {
       .then(doc => new models.VmpPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+  //FIXME: genloc: getVersion() removed
 }
