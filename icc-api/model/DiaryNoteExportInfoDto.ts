@@ -42,11 +42,11 @@ export class DiaryNoteExportInfoDto {
 
   contexts?: Array<string>
 
+  psy?: boolean
+
   documentId?: string
 
   attachmentId?: string
 
   note?: string
-
-  psy?: boolean
 }

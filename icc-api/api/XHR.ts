@@ -117,7 +117,7 @@ export namespace XHR {
           : response.arrayBuffer
             ? response.arrayBuffer()
             : response.blob().then(blob => new Response(blob).arrayBuffer())
-      ) // FIXME: not from genloc
+      ) // FIXME: genloc: always response.arrayBuffer()
         .then(d => new Data(response.status, ct, d))
     })
   }

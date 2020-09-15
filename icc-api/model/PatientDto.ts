@@ -96,6 +96,8 @@ export class PatientDto {
 
   dateOfDeath?: number
 
+  timestampOfLatestEidReading?: number
+
   placeOfBirth?: string
 
   placeOfDeath?: string

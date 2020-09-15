@@ -24,13 +24,19 @@
 
 import * as models from "./models"
 
-export class FormColumn {
+export class SupplyProblemDto {
   constructor(json: JSON | any) {
-    Object.assign(this as FormColumn, json)
+    Object.assign(this as SupplyProblemDto, json)
   }
-  formDataList?: Array<models.FormLayoutData>
+  from?: number
 
-  columns?: string
+  to?: number
 
-  shouldDisplay?: boolean
+  reason?: models.SamTextDto
+
+  expectedEndOn?: number
+
+  impact?: models.SamTextDto
+
+  additionalInformation?: models.SamTextDto
 }

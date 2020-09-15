@@ -24,13 +24,27 @@
 
 import * as models from "./models"
 
-export class FormColumn {
+export class SamVersion {
   constructor(json: JSON | any) {
-    Object.assign(this as FormColumn, json)
+    Object.assign(this as SamVersion, json)
   }
-  formDataList?: Array<models.FormLayoutData>
+  version?: string
 
-  columns?: string
+  date?: number
 
-  shouldDisplay?: boolean
+  attachments?: { [key: string]: models.Attachment }
+
+  deleted?: number
+
+  id?: string
+
+  rev?: string
+
+  revsInfo?: Array<models.RevisionInfo>
+
+  conflicts?: Array<string>
+
+  javaType?: string
+
+  revHistory?: { [key: string]: string }
 }

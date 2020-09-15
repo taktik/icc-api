@@ -223,9 +223,9 @@ export class iccMessageApi {
       (transportGuid ? "&transportGuid=" + transportGuid : "") +
       (received ? "&received=" + received : "") +
       (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(startDocumentId) : "") +
+      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
       (limit ? "&limit=" + limit : "") +
-      (hcpId ? "&hcpId=" + encodeURIComponent(hcpId) : "")
+      (hcpId ? "&hcpId=" + hcpId : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
