@@ -24,6 +24,7 @@
 
 import { XHR } from "./XHR"
 import * as models from "../model/models"
+import { MikronoAppointmentTypeRestDto } from "../model/models"
 
 export class iccBeMikronoApi {
   host: string

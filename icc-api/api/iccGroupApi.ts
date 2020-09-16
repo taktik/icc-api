@@ -25,7 +25,7 @@
 import { XHR } from "./XHR"
 import * as models from "../model/models"
 
-export class iccAuthApi {
+export class iccGroupApi {
   host: string
   headers: Array<XHR.Header>
   fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
@@ -49,62 +49,40 @@ export class iccAuthApi {
     else throw Error("api-error" + e.status)
   }
 
-  login(body?: models.LoginCredentials): Promise<models.AuthenticationResponse | any> {
+  createGroup(
+    id: string,
+    name?: string,
+    password?: string,
+    body?: models.ReplicationDto
+  ): Promise<models.GroupDto | any> {
     let _body = null
     _body = body
 
-    const _url = this.host + "/auth/login" + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new models.AuthenticationResponse(doc.body as JSON))
-      .catch(err => this.handleError(err))
-  }
-
-  logout(): Promise<models.AuthenticationResponse | any> {
-    let _body = null
-
-    const _url = this.host + "/auth/logout" + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new models.AuthenticationResponse(doc.body as JSON))
-      .catch(err => this.handleError(err))
-  }
-
-  token(method: string, path: string): Promise<string | any> {
-    let _body = null
-
     const _url =
       this.host +
-      "/auth/token/{method}/{path}"
-        .replace("{method}", method)
-        .replace("{path}", encodeURIComponent(path)) +
+      "/group/{id}".replace("{id}", id + "") +
       "?ts=" +
-      new Date().getTime()
-    let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => doc.body)
-      .catch(err => this.handleError(err))
-  }
-
-  logoutPost(): Promise<models.AuthenticationResponse | any> {
-    let _body = null
-
-    const _url = this.host + "/auth/logout" + "?ts=" + new Date().getTime()
+      new Date().getTime() +
+      (name ? "&name=" + name : "") +
+      (password ? "&password=" + password : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new models.AuthenticationResponse(doc.body as JSON))
+      .then(doc => new models.GroupDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+  listGroups(): Promise<Array<models.GroupDto> | any> {
+    let _body = null
+
+    const _url = this.host + "/group" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.GroupDto(it)))
       .catch(err => this.handleError(err))
   }
 }
