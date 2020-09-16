@@ -40,7 +40,7 @@ export namespace FlatRateTarificationDto {
   export enum FlatRateTypeEnum {
     Physician = <any>"physician",
     Physiotherapist = <any>"physiotherapist",
-    Nurse = <any>"nurse"
-    // FIXME: genloc: Ptd = <any>"ptd"
+    Nurse = <any>"nurse",
+    Ptd = <any>"ptd"
   }
 }

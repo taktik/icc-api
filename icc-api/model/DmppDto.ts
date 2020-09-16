@@ -32,9 +32,9 @@ export class DmppDto {
 
   to?: number
 
-  // FIXME: genloc: id?: string
+  id?: string
 
-  // FIXME: genloc: productId?: string
+  productId?: string
 
   deliveryEnvironment?: DmppDto.DeliveryEnvironmentEnum
 

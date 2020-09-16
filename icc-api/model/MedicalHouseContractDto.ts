@@ -66,9 +66,9 @@ export class MedicalHouseContractDto {
 
   // FIXME: genloc: signatureType?: MedicalHouseContractDto.SignatureTypeEnum
 
-  // FIXME: genloc: status?: number
+  status?: number
 
-  // FIXME: genloc: receipts?: { [key: string]: string }
+  receipts?: { [key: string]: string }
 
   startOfSuspension?: number
 

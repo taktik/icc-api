@@ -44,9 +44,9 @@ export class AppointmentImportDto {
 
   type?: string
 
-  // FIXME: genloc:  appointmentTypeId?: string
+  appointmentTypeId?: string
 
-  // FIXME: genloc:  ownerRef?: string
+  ownerRef?: string
 
   customerName?: string
 
@@ -62,7 +62,7 @@ export class AppointmentImportDto {
 
   sex?: string
 
-  // FIXME: genloc: externalId?: string
+  externalId?: string
 
   customerBirthDate?: Date
 

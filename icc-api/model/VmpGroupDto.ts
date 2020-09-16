@@ -32,7 +32,7 @@ export class VmpGroupDto {
 
   to?: number
 
-  // FIXME: genloc: productId?: string
+  productId?: string
 
   code?: string
 

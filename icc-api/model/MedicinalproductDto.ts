@@ -36,5 +36,5 @@ export class MedicinalproductDto {
 
   deliveredname?: any
 
-  // FIXME: genloc: productId?: string
+  productId?: string
 }

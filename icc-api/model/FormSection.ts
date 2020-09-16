@@ -29,9 +29,9 @@ export class FormSection {
     Object.assign(this as FormSection, json)
   }
 
-  // FIXME: genloc:  icon?: string
+  icon?: string
 
-  // FIXME: genloc: title?: string
+  title?: string
 
   columns?: number
 
