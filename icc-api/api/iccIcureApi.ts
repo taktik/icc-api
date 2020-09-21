@@ -238,14 +238,15 @@ export class iccIcureApi {
       .then(doc => true)
       .catch(err => this.handleError(err))
   }
-  updateDesignDoc(entityName: string): Promise<boolean | any> {
+  updateDesignDoc(entityName: string, warmup = false): Promise<boolean | any> {
     let _body = null
 
     const _url =
       this.host +
       "/icure/dd/{entityName}".replace("{entityName}", entityName + "") +
       "?ts=" +
-      new Date().getTime()
+      new Date().getTime() +
+      (!!warmup ? "&warmup=" + "true" : "false")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
