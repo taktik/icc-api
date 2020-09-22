@@ -31,8 +31,11 @@ export class IccHcpartyXApi extends iccHcpartyApi {
       )
   }
 
-  getHealthcareParty(healthcarePartyId: string): Promise<HealthcarePartyDto | any> {
-    const fromCache = this.cache[healthcarePartyId]
+  getHealthcareParty(
+    healthcarePartyId: string,
+    bypassCache: boolean = false
+  ): Promise<HealthcarePartyDto | any> {
+    const fromCache = bypassCache ? undefined : this.cache[healthcarePartyId]
     return !fromCache || Date.now() > fromCache[0]
       ? (this.cache[healthcarePartyId] = [
           Date.now() + this.CACHE_RETENTION_IN_MS,

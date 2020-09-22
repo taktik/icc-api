@@ -96,6 +96,8 @@ export class PatientDto {
 
   dateOfDeath?: number
 
+  timestampOfLatestEidReading?: number
+
   placeOfBirth?: string
 
   placeOfDeath?: string
@@ -160,7 +162,7 @@ export class PatientDto {
 
   employementInfos?: Array<models.EmploymentInfoDto>
 
-  properties?: Array<models.Property>
+  properties?: Array<models.Property> // FIXME: genloc: Array<models.PropertyDto>
 }
 export namespace PatientDto {
   export enum DeactivationReasonEnum {

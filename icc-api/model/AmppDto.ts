@@ -64,6 +64,8 @@ export class AmppDto {
 
   deliveryModusSpecification?: models.SamTextDto
 
+  dhpcLink?: models.SamText
+
   distributorCompany?: models.CompanyDto
 
   speciallyRegulated?: number
@@ -93,6 +95,8 @@ export class AmppDto {
   components?: Array<models.AmppComponentDto>
 
   commercializations?: Array<models.CommercializationDto>
+
+  supplyProblems?: Array<models.SupplyProblemDto>
 
   dmpps?: Array<models.DmppDto>
 

@@ -62,16 +62,12 @@ export class iccEntitytemplateApi {
       .then(doc => new models.EntityTemplateDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
-
-  deleteEntityTemplate(entityTemplateIds: string): Promise<any> {
+  deleteEntityTemplate(entityTemplateIds: string): Promise<any | Boolean> {
     let _body = null
 
     const _url =
       this.host +
-      "/entitytemplate/{entityTemplateIds}".replace(
-        "{entityTemplateIds}",
-        entityTemplateIds + ""
-      ) +
+      "/entitytemplate/{entityTemplateIds}".replace("{entityTemplateIds}", entityTemplateIds + "") +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers
@@ -79,9 +75,9 @@ export class iccEntitytemplateApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
+      .then(doc => true)
       .catch(err => this.handleError(err))
   }
-
   findAllEntityTemplates(
     type: string,
     searchString?: string,

@@ -44,6 +44,10 @@ export class AppointmentImportDto {
 
   type?: string
 
+  appointmentTypeId?: string
+
+  ownerRef?: string
+
   customerName?: string
 
   customerFirstname?: string
@@ -57,6 +61,8 @@ export class AppointmentImportDto {
   street?: string
 
   sex?: string
+
+  externalId?: string
 
   customerBirthDate?: Date
 

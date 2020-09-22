@@ -238,6 +238,7 @@ export class iccIcureApi {
       .then(doc => true)
       .catch(err => this.handleError(err))
   }
+  // FIXME: genloc: warmup?: boolean
   updateDesignDoc(entityName: string, warmup = false): Promise<boolean | any> {
     let _body = null
 
@@ -246,7 +247,7 @@ export class iccIcureApi {
       "/icure/dd/{entityName}".replace("{entityName}", entityName + "") +
       "?ts=" +
       new Date().getTime() +
-      (!!warmup ? "&warmup=" + "true" : "false")
+      (!!warmup ? "&warmup=" + "true" : "false") // FIXME: genloc: (warmup ? "&warmup=" + warmup : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")

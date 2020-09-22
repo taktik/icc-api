@@ -24,13 +24,15 @@
 
 import * as models from "./models"
 
-export class FormColumn {
+export class SamText {
   constructor(json: JSON | any) {
-    Object.assign(this as FormColumn, json)
+    Object.assign(this as SamText, json)
   }
-  formDataList?: Array<models.FormLayoutData>
+  fr?: string
 
-  columns?: string
+  nl?: string
 
-  shouldDisplay?: boolean
+  de?: string
+
+  en?: string
 }

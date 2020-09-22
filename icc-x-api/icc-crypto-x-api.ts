@@ -21,7 +21,7 @@ export class IccCryptoXApi {
     return this._AES
   }
   hcPartyKeysCache: {
-    [key: string]: { delegatorId: string; key: CryptoKey }
+    [key: string]: { delegatorId: string; key: CryptoKey; rawKey: string }
   } = {}
   hcPartiesRequestsCache: {
     [key: string]:
@@ -47,7 +47,7 @@ export class IccCryptoXApi {
     const cached = this.hcPartiesRequestsCache[hcpartyId]
 
     return cached
-      ? cached.entity.catch(() => {
+      ? (cached.entity as Promise<models.HealthcarePartyDto | models.PatientDto>).catch(() => {
           delete this.hcPartiesRequestsCache[hcpartyId]
           return this.getHcpOrPatient(hcpartyId)
         })
@@ -93,8 +93,8 @@ export class IccCryptoXApi {
 
   private forceGetHcPartyKeysForDelegate(delegateHcPartyId: string) {
     return Promise.all([
-      this.hcpartyBaseApi.getHcPartyKeysForDelegate(delegateHcPartyId).catch(() => {}),
-      this.patientBaseApi.getHcPartyKeysForDelegate(delegateHcPartyId).catch(() => {})
+      this.patientBaseApi.getHcPartyKeysForDelegate(delegateHcPartyId).catch(() => {}),
+      this.hcpartyBaseApi.getHcPartyKeysForDelegate(delegateHcPartyId).catch(() => {})
     ]).then(([a, b]) => Object.assign({}, a, b))
   }
 
@@ -126,8 +126,8 @@ export class IccCryptoXApi {
     crypto: Crypto = typeof window !== "undefined"
       ? window.crypto
       : typeof self !== "undefined"
-      ? self.crypto
-      : ({} as Crypto)
+        ? self.crypto
+        : ({} as Crypto)
   ) {
     this.hcpartyBaseApi = hcpartyBaseApi
     this.patientBaseApi = patientBaseApi
@@ -191,8 +191,7 @@ export class IccCryptoXApi {
     delegateHcPartyId: string,
     encryptedHcPartyKey: string,
     encryptedForDelegator: boolean = false //TODO: suggestion: break this into 2 separate methods: decryptDelegatorEncryptedHcPartyKey() and decryptDelegateEncryptedHcPartyKey()
-  ): Promise<{ delegatorId: string; key: CryptoKey }> {
-    //TODO: why the delegatorId is also returned?
+  ): Promise<{ delegatorId: string; key: CryptoKey; rawKey: string }> {
     const cacheKey =
       delegatorId + "|" + delegateHcPartyId + "|" + (encryptedForDelegator ? "->" : "<-")
     const res = this.hcPartyKeysCache[cacheKey]
@@ -218,12 +217,18 @@ export class IccCryptoXApi {
           )
           throw e
         })
-        .then(decryptedHcPartyKey => this._AES.importKey("raw", decryptedHcPartyKey))
+        .then(decryptedHcPartyKey =>
+          this._AES.importKey("raw", decryptedHcPartyKey).then(decryptedImportedHcPartyKey => ({
+            decryptedHcPartyKey,
+            decryptedImportedHcPartyKey
+          }))
+        )
         .then(
-          decryptedImportedHcPartyKey =>
+          ({ decryptedHcPartyKey, decryptedImportedHcPartyKey }) =>
             (this.hcPartyKeysCache[cacheKey] = {
               delegatorId: delegatorId,
-              key: decryptedImportedHcPartyKey
+              key: decryptedImportedHcPartyKey,
+              rawKey: this.utils.ua2hex(new Uint8Array(decryptedHcPartyKey))
             })
         )
     }
@@ -283,7 +288,7 @@ export class IccCryptoXApi {
    *
    * 1. Get the keys for the delegateHealthCareParty (cache/backend).
    * 2. For each key in the delegators, decrypt it with the delegate's private key
-   * 3. Filter out undefined keys and return th
+   * 3. Filter out undefined keys and return them
    *
    * @param delegatorsHcPartyIdsSet array of delegator HcP IDs that could have delegated something to the HcP with ID `delegateHcPartyId`
    * @param delegateHcPartyId the HcP for which the HcPs with IDs in `delegatorsHcPartyIdsSet` could have delegated something
@@ -294,7 +299,7 @@ export class IccCryptoXApi {
     //TODO:  suggested name: getDecryptedHcPKeysSharedBetweenDelegateAndDelegators
     delegatorsHcPartyIdsSet: Array<string>,
     delegateHcPartyId: string
-  ): Promise<Array<{ delegatorId: string; key: CryptoKey }>> {
+  ): Promise<Array<{ delegatorId: string; key: CryptoKey; rawKey: string }>> {
     return (
       this.hcPartyKeysRequestsCache[delegateHcPartyId] ||
       (this.hcPartyKeysRequestsCache[delegateHcPartyId] = this.getHcPartyKeysForDelegate(
@@ -340,7 +345,7 @@ export class IccCryptoXApi {
     healthcarePartyId: string,
     delegations: { [key: string]: Array<models.DelegationDto> },
     fallbackOnParent = true
-  ): Promise<Array<{ delegatorId: string; key: CryptoKey }>> {
+  ): Promise<Array<{ delegatorId: string; key: CryptoKey; rawKey: string }>> {
     const delegatorIds: { [key: string]: boolean } = {}
     const delegationsArray = delegations[healthcarePartyId]
     if (delegationsArray && delegationsArray.length) {
@@ -348,10 +353,11 @@ export class IccCryptoXApi {
         delegatorIds[delegationItem.owner!] = true //TODO: why is set to true?
       })
     } else if (fallbackOnParent) {
-      return this.getHcpOrPatient(healthcarePartyId).then(hcp =>
-        (hcp as any).parentId
-          ? this.decryptAndImportAesHcPartyKeysInDelegations((hcp as any).parentId, delegations)
-          : Promise.resolve([])
+      return this.getHcpOrPatient(healthcarePartyId).then(
+        hcp =>
+          (hcp as any).parentId
+            ? this.decryptAndImportAesHcPartyKeysInDelegations((hcp as any).parentId, delegations)
+            : Promise.resolve([])
       )
     }
 
@@ -400,13 +406,17 @@ export class IccCryptoXApi {
       )
       .then(importedAESHcPartyKey =>
         Promise.all([
-          this._AES.encrypt(importedAESHcPartyKey.key, utils.text2ua(
-            createdObject.id + ":" + secretId
-          ).buffer as ArrayBuffer),
+          this._AES.encrypt(
+            importedAESHcPartyKey.key,
+            utils.text2ua(createdObject.id + ":" + secretId).buffer as ArrayBuffer,
+            importedAESHcPartyKey.rawKey
+          ),
           parentObject
-            ? this._AES.encrypt(importedAESHcPartyKey.key, utils.text2ua(
-                createdObject.id + ":" + parentObject.id
-              ).buffer as ArrayBuffer)
+            ? this._AES.encrypt(
+                importedAESHcPartyKey.key,
+                utils.text2ua(createdObject.id + ":" + parentObject.id).buffer as ArrayBuffer,
+                importedAESHcPartyKey.rawKey
+              )
             : Promise.resolve(null)
         ])
       )
@@ -518,10 +528,16 @@ export class IccCryptoXApi {
               (d.key &&
                 d.owner === ownerId &&
                 this._AES
-                  .decrypt(importedAESHcPartyKey.key, this._utils.hex2ua(d.key))
+                  .decrypt(
+                    importedAESHcPartyKey.key,
+                    this._utils.hex2ua(d.key),
+                    importedAESHcPartyKey.rawKey
+                  )
                   .catch(() => {
                     console.log(
-                      `Cannot decrypt delegation from ${d.owner} to ${d.delegatedTo} for object with id ${modifiedObject.id}:`,
+                      `Cannot decrypt delegation from ${d.owner} to ${
+                        d.delegatedTo
+                      } for object with id ${modifiedObject.id}:`,
                       modifiedObject
                     )
                     return null
@@ -534,10 +550,16 @@ export class IccCryptoXApi {
               (d.key &&
                 d.owner === ownerId &&
                 this._AES
-                  .decrypt(importedAESHcPartyKey.key, this._utils.hex2ua(d.key))
+                  .decrypt(
+                    importedAESHcPartyKey.key,
+                    this._utils.hex2ua(d.key),
+                    importedAESHcPartyKey.rawKey
+                  )
                   .catch(() => {
                     console.log(
-                      `Cannot decrypt cryptedForeignKeys from ${d.owner} to ${d.delegatedTo} for object with id ${modifiedObject.id}:`,
+                      `Cannot decrypt cryptedForeignKeys from ${d.owner} to ${
+                        d.delegatedTo
+                      } for object with id ${modifiedObject.id}:`,
                       modifiedObject
                     )
                     return null
@@ -545,14 +567,19 @@ export class IccCryptoXApi {
               Promise.resolve(null)
           ) as Array<Promise<ArrayBuffer>>),
 
-          this._AES.encrypt(importedAESHcPartyKey.key, utils.text2ua(
-            modifiedObject.id + ":" + secretIdOfModifiedObject!!
-          ).buffer as ArrayBuffer),
+          this._AES.encrypt(
+            importedAESHcPartyKey.key,
+            utils.text2ua(modifiedObject.id + ":" + secretIdOfModifiedObject!!)
+              .buffer as ArrayBuffer,
+            importedAESHcPartyKey.rawKey
+          ),
 
           parentObject
-            ? this._AES.encrypt(importedAESHcPartyKey.key, utils.text2ua(
-                modifiedObject.id + ":" + parentObject.id
-              ).buffer as ArrayBuffer)
+            ? this._AES.encrypt(
+                importedAESHcPartyKey.key,
+                utils.text2ua(modifiedObject.id + ":" + parentObject.id).buffer as ArrayBuffer,
+                importedAESHcPartyKey.rawKey
+              )
             : Promise.resolve(null)
         ])
       )
@@ -583,7 +610,7 @@ export class IccCryptoXApi {
                 d: {
                   owner: ownerId,
                   delegatedTo: delegateId,
-                  key: this._utils.ua2hex(cryptedDelegation)
+                  key: this._utils.ua2hex(cryptedDelegation as ArrayBuffer)
                 },
                 k: modifiedObject.id + ":" + secretIdOfModifiedObject!
               }
@@ -615,7 +642,7 @@ export class IccCryptoXApi {
                         delegatedTo: delegateId,
                         key: this._utils.ua2hex(cryptedForeignKey)
                       },
-                      k: modifiedObject.id + ":" + secretIdOfModifiedObject!
+                      k: modifiedObject.id + ":" + parentObject.id!
                     }
                   ]
                 : []
@@ -733,23 +760,31 @@ export class IccCryptoXApi {
       .then(encryptedHcPartyKey =>
         this.decryptHcPartyKey(ownerId, delegateId, encryptedHcPartyKey, true)
       )
-      .then(decryptedHcPartyKey =>
+      .then(importedAESHcPartyKey =>
         Promise.all([
           Promise.all(((modifiedObject.encryptionKeys || {})[delegateId] || []).map(
             (d: DelegationDto) =>
               (d.key &&
                 d.owner === ownerId &&
-                this._AES.decrypt(decryptedHcPartyKey.key, this._utils.hex2ua(d.key)).catch(() => {
-                  console.log(
-                    `Cannot decrypt encryption key from ${d.owner} to ${d.delegatedTo} for object with id ${modifiedObject.id}:`,
-                    modifiedObject
+                this._AES
+                  .decrypt(
+                    importedAESHcPartyKey.key,
+                    this._utils.hex2ua(d.key),
+                    importedAESHcPartyKey.rawKey
                   )
-                  return null
-                })) ||
+                  .catch(() => {
+                    console.log(
+                      `Cannot decrypt encryption key from ${d.owner} to ${
+                        d.delegatedTo
+                      } for object with id ${modifiedObject.id}:`,
+                      modifiedObject
+                    )
+                    return null
+                  })) ||
               Promise.resolve(null)
           ) as Array<Promise<ArrayBuffer>>),
           this._AES.encrypt(
-            decryptedHcPartyKey.key,
+            importedAESHcPartyKey.key,
             utils.text2ua(modifiedObject.id + ":" + secretEncryptionKeyOfObject)
           )
         ])
@@ -869,19 +904,20 @@ export class IccCryptoXApi {
         )
       : Promise.resolve({ delegations: {}, cryptedForeignKeys: {} })
     )
-      .then(extendedChildObjectSPKsAndCFKs =>
-        secretEncryptionKey
-          ? this.appendEncryptionKeys(child, ownerId, delegateId, secretEncryptionKey).then(
-              //TODO: extendedDelegationsAndCryptedForeignKeys and appendEncryptionKeys can be done in parallel
-              extendedChildObjectEKs => ({
+      .then(
+        extendedChildObjectSPKsAndCFKs =>
+          secretEncryptionKey
+            ? this.appendEncryptionKeys(child, ownerId, delegateId, secretEncryptionKey).then(
+                //TODO: extendedDelegationsAndCryptedForeignKeys and appendEncryptionKeys can be done in parallel
+                extendedChildObjectEKs => ({
+                  extendedSPKsAndCFKs: extendedChildObjectSPKsAndCFKs,
+                  extendedEKs: extendedChildObjectEKs
+                })
+              )
+            : Promise.resolve({
                 extendedSPKsAndCFKs: extendedChildObjectSPKsAndCFKs,
-                extendedEKs: extendedChildObjectEKs
+                extendedEKs: { encryptionKeys: {} }
               })
-            )
-          : Promise.resolve({
-              extendedSPKsAndCFKs: extendedChildObjectSPKsAndCFKs,
-              extendedEKs: { encryptionKeys: {} }
-            })
       )
       .then(
         ({
@@ -1115,9 +1151,11 @@ export class IccCryptoXApi {
       (delegations[hcpartyId] && delegations[hcpartyId].length
         ? this.decryptAndImportAesHcPartyKeysInDelegations(hcpartyId, delegations, false).then(
             decryptedAndImportedAesHcPartyKeys => {
-              const collatedAesKeysFromDelegatorToHcpartyId: { [key: string]: CryptoKey } = {}
+              const collatedAesKeysFromDelegatorToHcpartyId: {
+                [key: string]: { key: CryptoKey; rawKey: string }
+              } = {}
               decryptedAndImportedAesHcPartyKeys.forEach(
-                k => (collatedAesKeysFromDelegatorToHcpartyId[k.delegatorId] = k.key)
+                k => (collatedAesKeysFromDelegatorToHcpartyId[k.delegatorId] = k)
               )
               return this.decryptKeyInDelegationLikes(
                 delegations[hcpartyId],
@@ -1127,16 +1165,17 @@ export class IccCryptoXApi {
             }
           )
         : Promise.resolve([])
-      ).then(extractedKeys =>
-        (hcp as HealthcarePartyDto).parentId
-          ? this.extractKeysHierarchyFromDelegationLikes(
-              (hcp as HealthcarePartyDto).parentId!,
-              objectId,
-              delegations
-            ).then(parentResponse =>
-              parentResponse.concat({ extractedKeys: extractedKeys, hcpartyId: hcpartyId })
-            )
-          : [{ extractedKeys: extractedKeys, hcpartyId: hcpartyId }]
+      ).then(
+        extractedKeys =>
+          (hcp as HealthcarePartyDto).parentId
+            ? this.extractKeysHierarchyFromDelegationLikes(
+                (hcp as HealthcarePartyDto).parentId!,
+                objectId,
+                delegations
+              ).then(parentResponse =>
+                parentResponse.concat({ extractedKeys: extractedKeys, hcpartyId: hcpartyId })
+              )
+            : [{ extractedKeys: extractedKeys, hcpartyId: hcpartyId }]
       )
     )
   }
@@ -1164,9 +1203,11 @@ export class IccCryptoXApi {
       (delegations[hcpartyId] && delegations[hcpartyId].length
         ? this.decryptAndImportAesHcPartyKeysInDelegations(hcpartyId, delegations, false).then(
             decryptedAndImportedAesHcPartyKeys => {
-              const collatedAesKeysFromDelegatorToHcpartyId: { [key: string]: CryptoKey } = {}
+              const collatedAesKeysFromDelegatorToHcpartyId: {
+                [key: string]: { key: CryptoKey; rawKey: string }
+              } = {}
               decryptedAndImportedAesHcPartyKeys.forEach(
-                k => (collatedAesKeysFromDelegatorToHcpartyId[k.delegatorId] = k.key)
+                k => (collatedAesKeysFromDelegatorToHcpartyId[k.delegatorId] = k)
               )
               return this.decryptKeyInDelegationLikes(
                 delegations[hcpartyId],
@@ -1176,18 +1217,19 @@ export class IccCryptoXApi {
             }
           )
         : Promise.resolve([])
-      ).then(extractedKeys =>
-        (hcp as HealthcarePartyDto).parentId
-          ? this.extractKeysFromDelegationsForHcpHierarchy(
-              (hcp as HealthcarePartyDto).parentId!,
-              objectId,
-              delegations
-            ).then(parentResponse =>
-              _.assign(parentResponse, {
-                extractedKeys: parentResponse.extractedKeys.concat(extractedKeys)
-              })
-            )
-          : { extractedKeys: extractedKeys, hcpartyId: hcpartyId }
+      ).then(
+        extractedKeys =>
+          (hcp as HealthcarePartyDto).parentId
+            ? this.extractKeysFromDelegationsForHcpHierarchy(
+                (hcp as HealthcarePartyDto).parentId!,
+                objectId,
+                delegations
+              ).then(parentResponse =>
+                _.assign(parentResponse, {
+                  extractedKeys: parentResponse.extractedKeys.concat(extractedKeys)
+                })
+              )
+            : { extractedKeys: extractedKeys, hcpartyId: hcpartyId }
       )
     )
   }
@@ -1207,7 +1249,7 @@ export class IccCryptoXApi {
   decryptKeyInDelegationLikes(
     //TODO: suggested name: getSecretIdsFromGenericDelegations
     delegationsArray: Array<models.DelegationDto>,
-    aesKeys: { [key: string]: CryptoKey },
+    aesKeys: { [key: string]: { key: CryptoKey; rawKey: string } },
     masterId: string
   ): Promise<Array<string>> {
     const decryptPromises: Array<Promise<string | undefined>> = []
@@ -1217,8 +1259,9 @@ export class IccCryptoXApi {
       decryptPromises.push(
         this._AES
           .decrypt(
-            aesKeys[genericDelegationItem.owner!!],
-            this._utils.hex2ua(genericDelegationItem.key!!)
+            aesKeys[genericDelegationItem.owner!!].key,
+            this._utils.hex2ua(genericDelegationItem.key!!),
+            aesKeys[genericDelegationItem.owner!!].rawKey
           )
           .then((decryptedGenericDelegationKey: ArrayBuffer) => {
             const results = utils.ua2text(decryptedGenericDelegationKey).split(":")
@@ -1248,7 +1291,9 @@ export class IccCryptoXApi {
           })
           .catch(err => {
             console.log(
-              `Could not decrypt generic delegation in object with ID: ${masterId} from ${genericDelegationItem.owner} to ${genericDelegationItem.delegatedTo}: ${err}`
+              `Could not decrypt generic delegation in object with ID: ${masterId} from ${
+                genericDelegationItem.owner
+              } to ${genericDelegationItem.delegatedTo}: ${err}`
             )
             return undefined
           })
@@ -1408,9 +1453,9 @@ export class IccCryptoXApi {
 
   importKeychainInBrowserFromHCP(hcpId: string): Promise<void> {
     return this.hcpartyBaseApi.getHealthcareParty(hcpId).then(async (hcp: HealthcarePartyDto) => {
-      let crtCryp: Uint8Array | null = null;
+      let crtCryp: Uint8Array | null = null
       if (!!hcp.options && !!hcp.options[this.hcpPreferenceKeyEhealthCertEncrypted]) {
-        crtCryp = this.utils.text2ua(hcp.options[this.hcpPreferenceKeyEhealthCertEncrypted]);
+        crtCryp = this.utils.text2ua(hcp.options[this.hcpPreferenceKeyEhealthCertEncrypted])
       }
 
       const crtValidityDate = _.get(hcp.options, this.hcpPreferenceKeyEhealthCertDate)
@@ -1444,8 +1489,10 @@ export class IccCryptoXApi {
 
       if (!crt) {
         throw new Error(
-            `Error while saving certificate in browser local storage! Hcp ${hcp.id} has no certificate.`
-          )   
+          `Error while saving certificate in browser local storage! Hcp ${
+            hcp.id
+          } has no certificate.`
+        )
       } else {
         this.saveKeychainInBrowserLocalStorageAsBase64(
           hcp.id!!,

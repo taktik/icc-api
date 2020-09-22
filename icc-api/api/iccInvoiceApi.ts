@@ -301,7 +301,14 @@ export class iccInvoiceApi {
   }
   listByHcPartySentMediumTypeInvoiceTypeSentDate(
     hcPartyId: string,
-    sentMediumType: "cdrom" | "eattest" | "efact" | "email" | "mediprima" | "paper",
+    sentMediumType:
+      | "cdrom"
+      | "eattest"
+      | "efact"
+      | "email"
+      | "mediprima"
+      | "paper"
+      | "technicalAct",
     invoiceType: "patient" | "mutualfund" | "payingagency" | "insurance" | "efact" | "other",
     sent: boolean,
     from?: number,

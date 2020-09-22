@@ -1,4 +1,5 @@
 import { utils } from "./utils"
+import { debuglog } from "util"
 
 export class AESUtils {
   /********* AES Config **********/
@@ -10,6 +11,11 @@ export class AESUtils {
     length: 256
   }
   private crypto: Crypto
+  private _debug: boolean
+
+  set debug(value: boolean) {
+    this._debug = value
+  }
 
   constructor(
     crypto: Crypto = typeof window !== "undefined"
@@ -19,9 +25,10 @@ export class AESUtils {
         : ({} as Crypto)
   ) {
     this.crypto = crypto
+    this._debug = false
   }
 
-  encrypt(cryptoKey: CryptoKey, plainData: ArrayBuffer | Uint8Array) {
+  encrypt(cryptoKey: CryptoKey, plainData: ArrayBuffer | Uint8Array, rawKey: string = "<NA>") {
     return new Promise((resolve: (value: ArrayBuffer) => any, reject: (reason: any) => any) => {
       if (plainData instanceof Uint8Array) {
         const buffer = plainData.buffer
@@ -33,6 +40,7 @@ export class AESUtils {
         name: this.aesAlgorithmEncryptName,
         iv: this.generateIV(this.ivLength)
       }
+      this._debug && console.log(`encrypt ${plainData} with ${rawKey}`)
       this.crypto.subtle
         .encrypt(aesAlgorithmEncrypt, cryptoKey, plainData)
         .then(
@@ -47,9 +55,10 @@ export class AESUtils {
    *
    * @param cryptoKey (CryptoKey)
    * @param encryptedData (ArrayBuffer)
+   * @param rawKey
    * @returns {Promise} will be ArrayBuffer
    */
-  decrypt(cryptoKey: CryptoKey, encryptedData: ArrayBuffer | Uint8Array) {
+  decrypt(cryptoKey: CryptoKey, encryptedData: ArrayBuffer | Uint8Array, rawKey: string = "<NA>") {
     return new Promise((resolve: (value: ArrayBuffer) => any, reject: (reason: any) => any) => {
       if (!cryptoKey) {
         reject("No crypto key provided for decryption")
@@ -80,13 +89,16 @@ export class AESUtils {
     * var delegateHcPartyKey = hcparty.hcPartyKeys[delegatorId][1];
     */
       }
+      this._debug && console.log(`decrypt with ${rawKey}`)
       this.crypto.subtle
         .decrypt(
           aesAlgorithmEncrypt,
           cryptoKey,
           encryptedDataUnit8.subarray(this.ivLength, encryptedDataUnit8.length)
         )
-        .then(resolve, err => reject("AES decryption failed: " + err))
+        .then(resolve, err => {
+          reject("AES decryption failed: " + err)
+        })
     })
   }
 
