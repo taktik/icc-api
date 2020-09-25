@@ -94,8 +94,11 @@ export class IccHcpartyXApi extends iccHcpartyApi {
       .then(hcp => this.putHcPartyInCache(hcp.id!, Promise.resolve(hcp)))
   }
 
-  getHcPartyKeysForDelegate(healthcarePartyId: string): Promise<{ [key: string]: string }> {
-    const cached = this.hcPartyKeysCache[healthcarePartyId]
+  getHcPartyKeysForDelegate(
+    healthcarePartyId: string,
+    bypassCache = false
+  ): Promise<{ [key: string]: string }> {
+    const cached = bypassCache ? null : this.hcPartyKeysCache[healthcarePartyId]
     return cached
       ? Promise.resolve(cached)
       : super
