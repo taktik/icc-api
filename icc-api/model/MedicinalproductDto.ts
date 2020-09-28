@@ -35,4 +35,6 @@ export class MedicinalproductDto {
   intendedname?: string
 
   deliveredname?: any
+
+  productId?: string
 }

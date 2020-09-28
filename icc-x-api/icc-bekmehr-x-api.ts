@@ -5,17 +5,20 @@ import * as models from "../icc-api/model/models"
 import { IccContactXApi } from "./icc-contact-x-api"
 import { IccHelementXApi } from "./icc-helement-x-api"
 import { ContactDto } from "../icc-api/model/models"
+import { utils } from "./crypto/utils"
 
 export class IccBekmehrXApi extends iccBeKmehrApi {
   private readonly ctcApi: IccContactXApi
   private readonly helementApi: IccHelementXApi
   private readonly wssHost: string
+  private preferBinaryForLargeMessages: boolean
 
   constructor(
     host: string,
     headers: { [key: string]: string },
     ctcApi: IccContactXApi,
     helementApi: IccHelementXApi,
+    preferBinaryForLargeMessages: boolean = false,
     fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
     "undefined"
       ? window.fetch
@@ -24,6 +27,7 @@ export class IccBekmehrXApi extends iccBeKmehrApi {
     super(host, headers, fetchImpl)
     this.ctcApi = ctcApi
     this.helementApi = helementApi
+    this.preferBinaryForLargeMessages = preferBinaryForLargeMessages
 
     const auth = this.headers.find(h => h.header === "Authorization")
     this.wssHost = new URL(this.host, window.location.href).href
@@ -34,61 +38,76 @@ export class IccBekmehrXApi extends iccBeKmehrApi {
   socketEventListener(
     socket: WebSocket,
     healthcarePartyId: string,
-    resolve: (value?: Promise<Blob>) => void,
+    resolve: (value?: Blob) => void,
     reject: (reason?: any) => void,
     progressCallback?: (progress: number) => void,
-    servicesPatcher?: (response: any[]) => Promise<any[]>,
-    contactsPatcher?: (response: any[]) => Promise<any[]>,
-    healthElementsPatcher?: (response: any[]) => Promise<any[]>
+    servicesPatcher?: (response: any[]) => Promise<any[]>, // MS addition to icc-x-api
+    contactsPatcher?: (response: any[]) => Promise<any[]>, // MS addition to icc-x-api
+    healthElementsPatcher?: (response: any[]) => Promise<any[]> // MS addition to icc-x-api
   ) {
     const that = this
+
+    const send = (command: string, uuid: string, body: any) => {
+      const data = JSON.stringify({ command, uuid, body })
+      socket.send(
+        data.length > 65000 && this.preferBinaryForLargeMessages ? utils.text2ua(data).buffer : data
+      )
+    }
+
+    const messageHandler = (msg: any, event: any) => {
+      if (msg.command === "decrypt") {
+        if (msg.type === "ContactDto") {
+          that.ctcApi
+            .decrypt(healthcarePartyId, msg.body)
+            .then(res => (contactsPatcher ? contactsPatcher(res) : Promise.resolve(res)))
+            .then(res => send("decryptResponse", msg.uuid, res))
+        } else if (msg.type === "HealthElementDto") {
+          that.helementApi
+            .decrypt(healthcarePartyId, msg.body)
+            .then(
+              res => (healthElementsPatcher ? healthElementsPatcher(res) : Promise.resolve(res))
+            )
+            .then(res => send("decryptResponse", msg.uuid, res))
+        } else {
+          that.ctcApi
+            .decryptServices(healthcarePartyId, msg.body)
+            .then(res => (servicesPatcher ? servicesPatcher(res) : Promise.resolve(res)))
+            .then(res => send("decryptResponse", msg.uuid, res))
+        }
+      } else if ((msg.command = "progress")) {
+        if (progressCallback && msg.body && msg.body[0]) {
+          progressCallback(msg.body[0].progress)
+        }
+      } else {
+        console.error("error received from backend:" + event.data)
+        reject("websocket error: " + event.data)
+        socket.close(4000, "backend error")
+      }
+    }
+
     return (event: MessageEvent) => {
       if (typeof event.data === "string") {
         const msg = JSON.parse(event.data)
-
-        if (msg.command === "decrypt") {
-          if (msg.type === "ContactDto") {
-            that.ctcApi
-              .decrypt(healthcarePartyId, msg.body)
-              .then(res => (contactsPatcher ? contactsPatcher(res) : Promise.resolve(res)))
-              .then(res =>
-                socket.send(
-                  JSON.stringify({ command: "decryptResponse", uuid: msg.uuid, body: res })
-                )
-              )
-          } else if (msg.type === "HealthElementDto") {
-            that.helementApi
-              .decrypt(healthcarePartyId, msg.body)
-              .then(res =>
-                healthElementsPatcher ? healthElementsPatcher(res) : Promise.resolve(res)
-              )
-              .then(res =>
-                socket.send(
-                  JSON.stringify({ command: "decryptResponse", uuid: msg.uuid, body: res })
-                )
-              )
-          } else {
-            that.ctcApi
-              .decryptServices(healthcarePartyId, msg.body)
-              .then(res => (servicesPatcher ? servicesPatcher(res) : Promise.resolve(res)))
-              .then(res =>
-                socket.send(
-                  JSON.stringify({ command: "decryptResponse", uuid: msg.uuid, body: res })
-                )
-              )
-          }
-        } else if (msg.command === "progress") {
-          if (progressCallback && msg.body && msg.body[0]) {
-            progressCallback(msg.body[0].progress)
-          }
-        } else {
-          console.error("error received from backend:" + event.data)
-          reject("websocket error: " + event.data)
-          socket.close(4000, "backend error")
-        }
+        messageHandler(msg, event)
       } else {
-        resolve(event.data)
-        socket.close(1000, "Ok")
+        const blob: Blob = event.data
+        var subBlob = blob.slice(0, 1)
+        const br = new FileReader()
+        br.onload = function(e) {
+          const firstChar = e.target && new Uint8Array(e.target.result as ArrayBuffer)[0]
+          if (firstChar === 0x7b) {
+            const tr = new FileReader()
+            tr.onload = function(e) {
+              const msg = e.target && JSON.parse(e.target.result as string)
+              messageHandler(msg, event)
+            }
+            tr.readAsBinaryString(blob)
+          } else {
+            resolve(blob)
+            socket.close(1000, "Ok")
+          }
+        }
+        br.readAsArrayBuffer(subBlob)
       }
     }
   }

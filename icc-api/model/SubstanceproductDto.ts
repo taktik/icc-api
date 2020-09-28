@@ -35,4 +35,6 @@ export class SubstanceproductDto {
   intendedname?: string
 
   deliveredname?: any
+
+  productId?: string
 }

@@ -61,4 +61,6 @@ export class FormTemplateDto {
   disabled?: string
 
   reports?: Array<string>
+
+  tags?: Array<models.CodeDto>
 }

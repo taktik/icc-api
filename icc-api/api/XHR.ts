@@ -104,12 +104,12 @@ export namespace XHR {
           : {}
       ),
       timeout,
-      fetchImpl
+      fetchImpl // FIXME: not from genloc
     ).then(function(response) {
       if (response.status >= 400) {
         throw new XHRError(response.statusText, response.status, response.status, response.headers)
       }
-      const ct = response.headers.get("content-type") || "text/plain"
+      const ct = contentTypeOverride || response.headers.get("content-type") || "text/plain"
       return (ct.startsWith("application/json")
         ? response.json()
         : ct.startsWith("application/xml") || ct.startsWith("text/")
@@ -117,7 +117,8 @@ export namespace XHR {
           : response.arrayBuffer
             ? response.arrayBuffer()
             : response.blob().then(blob => new Response(blob).arrayBuffer())
-      ).then(d => new Data(response.status, ct, d))
+      ) // FIXME: genloc: always response.arrayBuffer()
+        .then(d => new Data(response.status, ct, d))
     })
   }
 }
