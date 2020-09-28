@@ -53,13 +53,21 @@ export class AddressDto {
   telecoms?: Array<models.TelecomDtoEmbed>
 }
 export namespace AddressDto {
-  export enum AddressTypeEnum {
-    Home = <any>"home",
-    Work = <any>"work",
-    Vacation = <any>"vacation",
-    Hospital = <any>"hospital",
-    Clinic = <any>"clinic",
-    Hq = <any>"hq",
-    Other = <any>"other"
+  export type AddressTypeEnum =
+    | "home"
+    | "work"
+    | "vacation"
+    | "hospital"
+    | "clinic"
+    | "hq"
+    | "other"
+  export const AddressTypeEnum = {
+    Home: "home" as AddressTypeEnum,
+    Work: "work" as AddressTypeEnum,
+    Vacation: "vacation" as AddressTypeEnum,
+    Hospital: "hospital" as AddressTypeEnum,
+    Clinic: "clinic" as AddressTypeEnum,
+    Hq: "hq" as AddressTypeEnum,
+    Other: "other" as AddressTypeEnum
   }
 }
