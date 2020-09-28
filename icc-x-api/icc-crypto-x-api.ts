@@ -214,11 +214,11 @@ export class IccCryptoXApi {
       if (nLen == 1) {
         const importedAESHcPartyKey = await this.decryptHcPartyKey(
           hcp.id!,
-          hcp.parentId!,
-          hcp.hcPartyKeys![hcp.parentId!][1],
+          notaries[0].id!,
+          hcp.hcPartyKeys![notaries[0].id!][1],
           false
         )
-        const cryptedPrivatedKey = hcp.privateKeyShamirPartitions![hcp.parentId!]
+        const cryptedPrivatedKey = hcp.privateKeyShamirPartitions![notaries[0].id!]
         decryptedPrivatedKey = this.utils.ua2hex(
           await this.AES.decrypt(importedAESHcPartyKey.key, this.utils.hex2ua(cryptedPrivatedKey))
         )
