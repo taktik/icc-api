@@ -37,18 +37,31 @@ export class TelecomDtoEmbed {
   encryptedSelf?: string
 }
 export namespace TelecomDtoEmbed {
-  export enum TelecomTypeEnum {
-    Mobile = <any>"mobile",
-    Phone = <any>"phone",
-    Email = <any>"email",
-    Fax = <any>"fax",
-    Skype = <any>"skype",
-    Im = <any>"im",
-    Medibridge = <any>"medibridge",
-    Ehealthbox = <any>"ehealthbox",
-    Apicrypt = <any>"apicrypt",
-    Web = <any>"web",
-    Print = <any>"print",
-    Disk = <any>"disk"
+  export type TelecomTypeEnum =
+    | "mobile"
+    | "phone"
+    | "email"
+    | "fax"
+    | "skype"
+    | "im"
+    | "medibridge"
+    | "ehealthbox"
+    | "apicrypt"
+    | "web"
+    | "print"
+    | "disk"
+  export const TelecomTypeEnum = {
+    Mobile: "mobile" as TelecomTypeEnum,
+    Phone: "phone" as TelecomTypeEnum,
+    Email: "email" as TelecomTypeEnum,
+    Fax: "fax" as TelecomTypeEnum,
+    Skype: "skype" as TelecomTypeEnum,
+    Im: "im" as TelecomTypeEnum,
+    Medibridge: "medibridge" as TelecomTypeEnum,
+    Ehealthbox: "ehealthbox" as TelecomTypeEnum,
+    Apicrypt: "apicrypt" as TelecomTypeEnum,
+    Web: "web" as TelecomTypeEnum,
+    Print: "print" as TelecomTypeEnum,
+    Disk: "disk" as TelecomTypeEnum
   }
 }
