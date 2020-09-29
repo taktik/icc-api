@@ -67,7 +67,7 @@ export class AESUtils {
   decrypt(cryptoKey: CryptoKey, encryptedData: ArrayBuffer | Uint8Array, rawKey: string = "<NA>") {
     return new Promise((resolve: (value: ArrayBuffer) => any, reject: (reason: any) => any) => {
       if (!cryptoKey) {
-        reject("No crypto key provided for decryption")
+        return reject("No crypto key provided for decryption")
       }
       if (encryptedData instanceof ArrayBuffer) {
         var encryptedDataUnit8 = new Uint8Array(encryptedData)
