@@ -128,7 +128,7 @@ export class IccCryptoXApi {
 
     this._AES = new AESUtils(crypto)
     this._RSA = new RSAUtils(crypto)
-    this._utils = new UtilsClass(crypto)
+    this._utils = new UtilsClass()
     this._shamir = new ShamirClass(crypto)
   }
 
