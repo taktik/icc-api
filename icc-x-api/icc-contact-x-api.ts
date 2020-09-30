@@ -574,7 +574,7 @@ export class IccContactXApi extends iccContactApi {
             )
             let jsonContent
             try {
-              jsonContent = utils.ua2utf8(dec).replace(/\0+$/g, "")
+              jsonContent = utils.ua2utf8(utils.truncateTrailingNulls(new Uint8Array(dec)))
               Object.assign(svc, { content: JSON.parse(jsonContent) })
             } catch (e) {
               console.log("Cannot parse service", svc.id, jsonContent || "<- Invalid encoding")
@@ -587,7 +587,7 @@ export class IccContactXApi extends iccContactApi {
             const dec = await this.crypto.AES.decrypt(key, utils.text2ua(atob(svc.encryptedSelf!)))
             let jsonContent
             try {
-              jsonContent = utils.ua2utf8(dec).replace(/\0+$/g, "")
+              jsonContent = utils.ua2utf8(utils.truncateTrailingNulls(new Uint8Array(dec)))
               Object.assign(svc, JSON.parse(jsonContent))
             } catch (e) {
               console.log("Cannot parse service", svc.id, jsonContent || "<- Invalid encoding")
