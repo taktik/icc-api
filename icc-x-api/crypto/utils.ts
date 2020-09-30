@@ -4,17 +4,11 @@ import { Moment } from "moment"
 import * as _ from "lodash"
 
 export class UtilsClass {
-  private crypto: Crypto
+  private textDecoder = TextDecoder ? new TextDecoder() : null
+  private textEncoder = TextEncoder ? new TextEncoder() : null
 
-  constructor(
-    crypto: Crypto = typeof window !== "undefined"
-      ? window.crypto
-      : typeof self !== "undefined"
-        ? self.crypto
-        : ({} as Crypto)
-  ) {
-    this.crypto = crypto
-  }
+  constructor() {}
+
   /**
    * String to Uint8Array
    *
@@ -168,6 +162,10 @@ export class UtilsClass {
   }
 
   utf82ua(str: string): Uint8Array {
+    if (this.textEncoder) {
+      return this.textEncoder.encode(str)
+    }
+
     const utf8 = new Uint8Array(4 * str.length)
     let j = 0
     for (var i = 0; i < str.length; i++) {
@@ -205,10 +203,17 @@ export class UtilsClass {
   }
 
   ua2utf8(arrBuf: Uint8Array | ArrayBuffer): string {
+    if (this.textDecoder) {
+      // if arrBuf is undefined, imitate the JS implementation below which returns an empty string
+      return arrBuf ? this.textDecoder.decode(arrBuf) : ""
+    }
+
     var out, i, len, c, u
     var char2, char3, char4
 
-    const array = new Uint8Array(arrBuf)
+    // avoid applying the Uint8Array constructor: on ArrayBuffer it creates a
+    // view but on Uint8Array it creates a copy
+    const array = ArrayBuffer.isView(arrBuf) ? arrBuf : new Uint8Array(arrBuf)
 
     out = ""
     len = array.length || array.byteLength
@@ -258,6 +263,25 @@ export class UtilsClass {
     }
 
     return out
+  }
+
+  /**
+   * Provide a view over the given Uint8Array where any trailing null bytes at
+   * the end are truncated.
+   *
+   * This can be used to ignore null bytes at the end of a padded UTF-8 string
+   * without needing to copy that string, assuming code point U+0000 is encoded
+   * in one null byte according to standards rather than in a multi-byte
+   * overlong form.
+   */
+  truncateTrailingNulls(a: Uint8Array) {
+    let end = a.byteLength - 1
+    while (a[end] === 0 && end >= 0) {
+      end--
+    }
+    // end is now either the last non-null position in a or -1; in the latter
+    // case the returned array will have length 0.
+    return a.subarray(0, end + 1)
   }
 
   base64url(b: Uint8Array): string {
