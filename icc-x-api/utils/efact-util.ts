@@ -167,7 +167,7 @@ export function toInvoiceBatch(
   insuranceApi: iccInsuranceApi,
   invoiceXApi: IccInvoiceXApi,
   messageXApi: IccMessageXApi,
-  flatraterInvoice: boolean = false
+  flatrateInvoice: boolean = false
 ): Promise<InvoicesBatch> {
   return insuranceApi
     .getInsurances(
@@ -199,8 +199,8 @@ export function toInvoiceBatch(
 
             invoicesBatch.batchRef = batchRef
             invoicesBatch.fileRef = fileRef
-            invoicesBatch.magneticInvoice = flatraterInvoice //flatrateInvoice have some different fields
-            if (flatraterInvoice) {
+            invoicesBatch.magneticInvoice = flatrateInvoice //flatrateInvoice have some different fields
+            if (flatrateInvoice) {
               invoicesBatch.invoiceContent = 0
             }
             invoicesBatch.invoices = _.map(
@@ -222,7 +222,7 @@ export function toInvoiceBatch(
                   invWithPat.patientDto,
                   insurance,
                   relatedInvoiceInfo,
-                  flatraterInvoice
+                  flatrateInvoice
                 )
               }
             )
@@ -261,7 +261,7 @@ function toInvoice(
   patientDto: PatientDto,
   insurance: InsuranceDto,
   relatedInvoiceInfo: RelatedInvoiceInfo | undefined,
-  flatraterInvoice: boolean = false
+  flatrateInvoice: boolean = false
 ): Invoice {
   const invoice = new Invoice({})
   const invoiceYear = moment(invoiceDto.created)
@@ -280,7 +280,7 @@ function toInvoice(
       patientDto,
       invoiceDto,
       invoicingCodeDto,
-      flatraterInvoice
+      flatrateInvoice
     )
   })
   invoice.patient = toPatient(patientDto)
@@ -301,7 +301,7 @@ function toInvoice(
   // TODO : fix me later
   invoice.reason = Invoice.ReasonEnum.Other
   invoice.creditNote = invoiceDto.creditNote
-  if (flatraterInvoice) {
+  if (flatrateInvoice) {
     invoice.startOfCoveragePeriod = invoiceDto.invoicingCodes!![0].contractDate
   }
   return invoice
@@ -312,7 +312,7 @@ function toInvoiceItem(
   patientDto: PatientDto,
   invoiceDto: InvoiceDto,
   invoicingCode: InvoicingCodeDto,
-  flatraterInvoice: boolean = false
+  flatrateInvoice: boolean = false
 ): InvoiceItem {
   const invoiceItem = new InvoiceItem({})
   invoiceItem.codeNomenclature = Number(invoicingCode.tarificationId!!.split("|")[1])
