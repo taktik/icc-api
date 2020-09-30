@@ -21,7 +21,9 @@ export class IccContactXApi extends iccContactApi {
     fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
     "undefined"
       ? window.fetch
-      : (self.fetch as any)
+      : typeof self !== "undefined"
+        ? self.fetch
+        : fetch
   ) {
     super(host, headers, fetchImpl)
     this.crypto = crypto
