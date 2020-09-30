@@ -10,26 +10,28 @@ export namespace XHR {
   }
 
   export class Data {
-    status: number
+    statusCode: number
     contentType: string
     body: JSON | Array<JSON> | any //stream bytes|json|array<json>
 
     constructor(status: number, contentType: string, body: JSON | Array<JSON> | any) {
-      this.status = status
+      this.statusCode = status
       this.contentType = contentType
       this.body = body
     }
   }
 
   export class XHRError extends Error {
-    status: number
-    code: number
+    statusCode: number
+    errorCode: string
     headers: Headers
+    message: string
 
-    constructor(message: string, status: number, code: number, headers: Headers) {
+    constructor(message: string, status: number, errorCode: string, headers: Headers) {
       super(message)
-      this.status = status
-      this.code = code
+      this.statusCode = status
+      this.message = message
+      this.errorCode = errorCode
       this.headers = headers
     }
   }
@@ -115,11 +117,16 @@ export namespace XHR {
       ),
       timeout,
       fetchImpl
-    ).then(function(response) {
+    ).then(async function(response) {
       if (response.status >= 400) {
-        throw new XHRError(response.statusText, response.status, response.status, response.headers)
+        const error: {
+          error: string
+          message: string
+          status: number
+        } = await response.blob().then(async data => await new Response(data).json())
+        throw new XHRError(error.message, error.status, error.error, response.headers)
       }
-      const ct = response.headers.get("content-type") || "text/plain"
+      const ct = contentTypeOverride || response.headers.get("content-type") || "text/plain"
       return (ct.startsWith("application/json")
         ? response.json()
         : ct.startsWith("application/xml") || ct.startsWith("text/")

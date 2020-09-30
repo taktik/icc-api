@@ -1,4 +1,5 @@
 import { utils } from "./utils"
+import { debuglog } from "util"
 
 export class AESUtils {
   /********* AES Config **********/
@@ -10,6 +11,11 @@ export class AESUtils {
     length: 256
   }
   private crypto: Crypto
+  private _debug: boolean
+
+  set debug(value: boolean) {
+    this._debug = value
+  }
 
   constructor(
     crypto: Crypto = typeof window !== "undefined"
@@ -19,9 +25,10 @@ export class AESUtils {
         : ({} as Crypto)
   ) {
     this.crypto = crypto
+    this._debug = false
   }
 
-  encrypt(cryptoKey: CryptoKey, plainData: ArrayBuffer | Uint8Array) {
+  encrypt(cryptoKey: CryptoKey, plainData: ArrayBuffer | Uint8Array, rawKey: string = "<NA>") {
     return new Promise((resolve: (value: ArrayBuffer) => any, reject: (reason: any) => any) => {
       if (plainData instanceof Uint8Array) {
         const buffer = plainData.buffer
@@ -33,8 +40,15 @@ export class AESUtils {
         name: this.aesAlgorithmEncryptName,
         iv: this.generateIV(this.ivLength)
       }
+      this._debug && console.log(`encrypt ${plainData} with ${rawKey}`)
       this.crypto.subtle
-        .encrypt(aesAlgorithmEncrypt, cryptoKey, plainData)
+        .encrypt(
+          {
+            ...aesAlgorithmEncrypt
+          } /* some ill behaved implementations change the values in place */,
+          cryptoKey,
+          plainData
+        )
         .then(
           cipherData =>
             resolve(utils.appendBuffer(aesAlgorithmEncrypt.iv!.buffer! as ArrayBuffer, cipherData)),
@@ -47,12 +61,13 @@ export class AESUtils {
    *
    * @param cryptoKey (CryptoKey)
    * @param encryptedData (ArrayBuffer)
+   * @param rawKey
    * @returns {Promise} will be ArrayBuffer
    */
-  decrypt(cryptoKey: CryptoKey, encryptedData: ArrayBuffer | Uint8Array) {
+  decrypt(cryptoKey: CryptoKey, encryptedData: ArrayBuffer | Uint8Array, rawKey: string = "<NA>") {
     return new Promise((resolve: (value: ArrayBuffer) => any, reject: (reason: any) => any) => {
       if (!cryptoKey) {
-        reject("No crypto key provided for decryption")
+        return reject("No crypto key provided for decryption")
       }
       if (encryptedData instanceof ArrayBuffer) {
         var encryptedDataUnit8 = new Uint8Array(encryptedData)
@@ -80,13 +95,16 @@ export class AESUtils {
     * var delegateHcPartyKey = hcparty.hcPartyKeys[delegatorId][1];
     */
       }
+      this._debug && console.log(`decrypt with ${rawKey}`)
       this.crypto.subtle
         .decrypt(
           aesAlgorithmEncrypt,
           cryptoKey,
           encryptedDataUnit8.subarray(this.ivLength, encryptedDataUnit8.length)
         )
-        .then(resolve, err => reject("AES decryption failed: " + err))
+        .then(resolve, err => {
+          reject("AES decryption failed: " + err)
+        })
     })
   }
 
@@ -118,7 +136,7 @@ export class AESUtils {
 
   // noinspection JSMethodCanBeStatic
   generateIV(ivByteLength: number) {
-    return this.crypto.getRandomValues(new Uint8Array(ivByteLength))
+    return new Uint8Array(this.crypto.getRandomValues(new Uint8Array(ivByteLength)))
   }
 
   /**
@@ -154,7 +172,7 @@ export class AESUtils {
       var extractable = true
       var keyUsages = ["decrypt", "encrypt"]
       return this.crypto.subtle
-        .importKey(format, aesKey, this.aesKeyGenParams.name, extractable, keyUsages)
+        .importKey(format, aesKey, this.aesKeyGenParams, extractable, keyUsages)
         .then(resolve, reject)
     })
   }

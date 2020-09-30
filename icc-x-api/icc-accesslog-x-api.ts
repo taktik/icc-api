@@ -5,6 +5,7 @@ import * as models from "../icc-api/model/models"
 
 import * as _ from "lodash"
 import { utils } from "./crypto/utils"
+import { PaginatedListAccessLogDto } from "../icc-api/model/models"
 
 export class IccAccesslogXApi extends iccAccesslogApi {
   crypto: IccCryptoXApi
@@ -125,10 +126,10 @@ export class IccAccesslogXApi extends iccAccesslogApi {
 
   findByHCPartyPatientSecretFKeys(
     hcPartyId: string,
-    secretFKeys?: string
+    secretFKeys: string
   ): Promise<Array<models.ContactDto> | any> {
     return super
-      .findByHCPartyPatientSecretFKeys(hcPartyId, secretFKeys)
+      .findAccessLogsByHCPartyPatientForeignKeys(hcPartyId, secretFKeys)
       .then(accesslogs => this.decrypt(hcPartyId, accesslogs))
   }
 
@@ -276,9 +277,9 @@ export class IccAccesslogXApi extends iccAccesslogApi {
   listAccessLogs(
     fromEpoch?: number,
     toEpoch?: number,
-    startKey?: string,
+    startKey?: number,
     startDocumentId?: string,
-    limit?: string
+    limit?: number
   ): never {
     throw new Error(
       "Cannot call a method that returns access logs without providing a user for de/encryption"
@@ -289,15 +290,15 @@ export class IccAccesslogXApi extends iccAccesslogApi {
     user: models.UserDto,
     fromEpoch?: number,
     toEpoch?: number,
-    startKey?: string,
+    startKey?: number,
     startDocumentId?: string,
-    limit?: string,
+    limit?: number,
     descending?: boolean
-  ): Promise<models.AccessLogPaginatedList | any> {
+  ): Promise<PaginatedListAccessLogDto> {
     return super
       .listAccessLogs(fromEpoch, toEpoch, startKey, startDocumentId, limit, descending)
       .then(accessLog =>
-        this.decrypt((user.healthcarePartyId || user.patientId)!, accessLog.rows).then(dr =>
+        this.decrypt((user.healthcarePartyId || user.patientId)!, accessLog.rows!).then(dr =>
           Object.assign(accessLog, { rows: dr })
         )
       )
@@ -356,7 +357,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
         descending
       )
       .then(accessLog =>
-        this.decrypt((user.healthcarePartyId || user.patientId)!, accessLog.rows).then(dr =>
+        this.decrypt((user.healthcarePartyId || user.patientId)!, accessLog.rows!).then(dr =>
           Object.assign(accessLog, { rows: dr })
         )
       )

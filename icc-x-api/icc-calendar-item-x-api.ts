@@ -11,7 +11,7 @@ import { CalendarItemDto, UserDto } from "../icc-api/model/models"
 export class IccCalendarItemXApi extends iccCalendarItemApi {
   i18n: any = i18n
   crypto: IccCryptoXApi
-  cryptedKeys = ["detail", "title"]
+  cryptedKeys = ["details", "title"]
 
   constructor(
     host: string,
@@ -71,7 +71,8 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
   newInstancePatient(
     user: models.UserDto,
     patient: models.PatientDto,
-    ci: any
+    ci: any,
+    delegates: string[] = []
   ): Promise<models.CalendarItemDto> {
     const calendarItem = _.extend(
       {
@@ -87,13 +88,14 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
       ci || {}
     )
 
-    return this.initDelegationsAndEncryptionKeys(user, patient, calendarItem)
+    return this.initDelegationsAndEncryptionKeys(user, patient, calendarItem, delegates)
   }
 
   initDelegationsAndEncryptionKeys(
     user: models.UserDto,
     patient: models.PatientDto,
-    calendarItem: models.CalendarItemDto
+    calendarItem: models.CalendarItemDto,
+    delegates: string[] = []
   ): Promise<models.CalendarItemDto> {
     const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto
@@ -120,9 +122,14 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
         })
 
         let promise = Promise.resolve(calendarItem)
-        ;(user.autoDelegations
-          ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
-          : []
+        _.uniq(
+          delegates.concat(
+            user.autoDelegations
+              ? (user.autoDelegations.all || []).concat(
+                  user.autoDelegations.medicalInformation || []
+                )
+              : []
+          )
         ).forEach(
           delegateId =>
             (promise = promise.then(contact =>
@@ -155,10 +162,10 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
 
   findByHCPartyPatientSecretFKeys(
     hcPartyId: string,
-    secretFKeys?: string
+    secretFKeys: string
   ): Promise<Array<models.CalendarItemDto> | any> {
     return super
-      .findByHCPartyPatientSecretFKeys(hcPartyId, secretFKeys)
+      .findCalendarItemsByHCPartyPatientForeignKeys(hcPartyId, secretFKeys)
       .then(calendarItems => this.decrypt(hcPartyId, calendarItems))
   }
 
@@ -228,9 +235,9 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
 
   getCalendarItemsByPeriodAndHcPartyIdWithUser(
     user: models.UserDto,
-    startDate?: number,
-    endDate?: number,
-    hcPartyId?: string
+    startDate: number,
+    endDate: number,
+    hcPartyId: string
   ): Promise<Array<CalendarItemDto> | any> {
     return super
       .getCalendarItemsByPeriodAndHcPartyId(startDate, endDate, hcPartyId)
@@ -251,9 +258,9 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
 
   getCalendarsByPeriodAndAgendaIdWithUser(
     user: models.UserDto,
-    startDate?: number,
-    endDate?: number,
-    agendaId?: string
+    startDate: number,
+    endDate: number,
+    agendaId: string
   ): Promise<Array<CalendarItemDto> | any> {
     return super
       .getCalendarsByPeriodAndAgendaId(startDate, endDate, agendaId)

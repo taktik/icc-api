@@ -165,10 +165,10 @@ export class IccHelementXApi extends iccHelementApi {
 
   findByHCPartyPatientSecretFKeys(
     hcPartyId: string,
-    secretFKeys?: string
+    secretFKeys: string
   ): Promise<Array<models.ContactDto> | any> {
     return super
-      .findByHCPartyPatientSecretFKeys(hcPartyId, secretFKeys)
+      .findHealthElementsByHCPartyPatientForeignKeys(hcPartyId, secretFKeys)
       .then(helements => this.decrypt(hcPartyId, helements))
   }
 

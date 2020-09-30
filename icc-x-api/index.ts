@@ -1,4 +1,3 @@
-export * from "./icc-bedrugs-x-api"
 export * from "./icc-bekmehr-x-api"
 export * from "./icc-calendar-item-x-api"
 export * from "./icc-classification-x-api"

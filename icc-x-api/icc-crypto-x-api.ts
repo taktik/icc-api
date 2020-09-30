@@ -22,13 +22,7 @@ export class IccCryptoXApi {
     return this._AES
   }
   hcPartyKeysCache: {
-    [key: string]: { delegatorId: string; key: CryptoKey }
-  } = {}
-  hcPartiesRequestsCache: {
-    [key: string]:
-      | { entityType: null; entity: Promise<models.HealthcarePartyDto | models.PatientDto> }
-      | { entityType: "hcp"; entity: Promise<models.HealthcarePartyDto> }
-      | { entityType: "patient"; entity: Promise<models.PatientDto> }
+    [key: string]: { delegatorId: string; key: CryptoKey; rawKey: string }
   } = {}
 
   //[delegateId][delegatorId] = delegateEncryptedHcPartyKey
@@ -38,39 +32,15 @@ export class IccCryptoXApi {
   } = {}
 
   emptyHcpCache(hcpartyId: string) {
-    delete this.hcPartiesRequestsCache[hcpartyId]
     delete this.hcPartyKeysRequestsCache[hcpartyId]
   }
 
   private getHcpOrPatient(
     hcpartyId: string
   ): Promise<models.HealthcarePartyDto | models.PatientDto> {
-    const cached = this.hcPartiesRequestsCache[hcpartyId]
-
-    return cached
-      ? cached.entity.catch(() => {
-          delete this.hcPartiesRequestsCache[hcpartyId]
-          return this.getHcpOrPatient(hcpartyId)
-        })
-      : (this.hcPartiesRequestsCache[hcpartyId] = {
-          entityType: null,
-          entity: this.hcpartyBaseApi
-            .getHealthcareParty(hcpartyId)
-            .then(hcp => {
-              this.hcPartiesRequestsCache[hcpartyId]!.entityType = "hcp"
-              return hcp
-            })
-            .catch(() =>
-              this.patientBaseApi.getPatient(hcpartyId).then(pat => {
-                this.hcPartiesRequestsCache[hcpartyId]!.entityType = "patient"
-                return pat
-              })
-            )
-        }).entity
-  }
-
-  private getCachedHcpOrPatientType(hcpartyId: string): string | null | undefined {
-    return (this.hcPartiesRequestsCache[hcpartyId] || {}).entityType
+    return this.hcpartyBaseApi
+      .getHealthcareParty(hcpartyId)
+      .catch(() => this.patientBaseApi.getPatient(hcpartyId))
   }
 
   /**
@@ -92,10 +62,12 @@ export class IccCryptoXApi {
     )
   }
 
-  private forceGetHcPartyKeysForDelegate(delegateHcPartyId: string) {
+  private forceGetHcPartyKeysForDelegate(
+    delegateHcPartyId: string
+  ): Promise<{ [delegatorId: string]: string } | {}> {
     return Promise.all([
-      this.hcpartyBaseApi.getHcPartyKeysForDelegate(delegateHcPartyId).catch(() => {}),
-      this.patientBaseApi.getHcPartyKeysForDelegate(delegateHcPartyId).catch(() => {})
+      this.patientBaseApi.getPatientHcPartyKeysForDelegate(delegateHcPartyId).catch(() => {}),
+      this.hcpartyBaseApi.getHcPartyKeysForDelegate(delegateHcPartyId).catch(() => {})
     ]).then(([a, b]) => Object.assign({}, a, b))
   }
 
@@ -106,6 +78,8 @@ export class IccCryptoXApi {
   private patientBaseApi: iccPatientApi
   private crypto: Crypto
 
+  private generateKeyConcurrencyMap: { [key: string]: PromiseLike<HealthcarePartyDto | PatientDto> }
+
   private _AES: AESUtils
   private _RSA: RSAUtils
   private _utils: UtilsClass
@@ -114,7 +88,7 @@ export class IccCryptoXApi {
   constructor(
     host: string,
     headers: { [key: string]: string },
-    hcpartyBaseApi: iccHcpartyApi,
+    hcpartyBaseApi: iccHcpartyApi, //Init with a hcparty x api for better performances
     patientBaseApi: iccPatientApi,
     crypto: Crypto = typeof window !== "undefined"
       ? window.crypto
@@ -125,6 +99,7 @@ export class IccCryptoXApi {
     this.hcpartyBaseApi = hcpartyBaseApi
     this.patientBaseApi = patientBaseApi
     this.crypto = crypto
+    this.generateKeyConcurrencyMap = {}
 
     this._AES = new AESUtils(crypto)
     this._RSA = new RSAUtils(crypto)
@@ -147,24 +122,134 @@ export class IccCryptoXApi {
   encryptedShamirRSAKey(
     hcp: HealthcarePartyDto,
     notaries: Array<HealthcarePartyDto>,
-    threshold: number
-  ): Promise<Map<String, String>> {
-    const kp = this._RSA.loadKeyPairNotImported(hcp.id!)
-    return this._RSA.exportKey(kp.privateKey, "pkcs8").then(exportedKey => {
-      const pk = exportedKey as ArrayBuffer
-      const shares = this._shamir.share(this._utils.ua2hex(pk), notaries.length, threshold)
-      return Promise.all(
-        notaries.map((notary, idx) => {
-          const notaryPubKey = utils.spkiToJwk(utils.hex2ua(notary.publicKey!))
-          return this._RSA
-            .importKey("jwk", notaryPubKey, ["encrypt"])
-            .then(key => {
-              this._RSA.encrypt(key, this._utils.hex2ua(shares[idx]))
+    threshold?: number
+  ): Promise<HealthcarePartyDto> {
+    return this._RSA.loadKeyPairImported(hcp.id!).then(keyPair =>
+      this._RSA.exportKey(keyPair.privateKey, "pkcs8").then(exportedKey => {
+        const privateKey = exportedKey as ArrayBuffer
+        const nLen = notaries.length
+        const shares =
+          nLen == 1
+            ? [privateKey]
+            : this._shamir
+                .share(this._utils.ua2hex(privateKey), nLen, threshold || nLen)
+                .map(share => this.utils.hex2ua(share))
+
+        return _.reduce(
+          notaries,
+          (queue, notary, idx) => {
+            return queue.then(async hcp => {
+              const hcParty = hcp.hcPartyKeys![notary.id!]
+                ? hcp
+                : ((await this.generateKeyForDelegate(hcp.id!, notary.id!)) as HealthcarePartyDto)
+
+              try {
+                const importedAESHcPartyKey = await this.decryptHcPartyKey(
+                  hcParty.id!,
+                  notary.id!,
+                  hcParty.hcPartyKeys![notary.id!][1],
+                  false
+                )
+                const encryptedShamirPartition = await this.AES.encrypt(
+                  importedAESHcPartyKey.key,
+                  shares[idx]
+                )
+
+                hcParty.privateKeyShamirPartitions = hcParty.privateKeyShamirPartitions || {}
+                hcParty.privateKeyShamirPartitions[notary.id!] = this.utils.ua2hex(
+                  encryptedShamirPartition
+                )
+              } catch (e) {
+                console.log("Error during encryptedShamirRSAKey", notary.id, e)
+              }
+              return hcParty
             })
-            .then(k => [notary.id, k])
-        })
-      ).then(keys => _.fromPairs(keys) as Map<string, string>)
-    })
+          },
+          Promise.resolve(hcp)
+        )
+      })
+    )
+  }
+
+  /* Reconstructs the hcp's private key from the notaries' shamir shares and stores it in localstorage.
+  The retrieval procedure of the shares is not designed or implemented yet.  Therefore, it currently only
+  works if the private key of the notaries are stored in local storage (e.g. notaries = [hcp parent]).
+   * @param hcp : the hcp whose key we want to reconstruct
+   * @param notaries : holders of the shamir shares
+  **/
+  async decryptedShamirRSAKey(
+    hcp: HealthcarePartyDto,
+    notaries: Array<HealthcarePartyDto>
+  ): Promise<void> {
+    try {
+      const nLen = notaries.length
+      let decryptedPrivatedKey
+      if (nLen == 1) {
+        const importedAESHcPartyKey = await this.decryptHcPartyKey(
+          hcp.id!,
+          notaries[0].id!,
+          hcp.hcPartyKeys![notaries[0].id!][1],
+          false
+        )
+        const cryptedPrivatedKey = hcp.privateKeyShamirPartitions![notaries[0].id!]
+        decryptedPrivatedKey = this.utils.ua2hex(
+          await this.AES.decrypt(importedAESHcPartyKey.key, this.utils.hex2ua(cryptedPrivatedKey))
+        )
+      } else {
+        const decryptedShares: string[] = await _.reduce(
+          notaries,
+          (queue, notary) => {
+            return queue.then(async (shares: string[]) => {
+              try {
+                // TODO: now, we get the encrypted shares in db and decrypt them. This assumes that the
+                // the notaries' private keys are in localstorage. We should implement a way for the notaries to
+                // give hcp the decrypted shares without having to also share their private keys.
+                const importedAESHcPartyKey = await this.decryptHcPartyKey(
+                  hcp.id!,
+                  notary.id!,
+                  hcp.hcPartyKeys![notary.id!][1],
+                  false
+                )
+                const encryptedShare = hcp.privateKeyShamirPartitions![notary.id!]
+                const decryptedShamirPartition = this.utils.ua2hex(
+                  await this.AES.decrypt(
+                    importedAESHcPartyKey.key,
+                    this.utils.hex2ua(encryptedShare)
+                  )
+                )
+                shares.push(decryptedShamirPartition)
+              } catch (e) {
+                console.log("Error during encryptedShamirRSAKey", notary.id, e)
+              }
+              return shares
+            })
+          },
+          Promise.resolve([] as string[])
+        )
+
+        decryptedPrivatedKey = this._shamir.combine(decryptedShares)
+      }
+
+      const importedPrivateKey = await this.RSA.importKey(
+        "pkcs8",
+        this.utils.hex2ua(decryptedPrivatedKey),
+        ["decrypt"]
+      )
+      const importedPublicKey = await this.RSA.importKey(
+        "spki",
+        this.utils.hex2ua(hcp.publicKey!),
+        ["encrypt"]
+      )
+
+      const exportedKeyPair = await this.RSA.exportKeys(
+        { publicKey: importedPublicKey, privateKey: importedPrivateKey },
+        "jwk",
+        "jwk"
+      )
+      this.RSA.storeKeyPair(hcp.id!, exportedKeyPair)
+    } catch (e) {
+      console.log("Cannot decrypt shamir RSA key")
+    }
   }
 
   /**
@@ -184,8 +269,7 @@ export class IccCryptoXApi {
     delegateHcPartyId: string,
     encryptedHcPartyKey: string,
     encryptedForDelegator: boolean = false //TODO: suggestion: break this into 2 separate methods: decryptDelegatorEncryptedHcPartyKey() and decryptDelegateEncryptedHcPartyKey()
-  ): Promise<{ delegatorId: string; key: CryptoKey }> {
-    //TODO: why the delegatorId is also returned?
+  ): Promise<{ delegatorId: string; key: CryptoKey; rawKey: string }> {
     const cacheKey =
       delegatorId + "|" + delegateHcPartyId + "|" + (encryptedForDelegator ? "->" : "<-")
     const res = this.hcPartyKeysCache[cacheKey]
@@ -211,12 +295,18 @@ export class IccCryptoXApi {
           )
           throw e
         })
-        .then(decryptedHcPartyKey => this._AES.importKey("raw", decryptedHcPartyKey))
+        .then(decryptedHcPartyKey =>
+          this._AES.importKey("raw", decryptedHcPartyKey).then(decryptedImportedHcPartyKey => ({
+            decryptedHcPartyKey,
+            decryptedImportedHcPartyKey
+          }))
+        )
         .then(
-          decryptedImportedHcPartyKey =>
+          ({ decryptedHcPartyKey, decryptedImportedHcPartyKey }) =>
             (this.hcPartyKeysCache[cacheKey] = {
               delegatorId: delegatorId,
-              key: decryptedImportedHcPartyKey
+              key: decryptedImportedHcPartyKey,
+              rawKey: this.utils.ua2hex(new Uint8Array(decryptedHcPartyKey))
             })
         )
     }
@@ -276,7 +366,7 @@ export class IccCryptoXApi {
    *
    * 1. Get the keys for the delegateHealthCareParty (cache/backend).
    * 2. For each key in the delegators, decrypt it with the delegate's private key
-   * 3. Filter out undefined keys and return th
+   * 3. Filter out undefined keys and return them
    *
    * @param delegatorsHcPartyIdsSet array of delegator HcP IDs that could have delegated something to the HcP with ID `delegateHcPartyId`
    * @param delegateHcPartyId the HcP for which the HcPs with IDs in `delegatorsHcPartyIdsSet` could have delegated something
@@ -287,7 +377,7 @@ export class IccCryptoXApi {
     //TODO:  suggested name: getDecryptedHcPKeysSharedBetweenDelegateAndDelegators
     delegatorsHcPartyIdsSet: Array<string>,
     delegateHcPartyId: string
-  ): Promise<Array<{ delegatorId: string; key: CryptoKey }>> {
+  ): Promise<Array<{ delegatorId: string; key: CryptoKey; rawKey: string }>> {
     return (
       this.hcPartyKeysRequestsCache[delegateHcPartyId] ||
       (this.hcPartyKeysRequestsCache[delegateHcPartyId] = this.getHcPartyKeysForDelegate(
@@ -297,8 +387,11 @@ export class IccCryptoXApi {
       // [key: delegatorId] = delegateEncryptedHcPartyKey
       // For each delegatorId, obtain the AES key (decrypted HcParty Key) shared with the delegate, decrypted by the delegate
       return Promise.all(
-        delegatorsHcPartyIdsSet.map((delegatorId: string) =>
-          this.decryptHcPartyKey(
+        delegatorsHcPartyIdsSet.map((delegatorId: string) => {
+          if (!delegatorIDsWithDelegateEncryptedHcPartyKey[delegatorId]) {
+            return undefined
+          }
+          return this.decryptHcPartyKey(
             delegatorId,
             delegateHcPartyId,
             delegatorIDsWithDelegateEncryptedHcPartyKey[delegatorId]
@@ -306,7 +399,7 @@ export class IccCryptoXApi {
             console.log(`failed to decrypt hcPartyKey from ${delegatorId} to ${delegateHcPartyId}`)
             return undefined
           })
-        )
+        })
       ).then(hcPartyKeys =>
         hcPartyKeys.filter(<T>(hcPartyKey: T | undefined): hcPartyKey is T => !!hcPartyKey)
       )
@@ -333,7 +426,7 @@ export class IccCryptoXApi {
     healthcarePartyId: string,
     delegations: { [key: string]: Array<models.DelegationDto> },
     fallbackOnParent = true
-  ): Promise<Array<{ delegatorId: string; key: CryptoKey }>> {
+  ): Promise<Array<{ delegatorId: string; key: CryptoKey; rawKey: string }>> {
     const delegatorIds: { [key: string]: boolean } = {}
     const delegationsArray = delegations[healthcarePartyId]
     if (delegationsArray && delegationsArray.length) {
@@ -394,13 +487,17 @@ export class IccCryptoXApi {
       )
       .then(importedAESHcPartyKey =>
         Promise.all([
-          this._AES.encrypt(importedAESHcPartyKey.key, utils.text2ua(
-            createdObject.id + ":" + secretId
-          ).buffer as ArrayBuffer),
+          this._AES.encrypt(
+            importedAESHcPartyKey.key,
+            utils.text2ua(createdObject.id + ":" + secretId).buffer as ArrayBuffer,
+            importedAESHcPartyKey.rawKey
+          ),
           parentObject
-            ? this._AES.encrypt(importedAESHcPartyKey.key, utils.text2ua(
-                createdObject.id + ":" + parentObject.id
-              ).buffer as ArrayBuffer)
+            ? this._AES.encrypt(
+                importedAESHcPartyKey.key,
+                utils.text2ua(createdObject.id + ":" + parentObject.id).buffer as ArrayBuffer,
+                importedAESHcPartyKey.rawKey
+              )
             : Promise.resolve(null)
         ])
       )
@@ -512,7 +609,11 @@ export class IccCryptoXApi {
               (d.key &&
                 d.owner === ownerId &&
                 this._AES
-                  .decrypt(importedAESHcPartyKey.key, this._utils.hex2ua(d.key))
+                  .decrypt(
+                    importedAESHcPartyKey.key,
+                    this._utils.hex2ua(d.key),
+                    importedAESHcPartyKey.rawKey
+                  )
                   .catch(() => {
                     console.log(
                       `Cannot decrypt delegation from ${d.owner} to ${
@@ -530,7 +631,11 @@ export class IccCryptoXApi {
               (d.key &&
                 d.owner === ownerId &&
                 this._AES
-                  .decrypt(importedAESHcPartyKey.key, this._utils.hex2ua(d.key))
+                  .decrypt(
+                    importedAESHcPartyKey.key,
+                    this._utils.hex2ua(d.key),
+                    importedAESHcPartyKey.rawKey
+                  )
                   .catch(() => {
                     console.log(
                       `Cannot decrypt cryptedForeignKeys from ${d.owner} to ${
@@ -543,14 +648,19 @@ export class IccCryptoXApi {
               Promise.resolve(null)
           ) as Array<Promise<ArrayBuffer>>),
 
-          this._AES.encrypt(importedAESHcPartyKey.key, utils.text2ua(
-            modifiedObject.id + ":" + secretIdOfModifiedObject!!
-          ).buffer as ArrayBuffer),
+          this._AES.encrypt(
+            importedAESHcPartyKey.key,
+            utils.text2ua(modifiedObject.id + ":" + secretIdOfModifiedObject!!)
+              .buffer as ArrayBuffer,
+            importedAESHcPartyKey.rawKey
+          ),
 
           parentObject
-            ? this._AES.encrypt(importedAESHcPartyKey.key, utils.text2ua(
-                modifiedObject.id + ":" + parentObject.id
-              ).buffer as ArrayBuffer)
+            ? this._AES.encrypt(
+                importedAESHcPartyKey.key,
+                utils.text2ua(modifiedObject.id + ":" + parentObject.id).buffer as ArrayBuffer,
+                importedAESHcPartyKey.rawKey
+              )
             : Promise.resolve(null)
         ])
       )
@@ -581,7 +691,7 @@ export class IccCryptoXApi {
                 d: {
                   owner: ownerId,
                   delegatedTo: delegateId,
-                  key: this._utils.ua2hex(cryptedDelegation)
+                  key: this._utils.ua2hex(cryptedDelegation!)
                 },
                 k: modifiedObject.id + ":" + secretIdOfModifiedObject!
               }
@@ -613,7 +723,7 @@ export class IccCryptoXApi {
                         delegatedTo: delegateId,
                         key: this._utils.ua2hex(cryptedForeignKey)
                       },
-                      k: modifiedObject.id + ":" + secretIdOfModifiedObject!
+                      k: modifiedObject.id + ":" + parentObject.id!
                     }
                   ]
                 : []
@@ -731,25 +841,31 @@ export class IccCryptoXApi {
       .then(encryptedHcPartyKey =>
         this.decryptHcPartyKey(ownerId, delegateId, encryptedHcPartyKey, true)
       )
-      .then(decryptedHcPartyKey =>
+      .then(importedAESHcPartyKey =>
         Promise.all([
           Promise.all(((modifiedObject.encryptionKeys || {})[delegateId] || []).map(
             (d: DelegationDto) =>
               (d.key &&
                 d.owner === ownerId &&
-                this._AES.decrypt(decryptedHcPartyKey.key, this._utils.hex2ua(d.key)).catch(() => {
-                  console.log(
-                    `Cannot decrypt encryption key from ${d.owner} to ${
-                      d.delegatedTo
-                    } for object with id ${modifiedObject.id}:`,
-                    modifiedObject
+                this._AES
+                  .decrypt(
+                    importedAESHcPartyKey.key,
+                    this._utils.hex2ua(d.key),
+                    importedAESHcPartyKey.rawKey
                   )
-                  return null
-                })) ||
+                  .catch(() => {
+                    console.log(
+                      `Cannot decrypt encryption key from ${d.owner} to ${
+                        d.delegatedTo
+                      } for object with id ${modifiedObject.id}:`,
+                      modifiedObject
+                    )
+                    return null
+                  })) ||
               Promise.resolve(null)
           ) as Array<Promise<ArrayBuffer>>),
           this._AES.encrypt(
-            decryptedHcPartyKey.key,
+            importedAESHcPartyKey.key,
             utils.text2ua(modifiedObject.id + ":" + secretEncryptionKeyOfObject)
           )
         ])
@@ -1064,7 +1180,7 @@ export class IccCryptoXApi {
     }
     const eckeysForAllDelegates = document.encryptionKeys
     if (!eckeysForAllDelegates || !Object.keys(eckeysForAllDelegates).length) {
-      console.log(`There is no encryption key in document (${document.id})`)
+      //console.log(`There is no encryption key in document (${document.id})`)
       return Promise.resolve({ extractedKeys: [], hcpartyId: hcpartyId })
     }
     return this.extractKeysFromDelegationsForHcpHierarchy(
@@ -1116,9 +1232,11 @@ export class IccCryptoXApi {
       (delegations[hcpartyId] && delegations[hcpartyId].length
         ? this.decryptAndImportAesHcPartyKeysInDelegations(hcpartyId, delegations, false).then(
             decryptedAndImportedAesHcPartyKeys => {
-              const collatedAesKeysFromDelegatorToHcpartyId: { [key: string]: CryptoKey } = {}
+              const collatedAesKeysFromDelegatorToHcpartyId: {
+                [key: string]: { key: CryptoKey; rawKey: string }
+              } = {}
               decryptedAndImportedAesHcPartyKeys.forEach(
-                k => (collatedAesKeysFromDelegatorToHcpartyId[k.delegatorId] = k.key)
+                k => (collatedAesKeysFromDelegatorToHcpartyId[k.delegatorId] = k)
               )
               return this.decryptKeyInDelegationLikes(
                 delegations[hcpartyId],
@@ -1166,9 +1284,11 @@ export class IccCryptoXApi {
       (delegations[hcpartyId] && delegations[hcpartyId].length
         ? this.decryptAndImportAesHcPartyKeysInDelegations(hcpartyId, delegations, false).then(
             decryptedAndImportedAesHcPartyKeys => {
-              const collatedAesKeysFromDelegatorToHcpartyId: { [key: string]: CryptoKey } = {}
+              const collatedAesKeysFromDelegatorToHcpartyId: {
+                [key: string]: { key: CryptoKey; rawKey: string }
+              } = {}
               decryptedAndImportedAesHcPartyKeys.forEach(
-                k => (collatedAesKeysFromDelegatorToHcpartyId[k.delegatorId] = k.key)
+                k => (collatedAesKeysFromDelegatorToHcpartyId[k.delegatorId] = k)
               )
               return this.decryptKeyInDelegationLikes(
                 delegations[hcpartyId],
@@ -1210,54 +1330,55 @@ export class IccCryptoXApi {
   decryptKeyInDelegationLikes(
     //TODO: suggested name: getSecretIdsFromGenericDelegations
     delegationsArray: Array<models.DelegationDto>,
-    aesKeys: { [key: string]: CryptoKey },
+    aesKeys: { [key: string]: { key: CryptoKey; rawKey: string } },
     masterId: string
   ): Promise<Array<string>> {
     const decryptPromises: Array<Promise<string | undefined>> = []
     for (var i = 0; i < (delegationsArray || []).length; i++) {
       var genericDelegationItem = delegationsArray[i]
+      const aesKey = aesKeys[genericDelegationItem.owner!!]
+      if (aesKey) {
+        decryptPromises.push(
+          this._AES
+            .decrypt(aesKey.key, this._utils.hex2ua(genericDelegationItem.key!!), aesKey.rawKey)
+            .then((decryptedGenericDelegationKey: ArrayBuffer) => {
+              const results = utils.ua2text(decryptedGenericDelegationKey).split(":")
 
-      decryptPromises.push(
-        this._AES
-          .decrypt(
-            aesKeys[genericDelegationItem.owner!!],
-            this._utils.hex2ua(genericDelegationItem.key!!)
-          )
-          .then((decryptedGenericDelegationKey: ArrayBuffer) => {
-            const results = utils.ua2text(decryptedGenericDelegationKey).split(":")
+              const objectId = results[0] //must be the ID of the object, for checksum
+              const genericSecretId = results[1]
 
-            const objectId = results[0] //must be the ID of the object, for checksum
-            const genericSecretId = results[1]
+              const details =
+                "object ID: " +
+                masterId +
+                "; generic delegation from " +
+                genericDelegationItem.owner +
+                " to " +
+                genericDelegationItem.delegatedTo
 
-            const details =
-              "object ID: " +
-              masterId +
-              "; generic delegation from " +
-              genericDelegationItem.owner +
-              " to " +
-              genericDelegationItem.delegatedTo
+              if (!objectId) console.warn("Object id is empty; " + details)
+              if (!genericSecretId) console.warn("Secret id is empty; " + details)
 
-            if (!objectId) console.warn("Object id is empty; " + details)
-            if (!genericSecretId) console.warn("Secret id is empty; " + details)
+              if (objectId !== masterId) {
+                /*console.log(
+                  "Cryptographic mistake: object ID is not equal to the expected concatenated id within decrypted generic delegation. This may happen when patients have been merged; " +
+                    details
+                )*/
+              }
 
-            if (objectId !== masterId) {
+              return genericSecretId
+            })
+            .catch(err => {
               console.log(
-                "Cryptographic mistake: object ID is not equal to the expected concatenated id within decrypted generic delegation. This may happen when patients have been merged; " +
-                  details
+                `Could not decrypt generic delegation in object with ID: ${masterId} from ${
+                  genericDelegationItem.owner
+                } to ${genericDelegationItem.delegatedTo}: ${err}`
               )
-            }
-
-            return genericSecretId
-          })
-          .catch(err => {
-            console.log(
-              `Could not decrypt generic delegation in object with ID: ${masterId} from ${
-                genericDelegationItem.owner
-              } to ${genericDelegationItem.delegatedTo}: ${err}`
-            )
-            return undefined
-          })
-      )
+              return undefined
+            })
+        )
+      } else {
+        console.log(`Could not find aes key for object with ID: ${masterId}`)
+      }
     }
 
     return Promise.all(decryptPromises).then(
@@ -1401,69 +1522,64 @@ export class IccCryptoXApi {
   generateKeyForDelegate(
     ownerId: string,
     delegateId: string
-  ): Promise<models.HealthcarePartyDto | models.PatientDto> {
+  ): PromiseLike<models.HealthcarePartyDto | models.PatientDto> {
     //Preload hcp and patient because we need them and they are going to be invalidated from the caches
-    return Promise.all([this.getHcpOrPatient(ownerId), this.getHcpOrPatient(delegateId)]).then(
-      ([owner, delegate]) => {
-        const ownerType = this.getCachedHcpOrPatientType(owner.id!!)
+    return this.utils.notConcurrent(this.generateKeyConcurrencyMap, ownerId, () =>
+      Promise.all([this.getHcpOrPatient(ownerId), this.getHcpOrPatient(delegateId)]).then(
+        ([owner, delegate]) => {
+          if ((owner.hcPartyKeys || {})[delegateId]) {
+            return owner
+          }
+          const ownerType =
+            owner.constructor && owner.constructor.name === "PatientDto" ? "patient" : "hcp"
+          const genProm = new Promise<
+            [null | "hcp" | "patient", models.HealthcarePartyDto | models.PatientDto]
+          >((resolve, reject) => {
+            delegate.publicKey
+              ? this._AES
+                  .generateCryptoKey(true)
+                  .then(AESKey => {
+                    const ownerPubKey = utils.spkiToJwk(utils.hex2ua(owner.publicKey!))
+                    const delegatePubKey = utils.spkiToJwk(utils.hex2ua(delegate.publicKey!))
 
-        const genProm = new Promise<
-          [null | "hcp" | "patient", models.HealthcarePartyDto | models.PatientDto]
-        >((resolve, reject) => {
-          delegate.publicKey
-            ? this._AES
-                .generateCryptoKey(true)
-                .then(AESKey => {
-                  const ownerPubKey = utils.spkiToJwk(utils.hex2ua(owner.publicKey!))
-                  const delegatePubKey = utils.spkiToJwk(utils.hex2ua(delegate.publicKey!))
-
-                  return Promise.all([
-                    this._RSA.importKey("jwk", ownerPubKey, ["encrypt"]),
-                    this._RSA.importKey("jwk", delegatePubKey, ["encrypt"])
-                  ]).then(([ownerImportedKey, delegateImportedKey]) =>
-                    Promise.all([
-                      this._RSA.encrypt(ownerImportedKey, this._utils.hex2ua(AESKey as string)),
-                      this._RSA.encrypt(delegateImportedKey, this._utils.hex2ua(AESKey as string))
-                    ])
+                    return Promise.all([
+                      this._RSA.importKey("jwk", ownerPubKey, ["encrypt"]),
+                      this._RSA.importKey("jwk", delegatePubKey, ["encrypt"])
+                    ]).then(([ownerImportedKey, delegateImportedKey]) =>
+                      Promise.all([
+                        this._RSA.encrypt(ownerImportedKey, this._utils.hex2ua(AESKey as string)),
+                        this._RSA.encrypt(delegateImportedKey, this._utils.hex2ua(AESKey as string))
+                      ])
+                    )
+                  })
+                  .then(
+                    ([ownerKey, delegateKey]) =>
+                      (owner.hcPartyKeys![delegateId] = [
+                        this._utils.ua2hex(ownerKey),
+                        this._utils.ua2hex(delegateKey)
+                      ])
                   )
-                })
-                .then(
-                  ([ownerKey, delegateKey]) =>
-                    (owner.hcPartyKeys![delegateId] = [
-                      this._utils.ua2hex(ownerKey),
-                      this._utils.ua2hex(delegateKey)
-                    ])
-                )
-                .then(() => {
-                  ownerType === "hcp"
-                    ? this.hcpartyBaseApi
-                        .modifyHealthcareParty(owner as HealthcarePartyDto)
-                        .then((hcp: HealthcarePartyDto) => resolve(["hcp", hcp]))
-                    : this.patientBaseApi
-                        .modifyPatient(owner as PatientDto)
-                        .then((pat: PatientDto) => resolve(["patient", pat]))
-                })
-                .catch(e => reject(e))
-            : reject(new Error(`Missing public key for delegate ${delegateId}`))
-        })
-
-        //Those caches are invalidated first so that subsequents call to hcPartiesRequestsCache or hcPartyKeysRequestsCache take into account the newly generated keys
-        //And we do not have parallel processes for keys generations
-        // invalidate the hcp cache for the modified hcp
-        this.hcPartiesRequestsCache[ownerId] = {
-          entityType: null,
-          entity: genProm.then(hcpOrPat => {
-            this.hcPartiesRequestsCache[ownerId].entityType = hcpOrPat[0]
-            return hcpOrPat[1]
+                  .then(() => {
+                    ownerType === "hcp"
+                      ? this.hcpartyBaseApi
+                          .modifyHealthcareParty(owner as HealthcarePartyDto)
+                          .then((hcp: HealthcarePartyDto) => resolve(["hcp", hcp]))
+                      : this.patientBaseApi
+                          .modifyPatient(owner as PatientDto)
+                          .then((pat: PatientDto) => resolve(["patient", pat]))
+                  })
+                  .catch(e => reject(e))
+              : reject(new Error(`Missing public key for delegate ${delegateId}`))
           })
+
+          // invalidate the hcPartyKeys cache for the delegate hcp (who was not modified, but the view for its
+          // id was updated)
+          this.hcPartyKeysRequestsCache[delegateId] = genProm.then(() =>
+            this.forceGetHcPartyKeysForDelegate(delegateId)
+          )
+          return genProm.then(res => res[1])
         }
-        // invalidate the hcPartyKeys cache for the delegate hcp (who was not modified, but the view for its
-        // id was updated)
-        this.hcPartyKeysRequestsCache[delegateId] = genProm.then(() =>
-          this.forceGetHcPartyKeysForDelegate(delegateId)
-        )
-        return genProm.then(res => res[1])
-      }
+      )
     )
   }
 

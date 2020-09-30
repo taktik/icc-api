@@ -40,6 +40,25 @@ export class UtilsClass {
     return this.ua2ArrayBuffer(this.text2ua(atob(s)))
   }
 
+  notConcurrent<T>(
+    concurrencyMap: { [key: string]: PromiseLike<T> },
+    key: string,
+    proc: () => PromiseLike<T>
+  ): PromiseLike<T> {
+    let inFlight = concurrencyMap[key]
+    if (!inFlight) {
+      return (concurrencyMap[key] = (async () => {
+        try {
+          return await proc()
+        } finally {
+          delete concurrencyMap[key]
+        }
+      })())
+    } else {
+      return concurrencyMap[key].then(() => this.notConcurrent(concurrencyMap, key, proc))
+    }
+  }
+
   /**
    * Hex String to Uint8Array
    *
@@ -92,7 +111,8 @@ export class UtilsClass {
     }
   }
 
-  pkcs8ToJwk(buf: Uint8Array) {
+  pkcs8ToJwk(buff: Uint8Array | ArrayBuffer) {
+    let buf = new Uint8Array(buff)
     var hex = this.ua2hex(buf)
     if (!hex.startsWith("3082") || !hex.substr(8).startsWith("0201000282010100")) {
       hex = hex.substr(52)

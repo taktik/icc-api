@@ -203,7 +203,7 @@ export class RSAUtils {
       throw "Your browser does not support HTML5 Browser Local Storage !"
     }
     //TODO decryption
-    return JSON.parse(localStorage.getItem(this.rsaLocalStoreIdPrefix + id) as string)
+    return JSON.parse((localStorage.getItem(this.rsaLocalStoreIdPrefix + id) as string) || "{}")
   }
 
   /**
@@ -216,16 +216,27 @@ export class RSAUtils {
     return new Promise(
       (resolve: (value: { publicKey: CryptoKey; privateKey: CryptoKey }) => any, reject) => {
         try {
-          var jwkKeyPair = JSON.parse(localStorage.getItem(
-            this.rsaLocalStoreIdPrefix + id
-          ) as string)
-          this.importKeyPair("jwk", jwkKeyPair.privateKey, "jwk", jwkKeyPair.publicKey).then(
-            resolve,
-            err => {
-              console.log("Error in RSA.importKeyPair: " + err)
-              reject(err)
+          const jwkKey = localStorage.getItem(this.rsaLocalStoreIdPrefix + id) as string
+          if (jwkKey) {
+            const jwkKeyPair = JSON.parse(jwkKey)
+            if (jwkKeyPair.publicKey && jwkKeyPair.privateKey) {
+              this.importKeyPair("jwk", jwkKeyPair.privateKey, "jwk", jwkKeyPair.publicKey).then(
+                resolve,
+                err => {
+                  console.log("Error in RSA.importKeyPair: " + err)
+                  reject(err)
+                }
+              )
+            } else {
+              const message = "Error in RSA.importKeyPair: Invalid key"
+              console.log(message)
+              reject(Error(message))
             }
-          )
+          } else {
+            const message = "Error in RSA.importKeyPair: Missing key"
+            console.log(message)
+            reject(Error(message))
+          }
         } catch (err) {
           reject(err)
         }

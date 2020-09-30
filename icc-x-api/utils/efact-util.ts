@@ -40,7 +40,9 @@ const base36UUID = new UuidEncoder()
 function ensureNoFederation(invoices: Array<InvoiceWithPatient>, insurances: Array<InsuranceDto>) {
   // We will check here for recipient which are federations (except 306).
 
-  const federations = insurances.filter(i => i.code !== "306" && i.id === i.parent)
+  const federations = insurances.filter(
+    i => i.code !== "306" && i.code !== "675" && i.id === i.parent
+  )
 
   if (federations.length > 0) {
     console.error(
@@ -165,7 +167,7 @@ export function toInvoiceBatch(
   insuranceApi: iccInsuranceApi,
   invoiceXApi: IccInvoiceXApi,
   messageXApi: IccMessageXApi,
-  flatrateInvoice: boolean = false
+  flatraterInvoice: boolean = false
 ): Promise<InvoicesBatch> {
   return insuranceApi
     .getInsurances(
@@ -197,8 +199,8 @@ export function toInvoiceBatch(
 
             invoicesBatch.batchRef = batchRef
             invoicesBatch.fileRef = fileRef
-            invoicesBatch.magneticInvoice = flatrateInvoice
-            if (flatrateInvoice) {
+            invoicesBatch.magneticInvoice = flatraterInvoice //flatrateInvoice have some different fields
+            if (flatraterInvoice) {
               invoicesBatch.invoiceContent = 0
             }
             invoicesBatch.invoices = _.map(
@@ -220,7 +222,7 @@ export function toInvoiceBatch(
                   invWithPat.patientDto,
                   insurance,
                   relatedInvoiceInfo,
-                  flatrateInvoice
+                  flatraterInvoice
                 )
               }
             )
@@ -259,7 +261,7 @@ function toInvoice(
   patientDto: PatientDto,
   insurance: InsuranceDto,
   relatedInvoiceInfo: RelatedInvoiceInfo | undefined,
-  flatrateInvoice: boolean = false
+  flatraterInvoice: boolean = false
 ): Invoice {
   const invoice = new Invoice({})
   const invoiceYear = moment(invoiceDto.created)
@@ -278,7 +280,7 @@ function toInvoice(
       patientDto,
       invoiceDto,
       invoicingCodeDto,
-      flatrateInvoice
+      flatraterInvoice
     )
   })
   invoice.patient = toPatient(patientDto)
@@ -299,7 +301,7 @@ function toInvoice(
   // TODO : fix me later
   invoice.reason = Invoice.ReasonEnum.Other
   invoice.creditNote = invoiceDto.creditNote
-  if (flatrateInvoice) {
+  if (flatraterInvoice) {
     invoice.startOfCoveragePeriod = invoiceDto.invoicingCodes!![0].contractDate
   }
   return invoice
@@ -310,16 +312,16 @@ function toInvoiceItem(
   patientDto: PatientDto,
   invoiceDto: InvoiceDto,
   invoicingCode: InvoicingCodeDto,
-  flatrateInvoice: boolean = false
+  flatraterInvoice: boolean = false
 ): InvoiceItem {
   const invoiceItem = new InvoiceItem({})
   invoiceItem.codeNomenclature = Number(invoicingCode.tarificationId!!.split("|")[1])
   invoiceItem.dateCode = dateEncode(toMoment(invoicingCode.dateCode!!)!!.toDate())
   invoiceItem.endDateCode =
     invoiceItem.codeNomenclature === 109594
-      ? dateEncode(toMoment(invoicingCode!!.dateCode!!)!!.toDate())
+      ? dateEncode(toMoment(invoicingCode.dateCode!!)!!.toDate())
       : dateEncode(
-          toMoment(invoicingCode!!.dateCode!!)!!
+          toMoment(invoicingCode.dateCode!!)!!
             .endOf("month")
             .toDate()
         )
