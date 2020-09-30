@@ -1099,7 +1099,8 @@ export class IccMessageXApi extends iccMessageApi {
               smallBase36,
               this.insuranceApi,
               this.invoiceXApi,
-              this
+              this,
+              medicalLocationId === "medicalhouse"
             )
           )
           .then(batch =>
