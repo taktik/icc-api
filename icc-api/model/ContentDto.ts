@@ -11,6 +11,7 @@
  */
 import { MeasureDto } from "./MeasureDto"
 import { MedicationDto } from "./MedicationDto"
+import { ServiceDto } from "./ServiceDto"
 
 import { decodeBase64 } from "./ModelHelper"
 
