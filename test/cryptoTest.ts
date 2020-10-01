@@ -125,12 +125,17 @@ describe("Test that contact information can be decrypted", () => {
       expect(check.services[0].content.nl.stringValue).to.equal(
         ctc.services[0].content.nl.stringValue
       )
+      expect(check.services[0].encryptedSelf).to.not.be.null
+
       expect(check.services[1].content.fr.compoundValue[0].content.fr.stringValue).to.equal(
         ctc.services[1].content.fr.compoundValue[0].content.fr.stringValue
       )
+      expect(check.services[1].content.fr.compoundValue[0].encryptedSelf).to.not.be.null
+
       expect(check.services[1].content.fr.compoundValue[1].content.fr.stringValue).to.equal(
         ctc.services[1].content.fr.compoundValue[1].content.fr.stringValue
       )
+      expect(check.services[1].content.fr.compoundValue[1].encryptedSelf).to.not.be.null
     } catch (e) {
       console.log(e)
     }
