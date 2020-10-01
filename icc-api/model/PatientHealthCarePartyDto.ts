@@ -11,6 +11,8 @@
  */
 import { ReferralPeriodDto } from "./ReferralPeriodDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class PatientHealthCarePartyDto {
   constructor(json: JSON | any) {
     Object.assign(this as PatientHealthCarePartyDto, json)

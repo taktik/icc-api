@@ -11,11 +11,16 @@
  */
 import { MeasureDto } from "./MeasureDto"
 import { MedicationDto } from "./MedicationDto"
-import { ServiceDto } from "./ServiceDto"
+
+import { decodeBase64 } from "./ModelHelper"
 
 export class ContentDto {
   constructor(json: JSON | any) {
-    Object.assign(this as ContentDto, json)
+    Object.assign(
+      this as ContentDto,
+      json,
+      json.binaryValue ? { binaryValue: decodeBase64(json.binaryValue) } : {}
+    )
   }
 
   stringValue?: string

@@ -18,6 +18,8 @@ import { QuantityDto } from "./QuantityDto"
 import { SamTextDto } from "./SamTextDto"
 import { SupplyProblemDto } from "./SupplyProblemDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class AmppDto {
   constructor(json: JSON | any) {
     Object.assign(this as AmppDto, json)

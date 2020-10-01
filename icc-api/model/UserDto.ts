@@ -12,6 +12,8 @@
 import { PermissionDto } from "./PermissionDto"
 import { PropertyStubDto } from "./PropertyStubDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class UserDto {
   constructor(json: JSON | any) {
     Object.assign(this as UserDto, json)

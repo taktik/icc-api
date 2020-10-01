@@ -21,9 +21,15 @@ import { PatientHealthCarePartyDto } from "./PatientHealthCarePartyDto"
 import { PropertyStubDto } from "./PropertyStubDto"
 import { SchoolingInfoDto } from "./SchoolingInfoDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class PatientDto {
   constructor(json: JSON | any) {
-    Object.assign(this as PatientDto, json)
+    Object.assign(
+      this as PatientDto,
+      json,
+      json.picture ? { picture: decodeBase64(json.picture) } : {}
+    )
   }
 
   id?: string

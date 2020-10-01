@@ -18,6 +18,8 @@ import { RenewalDto } from "./RenewalDto"
 import { SubstanceproductDto } from "./SubstanceproductDto"
 import { SuspensionDto } from "./SuspensionDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class MedicationDto {
   constructor(json: JSON | any) {
     Object.assign(this as MedicationDto, json)

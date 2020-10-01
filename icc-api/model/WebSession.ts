@@ -11,16 +11,18 @@
  */
 import { WebSessionMaxIdleTime } from "./WebSessionMaxIdleTime"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class WebSession {
   constructor(json: JSON | any) {
     Object.assign(this as WebSession, json)
   }
 
-  expired?: boolean
-  maxIdleTime?: WebSessionMaxIdleTime
-  started?: boolean
   id?: string
   attributes?: { [key: string]: any }
-  lastAccessTime?: number
+  started?: boolean
+  expired?: boolean
   creationTime?: number
+  lastAccessTime?: number
+  maxIdleTime?: WebSessionMaxIdleTime
 }

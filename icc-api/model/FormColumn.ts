@@ -11,6 +11,8 @@
  */
 import { FormLayoutData } from "./FormLayoutData"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class FormColumn {
   constructor(json: JSON | any) {
     Object.assign(this as FormColumn, json)

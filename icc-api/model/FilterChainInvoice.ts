@@ -12,6 +12,8 @@
 import { AbstractFilterDtoInvoice } from "./AbstractFilterDtoInvoice"
 import { Predicate } from "./Predicate"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class FilterChainInvoice {
   constructor(json: JSON | any) {
     Object.assign(this as FilterChainInvoice, json)

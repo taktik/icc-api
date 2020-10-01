@@ -12,6 +12,8 @@
 import { Invoice } from "./Invoice"
 import { InvoiceSender } from "./InvoiceSender"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class InvoicesBatch {
   constructor(json: JSON | any) {
     Object.assign(this as InvoicesBatch, json)

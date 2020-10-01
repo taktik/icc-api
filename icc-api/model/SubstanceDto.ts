@@ -12,6 +12,8 @@
 import { SamTextDto } from "./SamTextDto"
 import { StandardSubstanceDto } from "./StandardSubstanceDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class SubstanceDto {
   constructor(json: JSON | any) {
     Object.assign(this as SubstanceDto, json)

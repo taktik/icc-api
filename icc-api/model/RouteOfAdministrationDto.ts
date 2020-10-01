@@ -12,6 +12,8 @@
 import { CodeStubDto } from "./CodeStubDto"
 import { SamTextDto } from "./SamTextDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class RouteOfAdministrationDto {
   constructor(json: JSON | any) {
     Object.assign(this as RouteOfAdministrationDto, json)

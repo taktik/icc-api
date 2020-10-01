@@ -11,6 +11,8 @@
  */
 import { ReimbursementDto } from "./ReimbursementDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class DmppDto {
   constructor(json: JSON | any) {
     Object.assign(this as DmppDto, json)

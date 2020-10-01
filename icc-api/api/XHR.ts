@@ -90,7 +90,7 @@ export namespace XHR {
       Object.assign(
         {
           method: method,
-          credentials: "include",
+          credentials: "include" as RequestCredentials,
           headers:
             (headers &&
               headers
@@ -109,8 +109,12 @@ export namespace XHR {
         method === "POST" || method === "PUT"
           ? {
               body:
-                (!contentType || contentType.data) === "application/json"
-                  ? JSON.stringify(data)
+                !contentType || contentType.data === "application/json"
+                  ? JSON.stringify(data, (k, v) => {
+                      return v instanceof ArrayBuffer || v instanceof Uint8Array
+                        ? btoa(new Uint8Array(v).reduce((d, b) => d + String.fromCharCode(b), ""))
+                        : v
+                    })
                   : data
             }
           : {}

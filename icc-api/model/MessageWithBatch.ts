@@ -12,6 +12,8 @@
 import { InvoicesBatch } from "./InvoicesBatch"
 import { MessageDto } from "./MessageDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class MessageWithBatch {
   constructor(json: JSON | any) {
     Object.assign(this as MessageWithBatch, json)

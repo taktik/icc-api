@@ -12,6 +12,8 @@
 import { PropertyTypeStubDto } from "./PropertyTypeStubDto"
 import { TypedValueDtoObject } from "./TypedValueDtoObject"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class PropertyStubDto {
   constructor(json: JSON | any) {
     Object.assign(this as PropertyStubDto, json)

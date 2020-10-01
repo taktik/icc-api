@@ -12,6 +12,8 @@
 import { CodeStubDto } from "./CodeStubDto"
 import { EmployerDto } from "./EmployerDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class EmploymentInfoDto {
   constructor(json: JSON | any) {
     Object.assign(this as EmploymentInfoDto, json)

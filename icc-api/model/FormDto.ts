@@ -12,6 +12,8 @@
 import { CodeStubDto } from "./CodeStubDto"
 import { DelegationDto } from "./DelegationDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class FormDto {
   constructor(json: JSON | any) {
     Object.assign(this as FormDto, json)

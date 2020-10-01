@@ -12,6 +12,8 @@
 import { AbstractFilterDtoPatient } from "./AbstractFilterDtoPatient"
 import { Predicate } from "./Predicate"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class FilterChainPatient {
   constructor(json: JSON | any) {
     Object.assign(this as FilterChainPatient, json)

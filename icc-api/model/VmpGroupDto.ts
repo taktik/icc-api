@@ -13,6 +13,8 @@ import { NoGenericPrescriptionReasonDto } from "./NoGenericPrescriptionReasonDto
 import { NoSwitchReasonDto } from "./NoSwitchReasonDto"
 import { SamTextDto } from "./SamTextDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class VmpGroupDto {
   constructor(json: JSON | any) {
     Object.assign(this as VmpGroupDto, json)

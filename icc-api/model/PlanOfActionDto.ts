@@ -12,6 +12,8 @@
 import { CareTeamMembershipDto } from "./CareTeamMembershipDto"
 import { CodeStubDto } from "./CodeStubDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class PlanOfActionDto {
   constructor(json: JSON | any) {
     Object.assign(this as PlanOfActionDto, json)

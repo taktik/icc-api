@@ -11,6 +11,8 @@
  */
 import { Data } from "./Data"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class Editor {
   constructor(json: JSON | any) {
     Object.assign(this as Editor, json)

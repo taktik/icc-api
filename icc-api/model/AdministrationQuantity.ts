@@ -11,6 +11,8 @@
  */
 import { CodeStubDto } from "./CodeStubDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class AdministrationQuantity {
   constructor(json: JSON | any) {
     Object.assign(this as AdministrationQuantity, json)

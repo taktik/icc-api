@@ -12,6 +12,8 @@
 import { FormSection } from "./FormSection"
 import { Tag } from "./Tag"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class FormLayout {
   constructor(json: JSON | any) {
     Object.assign(this as FormLayout, json)

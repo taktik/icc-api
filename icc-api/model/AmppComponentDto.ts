@@ -12,6 +12,8 @@
 import { DeviceTypeDto } from "./DeviceTypeDto"
 import { PackagingTypeDto } from "./PackagingTypeDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class AmppComponentDto {
   constructor(json: JSON | any) {
     Object.assign(this as AmppComponentDto, json)

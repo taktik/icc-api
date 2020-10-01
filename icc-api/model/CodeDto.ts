@@ -11,6 +11,8 @@
  */
 import { PeriodicityDto } from "./PeriodicityDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class CodeDto {
   constructor(json: JSON | any) {
     Object.assign(this as CodeDto, json)

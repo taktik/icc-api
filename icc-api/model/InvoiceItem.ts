@@ -11,6 +11,8 @@
  */
 import { EIDItem } from "./EIDItem"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class InvoiceItem {
   constructor(json: JSON | any) {
     Object.assign(this as InvoiceItem, json)

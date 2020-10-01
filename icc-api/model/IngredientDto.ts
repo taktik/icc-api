@@ -12,6 +12,8 @@
 import { QuantityDto } from "./QuantityDto"
 import { SubstanceDto } from "./SubstanceDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class IngredientDto {
   constructor(json: JSON | any) {
     Object.assign(this as IngredientDto, json)

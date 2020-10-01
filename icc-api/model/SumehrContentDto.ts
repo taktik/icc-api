@@ -14,6 +14,8 @@ import { PartnershipDto } from "./PartnershipDto"
 import { PatientHealthCarePartyDto } from "./PatientHealthCarePartyDto"
 import { ServiceDto } from "./ServiceDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class SumehrContentDto {
   constructor(json: JSON | any) {
     Object.assign(this as SumehrContentDto, json)

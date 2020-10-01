@@ -13,6 +13,8 @@ import { CodeStubDto } from "./CodeStubDto"
 import { ContentDto } from "./ContentDto"
 import { DelegationDto } from "./DelegationDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class ServiceDto {
   constructor(json: JSON | any) {
     Object.assign(this as ServiceDto, json)
@@ -47,6 +49,7 @@ export class ServiceDto {
   comment?: string
   status?: number
   invoicingCodes?: Array<string>
+  qualifiedLinks?: { [key: string]: Array<string> }
   codes?: Array<CodeStubDto>
   tags?: Array<CodeStubDto>
   encryptedSelf?: string

@@ -15,6 +15,8 @@ import { DelegationDto } from "./DelegationDto"
 import { EpisodeDto } from "./EpisodeDto"
 import { PlanOfActionDto } from "./PlanOfActionDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class HealthElementDto {
   constructor(json: JSON | any) {
     Object.assign(this as HealthElementDto, json)

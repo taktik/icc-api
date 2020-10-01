@@ -11,6 +11,8 @@
  */
 import { MimeAttachmentDto } from "./MimeAttachmentDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class EmailOrSmsMessageDto {
   constructor(json: JSON | any) {
     Object.assign(this as EmailOrSmsMessageDto, json)

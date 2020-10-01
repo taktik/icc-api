@@ -14,6 +14,8 @@ import { PharmaceuticalFormDto } from "./PharmaceuticalFormDto"
 import { RouteOfAdministrationDto } from "./RouteOfAdministrationDto"
 import { SamTextDto } from "./SamTextDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class AmpComponentDto {
   constructor(json: JSON | any) {
     Object.assign(this as AmpComponentDto, json)

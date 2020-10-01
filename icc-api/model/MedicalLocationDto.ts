@@ -11,6 +11,8 @@
  */
 import { AddressDto } from "./AddressDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class MedicalLocationDto {
   constructor(json: JSON | any) {
     Object.assign(this as MedicalLocationDto, json)

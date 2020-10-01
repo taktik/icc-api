@@ -11,6 +11,8 @@
  */
 import { AgreementAppendixDto } from "./AgreementAppendixDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class ParagraphAgreementDto {
   constructor(json: JSON | any) {
     Object.assign(this as ParagraphAgreementDto, json)

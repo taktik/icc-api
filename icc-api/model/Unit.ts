@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class Unit {
   constructor(json: JSON | any) {
     Object.assign(this as Unit, json)

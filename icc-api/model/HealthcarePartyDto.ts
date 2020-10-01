@@ -14,9 +14,15 @@ import { CodeStubDto } from "./CodeStubDto"
 import { FinancialInstitutionInformationDto } from "./FinancialInstitutionInformationDto"
 import { FlatRateTarificationDto } from "./FlatRateTarificationDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class HealthcarePartyDto {
   constructor(json: JSON | any) {
-    Object.assign(this as HealthcarePartyDto, json)
+    Object.assign(
+      this as HealthcarePartyDto,
+      json,
+      json.picture ? { picture: decodeBase64(json.picture) } : {}
+    )
   }
 
   id?: string

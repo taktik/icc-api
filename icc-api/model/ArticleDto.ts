@@ -13,6 +13,8 @@ import { CodeStubDto } from "./CodeStubDto"
 import { ContentDto } from "./ContentDto"
 import { DelegationDto } from "./DelegationDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class ArticleDto {
   constructor(json: JSON | any) {
     Object.assign(this as ArticleDto, json)

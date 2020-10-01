@@ -10,9 +10,15 @@
  * Do not edit the class manually.
  */
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class MimeAttachmentDto {
   constructor(json: JSON | any) {
-    Object.assign(this as MimeAttachmentDto, json)
+    Object.assign(
+      this as MimeAttachmentDto,
+      json,
+      json.data ? { data: decodeBase64(json.data) } : {}
+    )
   }
 
   data?: ArrayBuffer

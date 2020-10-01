@@ -12,6 +12,8 @@
 import { PaginatedDocumentKeyIdPairObject } from "./PaginatedDocumentKeyIdPairObject"
 import { PatientDto } from "./PatientDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class PaginatedListPatientDto {
   constructor(json: JSON | any) {
     Object.assign(this as PaginatedListPatientDto, json)

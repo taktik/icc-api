@@ -12,6 +12,8 @@
 import { CodeStubDto } from "./CodeStubDto"
 import { RightDto } from "./RightDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class AgendaDto {
   constructor(json: JSON | any) {
     Object.assign(this as AgendaDto, json)

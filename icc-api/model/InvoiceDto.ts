@@ -15,6 +15,8 @@ import { IdentityDocumentReaderDto } from "./IdentityDocumentReaderDto"
 import { InvoicingCodeDto } from "./InvoicingCodeDto"
 import { PaymentDto } from "./PaymentDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class InvoiceDto {
   constructor(json: JSON | any) {
     Object.assign(this as InvoiceDto, json)

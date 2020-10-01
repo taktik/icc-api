@@ -13,6 +13,8 @@ import { HealthElementDto } from "./HealthElementDto"
 import { HealthcarePartyDto } from "./HealthcarePartyDto"
 import { ServiceDto } from "./ServiceDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class SumehrExportInfoDto {
   constructor(json: JSON | any) {
     Object.assign(this as SumehrExportInfoDto, json)

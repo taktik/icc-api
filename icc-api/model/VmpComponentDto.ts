@@ -14,6 +14,8 @@ import { SamTextDto } from "./SamTextDto"
 import { VirtualFormDto } from "./VirtualFormDto"
 import { VirtualIngredientDto } from "./VirtualIngredientDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class VmpComponentDto {
   constructor(json: JSON | any) {
     Object.assign(this as VmpComponentDto, json)

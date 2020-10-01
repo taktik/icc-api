@@ -12,9 +12,15 @@
 import { CodeStubDto } from "./CodeStubDto"
 import { DelegationDto } from "./DelegationDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class DocumentDto {
   constructor(json: JSON | any) {
-    Object.assign(this as DocumentDto, json)
+    Object.assign(
+      this as DocumentDto,
+      json,
+      json.attachment ? { attachment: decodeBase64(json.attachment) } : {}
+    )
   }
 
   id?: string

@@ -13,6 +13,8 @@ import { CodeStubDto } from "./CodeStubDto"
 import { DocumentGroupDto } from "./DocumentGroupDto"
 import { FormLayout } from "./FormLayout"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class FormTemplateDto {
   constructor(json: JSON | any) {
     Object.assign(this as FormTemplateDto, json)

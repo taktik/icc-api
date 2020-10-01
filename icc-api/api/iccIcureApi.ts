@@ -265,7 +265,7 @@ export class iccIcureApi {
    * @param entityName
    * @param warmup
    */
-  updateDesignDoc(entityName: string, warmup: boolean): Promise<boolean> {
+  updateDesignDoc(entityName: string, warmup?: boolean): Promise<boolean> {
     let _body = null
 
     const _url =

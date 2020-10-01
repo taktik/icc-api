@@ -10,9 +10,11 @@
  * Do not edit the class manually.
  */
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class ByteArrayDto {
   constructor(json: JSON | any) {
-    Object.assign(this as ByteArrayDto, json)
+    Object.assign(this as ByteArrayDto, json, json.data ? { data: decodeBase64(json.data) } : {})
   }
 
   data?: ArrayBuffer

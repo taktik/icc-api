@@ -13,6 +13,8 @@ import { HealthcarePartyDto } from "./HealthcarePartyDto"
 import { ReplicationDto } from "./ReplicationDto"
 import { UserDto } from "./UserDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class DatabaseInitialisationDto {
   constructor(json: JSON | any) {
     Object.assign(this as DatabaseInitialisationDto, json)

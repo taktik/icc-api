@@ -12,6 +12,8 @@
 import { AmpDto } from "./AmpDto"
 import { PaginatedDocumentKeyIdPairObject } from "./PaginatedDocumentKeyIdPairObject"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class PaginatedListAmpDto {
   constructor(json: JSON | any) {
     Object.assign(this as PaginatedListAmpDto, json)

@@ -16,6 +16,8 @@ import { VmpGroupStubDto } from "./VmpGroupStubDto"
 import { VtmDto } from "./VtmDto"
 import { WadaDto } from "./WadaDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class VmpDto {
   constructor(json: JSON | any) {
     Object.assign(this as VmpDto, json)

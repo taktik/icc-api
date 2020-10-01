@@ -18,6 +18,8 @@ import { FormPlanning } from "./FormPlanning"
 import { Formula } from "./Formula"
 import { Suggest } from "./Suggest"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class FormLayoutData {
   constructor(json: JSON | any) {
     Object.assign(this as FormLayoutData, json)

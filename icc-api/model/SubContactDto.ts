@@ -12,6 +12,8 @@
 import { CodeStubDto } from "./CodeStubDto"
 import { ServiceLinkDto } from "./ServiceLinkDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class SubContactDto {
   constructor(json: JSON | any) {
     Object.assign(this as SubContactDto, json)

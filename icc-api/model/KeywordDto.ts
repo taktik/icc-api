@@ -12,6 +12,8 @@
 import { CodeStubDto } from "./CodeStubDto"
 import { KeywordSubwordDto } from "./KeywordSubwordDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class KeywordDto {
   constructor(json: JSON | any) {
     Object.assign(this as KeywordDto, json)

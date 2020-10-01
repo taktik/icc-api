@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class ValorisationDto {
   constructor(json: JSON | any) {
     Object.assign(this as ValorisationDto, json)

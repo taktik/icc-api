@@ -11,6 +11,8 @@
  */
 import { SamTextDto } from "./SamTextDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class DeviceTypeDto {
   constructor(json: JSON | any) {
     Object.assign(this as DeviceTypeDto, json)

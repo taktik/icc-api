@@ -13,6 +13,8 @@ import { CodeStubDto } from "./CodeStubDto"
 import { DelegationDto } from "./DelegationDto"
 import { TimeTableItemDto } from "./TimeTableItemDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class TimeTableDto {
   constructor(json: JSON | any) {
     Object.assign(this as TimeTableDto, json)

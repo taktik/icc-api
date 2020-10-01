@@ -11,6 +11,8 @@
  */
 import { PermissionCriterionDto } from "./PermissionCriterionDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class PermissionDto {
   constructor(json: JSON | any) {
     Object.assign(this as PermissionDto, json)

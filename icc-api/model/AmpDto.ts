@@ -15,6 +15,8 @@ import { CompanyDto } from "./CompanyDto"
 import { SamTextDto } from "./SamTextDto"
 import { VmpStubDto } from "./VmpStubDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class AmpDto {
   constructor(json: JSON | any) {
     Object.assign(this as AmpDto, json)

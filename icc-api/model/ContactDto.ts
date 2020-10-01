@@ -14,6 +14,8 @@ import { DelegationDto } from "./DelegationDto"
 import { ServiceDto } from "./ServiceDto"
 import { SubContactDto } from "./SubContactDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class ContactDto {
   constructor(json: JSON | any) {
     Object.assign(this as ContactDto, json)

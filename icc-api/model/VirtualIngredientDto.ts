@@ -12,6 +12,8 @@
 import { StrengthRangeDto } from "./StrengthRangeDto"
 import { SubstanceDto } from "./SubstanceDto"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class VirtualIngredientDto {
   constructor(json: JSON | any) {
     Object.assign(this as VirtualIngredientDto, json)

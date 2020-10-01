@@ -13,6 +13,8 @@ import { AdministrationQuantity } from "./AdministrationQuantity"
 import { CodeStubDto } from "./CodeStubDto"
 import { Weekday } from "./Weekday"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class RegimenItemDto {
   constructor(json: JSON | any) {
     Object.assign(this as RegimenItemDto, json)

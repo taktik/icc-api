@@ -11,14 +11,16 @@
  */
 import { WebSessionMaxIdleTimeUnits } from "./WebSessionMaxIdleTimeUnits"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class WebSessionMaxIdleTime {
   constructor(json: JSON | any) {
     Object.assign(this as WebSessionMaxIdleTime, json)
   }
 
   seconds?: number
-  negative?: boolean
-  zero?: boolean
   units?: Array<WebSessionMaxIdleTimeUnits>
+  zero?: boolean
+  negative?: boolean
   nano?: number
 }

@@ -12,6 +12,8 @@
 import { AbstractFilterDtoCode } from "./AbstractFilterDtoCode"
 import { Predicate } from "./Predicate"
 
+import { decodeBase64 } from "./ModelHelper"
+
 export class FilterChainCode {
   constructor(json: JSON | any) {
     Object.assign(this as FilterChainCode, json)
