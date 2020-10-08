@@ -127,7 +127,7 @@ export namespace XHR {
           error: string
           message: string
           status: number
-        } = await response.blob().then(async data => await new Response(data).json())
+        } = await response.json()
         throw new XHRError(error.message, error.status, error.error, response.headers)
       }
       const ct = contentTypeOverride || response.headers.get("content-type") || "text/plain"

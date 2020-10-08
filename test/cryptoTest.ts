@@ -85,6 +85,30 @@ async function initKeys(api: Api, user: UserDto) {
   }
 }
 
+describe("Test that patient information can be decrypted", () => {
+  it("should return a contact with decrypted information", async () => {
+    try {
+      const user = await api.usericc.getCurrentUser()
+      await initKeys(api, user)
+
+      const pat = await api.patienticc.getPatientWithUser(
+        user,
+        "Pat_2015022022080888491_ms-gerard-delacroix-prd-10c50a01-5670-477b-a4a1-e6bb737325ce"
+      )
+
+      expect(pat.delegations).to.not.empty
+
+      const contacts = await api.contacticc.findBy(user.healthcarePartyId!, pat)
+      const hes = await api.helementicc.findBy(user.healthcarePartyId!, pat)
+
+      expect(contacts).to.not.empty
+      expect(hes).to.not.empty
+    } catch (e) {
+      console.log(e)
+    }
+  })
+})
+
 describe("Test that contact information can be decrypted", () => {
   it("should return a contact with decrypted information", async () => {
     try {
@@ -141,7 +165,6 @@ describe("Test that contact information can be decrypted", () => {
     }
   })
 })
-
 describe("test that confidential helement information cannot be retrieved at MH level", () => {
   it("should find the confidential data only when logged as the user", async () => {
     try {
