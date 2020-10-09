@@ -159,6 +159,7 @@ export class iccCodeApi {
    * @param type
    * @param code
    * @param version
+   * @param startKey The start key for pagination
    * @param startDocumentId A code document ID
    * @param limit Number of rows
    */
@@ -167,6 +168,7 @@ export class iccCodeApi {
     type?: string,
     code?: string,
     version?: string,
+    startKey?: string,
     startDocumentId?: string,
     limit?: number
   ): Promise<PaginatedListCodeDto> {
@@ -181,6 +183,7 @@ export class iccCodeApi {
       (type ? "&type=" + encodeURIComponent(String(type)) : "") +
       (code ? "&code=" + encodeURIComponent(String(code)) : "") +
       (version ? "&version=" + encodeURIComponent(String(version)) : "") +
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
       (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
