@@ -12,8 +12,8 @@ export type PaginatorExecutor<X> = (
 
 export interface PaginatorResponse<X> {
   rows: Array<X>
-  nextKey: any | null
-  nextDocId: string | null
+  nextKey: any | null | undefined
+  nextDocId: string | null | undefined
   done: boolean
 }
 
@@ -68,8 +68,8 @@ export async function getRowsUsingPagination<X>(
     limit: number | undefined
   ) => {
     const newResult = await paginator(
-      latestResult.nextKey,
-      latestResult.nextDocId,
+      latestResult.nextKey || null,
+      latestResult.nextDocId || null,
       endIdx && startIdx ? endIdx - startIdx : undefined
     )
     const rows = (filter ? newResult.rows && newResult.rows.filter(filter) : newResult.rows) || []
@@ -233,8 +233,8 @@ export async function getRowsUsingPagination<X>(
           rows,
           startIdx: missing.missing[0],
           endIdx: missing.missing[1],
-          nextKey,
-          nextDocId
+          nextKey: nextKey || null,
+          nextDocId: nextDocId || null
         }
       })
     )
