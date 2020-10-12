@@ -61,7 +61,8 @@ describe("Create a patient from scratch", () => {
           firstName: "Joe",
           note: "A secured note that is encrypted"
         })
-      )
+      ) //curl -X POST "https://kraken.svc.icure.cloud/rest/v1/patient" -u abdemo:knalou -H  "Content-Type: application/json" -d '{"id":"e4ca63b6-f9bf-4b7d-802d-d704394dde95","lastName":"Biden","firstName":"Joe",note:"A secured note that is encrypted", "delegations":{...}, "encryptedKeys":{...}, "encryptedSelf":"..."'
+
       console.log(
         `Created patient (decrypted): ${patient.id}: ${patient.firstName} ${
           patient.lastName
