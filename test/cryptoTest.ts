@@ -59,9 +59,7 @@ describe("Create a patient from scratch", () => {
           id: api.cryptoicc.randomUuid(),
           lastName: "Biden",
           firstName: "Joe",
-          note:
-            "A very long note that should increase the size of the encryptedSelf key inside the patient",
-          dateOfBirth: 19401010
+          note: "A secured note that is encrypted"
         })
       )
       console.log(
