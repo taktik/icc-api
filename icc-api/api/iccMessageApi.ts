@@ -223,9 +223,9 @@ export class iccMessageApi {
       (transportGuid ? "&transportGuid=" + transportGuid : "") +
       (received ? "&received=" + received : "") +
       (startKey ? "&startKey=" + startKey : "") +
-      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(startDocumentId) : "") + // FIXME: genloc: (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
       (limit ? "&limit=" + limit : "") +
-      (hcpId ? "&hcpId=" + hcpId : "")
+      (hcpId ? "&hcpId=" + encodeURIComponent(hcpId) : "") // FIXME: genloc:  (hcpId ? "&hcpId=" + hcpId : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
