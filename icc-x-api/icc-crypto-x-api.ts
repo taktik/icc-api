@@ -154,24 +154,134 @@ export class IccCryptoXApi {
   encryptedShamirRSAKey(
     hcp: HealthcarePartyDto,
     notaries: Array<HealthcarePartyDto>,
-    threshold: number
-  ): Promise<Map<String, String>> {
-    const kp = this._RSA.loadKeyPairNotImported(hcp.id!)
-    return this._RSA.exportKey(kp.privateKey, "pkcs8").then(exportedKey => {
-      const pk = exportedKey as ArrayBuffer
-      const shares = this._shamir.share(this._utils.ua2hex(pk), notaries.length, threshold)
-      return Promise.all(
-        notaries.map((notary, idx) => {
-          const notaryPubKey = utils.spkiToJwk(utils.hex2ua(notary.publicKey!))
-          return this._RSA
-            .importKey("jwk", notaryPubKey, ["encrypt"])
-            .then(key => {
-              this._RSA.encrypt(key, this._utils.hex2ua(shares[idx]))
+    threshold?: number
+  ): Promise<HealthcarePartyDto> {
+    return this._RSA.loadKeyPairImported(hcp.id!).then(keyPair =>
+      this._RSA.exportKey(keyPair.privateKey, "pkcs8").then(exportedKey => {
+        const privateKey = exportedKey as ArrayBuffer
+        const nLen = notaries.length
+        const shares =
+          nLen == 1
+            ? [privateKey]
+            : this._shamir
+                .share(this._utils.ua2hex(privateKey), nLen, threshold || nLen)
+                .map(share => this.utils.hex2ua(share))
+
+        return _.reduce(
+          notaries,
+          (queue, notary, idx) => {
+            return queue.then(async hcp => {
+              const hcParty = hcp.hcPartyKeys![notary.id!]
+                ? hcp
+                : ((await this.generateKeyForDelegate(hcp.id!, notary.id!)) as HealthcarePartyDto)
+
+              try {
+                const importedAESHcPartyKey = await this.decryptHcPartyKey(
+                  hcParty.id!,
+                  notary.id!,
+                  hcParty.hcPartyKeys![notary.id!][1],
+                  false
+                )
+                const encryptedShamirPartition = await this.AES.encrypt(
+                  importedAESHcPartyKey.key,
+                  shares[idx]
+                )
+
+                hcParty.privateKeyShamirPartitions = hcParty.privateKeyShamirPartitions || {}
+                hcParty.privateKeyShamirPartitions[notary.id!] = this.utils.ua2hex(
+                  encryptedShamirPartition
+                )
+              } catch (e) {
+                console.log("Error during encryptedShamirRSAKey", notary.id, e)
+              }
+              return hcParty
             })
-            .then(k => [notary.id, k])
-        })
-      ).then(keys => _.fromPairs(keys) as Map<string, string>)
-    })
+          },
+          Promise.resolve(hcp)
+        )
+      })
+    )
+  }
+
+  /* Reconstructs the hcp's private key from the notaries' shamir shares and stores it in localstorage.
+  The retrieval procedure of the shares is not designed or implemented yet.  Therefore, it currently only
+  works if the private key of the notaries are stored in local storage (e.g. notaries = [hcp parent]).
+   * @param hcp : the hcp whose key we want to reconstruct
+   * @param notaries : holders of the shamir shares
+  **/
+  async decryptedShamirRSAKey(
+    hcp: HealthcarePartyDto,
+    notaries: Array<HealthcarePartyDto>
+  ): Promise<void> {
+    try {
+      const nLen = notaries.length
+      let decryptedPrivatedKey
+      if (nLen == 1) {
+        const importedAESHcPartyKey = await this.decryptHcPartyKey(
+          hcp.id!,
+          notaries[0].id!,
+          hcp.hcPartyKeys![notaries[0].id!][1],
+          false
+        )
+        const cryptedPrivatedKey = hcp.privateKeyShamirPartitions![notaries[0].id!]
+        decryptedPrivatedKey = this.utils.ua2hex(
+          await this.AES.decrypt(importedAESHcPartyKey.key, this.utils.hex2ua(cryptedPrivatedKey))
+        )
+      } else {
+        const decryptedShares: string[] = await _.reduce(
+          notaries,
+          (queue, notary) => {
+            return queue.then(async (shares: string[]) => {
+              try {
+                // TODO: now, we get the encrypted shares in db and decrypt them. This assumes that the
+                // the notaries' private keys are in localstorage. We should implement a way for the notaries to
+                // give hcp the decrypted shares without having to also share their private keys.
+                const importedAESHcPartyKey = await this.decryptHcPartyKey(
+                  hcp.id!,
+                  notary.id!,
+                  hcp.hcPartyKeys![notary.id!][1],
+                  false
+                )
+                const encryptedShare = hcp.privateKeyShamirPartitions![notary.id!]
+                const decryptedShamirPartition = this.utils.ua2hex(
+                  await this.AES.decrypt(
+                    importedAESHcPartyKey.key,
+                    this.utils.hex2ua(encryptedShare)
+                  )
+                )
+                shares.push(decryptedShamirPartition)
+              } catch (e) {
+                console.log("Error during encryptedShamirRSAKey", notary.id, e)
+              }
+              return shares
+            })
+          },
+          Promise.resolve([] as string[])
+        )
+
+        decryptedPrivatedKey = this._shamir.combine(decryptedShares)
+      }
+
+      const importedPrivateKey = await this.RSA.importKey(
+        "pkcs8",
+        this.utils.hex2ua(decryptedPrivatedKey),
+        ["decrypt"]
+      )
+      const importedPublicKey = await this.RSA.importKey(
+        "spki",
+        this.utils.hex2ua(hcp.publicKey!),
+        ["encrypt"]
+      )
+
+      const exportedKeyPair = await this.RSA.exportKeys(
+        { publicKey: importedPublicKey, privateKey: importedPrivateKey },
+        "jwk",
+        "jwk"
+      )
+      this.RSA.storeKeyPair(hcp.id!, exportedKeyPair)
+    } catch (e) {
+      console.log("Cannot decrypt shamir RSA key")
+    }
   }
 
   /**
@@ -613,7 +723,7 @@ export class IccCryptoXApi {
                 d: {
                   owner: ownerId,
                   delegatedTo: delegateId,
-                  key: this._utils.ua2hex(cryptedDelegation as ArrayBuffer)
+                  key: this._utils.ua2hex(cryptedDelegation!)
                 },
                 k: modifiedObject.id + ":" + secretIdOfModifiedObject!
               }
