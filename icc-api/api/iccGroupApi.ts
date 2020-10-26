@@ -101,9 +101,12 @@ export class iccGroupApi {
   modifyGroupName(id: string, name: string): Promise<GroupDto> {
     let _body = null
 
-    const _url = this.host + `/group` + "?ts=" + new Date().getTime()
+    const _url =
+      this.host +
+      `/group/${encodeURIComponent(String(id))}/name/${encodeURIComponent(String(name))}` +
+      "?ts=" +
+      new Date().getTime()
     let headers = this.headers
-    name && (headers = headers.concat(new XHR.Header("name", name)))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
       .then(doc => new GroupDto(doc.body as JSON))
       .catch(err => this.handleError(err))
