@@ -305,16 +305,16 @@ export class iccPatientApi {
   }
 
   /**
-   * (key, value) of the map is as follows: (ID of the owner of the encrypted AES key, encrypted AES key)
-   * @summary Get the HcParty encrypted AES keys indexed by owner
-   * @param healthcarePartyId
+   * This endpoint is used to recover all keys that have already been created and that can be used to share information with this patient. It returns a map with the following structure: ID of the owner of the encrypted AES key -> encrypted AES key. The returned encrypted AES keys will have to be decrypted using the patient's private key.
+   * @summary Get the patient (identified by patientId) hcparty keys. Those keys are AES keys (encrypted) used to share information between HCPs and a patient.
+   * @param patientId The patient Id for which information is shared
    */
-  getPatientHcPartyKeysForDelegate(healthcarePartyId: string): Promise<{ [key: string]: string }> {
+  getPatientHcPartyKeysForDelegate(patientId: string): Promise<string> {
     let _body = null
 
     const _url =
       this.host +
-      `/patient/${encodeURIComponent(String(healthcarePartyId))}/keys` +
+      `/patient/${encodeURIComponent(String(patientId))}/keys` +
       "?ts=" +
       new Date().getTime()
     let headers = this.headers

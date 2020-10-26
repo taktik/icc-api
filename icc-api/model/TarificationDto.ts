@@ -24,6 +24,7 @@ export class TarificationDto {
   rev?: string
   deletionDate?: number
   label?: { [key: string]: string }
+  context?: string
   type?: string
   code?: string
   version?: string

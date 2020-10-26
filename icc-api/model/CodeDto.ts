@@ -21,6 +21,7 @@ export class CodeDto {
   id?: string
   rev?: string
   deletionDate?: number
+  context?: string
   type?: string
   code?: string
   version?: string

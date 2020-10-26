@@ -18,6 +18,7 @@ export class CodeStubDto {
   }
 
   id?: string
+  context?: string
   type?: string
   code?: string
   version?: string

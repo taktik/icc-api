@@ -44,6 +44,8 @@ export class DocumentDto {
   otherUtis?: Array<string>
   storedICureDocumentId?: string
   attachmentId?: string
+  idOpeningContact?: string
+  idClosingContact?: string
   secretForeignKeys?: Array<string>
   cryptedForeignKeys?: { [key: string]: Array<DelegationDto> }
   delegations?: { [key: string]: Array<DelegationDto> }

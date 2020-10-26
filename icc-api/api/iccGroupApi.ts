@@ -79,7 +79,7 @@ export class iccGroupApi {
   }
 
   /**
-   * Create a new gorup with associated dbs
+   * List existing groups
    * @summary List groups
    */
   listGroups(): Promise<Array<GroupDto>> {
@@ -89,6 +89,23 @@ export class iccGroupApi {
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new GroupDto(it)))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   * Update existing group name
+   * @summary Update group name
+   * @param id The id of the group
+   * @param name The new name for the group
+   */
+  modifyGroupName(id: string, name: string): Promise<GroupDto> {
+    let _body = null
+
+    const _url = this.host + `/group` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    name && (headers = headers.concat(new XHR.Header("name", name)))
+    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
+      .then(doc => new GroupDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 
