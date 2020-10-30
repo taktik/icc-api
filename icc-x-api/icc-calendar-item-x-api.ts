@@ -182,7 +182,10 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
     body?: models.CalendarItemDto
   ): Promise<models.CalendarItemDto | any> {
     return body
-      ? this.encrypt(user, [_.cloneDeep(body)]).then(items => super.createCalendarItem(items[0]))
+      ? this.encrypt(user, [_.cloneDeep(body)])
+          .then(items => super.createCalendarItem(items[0]))
+          .then(ci => this.decrypt((user.healthcarePartyId || user.patientId)!, [ci]))
+          .then(cis => cis[0])
       : Promise.resolve(null)
   }
 
@@ -304,7 +307,10 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
     body?: models.CalendarItemDto
   ): Promise<models.CalendarItemDto | any> {
     return body
-      ? this.encrypt(user, [_.cloneDeep(body)]).then(items => super.modifyCalendarItem(items[0]))
+      ? this.encrypt(user, [_.cloneDeep(body)])
+          .then(items => super.modifyCalendarItem(items[0]))
+          .then(ci => this.decrypt((user.healthcarePartyId || user.patientId)!, [ci]))
+          .then(cis => cis[0])
       : Promise.resolve(null)
   }
 
