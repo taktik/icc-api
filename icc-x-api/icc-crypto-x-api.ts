@@ -1508,24 +1508,24 @@ export class IccCryptoXApi {
   }
 
   /**
-   * Synchronizes the eHealth certificate between LocalStorage and database.
-   *
-   * The synchronization is two-way with priority to the remote -> local direction:
-   *  - If it exists remotely, store it locally.
-   *  - Otherwise, if it exists locally, upload it.
+   * Synchronizes the eHealth certificate from the database into the LocalStorage, returning information on the presence
+   * of certificate data in either place.
    *
    * @param hcpId The healthcare party id
-   * @returns A Promise that resolves when the synchronization is done
+   * @returns A Promise for an object that represents the existence of a certificate in local storage and in the DB,
+   * through the two boolean properties "local" and "remote".
    */
-  syncEhealthCertificate(hcpId: string): Promise<void> {
+  syncEhealthCertificateFromDatabase(hcpId: string): Promise<{ remote: boolean; local: boolean }> {
     return this.hcpartyBaseApi.getHealthcareParty(hcpId).then((hcp: HealthcarePartyDto) => {
       const remoteCertificate = _.get(hcp.options, this.hcpPreferenceKeyEhealthCertEncrypted)
       const localCertificate = this.getKeychainInBrowserLocalStorageAsBase64(hcp.id)
 
       if (remoteCertificate) {
-        return this.importKeychainInBrowserFromHCP(hcp.id).catch(() => void 0)
-      } else if (localCertificate) {
-        return this.saveKeyChainInHCPFromLocalStorage(hcp.id).catch(() => void 0)
+        return this.importKeychainInBrowserFromHCP(hcp.id)
+          .then(() => ({ local: true, remote: true }))
+          .catch(() => ({ local: !!localCertificate, remote: true }))
+      } else {
+        return { local: !!localCertificate, remote: !!remoteCertificate }
       }
     })
   }
