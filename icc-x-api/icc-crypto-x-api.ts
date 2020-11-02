@@ -1618,27 +1618,24 @@ export class IccCryptoXApi {
   }
 
   /**
-   * Returns true if a key has been set in the localstorage
+   * Synchronizes the eHealth certificate from the database into the LocalStorage, returning information on the presence
+   * of certificate data in either place.
+   *
    * @param hcpId The healthcare party id
+   * @returns A Promise for an object that represents the existence of a certificate in local storage and in the DB,
+   * through the two boolean properties "local" and "remote".
    */
-  syncEhealthCertificate(hcpId: string): Promise<boolean> {
-    return this.hcpartyBaseApi.getHealthcareParty(hcpId).then(hcp => {
-      const crtHCP = _.get(hcp.options, this.hcpPreferenceKeyEhealthCertEncrypted)
-      const crtLC = this.getKeychainInBrowserLocalStorageAsBase64(hcp.id!!)
-      const xor_hcp_localstorage = !(crtHCP && crtLC) && (crtHCP || crtLC)
+  syncEhealthCertificateFromDatabase(hcpId: string): Promise<{ remote: boolean; local: boolean }> {
+    return this.hcpartyBaseApi.getHealthcareParty(hcpId).then((hcp: HealthcarePartyDto) => {
+      const remoteCertificate = _.get(hcp.options, this.hcpPreferenceKeyEhealthCertEncrypted)
+      const localCertificate = this.getKeychainInBrowserLocalStorageAsBase64(hcp.id)
 
-      if (!xor_hcp_localstorage) {
-        // The key is either present in the 2 sources or absent from the 2 sources
-        return !!crtLC
-      }
-      if (crtHCP) {
-        return this.importKeychainInBrowserFromHCP(hcp.id!!)
-          .then(() => true)
-          .catch(() => false)
+      if (remoteCertificate) {
+        return this.importKeychainInBrowserFromHCP(hcp.id)
+          .then(() => ({ local: true, remote: true }))
+          .catch(() => ({ local: !!localCertificate, remote: true }))
       } else {
-        return this.saveKeyChainInHCPFromLocalStorage(hcp.id!!)
-          .then(() => true)
-          .catch(() => false)
+        return { local: !!localCertificate, remote: !!remoteCertificate }
       }
     })
   }
