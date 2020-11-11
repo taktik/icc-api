@@ -5,7 +5,7 @@ export class IccUserXApi extends iccUserApi {
 
   public static api(
     host: string,
-    user: string,
+    username: string,
     password: string,
     fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
     "undefined"
@@ -15,7 +15,7 @@ export class IccUserXApi extends iccUserApi {
         : fetch
   ) {
     const headers = {
-      Authorization: `Basic ${Buffer.from(`$username:$password`).toString("base64")}`
+      Authorization: `Basic ${Buffer.from(`${username}:${password}`).toString("base64")}`
     }
 
     return new IccUserXApi(host, headers, fetchImpl)

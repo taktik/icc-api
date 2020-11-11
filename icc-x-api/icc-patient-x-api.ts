@@ -40,7 +40,7 @@ export class IccPatientXApi extends iccPatientApi {
 
   public static api(
     host: string,
-    user: string,
+    username: string,
     password: string,
     crypto: Crypto = typeof window !== "undefined"
       ? window.crypto
@@ -55,7 +55,7 @@ export class IccPatientXApi extends iccPatientApi {
         : fetch
   ) {
     const headers = {
-      Authorization: `Basic ${Buffer.from(`$username:$password`).toString("base64")}`
+      Authorization: `Basic ${Buffer.from(`${username}:${password}`).toString("base64")}`
     }
     const hcPartyApi = new IccHcpartyXApi(host, headers, fetchImpl)
     const cryptoApi = new IccCryptoXApi(
