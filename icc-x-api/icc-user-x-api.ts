@@ -1,9 +1,25 @@
 import { iccUserApi } from "../icc-api/api/iccUserApi"
-import { XHR } from "../icc-api/api/XHR"
-import * as models from "../icc-api/model/models"
 
 export class IccUserXApi extends iccUserApi {
   fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response>
+
+  public static api(
+    host: string,
+    user: string,
+    password: string,
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
+    "undefined"
+      ? window.fetch
+      : typeof self !== "undefined"
+        ? self.fetch
+        : fetch
+  ) {
+    const headers = {
+      Authorization: `Basic ${Buffer.from(`$username:$password`).toString("base64")}`
+    }
+
+    return new IccUserXApi(host, headers, fetchImpl)
+  }
 
   constructor(
     host: string,
