@@ -1,4 +1,4 @@
-import { iccPatientApi } from "../icc-api/iccApi"
+import { iccPatientApi, iccEntityrefApi, iccAuthApi } from "../icc-api/iccApi"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 import { IccContactXApi } from "./icc-contact-x-api"
 import { IccFormXApi } from "./icc-form-x-api"
@@ -9,20 +9,18 @@ import { IccHelementXApi } from "./icc-helement-x-api"
 import { IccClassificationXApi } from "./icc-classification-x-api"
 
 import * as _ from "lodash"
-import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
 import {
   CalendarItemDto,
   ClassificationDto,
+  DelegationDto,
   DocumentDto,
   IcureStubDto,
   InvoiceDto,
-  ListOfIdsDto,
-  PatientDto
+  ListOfIdsDto
 } from "../icc-api/model/models"
 import { retry } from "./utils/net-utils"
 import { utils } from "./crypto/utils"
-import { DelegationDto } from "../icc-api/model/models"
 import { IccCalendarItemXApi } from "./icc-calendar-item-x-api"
 import { decodeBase64 } from "../icc-api/model/ModelHelper"
 
@@ -39,6 +37,62 @@ export class IccPatientXApi extends iccPatientApi {
   calendarItemApi: IccCalendarItemXApi
 
   private cryptedKeys: Array<string>
+
+  public static api(
+    host: string,
+    user: string,
+    password: string,
+    crypto: Crypto = typeof window !== "undefined"
+      ? window.crypto
+      : typeof self !== "undefined"
+        ? self.crypto
+        : ({} as Crypto),
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
+    "undefined"
+      ? window.fetch
+      : typeof self !== "undefined"
+        ? self.fetch
+        : fetch
+  ) {
+    const headers = {
+      Authorization: `Basic ${Buffer.from(`$username:$password`).toString("base64")}`
+    }
+    const hcPartyApi = new IccHcpartyXApi(host, headers, fetchImpl)
+    const cryptoApi = new IccCryptoXApi(
+      host,
+      headers,
+      hcPartyApi,
+      new iccPatientApi(host, headers, fetchImpl),
+      crypto
+    )
+    return new IccPatientXApi(
+      host,
+      headers,
+      cryptoApi,
+      new IccContactXApi(host, headers, cryptoApi, fetchImpl),
+      new IccFormXApi(host, headers, cryptoApi, fetchImpl),
+      new IccHelementXApi(host, headers, cryptoApi, fetchImpl),
+      new IccInvoiceXApi(
+        host,
+        headers,
+        cryptoApi,
+        new iccEntityrefApi(host, headers, fetchImpl),
+        fetchImpl
+      ),
+      new IccDocumentXApi(
+        host,
+        headers,
+        cryptoApi,
+        new iccAuthApi(host, headers, fetchImpl),
+        fetchImpl
+      ),
+      hcPartyApi,
+      new IccClassificationXApi(host, headers, cryptoApi, fetchImpl),
+      new IccCalendarItemXApi(host, headers, cryptoApi, fetchImpl),
+      ["note"],
+      fetchImpl
+    )
+  }
 
   constructor(
     host: string,
