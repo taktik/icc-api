@@ -191,7 +191,7 @@ export class iccDocumentApi {
 
   /**
    *
-   * @summary Creates a document
+   * @summary Load document's attachment
    * @param documentId
    * @param attachmentId
    * @param enckeys
@@ -223,6 +223,25 @@ export class iccDocumentApi {
   /**
    *
    * @summary Gets a document
+   * @param externalUuid
+   */
+  getDocumentByExternalUuid(externalUuid: string): Promise<DocumentDto> {
+    let _body = null
+
+    const _url =
+      this.host +
+      `/document/externaluuid/${encodeURIComponent(String(externalUuid))}` +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => new DocumentDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   *
+   * @summary Gets a document
    * @param body
    */
   getDocuments(body?: ListOfIdsDto): Promise<Array<DocumentDto>> {
@@ -235,6 +254,25 @@ export class iccDocumentApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new DocumentDto(it)))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   *
+   * @summary Get all documents with externalUuid
+   * @param externalUuid
+   */
+  getDocumentsByExternalUuid(externalUuid: string): Promise<Array<DocumentDto>> {
+    let _body = null
+
+    const _url =
+      this.host +
+      `/document/externaluuid/${encodeURIComponent(String(externalUuid))}/all` +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new DocumentDto(it)))
       .catch(err => this.handleError(err))
   }
@@ -347,6 +385,37 @@ export class iccDocumentApi {
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new IcureStubDto(it)))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   *
+   * @summary Creates a document's attachment
+   * @param body
+   * @param documentId
+   * @param enckeys
+   */
+  setSafeDocumentAttachment(
+    documentId: string,
+    enckeys?: string,
+    body?: ArrayBuffer
+  ): Promise<DocumentDto> {
+    let _body = null
+    _body = body
+
+    const _url =
+      this.host +
+      `/document/attachment` +
+      "?ts=" +
+      new Date().getTime() +
+      (documentId ? "&documentId=" + encodeURIComponent(String(documentId)) : "") +
+      (enckeys ? "&enckeys=" + encodeURIComponent(String(enckeys)) : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/octet-stream"))
+    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
+      .then(doc => new DocumentDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 }

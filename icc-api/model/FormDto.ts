@@ -33,6 +33,7 @@ export class FormDto {
   openingDate?: number
   groupId?: string
   descr?: string
+  externalUuid?: string
   formTemplateId?: string
   contactId?: string
   healthElementId?: string

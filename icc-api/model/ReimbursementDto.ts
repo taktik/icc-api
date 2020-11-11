@@ -28,6 +28,7 @@ export class ReimbursementDto {
   multiple?: ReimbursementDto.MultipleEnum
   temporary?: boolean
   reference?: boolean
+  legalReferencePath?: string
   flatRateSystem?: boolean
   reimbursementBasePrice?: number
   referenceBasePrice?: number

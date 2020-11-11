@@ -41,8 +41,13 @@ export class DocumentDto {
   externalUri?: string
   mainUti?: string
   name?: string
+  version?: string
   otherUtis?: Array<string>
   storedICureDocumentId?: string
+  externalUuid?: string
+  size?: number
+  hash?: string
+  openingContactId?: string
   attachmentId?: string
   idOpeningContact?: string
   idClosingContact?: string

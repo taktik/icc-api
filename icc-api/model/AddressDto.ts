@@ -25,6 +25,7 @@ export class AddressDto {
   postboxNumber?: string
   postalCode?: string
   city?: string
+  state?: string
   country?: string
   note?: string
   telecoms?: Array<TelecomDto>

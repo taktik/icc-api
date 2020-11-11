@@ -256,6 +256,25 @@ export class iccFormApi {
 
   /**
    *
+   * @summary Gets a form
+   * @param externalUuid
+   */
+  getFormByExternalUuid(externalUuid: string): Promise<FormDto> {
+    let _body = null
+
+    const _url =
+      this.host +
+      `/form/externaluuid/${encodeURIComponent(String(externalUuid))}` +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => new FormDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   *
    * @summary Gets a form template by guid
    * @param formTemplateId
    */

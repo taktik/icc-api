@@ -11,6 +11,8 @@
  */
 import { XHR } from "./XHR"
 import { AmpDto } from "../model/AmpDto"
+import { ListOfIdsDto } from "../model/ListOfIdsDto"
+import { NmpDto } from "../model/NmpDto"
 import { PaginatedListAmpDto } from "../model/PaginatedListAmpDto"
 import { PaginatedListNmpDto } from "../model/PaginatedListNmpDto"
 import { PaginatedListVmpDto } from "../model/PaginatedListVmpDto"
@@ -18,6 +20,8 @@ import { PaginatedListVmpGroupDto } from "../model/PaginatedListVmpGroupDto"
 import { PharmaceuticalFormDto } from "../model/PharmaceuticalFormDto"
 import { SamVersionDto } from "../model/SamVersionDto"
 import { SubstanceDto } from "../model/SubstanceDto"
+import { VmpDto } from "../model/VmpDto"
+import { VmpGroupDto } from "../model/VmpGroupDto"
 
 export class iccBesamv2Api {
   host: string
@@ -58,6 +62,36 @@ export class iccBesamv2Api {
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new AmpDto(it)))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   * Returns a list of codes matched with given input. If several types are provided, paginantion is not supported
+   * @summary Finding AMPs by atc code with pagination.
+   * @param atcCode atcCode
+   * @param startKey The start key for pagination: a JSON representation of an array containing all the necessary components to form the Complex Key&#x27;s startKey
+   * @param startDocumentId A amp document ID
+   * @param limit Number of rows
+   */
+  findPaginatedAmpsByAtc(
+    atcCode: string,
+    startKey?: string,
+    startDocumentId?: string,
+    limit?: number
+  ): Promise<PaginatedListAmpDto> {
+    let _body = null
+
+    const _url =
+      this.host +
+      `/be_samv2/vmp/byAtc/${encodeURIComponent(String(atcCode))}` +
+      "?ts=" +
+      new Date().getTime() +
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
+    let headers = this.headers
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => new PaginatedListAmpDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 
@@ -251,7 +285,7 @@ export class iccBesamv2Api {
 
   /**
    * Returns a list of codes matched with given input. If several types are provided, paginantion is not supported
-   * @summary Finding codes by code, type and version with pagination.
+   * @summary Finding VMP groups by language label with pagination.
    * @param language language
    * @param label label
    * @param startKey The start key for pagination: a JSON representation of an array containing all the necessary components to form the Complex Key&#x27;s startKey
@@ -274,6 +308,36 @@ export class iccBesamv2Api {
       new Date().getTime() +
       (language ? "&language=" + encodeURIComponent(String(language)) : "") +
       (label ? "&label=" + encodeURIComponent(String(label)) : "") +
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
+    let headers = this.headers
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => new PaginatedListVmpGroupDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   * Returns a list of codes matched with given input. If several types are provided, paginantion is not supported
+   * @summary Finding VMP groups by cmpgCode with pagination.
+   * @param vmpgCode vmpgCode
+   * @param startKey The start key for pagination: a JSON representation of an array containing all the necessary components to form the Complex Key&#x27;s startKey
+   * @param startDocumentId A vmpgroup document ID
+   * @param limit Number of rows
+   */
+  findPaginatedVmpGroupsByVmpGroupCode(
+    vmpgCode: string,
+    startKey?: string,
+    startDocumentId?: string,
+    limit?: number
+  ): Promise<PaginatedListVmpGroupDto> {
+    let _body = null
+
+    const _url =
+      this.host +
+      `/be_samv2/vmpgroup/byGroupCode/${encodeURIComponent(String(vmpgCode))}` +
+      "?ts=" +
+      new Date().getTime() +
       (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
       (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
@@ -379,6 +443,36 @@ export class iccBesamv2Api {
 
   /**
    * Returns a list of codes matched with given input. If several types are provided, paginantion is not supported
+   * @summary Finding VMPs by group with pagination.
+   * @param vmpCode vmpCode
+   * @param startKey The start key for pagination: a JSON representation of an array containing all the necessary components to form the Complex Key&#x27;s startKey
+   * @param startDocumentId A vmp document ID
+   * @param limit Number of rows
+   */
+  findPaginatedVmpsByVmpCode(
+    vmpCode: string,
+    startKey?: string,
+    startDocumentId?: string,
+    limit?: number
+  ): Promise<PaginatedListVmpDto> {
+    let _body = null
+
+    const _url =
+      this.host +
+      `/be_samv2/vmp/byVmpCode/${encodeURIComponent(String(vmpCode))}` +
+      "?ts=" +
+      new Date().getTime() +
+      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
+      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
+    let headers = this.headers
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => new PaginatedListVmpDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   * Returns a list of codes matched with given input. If several types are provided, paginantion is not supported
    * @summary Get Samv2 version.
    */
   getSamVersion(): Promise<SamVersionDto> {
@@ -388,6 +482,120 @@ export class iccBesamv2Api {
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new SamVersionDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   * Returns a list of amps matched with given input. If several types are provided, paginantion is not supported
+   * @summary Finding AMPs by dmpp code
+   * @param body
+   */
+  listAmpsByDmppCodes(body?: ListOfIdsDto): Promise<Array<AmpDto>> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/be_samv2/amp/byDmppCodes` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new AmpDto(it)))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   * Returns a list of codes matched with given input. If several types are provided, paginantion is not supported
+   * @summary Finding AMPs by group.
+   * @param body
+   */
+  listAmpsByGroupCodes(body?: ListOfIdsDto): Promise<Array<AmpDto>> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/be_samv2/amp/byGroupCodes` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new AmpDto(it)))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   * Returns a list of codes matched with given input. If several types are provided, paginantion is not supported
+   * @summary Finding AMPs by group.
+   * @param body
+   */
+  listAmpsByGroupIds(body?: ListOfIdsDto): Promise<Array<AmpDto>> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/be_samv2/amp/byGroupIds` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new AmpDto(it)))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   * Returns a list of codes matched with given input. If several types are provided, paginantion is not supported
+   * @summary Finding AMPs by vmp code.
+   * @param body
+   */
+  listAmpsByVmpCodes(body?: ListOfIdsDto): Promise<Array<AmpDto>> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/be_samv2/amp/byVmpCodes` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new AmpDto(it)))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   * Returns a list of codes matched with given input. If several types are provided, paginantion is not supported
+   * @summary Finding AMPs by vmp id.
+   * @param body
+   */
+  listAmpsByVmpIds(body?: ListOfIdsDto): Promise<Array<AmpDto>> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/be_samv2/amp/byVmpIds` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new AmpDto(it)))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   * Returns a list of codes matched with given input. If several types are provided, paginantion is not supported
+   * @summary Finding NMPs by cnk id.
+   * @param body
+   */
+  listNmpsByCnks(body?: ListOfIdsDto): Promise<Array<NmpDto>> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/be_samv2/nmp/byCnks` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new NmpDto(it)))
       .catch(err => this.handleError(err))
   }
 
@@ -416,6 +624,63 @@ export class iccBesamv2Api {
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new SubstanceDto(it)))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   * Returns a list of group codes matched with given input. If several types are provided, paginantion is not supported
+   * @summary Finding AMPs by group.
+   * @param body
+   */
+  listVmpGroupsByVmpGroupCodes(body?: ListOfIdsDto): Promise<Array<VmpGroupDto>> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/be_samv2/vmpgroup/byGroupCodes` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new VmpGroupDto(it)))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   * Returns a list of codes matched with given input. If several types are provided, paginantion is not supported
+   * @summary Finding VMPs by group.
+   * @param body
+   */
+  listVmpsByGroupIds(body?: ListOfIdsDto): Promise<Array<VmpDto>> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/be_samv2/vmp/byGroupIds` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new VmpDto(it)))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   * Returns a list of codes matched with given input. If several types are provided, paginantion is not supported
+   * @summary Finding VMPs by group.
+   * @param body
+   */
+  listVmpsByVmpCodes(body?: ListOfIdsDto): Promise<Array<VmpDto>> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/be_samv2/vmp/byVmpCodes` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new VmpDto(it)))
       .catch(err => this.handleError(err))
   }
 }

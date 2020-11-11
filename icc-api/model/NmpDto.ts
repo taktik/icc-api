@@ -24,6 +24,7 @@ export class NmpDto {
   from?: number
   to?: number
   code?: string
+  productId?: string
   category?: string
   commercialStatus?: string
   name?: SamTextDto

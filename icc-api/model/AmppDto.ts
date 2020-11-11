@@ -15,6 +15,7 @@ import { CommercializationDto } from "./CommercializationDto"
 import { CompanyDto } from "./CompanyDto"
 import { DmppDto } from "./DmppDto"
 import { QuantityDto } from "./QuantityDto"
+import { SamText } from "./SamText"
 import { SamTextDto } from "./SamTextDto"
 import { SupplyProblemDto } from "./SupplyProblemDto"
 
@@ -27,6 +28,7 @@ export class AmppDto {
 
   from?: number
   to?: number
+  index?: number
   ctiExtended?: string
   orphan?: boolean
   leafletLink?: SamTextDto
@@ -44,6 +46,7 @@ export class AmppDto {
   deliveryModusCode?: string
   deliveryModus?: SamTextDto
   deliveryModusSpecification?: SamTextDto
+  dhpcLink?: SamText
   distributorCompany?: CompanyDto
   singleUse?: boolean
   speciallyRegulated?: number

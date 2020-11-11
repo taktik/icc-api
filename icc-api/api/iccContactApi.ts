@@ -22,6 +22,7 @@ import { LabelledOccurenceDto } from "../model/LabelledOccurenceDto"
 import { ListOfIdsDto } from "../model/ListOfIdsDto"
 import { PaginatedListContactDto } from "../model/PaginatedListContactDto"
 import { PaginatedListServiceDto } from "../model/PaginatedListServiceDto"
+import { ServiceDto } from "../model/ServiceDto"
 
 export class iccContactApi {
   host: string
@@ -414,6 +415,50 @@ export class iccContactApi {
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new PaginatedListContactDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   * Returns a list of services
+   * @summary List services with provided ids
+   * @param body
+   */
+  listServices(body?: ListOfIdsDto): Promise<Array<ServiceDto>> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/contact/service/byIds` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new ServiceDto(it)))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   * Returns a list of services
+   * @summary List services linked to provided ids
+   * @param body
+   * @param linkType The type of the link
+   */
+  listServicesLinkedTo(linkType?: string, body?: ListOfIdsDto): Promise<Array<ServiceDto>> {
+    let _body = null
+    _body = body
+
+    const _url =
+      this.host +
+      `/contact/service/linkedTo` +
+      "?ts=" +
+      new Date().getTime() +
+      (linkType ? "&linkType=" + encodeURIComponent(String(linkType)) : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new ServiceDto(it)))
       .catch(err => this.handleError(err))
   }
 
