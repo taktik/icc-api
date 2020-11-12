@@ -22,5 +22,12 @@
     "outDir": "./dist",
     "baseUrl": "./"
   },
-  "include": ["index.ts", "icc-api/*", "icc-x-api/*", "icc-api/**/*", "icc-x-api/**/*"]
+  "include": [
+    "index.ts",
+    "node-compat.ts",
+    "icc-api/*",
+    "icc-x-api/*",
+    "icc-api/**/*",
+    "icc-x-api/**/*"
+  ]
 }

@@ -1,24 +1,12 @@
 /* make node behave */
-import { iccPatientApi } from "../icc-api/api/iccPatientApi"
-
-const tmp = require("os").tmpdir()
-const util = require("util")
-import fetch from "node-fetch"
-;(global as any).localStorage = new (require("node-localstorage")).LocalStorage(
-  tmp,
-  5 * 1024 * 1024 * 1024
-)
-;(global as any).fetch = fetch
-;(global as any).Storage = ""
-;(global as any).TextDecoder = util.TextDecoder
-;(global as any).TextEncoder = util.TextEncoder
-
+import { IccPatientApi } from "../icc-api/api/IccPatientApi"
+import { crypto } from "../node-compat"
 import { expect } from "chai"
 import "mocha"
 
-import { Api } from "./api"
-import { UserDto } from "../icc-api/model/UserDto"
-import { PatientDto } from "../icc-api/model/PatientDto"
+import { Api } from "../icc-x-api"
+import { User } from "../icc-api/model/User"
+import { Patient } from "../icc-api/model/Patient"
 
 const privateKeys: { [key: string]: string } = {
   "37d470b5-1931-40e2-b959-af38545d8b67":
@@ -29,35 +17,25 @@ const privateKeys: { [key: string]: string } = {
     "308204bd020100300d06092a864886f70d0101010500048204a7308204a302010002820101009ad2f63357da7bb9b67b235b50f66c4968b391ba3340c4c4a697d0495512bff35f3692ffdcc867fa0602819d9fe9353f049b6c69e2dbf4a987e4d1b88b9475307c41427b33af8c0a6779a8347122f032cb801b54e2ce54e2edef2b1ae1f440a797945a4d0ab541711866ea32d096fe2da943bdd8251345fd8f50b0481e88f52e326a2cc9446d125c9643650182dbebf0272da6004a954acc21f8f47236fa7d3bbb256fb932aceb9b0fe081af27a3b476d0885905526b0e5faaa7d712536b77b05ff29a36b617a17ef611b8876346cc9ff864a295cc9ec2d5fe0efb0d94d99e5db96ea36a96d95ec63de639d243c74c773a4c350236265f71260de0fcd5fbb94b02030100010282010100878dd589b68dd06e155b52e58cc9749e0151d77193964db16fbad3dea0e1bdb633d2f0799cb0ca7899f26fd1b644d51dcbc6d8f10c73508f6e2fe57f129674d472b620a305e9d94ef2b20d977cc6fe4f3ae57b08a35bcbeeb42c072d8e4ff09bcb975448c7eb52d4d66ca4f8c0b0b2f2ff94140fbec6552d5fe161b683259ea3e95278ac83826f0674a4b0b5b6c717087abce79c73c9f6bf7832ef7337d8b07912244c30e3dc59512b8d2ab0fec288d8e561e29985e7eaaaa1e010a52ed025f5fa201c893214a42d9b17eff87752902063a1accc4eb169cd408aec4ee95e588e0bf5fccb6e945e67b965c6fb5d936c1b8cbf5e6dd6f7a9b8b4dd25f68ffcb68102818100ddc101d385681b81f527edb6dce5cb7ca9e2e7cb28fa1187933628bfbc38e9c153cd3783453a7e0ffbd2ad28ef67e879e08744d7148e83b3cb3fb7282ac03feed5d44cb7e70d014b1aef213d0c057d3d6c75653739ee22ba794c0a5f6194db84c6df3e0dddbdf57b1cc114881015f49c26eda572470dc708d2a1abc4c541671b02818100b2bbe5ab2f5d41323c8c9a6b65daf0771f416abc6c8c6b08a2bcd632e6ebba0d9efb6d99b435a3ae5b1b2b3ef450648e361bc6c480902d25b459ad120c05286ab7f91e24ecc8516ba9db086e8dabf5bb4ba97ef1c4c20a751841e472a41132145623eca0ca4fbb3025b4fb7430e0e5258afedb5017c2a0dd66cb8bcf0d172991028180345bc8049b71335d81f70587b1ac88594cfb88634daf8dc807183892dcec4b351c864ddf2ecf5ac8875afd0bb74b3f76d76ed8f037a856ac7306fe45fba21cf65582a5029f09510edcb32d93ee6cb55f75665a99a991f29d38da9d705be7fbd4e3e7fe0ce4186007cb884342c5198a01fca70bf3699775313e1a722629b5019502818006e5ab5234ccb3745dd3cb2db3cb841604b5c089aee2a84ab804f37b19602558db36b69f04ce4117bc5a4b0beddfa051c092c7d3d3663ce7c492e553d9f4e4ff614412beb8086ee3e9b51319390c56ba388c3ce2d585eb6363613f9090f63ce97dfd7ae725877820be83c264547289452e9cf117a123189412a06e2fba40979102818070faf47286b59425cb7c2f617f2b7b1b280b932f131a86b82e63c4fb240525ab40323ab902c507a4aee337f9f95b89aa9151d1ae2882bff497396e680407f5407ca154f20047017022eda8fe0438a473fb38123d36bc51bffc69e3c13fab4ecf16057529265e2c0993ca8886cc019c65e9460fe549b553fa48bb0f3ca0975e78"
 }
 
-const api = new Api(
-  "https://kraken.svc.icure.cloud/rest/v1",
-  {
-    Authorization: `Basic ${Buffer.from("abdemo:knalou").toString("base64")}`
-  },
-  fetch as any
-)
-
-let mhapi = new Api(
-  "https://backendb.svc.icure.cloud/rest/v1",
-  {
-    Authorization: `Basic ${Buffer.from(
-      `${"tz-dev-master-615cd8f9-4951-409b-87d8-116378c66f16/371279d6-cfdb-4ee8-b36d-b1ccb9b8568d"}:${"Ztf993pf"}`
-    ).toString("base64")}`
-  },
-  fetch as any
+const api = Api("http://localhost:16043/rest/v1", "abdemo", "knalou", crypto)
+let mhapi = Api(
+  "https://kraken.icure.dev/rest/v1",
+  "tz-dev-master-615cd8f9-4951-409b-87d8-116378c66f16/371279d6-cfdb-4ee8-b36d-b1ccb9b8568d",
+  "Ztf993pf",
+  crypto
 )
 
 describe("Create a patient from scratch", () => {
   it("should create a patient in the database", async () => {
     try {
-      const user = await api.usericc.getCurrentUser()
+      const user = await api.userApi.getCurrentUser()
       await initKeys(api, user)
 
-      const patient = await api.patienticc.createPatientWithUser(
+      const patient = await api.patientApi.createPatientWithUser(
         user,
-        await api.patienticc.newInstance(
+        await api.patientApi.newInstance(
           user,
-          new PatientDto({
+          new Patient({
             lastName: "Biden",
             firstName: "Joe",
             note: "A secured note that is encrypted"
@@ -71,14 +49,14 @@ describe("Create a patient from scratch", () => {
         } [note:${patient.note}, encryptedSelf:${patient.encryptedSelf}]`
       )
 
-      const fetched = await api.patienticc.getPatientWithUser(user, patient.id)
+      const fetched = await api.patientApi.getPatientWithUser(user, patient.id)
       console.log(
         `Fetched patient (decrypted): ${fetched.id}: ${fetched.firstName} ${
           fetched.lastName
         } [note:${patient.note}, encryptedSelf:${patient.encryptedSelf}]`
       )
 
-      const fetchedWithoutDecryption = await new iccPatientApi(
+      const fetchedWithoutDecryption = await new IccPatientApi(
         "https://kraken.svc.icure.cloud/rest/v1",
         {
           Authorization: `Basic ${Buffer.from("abdemo:knalou").toString("base64")}`
@@ -99,18 +77,18 @@ describe("Create a patient from scratch", () => {
 describe("Init confidential delegation in patient", () => {
   it("should return a patient with a confidential delegation", async () => {
     try {
-      const user = await api.usericc.getCurrentUser()
+      const user = await api.userApi.getCurrentUser()
       await initKeys(api, user)
 
-      const pat = await api.patienticc.newInstance(user, { firstName: "John", lastName: "Doe" })
-      const modifiedPatient = await api.patienticc.initConfidentialDelegation(pat, user)
+      const pat = await api.patientApi.newInstance(user, { firstName: "John", lastName: "Doe" })
+      const modifiedPatient = await api.patientApi.initConfidentialDelegation(pat, user)
 
-      const confidentialDelegationKey = await api.cryptoicc.extractPreferredSfk(
+      const confidentialDelegationKey = await api.cryptoApi.extractPreferredSfk(
         pat,
         user.healthcarePartyId!,
         true
       )
-      const nonConfidentialDelegationKey = await api.cryptoicc.extractPreferredSfk(
+      const nonConfidentialDelegationKey = await api.cryptoApi.extractPreferredSfk(
         pat,
         user.healthcarePartyId!,
         false
@@ -123,35 +101,35 @@ describe("Init confidential delegation in patient", () => {
   })
 })
 
-async function initKeys(api: Api, user: UserDto) {
+async function initKeys(api: any, user: User) {
   let id = user.healthcarePartyId
   while (id) {
-    await api.cryptoicc
-      .loadKeyPairsAsTextInBrowserLocalStorage(id, api.cryptoicc.utils.hex2ua(privateKeys[id]))
-      .catch(error => {
+    await api.cryptoApi
+      .loadKeyPairsAsTextInBrowserLocalStorage(id, api.cryptoApi.utils.hex2ua(privateKeys[id]))
+      .catch((error: any) => {
         console.error("Error: in loadKeyPairsAsTextInBrowserLocalStorage")
         console.error(error)
       })
 
-    id = (await api.hcpartyicc.getHealthcareParty(id)).parentId
+    id = (await api.healthcarePartyApi.getHealthcareParty(id)).parentId
   }
 }
 
 describe("Test that patient information can be decrypted", () => {
   it("should return a contact with decrypted information", async () => {
     try {
-      const user = await api.usericc.getCurrentUser()
+      const user = await api.userApi.getCurrentUser()
       await initKeys(api, user)
 
-      const pat = await api.patienticc.getPatientWithUser(
+      const pat = await api.patientApi.getPatientWithUser(
         user,
         "Pat_2015022022080888491_ms-gerard-delacroix-prd-10c50a01-5670-477b-a4a1-e6bb737325ce"
       )
 
       expect(pat.delegations).to.not.empty
 
-      const contacts = await api.contacticc.findBy(user.healthcarePartyId!, pat)
-      const hes = await api.helementicc.findBy(user.healthcarePartyId!, pat)
+      const contacts = await api.contactApi.findBy(user.healthcarePartyId!, pat)
+      const hes = await api.healthcareElementApi.findBy(user.healthcarePartyId!, pat)
 
       expect(contacts).to.not.empty
       expect(hes).to.not.empty
@@ -164,23 +142,23 @@ describe("Test that patient information can be decrypted", () => {
 describe("Test that contact information can be decrypted", () => {
   it("should return a contact with decrypted information", async () => {
     try {
-      const user = await api.usericc.getCurrentUser()
+      const user = await api.userApi.getCurrentUser()
       await initKeys(api, user)
 
-      const pat = await api.patienticc.createPatientWithUser(
+      const pat = await api.patientApi.createPatientWithUser(
         user,
-        await api.patienticc.newInstance(user, { firstName: "John", lastName: "Doe" })
+        await api.patientApi.newInstance(user, { firstName: "John", lastName: "Doe" })
       )
-      const ctc = await api.contacticc.createContactWithUser(
+      const ctc = await api.contactApi.createContactWithUser(
         user,
-        await api.contacticc.newInstance(user, pat, {
+        await api.contactApi.newInstance(user, pat, {
           services: [
             {
-              id: api.cryptoicc.randomUuid(),
+              id: api.cryptoApi.randomUuid(),
               content: { fr: { stringValue: "Salut" }, nl: { stringValue: "Halo" } }
             },
             {
-              id: api.cryptoicc.randomUuid(),
+              id: api.cryptoApi.randomUuid(),
               content: {
                 fr: {
                   compoundValue: [
@@ -193,7 +171,7 @@ describe("Test that contact information can be decrypted", () => {
           ]
         })
       )
-      const check = await api.contacticc.getContactWithUser(user, ctc.id)
+      const check = await api.contactApi.getContactWithUser(user, ctc.id)
 
       expect(check.services[0].content.fr.stringValue).to.equal(
         ctc.services[0].content.fr.stringValue
@@ -214,22 +192,23 @@ describe("Test that contact information can be decrypted", () => {
       expect(check.services[1].content.fr.compoundValue[1].encryptedSelf).to.not.be.null
     } catch (e) {
       console.log(e)
+      throw e
     }
   })
 })
 describe("test that confidential helement information cannot be retrieved at MH level", () => {
   it("should find the confidential data only when logged as the user", async () => {
     try {
-      const user = await api.usericc.getCurrentUser()
-      const mhUser = await mhapi.usericc.getCurrentUser()
+      const user = await api.userApi.getCurrentUser()
+      const mhUser = await mhapi.userApi.getCurrentUser()
       await initKeys(api, user)
       await initKeys(mhapi, mhUser)
 
-      const pat = await api.patienticc.newInstance(user, { firstName: "John", lastName: "Doe" })
-      const modifiedPatient = (await api.patienticc.initConfidentialDelegation(pat, user))!!
+      const pat = await api.patientApi.newInstance(user, { firstName: "John", lastName: "Doe" })
+      const modifiedPatient = (await api.patientApi.initConfidentialDelegation(pat, user))!!
 
-      await api.helementicc.createHealthElement(
-        await api.helementicc.newInstance(
+      await api.healthcareElementApi.createHealthElement(
+        await api.healthcareElementApi.newInstance(
           user,
           modifiedPatient,
           { descr: "Confidential info" },
@@ -237,11 +216,11 @@ describe("test that confidential helement information cannot be retrieved at MH 
         )
       )
 
-      const retrievedHesAsUser = await api.helementicc.findBy(
+      const retrievedHesAsUser = await api.healthcareElementApi.findBy(
         user.healthcarePartyId!,
         modifiedPatient
       )
-      const retrievedHesAsMh = await mhapi.helementicc.findBy(
+      const retrievedHesAsMh = await mhapi.healthcareElementApi.findBy(
         mhUser.healthcarePartyId!,
         modifiedPatient
       )
@@ -257,17 +236,17 @@ describe("test that confidential helement information cannot be retrieved at MH 
 describe("test that confidential contact information cannot be retrieved at MH level", () => {
   it("should find the confidential data only when logged as the user", async () => {
     try {
-      const user = await api.usericc.getCurrentUser()
-      const mhUser = await mhapi.usericc.getCurrentUser()
+      const user = await api.userApi.getCurrentUser()
+      const mhUser = await mhapi.userApi.getCurrentUser()
       await initKeys(api, user)
       await initKeys(mhapi, mhUser)
 
-      const pat = await api.patienticc.newInstance(user, { firstName: "John", lastName: "Doe" })
-      const modifiedPatient = (await api.patienticc.initConfidentialDelegation(pat, user))!!
+      const pat = await api.patientApi.newInstance(user, { firstName: "John", lastName: "Doe" })
+      const modifiedPatient = (await api.patientApi.initConfidentialDelegation(pat, user))!!
 
-      await api.contacticc.createContactWithUser(
+      await api.contactApi.createContactWithUser(
         user,
-        await api.helementicc.newInstance(
+        await api.healthcareElementApi.newInstance(
           user,
           modifiedPatient,
 
@@ -276,9 +255,9 @@ describe("test that confidential contact information cannot be retrieved at MH l
         )
       )
 
-      await api.contacticc.createContactWithUser(
+      await api.contactApi.createContactWithUser(
         user,
-        await api.helementicc.newInstance(
+        await api.healthcareElementApi.newInstance(
           user,
           modifiedPatient,
 
@@ -287,11 +266,11 @@ describe("test that confidential contact information cannot be retrieved at MH l
         )
       )
 
-      const retrievedCtcsAsUser = await api.contacticc.findBy(
+      const retrievedCtcsAsUser = await api.contactApi.findBy(
         user.healthcarePartyId!,
         modifiedPatient
       )
-      const retrievedCtcsAsMh = await mhapi.contacticc.findBy(
+      const retrievedCtcsAsMh = await mhapi.contactApi.findBy(
         mhUser.healthcarePartyId!,
         modifiedPatient
       )

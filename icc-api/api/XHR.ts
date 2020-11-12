@@ -26,9 +26,11 @@ export namespace XHR {
     errorCode: string
     headers: Headers
     message: string
+    url: string
 
-    constructor(message: string, status: number, errorCode: string, headers: Headers) {
+    constructor(url: string, message: string, status: number, errorCode: string, headers: Headers) {
       super(message)
+      this.url = url
       this.statusCode = status
       this.message = message
       this.errorCode = errorCode
@@ -128,7 +130,7 @@ export namespace XHR {
           message: string
           status: number
         } = await response.json()
-        throw new XHRError(error.message, error.status, error.error, response.headers)
+        throw new XHRError(url, error.message, error.status, error.error, response.headers)
       }
       const ct = contentTypeOverride || response.headers.get("content-type") || "text/plain"
       return (ct.startsWith("application/json")

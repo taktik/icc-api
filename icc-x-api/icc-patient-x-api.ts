@@ -1,4 +1,4 @@
-import { iccPatientApi, iccEntityrefApi, iccAuthApi } from "../icc-api/iccApi"
+import { IccPatientApi, IccEntityrefApi, IccAuthApi } from "../icc-api"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 import { IccContactXApi } from "./icc-contact-x-api"
 import { IccFormXApi } from "./icc-form-x-api"
@@ -11,13 +11,13 @@ import { IccClassificationXApi } from "./icc-classification-x-api"
 import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
 import {
-  CalendarItemDto,
-  ClassificationDto,
-  DelegationDto,
-  DocumentDto,
-  IcureStubDto,
-  InvoiceDto,
-  ListOfIdsDto
+  CalendarItem,
+  Classification,
+  Delegation,
+  Document,
+  IcureStub,
+  Invoice,
+  ListOfIds
 } from "../icc-api/model/models"
 import { retry } from "./utils/net-utils"
 import { utils } from "./crypto/utils"
@@ -25,7 +25,7 @@ import { IccCalendarItemXApi } from "./icc-calendar-item-x-api"
 import { decodeBase64 } from "../icc-api/model/ModelHelper"
 
 // noinspection JSUnusedGlobalSymbols
-export class IccPatientXApi extends iccPatientApi {
+export class IccPatientXApi extends IccPatientApi {
   crypto: IccCryptoXApi
   contactApi: IccContactXApi
   formApi: IccFormXApi
@@ -62,7 +62,7 @@ export class IccPatientXApi extends iccPatientApi {
       host,
       headers,
       hcPartyApi,
-      new iccPatientApi(host, headers, fetchImpl),
+      new IccPatientApi(host, headers, fetchImpl),
       crypto
     )
     return new IccPatientXApi(
@@ -76,14 +76,14 @@ export class IccPatientXApi extends iccPatientApi {
         host,
         headers,
         cryptoApi,
-        new iccEntityrefApi(host, headers, fetchImpl),
+        new IccEntityrefApi(host, headers, fetchImpl),
         fetchImpl
       ),
       new IccDocumentXApi(
         host,
         headers,
         cryptoApi,
-        new iccAuthApi(host, headers, fetchImpl),
+        new IccAuthApi(host, headers, fetchImpl),
         fetchImpl
       ),
       hcPartyApi,
@@ -129,7 +129,7 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   // noinspection JSUnusedGlobalSymbols
-  newInstance(user: models.UserDto, p: any) {
+  newInstance(user: models.User, p: any) {
     const patient = _.extend(
       {
         id: this.crypto.randomUuid(),
@@ -147,10 +147,10 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   initDelegations(
-    patient: models.PatientDto,
-    user: models.UserDto,
+    patient: models.Patient,
+    user: models.User,
     secretForeignKey?: string
-  ): Promise<models.PatientDto> {
+  ): Promise<models.Patient> {
     return this.crypto
       .initObjectDelegations(
         patient,
@@ -188,9 +188,9 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   initConfidentialDelegation(
-    patient: models.PatientDto,
-    user: models.UserDto
-  ): Promise<models.PatientDto | null> {
+    patient: models.Patient,
+    user: models.User
+  ): Promise<models.Patient | null> {
     const ownerId = user.healthcarePartyId || user.patientId
     return this.crypto.extractPreferredSfk(patient, ownerId!!, true).then(k => {
       if (!k) {
@@ -204,7 +204,7 @@ export class IccPatientXApi extends iccPatientApi {
           })
           .then(newDelegation => {
             ;(patient.delegations!![ownerId!!] || (patient.delegations!![ownerId!!] = [])).push(
-              new DelegationDto({
+              new Delegation({
                 owner: ownerId,
                 delegatedTo: ownerId,
                 tag: "confidential",
@@ -221,16 +221,13 @@ export class IccPatientXApi extends iccPatientApi {
     })
   }
 
-  createPatient(body?: models.PatientDto): never {
+  createPatient(body?: models.Patient): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
     )
   }
 
-  createPatientWithUser(
-    user: models.UserDto,
-    body?: models.PatientDto
-  ): Promise<models.PatientDto | any> {
+  createPatientWithUser(user: models.User, body?: models.Patient): Promise<models.Patient | any> {
     return body
       ? this.encrypt(user, [_.cloneDeep(body)])
           .then(pats => super.createPatient(pats[0]))
@@ -254,7 +251,7 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   filterByWithUser(
-    user: models.UserDto,
+    user: models.User,
     startKey?: string,
     startDocumentId?: string,
     limit?: number,
@@ -262,7 +259,7 @@ export class IccPatientXApi extends iccPatientApi {
     sort?: string,
     desc?: boolean,
     body?: models.FilterChainPatient
-  ): Promise<models.PaginatedListPatientDto | any> {
+  ): Promise<models.PaginatedListPatient | any> {
     return super
       .filterPatientsBy(startKey, startDocumentId, limit, skip, sort, desc, body)
       .then(pl => this.decrypt(user, pl.rows!, false).then(dr => Object.assign(pl, { rows: dr })))
@@ -282,14 +279,14 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   findByAccessLogUserAfterDateWithUser(
-    user: models.UserDto,
+    user: models.User,
     userId: string,
     accessType?: string,
     startDate?: number,
     startKey?: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<models.PaginatedListPatientDto | any> {
+  ): Promise<models.PaginatedListPatient | any> {
     return super
       .findByAccessLogUserAfterDate(userId, accessType, startDate, startKey, startDocumentId, limit)
       .then(pl => this.decrypt(user, pl.rows!, false).then(dr => Object.assign(pl, { rows: dr })))
@@ -301,10 +298,7 @@ export class IccPatientXApi extends iccPatientApi {
     )
   }
 
-  findByExternalIdWithUser(
-    user: models.UserDto,
-    externalId: string
-  ): Promise<models.PatientDto | any> {
+  findByExternalIdWithUser(user: models.User, externalId: string): Promise<models.Patient | any> {
     return super
       .findByExternalId(externalId)
       .then(pats => this.decrypt(user, [pats]))
@@ -325,14 +319,14 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   findByNameBirthSsinAutoWithUser(
-    user: models.UserDto,
+    user: models.User,
     healthcarePartyId?: string,
     filterValue?: string,
     startKey?: string,
     startDocumentId?: string,
     limit?: number,
     sortDirection?: string
-  ): Promise<models.PaginatedListPatientDto | any> {
+  ): Promise<models.PaginatedListPatient | any> {
     return super
       .findByNameBirthSsinAuto(
         healthcarePartyId,
@@ -352,11 +346,11 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   fuzzySearchWithUser(
-    user: models.UserDto,
+    user: models.User,
     firstName?: string,
     lastName?: string,
     dateOfBirth?: number
-  ): Promise<Array<models.PatientDto> | any> {
+  ): Promise<Array<models.Patient> | any> {
     return super
       .fuzzySearch(firstName, lastName, dateOfBirth)
       .then(pats => this.decrypt(user, pats))
@@ -368,27 +362,27 @@ export class IccPatientXApi extends iccPatientApi {
     )
   }
 
-  getPatientRaw(patientId: string): Promise<models.PatientDto | any> {
+  getPatientRaw(patientId: string): Promise<models.Patient | any> {
     return super.getPatient(patientId)
   }
 
-  getPatientWithUser(user: models.UserDto, patientId: string): Promise<models.PatientDto | any> {
+  getPatientWithUser(user: models.User, patientId: string): Promise<models.Patient | any> {
     return super
       .getPatient(patientId)
       .then(p => this.decrypt(user, [p]))
       .then(pats => pats[0])
   }
 
-  getPatients(body?: models.ListOfIdsDto): never {
+  getPatients(body?: models.ListOfIds): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
     )
   }
 
   getPatientsWithUser(
-    user: models.UserDto,
-    body?: models.ListOfIdsDto
-  ): Promise<Array<models.PatientDto> | any> {
+    user: models.User,
+    body?: models.ListOfIds
+  ): Promise<Array<models.Patient> | any> {
     return super.getPatients(body).then(pats => this.decrypt(user, pats))
   }
 
@@ -405,13 +399,13 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   listDeletedPatientsWithUser(
-    user: models.UserDto,
+    user: models.User,
     startDate?: number,
     endDate?: number,
     desc?: boolean,
     startDocumentId?: string,
     limit?: number
-  ): Promise<models.PaginatedListPatientDto | any> {
+  ): Promise<models.PaginatedListPatient | any> {
     return super
       .listDeletedPatients(startDate, endDate, desc, startDocumentId, limit)
       .then(pl => this.decrypt(user, pl.rows!, false).then(dr => Object.assign(pl, { rows: dr })))
@@ -424,10 +418,10 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   listDeletedPatientsByNameWithUser(
-    user: models.UserDto,
+    user: models.User,
     firstName?: string,
     lastName?: string
-  ): Promise<Array<models.PatientDto> | any> {
+  ): Promise<Array<models.Patient> | any> {
     return super
       .listDeletedPatientsByName(firstName, lastName)
       .then(rows => this.decrypt(user, rows, false))
@@ -439,10 +433,7 @@ export class IccPatientXApi extends iccPatientApi {
     )
   }
 
-  listOfMergesAfterWithUser(
-    user: models.UserDto,
-    date: number
-  ): Promise<Array<models.PatientDto> | any> {
+  listOfMergesAfterWithUser(user: models.User, date: number): Promise<Array<models.Patient> | any> {
     return super.listOfMergesAfter(date).then(pats => this.decrypt(user, pats, false))
   }
 
@@ -458,12 +449,12 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   listOfPatientsModifiedAfterWithUser(
-    user: models.UserDto,
+    user: models.User,
     date: number,
     startKey?: number,
     startDocumentId?: string,
     limit?: number
-  ): Promise<models.PaginatedListPatientDto | any> {
+  ): Promise<models.PaginatedListPatient | any> {
     return super
       .listOfPatientsModifiedAfter(date, startKey, startDocumentId, limit)
       .then(pl => this.decrypt(user, pl.rows!, false).then(dr => Object.assign(pl, { rows: dr })))
@@ -483,14 +474,14 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   listPatientsWithUser(
-    user: models.UserDto,
+    user: models.User,
     hcPartyId?: string,
     sortField?: string,
     startKey?: string,
     startDocumentId?: string,
     limit?: number,
     sortDirection?: string
-  ): Promise<models.PaginatedListPatientDto | any> {
+  ): Promise<models.PaginatedListPatient | any> {
     return super
       .listPatients(hcPartyId, sortField, startKey, startDocumentId, limit, sortDirection)
       .then(pl => this.decrypt(user, pl.rows!, false).then(dr => Object.assign(pl, { rows: dr })))
@@ -510,14 +501,14 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   listPatientsByHcPartyWithUser(
-    user: models.UserDto,
+    user: models.User,
     hcPartyId: string,
     sortField?: string,
     startKey?: string,
     startDocumentId?: string,
     limit?: number,
     sortDirection?: string
-  ): Promise<models.PaginatedListPatientDto | any> {
+  ): Promise<models.PaginatedListPatient | any> {
     return super
       .listPatientsByHcParty(hcPartyId, sortField, startKey, startDocumentId, limit, sortDirection)
       .then(pl => this.decrypt(user, pl.rows!, false).then(dr => Object.assign(pl, { rows: dr })))
@@ -537,14 +528,14 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   listPatientsOfHcPartyWithUser(
-    user: models.UserDto,
+    user: models.User,
     hcPartyId: string,
     sortField?: string,
     startKey?: string,
     startDocumentId?: string,
     limit?: number,
     sortDirection?: string
-  ): Promise<models.PaginatedListPatientDto | any> {
+  ): Promise<models.PaginatedListPatient | any> {
     return super
       .listPatientsOfHcParty(hcPartyId, sortField, startKey, startDocumentId, limit, sortDirection)
       .then(pl => this.decrypt(user, pl.rows!, false).then(dr => Object.assign(pl, { rows: dr })))
@@ -557,30 +548,27 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   mergeIntoWithUser(
-    user: models.UserDto,
+    user: models.User,
     toId: string,
     fromIds: string
-  ): Promise<models.PatientDto | any> {
+  ): Promise<models.Patient | any> {
     return super
       .mergeInto(toId, fromIds)
       .then(p => this.decrypt(user, [p]))
       .then(pats => pats[0])
   }
 
-  modifyPatient(body?: models.PatientDto): never {
+  modifyPatient(body?: models.Patient): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
     )
   }
 
-  modifyPatientRaw(body?: models.PatientDto): Promise<models.PatientDto | any> {
+  modifyPatientRaw(body?: models.Patient): Promise<models.Patient | any> {
     return super.modifyPatient(body)
   }
 
-  modifyPatientWithUser(
-    user: models.UserDto,
-    body?: models.PatientDto
-  ): Promise<models.PatientDto | null> {
+  modifyPatientWithUser(user: models.User, body?: models.Patient): Promise<models.Patient | null> {
     return body
       ? this.encrypt(user, [_.cloneDeep(body)])
           .then(pats => super.modifyPatient(pats[0]))
@@ -601,19 +589,19 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   modifyPatientReferralWithUser(
-    user: models.UserDto,
+    user: models.User,
     patientId: string,
     referralId: string,
     start?: number,
     end?: number
-  ): Promise<models.PatientDto | any> {
+  ): Promise<models.Patient | any> {
     return super
       .modifyPatientReferral(patientId, referralId, start, end)
       .then(p => this.decrypt(user, [p]))
       .then(pats => pats[0])
   }
 
-  encrypt(user: models.UserDto, pats: Array<models.PatientDto>): Promise<Array<models.PatientDto>> {
+  encrypt(user: models.User, pats: Array<models.Patient>): Promise<Array<models.Patient>> {
     return Promise.all(
       pats.map(p =>
         (p.encryptionKeys && Object.keys(p.encryptionKeys).some(k => !!p.encryptionKeys![k].length)
@@ -652,10 +640,10 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   decrypt(
-    user: models.UserDto,
-    pats: Array<models.PatientDto>,
+    user: models.User,
+    pats: Array<models.Patient>,
     fillDelegations: boolean = true
-  ): Promise<Array<models.PatientDto>> {
+  ): Promise<Array<models.Patient>> {
     return (user.healthcarePartyId
       ? this.hcpartyApi
           .getHealthcareParty(user.healthcarePartyId!)
@@ -671,7 +659,7 @@ export class IccPatientXApi extends iccPatientApi {
           !Object.values(p.delegations).some(d => d.length > 0)
       )
 
-      let prom: Promise<{ [key: string]: models.PatientDto }> = Promise.resolve({})
+      let prom: Promise<{ [key: string]: models.Patient }> = Promise.resolve({})
       fillDelegations &&
         patsWithMissingDelegations.forEach(p => {
           prom = prom.then(acc =>
@@ -685,7 +673,7 @@ export class IccPatientXApi extends iccPatientApi {
         })
 
       return prom
-        .then((acc: { [key: string]: models.PatientDto }) =>
+        .then((acc: { [key: string]: models.Patient }) =>
           pats.map(p => {
             const fixedPatient = acc[p.id!]
             return fixedPatient || p
@@ -746,7 +734,7 @@ export class IccPatientXApi extends iccPatientApi {
     })
   }
 
-  initEncryptionKeys(user: models.UserDto, pat: models.PatientDto) {
+  initEncryptionKeys(user: models.User, pat: models.Patient) {
     const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto.initEncryptionKeys(pat, hcpId!).then(eks => {
       let promise = Promise.resolve(
@@ -778,20 +766,20 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   share(
-    user: models.UserDto,
+    user: models.User,
     patId: string,
     ownerId: string,
     delegateIds: Array<string>,
     delegationTags: { [key: string]: Array<string> }
   ): Promise<{
-    patient: models.PatientDto | null
+    patient: models.Patient | null
     statuses: { [key: string]: { success: boolean | null; error: Error | null } }
   } | null> {
     const addDelegationsAndKeys = (
-      dtos: Array<models.FormDto>,
+      dtos: Array<models.Form>,
       markerPromise: Promise<any>,
       delegateId: string,
-      patient: models.PatientDto | null
+      patient: models.Patient | null
     ) => {
       return dtos.reduce(
         (p, x) =>
@@ -867,14 +855,14 @@ export class IccPatientXApi extends iccPatientApi {
       }
       return retry(() => this.getPatientWithUser(user, patId))
         .then(
-          (patient: models.PatientDto) =>
+          (patient: models.Patient) =>
             patient.encryptionKeys && Object.keys(patient.encryptionKeys || {}).length
               ? Promise.resolve(patient)
-              : this.initEncryptionKeys(user, patient).then((patient: models.PatientDto) =>
+              : this.initEncryptionKeys(user, patient).then((patient: models.Patient) =>
                   this.modifyPatientWithUser(user, patient)
                 )
         )
-        .then((patient: models.PatientDto | null) => {
+        .then((patient: models.Patient | null) => {
           if (!patient) {
             status.patient = {
               success: false,
@@ -905,7 +893,7 @@ export class IccPatientXApi extends iccPatientApi {
                                   .then(moreHes => _.uniqBy(hes.concat(moreHes), "id"))
                               : hes
                         )
-                    ) as Promise<Array<models.IcureStubDto>>,
+                    ) as Promise<Array<models.IcureStub>>,
                     retry(() =>
                       this.formApi
                         .findFormsDelegationsStubsByHCPartyPatientForeignKeys(
@@ -923,7 +911,7 @@ export class IccPatientXApi extends iccPatientApi {
                                   .then(moreFrms => _.uniqBy(frms.concat(moreFrms), "id"))
                               : frms
                         )
-                    ) as Promise<Array<models.FormDto>>,
+                    ) as Promise<Array<models.Form>>,
                     retry(() =>
                       this.contactApi
                         .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
@@ -935,7 +923,7 @@ export class IccPatientXApi extends iccPatientApi {
                                   .then(moreCtcs => _.uniqBy(ctcs.concat(moreCtcs), "id"))
                               : ctcs
                         )
-                    ) as Promise<Array<models.ContactDto>>,
+                    ) as Promise<Array<models.Contact>>,
                     retry(() =>
                       this.invoiceApi
                         .findInvoicesDelegationsStubsByHCPartyPatientForeignKeys(
@@ -953,7 +941,7 @@ export class IccPatientXApi extends iccPatientApi {
                                   .then(moreIvs => _.uniqBy(ivs.concat(moreIvs), "id"))
                               : ivs
                         )
-                    ) as Promise<Array<models.IcureStubDto>>,
+                    ) as Promise<Array<models.IcureStub>>,
                     retry(() =>
                       this.classificationApi
                         .findClassificationsByHCPartyPatientForeignKeys(ownerId, delSfks.join(","))
@@ -968,7 +956,7 @@ export class IccPatientXApi extends iccPatientApi {
                                   .then(moreCls => _.uniqBy(cls.concat(moreCls), "id"))
                               : cls
                         )
-                    ) as Promise<Array<models.ClassificationDto>>,
+                    ) as Promise<Array<models.Classification>>,
                     retry(() =>
                       this.calendarItemApi
                         .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
@@ -980,7 +968,7 @@ export class IccPatientXApi extends iccPatientApi {
                                   .then(moreCls => _.uniqBy(cls.concat(moreCls), "id"))
                               : cls
                         )
-                    ) as Promise<Array<models.CalendarItemDto>>
+                    ) as Promise<Array<models.CalendarItem>>
                   ]).then(([hes, frms, ctcs, ivs, cls, cis]) => {
                     const ctcsStubs = ctcs.map(c => ({
                       id: c.id,
@@ -990,14 +978,14 @@ export class IccPatientXApi extends iccPatientApi {
                       encryptionKeys: _.clone(c.encryptionKeys)
                     }))
                     const oHes = hes.map(x =>
-                      _.assign(new IcureStubDto({}), x, {
+                      _.assign(new IcureStub({}), x, {
                         delegations: _.clone(x.delegations),
                         cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
                         encryptionKeys: _.clone(x.encryptionKeys)
                       })
                     )
                     const oFrms = frms.map(x =>
-                      _.assign(new IcureStubDto({}), x, {
+                      _.assign(new IcureStub({}), x, {
                         delegations: _.clone(x.delegations),
                         cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
                         encryptionKeys: _.clone(x.encryptionKeys)
@@ -1011,21 +999,21 @@ export class IccPatientXApi extends iccPatientApi {
                       })
                     )
                     const oIvs = ivs.map(x =>
-                      _.assign(new InvoiceDto({}), x, {
+                      _.assign(new Invoice({}), x, {
                         delegations: _.clone(x.delegations),
                         cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
                         encryptionKeys: _.clone(x.encryptionKeys)
                       })
                     )
                     const oCls = cls.map(x =>
-                      _.assign(new ClassificationDto({}), x, {
+                      _.assign(new Classification({}), x, {
                         delegations: _.clone(x.delegations),
                         cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
                         encryptionKeys: _.clone(x.encryptionKeys)
                       })
                     )
                     const oCis = cis.map(x =>
-                      _.assign(new CalendarItemDto({}), x, {
+                      _.assign(new CalendarItem({}), x, {
                         delegations: _.clone(x.delegations),
                         cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
                         encryptionKeys: _.clone(x.encryptionKeys)
@@ -1034,7 +1022,7 @@ export class IccPatientXApi extends iccPatientApi {
 
                     const docIds: { [key: string]: number } = {}
                     ctcs.forEach(
-                      (c: models.ContactDto) =>
+                      (c: models.Contact) =>
                         c.services &&
                         c.services.forEach(
                           s =>
@@ -1046,8 +1034,8 @@ export class IccPatientXApi extends iccPatientApi {
                     )
 
                     return retry(() =>
-                      this.documentApi.getDocuments(new ListOfIdsDto({ ids: Object.keys(docIds) }))
-                    ).then((docs: Array<DocumentDto>) => {
+                      this.documentApi.getDocuments(new ListOfIds({ ids: Object.keys(docIds) }))
+                    ).then((docs: Array<Document>) => {
                       const oDocs = docs.map(x =>
                         _.assign({}, x, {
                           delegations: _.clone(x.delegations),
@@ -1077,7 +1065,7 @@ export class IccPatientXApi extends iccPatientApi {
                                   .slice(1)
                                   .reduce(
                                     async (
-                                      patientPromise: Promise<models.PatientDto>,
+                                      patientPromise: Promise<models.Patient>,
                                       delSfk: string
                                     ) => {
                                       const patient = await patientPromise
@@ -1312,20 +1300,20 @@ export class IccPatientXApi extends iccPatientApi {
     })
   }
 
-  export(user: models.UserDto, patId: string, ownerId: string): Promise<{ id: string }> {
+  export(user: models.User, patId: string, ownerId: string): Promise<{ id: string }> {
     return this.hcpartyApi.getHealthcareParty(ownerId).then(hcp => {
       const parentId = hcp.parentId
 
       return retry(() => this.getPatientWithUser(user, patId))
         .then(
-          (patient: models.PatientDto) =>
+          (patient: models.Patient) =>
             patient.encryptionKeys && Object.keys(patient.encryptionKeys || {}).length
               ? Promise.resolve(patient)
-              : this.initEncryptionKeys(user, patient).then((patient: models.PatientDto) =>
+              : this.initEncryptionKeys(user, patient).then((patient: models.Patient) =>
                   this.modifyPatientWithUser(user, patient)
                 )
         )
-        .then((patient: models.PatientDto | null) => {
+        .then((patient: models.Patient | null) => {
           if (!patient) {
             return Promise.resolve({ id: patId })
           }
@@ -1346,7 +1334,7 @@ export class IccPatientXApi extends iccPatientApi {
                                   .then(moreHes => _.uniqBy(hes.concat(moreHes), "id"))
                               : hes
                         )
-                    ) as Promise<Array<models.IcureStubDto>>,
+                    ) as Promise<Array<models.IcureStub>>,
                     retry(() =>
                       this.formApi
                         .findFormsByHCPartyPatientForeignKeys(ownerId, delSfks.join(","))
@@ -1358,7 +1346,7 @@ export class IccPatientXApi extends iccPatientApi {
                                   .then(moreFrms => _.uniqBy(frms.concat(moreFrms), "id"))
                               : frms
                         )
-                    ) as Promise<Array<models.FormDto>>,
+                    ) as Promise<Array<models.Form>>,
                     retry(() =>
                       this.contactApi
                         .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
@@ -1370,7 +1358,7 @@ export class IccPatientXApi extends iccPatientApi {
                                   .then(moreCtcs => _.uniqBy(ctcs.concat(moreCtcs), "id"))
                               : ctcs
                         )
-                    ) as Promise<Array<models.ContactDto>>,
+                    ) as Promise<Array<models.Contact>>,
                     retry(() =>
                       this.invoiceApi
                         .findInvoicesByHCPartyPatientForeignKeys(ownerId, delSfks.join(","))
@@ -1385,7 +1373,7 @@ export class IccPatientXApi extends iccPatientApi {
                                   .then(moreIvs => _.uniqBy(ivs.concat(moreIvs), "id"))
                               : ivs
                         )
-                    ) as Promise<Array<models.IcureStubDto>>,
+                    ) as Promise<Array<models.IcureStub>>,
                     retry(() =>
                       this.classificationApi
                         .findClassificationsByHCPartyPatientForeignKeys(ownerId, delSfks.join(","))
@@ -1400,7 +1388,7 @@ export class IccPatientXApi extends iccPatientApi {
                                   .then(moreCls => _.uniqBy(cls.concat(moreCls), "id"))
                               : cls
                         )
-                    ) as Promise<Array<models.ClassificationDto>>,
+                    ) as Promise<Array<models.Classification>>,
                     retry(() =>
                       this.calendarItemApi
                         .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
@@ -1412,11 +1400,11 @@ export class IccPatientXApi extends iccPatientApi {
                                   .then(moreCls => _.uniqBy(cls.concat(moreCls), "id"))
                               : cls
                         )
-                    ) as Promise<Array<models.CalendarItemDto>>
+                    ) as Promise<Array<models.CalendarItem>>
                   ]).then(([hes, frms, ctcs, ivs, cls, cis]) => {
                     const docIds: { [key: string]: number } = {}
                     ctcs.forEach(
-                      (c: models.ContactDto) =>
+                      (c: models.Contact) =>
                         c.services &&
                         c.services.forEach(
                           s =>
@@ -1428,8 +1416,8 @@ export class IccPatientXApi extends iccPatientApi {
                     )
 
                     return retry(() =>
-                      this.documentApi.getDocuments(new ListOfIdsDto({ ids: Object.keys(docIds) }))
-                    ).then((docs: Array<DocumentDto>) => {
+                      this.documentApi.getDocuments(new ListOfIds({ ids: Object.keys(docIds) }))
+                    ).then((docs: Array<Document>) => {
                       return {
                         id: patId,
                         patient: patient,
@@ -1503,7 +1491,7 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   async getPatientIdOfChildDocumentForHcpAndHcpParents(
-    childDocument: models.InvoiceDto | models.CalendarItemDto | models.ContactDto,
+    childDocument: models.Invoice | models.CalendarItem | models.Contact,
     hcpId: string
   ): Promise<string> {
     const parentIdsArray = (await this.crypto.extractCryptedFKs(childDocument, hcpId)).extractedKeys
@@ -1526,7 +1514,7 @@ export class IccPatientXApi extends iccPatientApi {
         hcpId
     }
 
-    let patient: models.PatientDto = await super.getPatient(parentId!)
+    let patient: models.Patient = await super.getPatient(parentId!)
 
     let mergeLevel = 0
     const maxMergeLevel = 10

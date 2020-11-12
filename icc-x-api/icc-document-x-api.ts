@@ -1,4 +1,4 @@
-import { iccAuthApi, iccDocumentApi } from "../icc-api/iccApi"
+import { IccAuthApi, IccDocumentApi } from "../icc-api"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 
 import * as _ from "lodash"
@@ -8,10 +8,10 @@ import * as models from "../icc-api/model/models"
 import { utils } from "./crypto/utils"
 
 // noinspection JSUnusedGlobalSymbols
-export class IccDocumentXApi extends iccDocumentApi {
+export class IccDocumentXApi extends IccDocumentApi {
   crypto: IccCryptoXApi
   fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response>
-  authApi: iccAuthApi
+  authApi: IccAuthApi
 
   /** maps invalid UTI values to corresponding MIME type for backward-compatibility (pre-v1.0.117) */
   compatUtiRevDefs: { [key: string]: string } = {
@@ -548,7 +548,7 @@ export class IccDocumentXApi extends iccDocumentApi {
     host: string,
     headers: { [key: string]: string },
     crypto: IccCryptoXApi,
-    authApi: iccAuthApi,
+    authApi: IccAuthApi,
     fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
     "undefined"
       ? window.fetch
@@ -563,7 +563,7 @@ export class IccDocumentXApi extends iccDocumentApi {
   }
 
   // noinspection JSUnusedGlobalSymbols
-  newInstance(user: models.UserDto, message: models.MessageDto, c: any) {
+  newInstance(user: models.User, message: models.Message, c: any) {
     const document = _.extend(
       {
         id: this.crypto.randomUuid(),
@@ -582,10 +582,10 @@ export class IccDocumentXApi extends iccDocumentApi {
   }
 
   private initDelegationsAndEncryptionKeys(
-    user: models.UserDto,
-    message: models.MessageDto | null,
-    document: models.DocumentDto
-  ): Promise<models.DocumentDto> {
+    user: models.User,
+    message: models.Message | null,
+    document: models.Document
+  ): Promise<models.Document> {
     const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto
       .extractDelegationsSFKs(message, hcpId)
@@ -636,7 +636,7 @@ export class IccDocumentXApi extends iccDocumentApi {
       })
   }
 
-  initEncryptionKeys(user: models.UserDto, document: models.DocumentDto) {
+  initEncryptionKeys(user: models.User, document: models.Document) {
     const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto.initEncryptionKeys(document, hcpId!).then(eks => {
       let promise = Promise.resolve(
@@ -664,7 +664,7 @@ export class IccDocumentXApi extends iccDocumentApi {
   }
 
   // noinspection JSUnusedGlobalSymbols
-  findByMessage(hcpartyId: string, message: models.MessageDto) {
+  findByMessage(hcpartyId: string, message: models.Message) {
     return this.crypto
       .extractDelegationsSFKs(message, hcpartyId)
       .then(secretForeignKeys =>
@@ -681,8 +681,8 @@ export class IccDocumentXApi extends iccDocumentApi {
 
   decrypt(
     hcpartyId: string,
-    documents: Array<models.DocumentDto>
-  ): Promise<Array<models.DocumentDto> | void> {
+    documents: Array<models.Document>
+  ): Promise<Array<models.Document> | void> {
     return Promise.all(
       documents.map(document =>
         this.crypto

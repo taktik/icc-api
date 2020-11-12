@@ -1,6 +1,5 @@
 import * as _ from "lodash"
-import { HealthcarePartyDto, TelecomDto } from "../../icc-api/model/models"
-import { Telecom } from "fhc-api"
+import { HealthcareParty, Telecom } from "../../icc-api/model/models"
 
 export interface KendoDropdownSpeciality {
   text: string
@@ -103,13 +102,10 @@ export function isDoctorAssistant(nihii: string): boolean {
   )
 }
 
-export function getPhoneNumber(
-  hcp: HealthcarePartyDto,
-  maxLength: number | undefined
-): number | null {
+export function getPhoneNumber(hcp: HealthcareParty, maxLength: number | undefined): number | null {
   const phoneNumbers = (hcp.addresses || []).map(a => {
     const t = (a.telecoms || []).find(
-      (t: TelecomDto) =>
+      (t: Telecom) =>
         t.telecomType === Telecom.TelecomTypeEnum.Phone.toString() ||
         t.telecomType === Telecom.TelecomTypeEnum.Mobile.toString()
     )

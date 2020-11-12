@@ -9,8 +9,11 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { InvoiceItem } from "./InvoiceItem"
-import { PatientDto } from "./PatientDto"
+import { CodeStub } from "./CodeStub"
+import { Delegation } from "./Delegation"
+import { IdentityDocumentReader } from "./IdentityDocumentReader"
+import { InvoicingCode } from "./InvoicingCode"
+import { Payment } from "./Payment"
 
 import { decodeBase64 } from "./ModelHelper"
 
@@ -19,32 +22,121 @@ export class Invoice {
     Object.assign(this as Invoice, json)
   }
 
-  patient?: PatientDto
-  ioCode?: string
-  items?: Array<InvoiceItem>
-  reason?: Invoice.ReasonEnum
-  invoiceRef?: string
-  invoiceNumber?: number
-  ignorePrescriptionDate?: boolean
-  hospitalisedPatient?: boolean
+  id?: string
+  rev?: string
+  created?: number
+  modified?: number
+  author?: string
+  responsible?: string
+  medicalLocationId?: string
+  tags?: Array<CodeStub>
+  codes?: Array<CodeStub>
+  endOfLife?: number
+  deletionDate?: number
+  invoiceDate?: number
+  sentDate?: number
+  printedDate?: number
+  invoicingCodes?: Array<InvoicingCode>
+  receipts?: { [key: string]: string }
+  recipientType?: string
+  recipientId?: string
+  invoiceReference?: string
+  thirdPartyReference?: string
+  thirdPartyPaymentJustification?: string
+  thirdPartyPaymentReason?: string
+  reason?: string
+  invoiceType?: Invoice.InvoiceTypeEnum
+  sentMediumType?: Invoice.SentMediumTypeEnum
+  interventionType?: Invoice.InterventionTypeEnum
+  groupId?: string
+  paymentType?: Invoice.PaymentTypeEnum
+  paid?: number
+  payments?: Array<Payment>
+  gnotionNihii?: string
+  gnotionSsin?: string
+  gnotionLastName?: string
+  gnotionFirstName?: string
+  gnotionCdHcParty?: string
+  invoicePeriod?: number
+  careProviderType?: string
+  internshipNihii?: string
+  internshipSsin?: string
+  internshipLastName?: string
+  internshipFirstName?: string
+  internshipCdHcParty?: string
+  internshipCbe?: string
+  supervisorNihii?: string
+  supervisorSsin?: string
+  supervisorLastName?: string
+  supervisorFirstName?: string
+  supervisorCdHcParty?: string
+  supervisorCbe?: string
+  error?: string
+  encounterLocationName?: string
+  encounterLocationNihii?: string
+  encounterLocationNorm?: number
+  longDelayJustification?: number
+  correctiveInvoiceId?: string
+  correctedInvoiceId?: string
   creditNote?: boolean
-  relatedInvoiceIoCode?: string
-  relatedInvoiceNumber?: number
-  relatedBatchSendNumber?: number
-  relatedBatchYearMonth?: number
+  creditNoteRelatedInvoiceId?: string
+  idDocument?: IdentityDocumentReader
+  cancelReason?: string
+  cancelDate?: number
+  options?: { [key: string]: string }
+  secretForeignKeys?: Array<string>
+  cryptedForeignKeys?: { [key: string]: Array<Delegation> }
+  delegations?: { [key: string]: Array<Delegation> }
+  encryptionKeys?: { [key: string]: Array<Delegation> }
+  encryptedSelf?: string
 }
 export namespace Invoice {
-  export type ReasonEnum =
-    | "Chimiotherapy"
-    | "ProfessionalDisease"
-    | "WorkAccident"
-    | "Accident"
-    | "Other"
-  export const ReasonEnum = {
-    Chimiotherapy: "Chimiotherapy" as ReasonEnum,
-    ProfessionalDisease: "ProfessionalDisease" as ReasonEnum,
-    WorkAccident: "WorkAccident" as ReasonEnum,
-    Accident: "Accident" as ReasonEnum,
-    Other: "Other" as ReasonEnum
+  export type InvoiceTypeEnum =
+    | "patient"
+    | "mutualfund"
+    | "payingagency"
+    | "insurance"
+    | "efact"
+    | "other"
+  export const InvoiceTypeEnum = {
+    Patient: "patient" as InvoiceTypeEnum,
+    Mutualfund: "mutualfund" as InvoiceTypeEnum,
+    Payingagency: "payingagency" as InvoiceTypeEnum,
+    Insurance: "insurance" as InvoiceTypeEnum,
+    Efact: "efact" as InvoiceTypeEnum,
+    Other: "other" as InvoiceTypeEnum
+  }
+  export type SentMediumTypeEnum = "cdrom" | "eattest" | "efact" | "email" | "mediprima" | "paper"
+  export const SentMediumTypeEnum = {
+    Cdrom: "cdrom" as SentMediumTypeEnum,
+    Eattest: "eattest" as SentMediumTypeEnum,
+    Efact: "efact" as SentMediumTypeEnum,
+    Email: "email" as SentMediumTypeEnum,
+    Mediprima: "mediprima" as SentMediumTypeEnum,
+    Paper: "paper" as SentMediumTypeEnum
+  }
+  export type InterventionTypeEnum = "total" | "userfees"
+  export const InterventionTypeEnum = {
+    Total: "total" as InterventionTypeEnum,
+    Userfees: "userfees" as InterventionTypeEnum
+  }
+  export type PaymentTypeEnum =
+    | "cash"
+    | "wired"
+    | "insurance"
+    | "creditcard"
+    | "debitcard"
+    | "paypal"
+    | "bitcoin"
+    | "other"
+  export const PaymentTypeEnum = {
+    Cash: "cash" as PaymentTypeEnum,
+    Wired: "wired" as PaymentTypeEnum,
+    Insurance: "insurance" as PaymentTypeEnum,
+    Creditcard: "creditcard" as PaymentTypeEnum,
+    Debitcard: "debitcard" as PaymentTypeEnum,
+    Paypal: "paypal" as PaymentTypeEnum,
+    Bitcoin: "bitcoin" as PaymentTypeEnum,
+    Other: "other" as PaymentTypeEnum
   }
 }

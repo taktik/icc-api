@@ -1,6 +1,6 @@
-import { iccUserApi } from "../icc-api/api/iccUserApi"
+import { IccUserApi } from "../icc-api/api/IccUserApi"
 
-export class IccUserXApi extends iccUserApi {
+export class IccUserXApi extends IccUserApi {
   fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
   public static api(

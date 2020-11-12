@@ -1,14 +1,13 @@
-import { iccCodeApi } from "../icc-api/iccApi"
+import { IccCodeApi } from "../icc-api"
 
 import codeLanguages from "./rsrc/codelng"
 import icd10 from "./rsrc/icd10"
 import icpc2 from "./rsrc/icpc2"
 
 import * as _ from "lodash"
-import { XHR } from "../icc-api/api/XHR"
-import { CodeDto } from "../icc-api/model/CodeDto"
+import { Code } from "../icc-api/model/Code"
 
-export class IccCodeXApi extends iccCodeApi {
+export class IccCodeXApi extends IccCodeApi {
   icd10: any = icd10
   icpc2: any = icpc2
   codeLanguages: any = codeLanguages
@@ -106,7 +105,7 @@ export class IccCodeXApi extends iccCodeApi {
   }
 
   // noinspection JSMethodCanBeStatic, JSUnusedGlobalSymbols
-  normalize(c: CodeDto | string) {
+  normalize(c: Code | string) {
     return typeof c === "string"
       ? {
           id: c,
@@ -114,31 +113,25 @@ export class IccCodeXApi extends iccCodeApi {
           code: c.split(/\|/)[1],
           version: c.split(/\|/)[2]
         }
-      : (c as CodeDto).type && (c as CodeDto).code && !(c as CodeDto).id
+      : (c as Code).type && (c as Code).code && !(c as Code).id
         ? {
-            id:
-              (c as CodeDto).type +
-              "|" +
-              (c as CodeDto).code +
-              "|" +
-              ((c as CodeDto).version || "1"),
-            type: (c as CodeDto).type,
-            code: (c as CodeDto).code,
-            version: (c as CodeDto).version || "1"
+            id: (c as Code).type + "|" + (c as Code).code + "|" + ((c as Code).version || "1"),
+            type: (c as Code).type,
+            code: (c as Code).code,
+            version: (c as Code).version || "1"
           }
-        : (c as CodeDto).id &&
-          (!(c as CodeDto).code || !(c as CodeDto).type || !(c as CodeDto).version)
+        : (c as Code).id && (!(c as Code).code || !(c as Code).type || !(c as Code).version)
           ? {
-              id: (c as CodeDto).id,
-              type: (c as CodeDto).id!.split(/\|/)[0],
-              code: (c as CodeDto).id!.split(/\|/)[1],
-              version: (c as CodeDto).id!.split(/\|/)[2]
+              id: (c as Code).id,
+              type: (c as Code).id!.split(/\|/)[0],
+              code: (c as Code).id!.split(/\|/)[1],
+              version: (c as Code).id!.split(/\|/)[2]
             }
           : {
-              id: (c as CodeDto).id!,
-              type: (c as CodeDto).type,
-              code: (c as CodeDto).code,
-              version: (c as CodeDto).version || "1"
+              id: (c as Code).id!,
+              type: (c as Code).type,
+              code: (c as Code).code,
+              version: (c as Code).version || "1"
             }
   }
 }

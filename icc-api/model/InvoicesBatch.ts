@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Invoice } from "./Invoice"
+import { EfactInvoice } from "./EfactInvoice"
 import { InvoiceSender } from "./InvoiceSender"
 
 import { decodeBase64 } from "./ModelHelper"
@@ -27,5 +27,5 @@ export class InvoicesBatch {
   uniqueSendNumber?: number
   sender?: InvoiceSender
   numericalRef?: number
-  invoices?: Array<Invoice>
+  invoices?: Array<EfactInvoice>
 }

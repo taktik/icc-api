@@ -1,13 +1,13 @@
-import { iccAccesslogApi } from "../icc-api/iccApi"
+import { IccAccesslogApi } from "../icc-api"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 
 import * as models from "../icc-api/model/models"
 
 import * as _ from "lodash"
 import { utils } from "./crypto/utils"
-import { PaginatedListAccessLogDto } from "../icc-api/model/models"
+import { PaginatedListAccessLog } from "../icc-api/model/models"
 
-export class IccAccesslogXApi extends iccAccesslogApi {
+export class IccAccesslogXApi extends IccAccesslogApi {
   crypto: IccCryptoXApi
   cryptedKeys = ["detail", "objectId"]
 
@@ -26,7 +26,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
     this.crypto = crypto
   }
 
-  newInstance(user: models.UserDto, patient: models.PatientDto, h: any) {
+  newInstance(user: models.User, patient: models.Patient, h: any) {
     const hcpId = user.healthcarePartyId || user.patientId
     const accessslog = _.assign(
       {
@@ -110,7 +110,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
    * @param keepObsoleteVersions
    */
 
-  findBy(hcpartyId: string, patient: models.PatientDto) {
+  findBy(hcpartyId: string, patient: models.Patient) {
     return this.crypto
       .extractDelegationsSFKs(patient, hcpartyId)
       .then(
@@ -129,16 +129,13 @@ export class IccAccesslogXApi extends iccAccesslogApi {
   findByHCPartyPatientSecretFKeys(
     hcPartyId: string,
     secretFKeys: string
-  ): Promise<Array<models.ContactDto> | any> {
+  ): Promise<Array<models.Contact> | any> {
     return super
       .findAccessLogsByHCPartyPatientForeignKeys(hcPartyId, secretFKeys)
       .then(accesslogs => this.decrypt(hcPartyId, accesslogs))
   }
 
-  decrypt(
-    hcpId: string,
-    accessLogs: Array<models.AccessLogDto>
-  ): Promise<Array<models.AccessLogDto>> {
+  decrypt(hcpId: string, accessLogs: Array<models.AccessLog>): Promise<Array<models.AccessLog>> {
     //First check that we have no dangling delegation
 
     return Promise.all(
@@ -183,11 +180,11 @@ export class IccAccesslogXApi extends iccAccesslogApi {
     )
   }
 
-  initEncryptionKeys(user: models.UserDto, accessLogDto: models.AccessLogDto) {
+  initEncryptionKeys(user: models.User, accessLog: models.AccessLog) {
     const hcpId = user.healthcarePartyId || user.patientId
-    return this.crypto.initEncryptionKeys(accessLogDto, hcpId!).then(eks => {
+    return this.crypto.initEncryptionKeys(accessLog, hcpId!).then(eks => {
       let promise = Promise.resolve(
-        _.extend(accessLogDto, {
+        _.extend(accessLog, {
           encryptionKeys: eks.encryptionKeys
         })
       )
@@ -211,9 +208,9 @@ export class IccAccesslogXApi extends iccAccesslogApi {
   }
 
   encrypt(
-    user: models.UserDto,
-    accessLogs: Array<models.AccessLogDto>
-  ): Promise<Array<models.AccessLogDto>> {
+    user: models.User,
+    accessLogs: Array<models.AccessLog>
+  ): Promise<Array<models.AccessLog>> {
     return Promise.all(
       accessLogs.map(accessLog =>
         (accessLog.encryptionKeys && Object.keys(accessLog.encryptionKeys).length
@@ -242,16 +239,16 @@ export class IccAccesslogXApi extends iccAccesslogApi {
     )
   }
 
-  createAccessLog(body?: models.AccessLogDto): never {
+  createAccessLog(body?: models.AccessLog): never {
     throw new Error(
       "Cannot call a method that returns access logs without providing a user for de/encryption"
     )
   }
 
   createAccessLogWithUser(
-    user: models.UserDto,
-    body?: models.AccessLogDto
-  ): Promise<models.AccessLogDto | any> {
+    user: models.User,
+    body?: models.AccessLog
+  ): Promise<models.AccessLog | any> {
     return body
       ? this.encrypt(user, [_.cloneDeep(body)])
           .then(als => super.createAccessLog(als[0]))
@@ -266,10 +263,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
     )
   }
 
-  getAccessLogWithUser(
-    user: models.UserDto,
-    accessLogId: string
-  ): Promise<models.AccessLogDto | any> {
+  getAccessLogWithUser(user: models.User, accessLogId: string): Promise<models.AccessLog | any> {
     return super
       .getAccessLog(accessLogId)
       .then(accessLog => this.decrypt((user.healthcarePartyId || user.patientId)!, [accessLog]))
@@ -289,14 +283,14 @@ export class IccAccesslogXApi extends iccAccesslogApi {
   }
 
   listAccessLogsWithUser(
-    user: models.UserDto,
+    user: models.User,
     fromEpoch?: number,
     toEpoch?: number,
     startKey?: number,
     startDocumentId?: string,
     limit?: number,
     descending?: boolean
-  ): Promise<PaginatedListAccessLogDto> {
+  ): Promise<PaginatedListAccessLog> {
     return super
       .listAccessLogs(fromEpoch, toEpoch, startKey, startDocumentId, limit, descending)
       .then(accessLog =>
@@ -306,16 +300,16 @@ export class IccAccesslogXApi extends iccAccesslogApi {
       )
   }
 
-  modifyAccessLog(body?: models.AccessLogDto): never {
+  modifyAccessLog(body?: models.AccessLog): never {
     throw new Error(
       "Cannot call a method that returns access logs without providing a user for de/encryption"
     )
   }
 
   modifyAccessLogWithUser(
-    user: models.UserDto,
-    body?: models.AccessLogDto
-  ): Promise<models.AccessLogDto | null> {
+    user: models.User,
+    body?: models.AccessLog
+  ): Promise<models.AccessLog | null> {
     return body
       ? this.encrypt(user, [_.cloneDeep(body)])
           .then(als => super.modifyAccessLog(als[0]))
@@ -339,7 +333,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
   }
 
   findByUserAfterDateWithUser(
-    user: models.UserDto,
+    user: models.User,
     userId: string,
     accessType?: string,
     startDate?: number,
@@ -347,7 +341,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
     startDocumentId?: string,
     limit?: number,
     descending?: boolean
-  ): Promise<models.AccessLogDto | any> {
+  ): Promise<models.AccessLog | any> {
     return super
       .findByUserAfterDate(
         userId,

@@ -1,19 +1,19 @@
 import * as models from "../icc-api/model/models"
-import { iccAuthApi, iccBekmehrApi } from "../icc-api/iccApi"
+import { IccAuthApi, IccBekmehrApi } from "../icc-api"
 import { IccContactXApi } from "./icc-contact-x-api"
 import { IccHelementXApi } from "./icc-helement-x-api"
 import { utils } from "./crypto/utils"
 
-export class IccBekmehrXApi extends iccBekmehrApi {
+export class IccBekmehrXApi extends IccBekmehrApi {
   private readonly ctcApi: IccContactXApi
   private readonly helementApi: IccHelementXApi
   private readonly wssHost: string
-  private readonly authApi: iccAuthApi
+  private readonly authApi: IccAuthApi
 
   constructor(
     host: string,
     headers: { [key: string]: string },
-    authApi: iccAuthApi,
+    authApi: IccAuthApi,
     ctcApi: IccContactXApi,
     helementApi: IccHelementXApi,
     fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
@@ -49,11 +49,11 @@ export class IccBekmehrXApi extends iccBekmehrApi {
 
     const messageHandler = (msg: any) => {
       if (msg.command === "decrypt") {
-        if (msg.type === "ContactDto") {
+        if (msg.type === "Contact") {
           that.ctcApi
             .decrypt(healthcarePartyId, msg.body)
             .then(res => send("decryptResponse", msg.uuid, res))
-        } else if (msg.type === "HealthElementDto") {
+        } else if (msg.type === "HealthElement") {
           that.helementApi
             .decrypt(healthcarePartyId, msg.body)
             .then(res => send("decryptResponse", msg.uuid, res))
@@ -101,7 +101,7 @@ export class IccBekmehrXApi extends iccBekmehrApi {
     patientId: string,
     healthcarePartyId: string,
     language: string,
-    body: models.SoftwareMedicalFileExportDto,
+    body: models.SoftwareMedicalFileExport,
     progressCallback?: (progress: number) => void,
     sessionId?: string
   ): Promise<Blob> {
@@ -137,7 +137,7 @@ export class IccBekmehrXApi extends iccBekmehrApi {
     patientId: string,
     healthcarePartyId: string,
     language: string,
-    body: models.SumehrExportInfoDto,
+    body: models.SumehrExportInfo,
     sessionId?: string
   ): Promise<Blob> {
     return (!sessionId
@@ -171,7 +171,7 @@ export class IccBekmehrXApi extends iccBekmehrApi {
     patientId: string,
     healthcarePartyId: string,
     language: string,
-    body: models.SumehrExportInfoDto,
+    body: models.SumehrExportInfo,
     sessionId?: string
   ): Promise<Blob> {
     return (!sessionId
@@ -205,7 +205,7 @@ export class IccBekmehrXApi extends iccBekmehrApi {
     patientId: string,
     healthcarePartyId: string,
     language: string,
-    body: models.SumehrExportInfoDto,
+    body: models.SumehrExportInfo,
     sessionId?: string
   ): Promise<Blob> {
     return (!sessionId
@@ -241,7 +241,7 @@ export class IccBekmehrXApi extends iccBekmehrApi {
     language: string,
     recipientSafe: string,
     version: number,
-    body: models.MedicationSchemeExportInfoDto,
+    body: models.MedicationSchemeExportInfo,
     sessionId?: string
   ): Promise<Blob> {
     return (!sessionId

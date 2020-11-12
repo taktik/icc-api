@@ -1,20 +1,19 @@
-import { iccInvoiceApi, iccEntityrefApi } from "../icc-api/iccApi"
+import { IccInvoiceApi, IccEntityrefApi } from "../icc-api"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 
 import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
-import { XHR } from "../icc-api/api/XHR"
-import { InvoiceDto } from "../icc-api/model/models"
+import { Invoice } from "../icc-api/model/models"
 
-export class IccInvoiceXApi extends iccInvoiceApi {
+export class IccInvoiceXApi extends IccInvoiceApi {
   crypto: IccCryptoXApi
-  entityrefApi: iccEntityrefApi
+  entityrefApi: IccEntityrefApi
 
   constructor(
     host: string,
     headers: { [key: string]: string },
     crypto: IccCryptoXApi,
-    entityrefApi: iccEntityrefApi,
+    entityrefApi: IccEntityrefApi,
     fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
     "undefined"
       ? window.fetch
@@ -27,12 +26,8 @@ export class IccInvoiceXApi extends iccInvoiceApi {
     this.entityrefApi = entityrefApi
   }
 
-  newInstance(
-    user: models.UserDto,
-    patient: models.PatientDto,
-    inv?: any
-  ): Promise<models.InvoiceDto> {
-    const invoice = new models.InvoiceDto(
+  newInstance(user: models.User, patient: models.Patient, inv?: any): Promise<models.Invoice> {
+    const invoice = new models.Invoice(
       _.extend(
         {
           id: this.crypto.randomUuid(),
@@ -54,10 +49,10 @@ export class IccInvoiceXApi extends iccInvoiceApi {
   }
 
   private initDelegationsAndEncryptionKeys(
-    user: models.UserDto,
-    patient: models.PatientDto,
-    invoice: models.InvoiceDto
-  ): Promise<models.InvoiceDto> {
+    user: models.User,
+    patient: models.Patient,
+    invoice: models.Invoice
+  ): Promise<models.Invoice> {
     const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto
       .extractDelegationsSFKs(patient, hcpId)
@@ -108,7 +103,7 @@ export class IccInvoiceXApi extends iccInvoiceApi {
       })
   }
 
-  initEncryptionKeys(user: models.UserDto, invoice: models.InvoiceDto) {
+  initEncryptionKeys(user: models.User, invoice: models.Invoice) {
     const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto.initEncryptionKeys(invoice, hcpId!).then(eks => {
       let promise = Promise.resolve(
@@ -135,7 +130,7 @@ export class IccInvoiceXApi extends iccInvoiceApi {
     })
   }
 
-  createInvoice(invoice: InvoiceDto, prefix?: string): Promise<InvoiceDto> {
+  createInvoice(invoice: Invoice, prefix?: string): Promise<Invoice> {
     if (!prefix) {
       return super.createInvoice(invoice)
     }
@@ -155,8 +150,8 @@ export class IccInvoiceXApi extends iccInvoiceApi {
       })
   }
 
-  getNextInvoiceReference(prefix: string, entityrefApi: iccEntityrefApi): Promise<number> {
-    return entityrefApi.getLatest(prefix).then((entRef: models.EntityReferenceDto) => {
+  getNextInvoiceReference(prefix: string, entityrefApi: IccEntityrefApi): Promise<number> {
+    return entityrefApi.getLatest(prefix).then((entRef: models.EntityReference) => {
       if (!entRef || !entRef.id || !entRef.id!.startsWith(prefix)) return 1
       const sequenceNumber = entRef.id!.split(":").pop() || 0
       return Number(sequenceNumber) + 1
@@ -167,11 +162,11 @@ export class IccInvoiceXApi extends iccInvoiceApi {
     nextReference: number,
     docId: string,
     prefix: string,
-    entityrefApi: iccEntityrefApi
-  ): Promise<models.EntityReferenceDto> {
+    entityrefApi: IccEntityrefApi
+  ): Promise<models.EntityReference> {
     return entityrefApi
       .createEntityReference(
-        new models.EntityReferenceDto({
+        new models.EntityReference({
           id: prefix + nextReference.toString().padStart(6, "0"),
           docId
         })
@@ -197,7 +192,7 @@ export class IccInvoiceXApi extends iccInvoiceApi {
    * @param hcpartyId
    * @param patient (Promise)
    */
-  findBy(hcpartyId: string, patient: models.PatientDto): Promise<Array<models.InvoiceDto>> {
+  findBy(hcpartyId: string, patient: models.Patient): Promise<Array<models.Invoice>> {
     return this.crypto
       .extractDelegationsSFKs(patient, hcpartyId)
       .then(secretForeignKeys =>
@@ -212,14 +207,11 @@ export class IccInvoiceXApi extends iccInvoiceApi {
       })
   }
 
-  encrypt(user: models.UserDto, invoices: Array<models.InvoiceDto>) {
+  encrypt(user: models.User, invoices: Array<models.Invoice>) {
     return Promise.resolve(invoices)
   }
 
-  decrypt(
-    hcpartyId: string,
-    invoices: Array<models.InvoiceDto>
-  ): Promise<Array<models.InvoiceDto>> {
+  decrypt(hcpartyId: string, invoices: Array<models.Invoice>): Promise<Array<models.Invoice>> {
     return Promise.resolve(invoices)
   }
 }

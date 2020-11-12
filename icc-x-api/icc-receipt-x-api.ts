@@ -1,4 +1,4 @@
-import { iccReceiptApi } from "../icc-api/iccApi"
+import { IccReceiptApi } from "../icc-api"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 import { utils } from "./crypto/utils"
 import * as moment from "moment"
@@ -10,11 +10,10 @@ import {
   DmgConsultation,
   DmgNotification,
   DmgRegistration,
-  InsurabilityInfoDto,
   TarificationConsultationResult
 } from "fhc-api"
 
-export class IccReceiptXApi extends iccReceiptApi {
+export class IccReceiptXApi extends IccReceiptApi {
   crypto: IccCryptoXApi
 
   constructor(
@@ -32,8 +31,8 @@ export class IccReceiptXApi extends iccReceiptApi {
     this.crypto = crypto
   }
 
-  newInstance(user: models.UserDto, r: any): Promise<models.ReceiptDto> {
-    const receipt = new models.ReceiptDto(
+  newInstance(user: models.User, r: any): Promise<models.Receipt> {
+    const receipt = new models.Receipt(
       _.extend(
         {
           id: this.crypto.randomUuid(),
@@ -53,9 +52,9 @@ export class IccReceiptXApi extends iccReceiptApi {
   }
 
   private initDelegationsAndEncryptionKeys(
-    user: models.UserDto,
-    receipt: models.ReceiptDto
-  ): Promise<models.ReceiptDto> {
+    user: models.User,
+    receipt: models.Receipt
+  ): Promise<models.Receipt> {
     return Promise.all([
       this.crypto.initObjectDelegations(
         receipt,
@@ -100,7 +99,7 @@ export class IccReceiptXApi extends iccReceiptApi {
     })
   }
 
-  initEncryptionKeys(user: models.UserDto, rcpt: models.ReceiptDto) {
+  initEncryptionKeys(user: models.User, rcpt: models.Receipt) {
     return this.crypto
       .initEncryptionKeys(rcpt, (user.healthcarePartyId || user.patientId)!)
       .then(eks => {
@@ -134,7 +133,7 @@ export class IccReceiptXApi extends iccReceiptApi {
   }
 
   logReceipt(
-    user: models.UserDto,
+    user: models.User,
     docId: string,
     refs: Array<string>,
     blobType: string,
@@ -152,9 +151,8 @@ export class IccReceiptXApi extends iccReceiptApi {
       | DmgConsultation
       | DmgNotification
       | DmgRegistration
-      | TarificationConsultationResult
-      | InsurabilityInfoDto,
-    user: models.UserDto,
+      | TarificationConsultationResult,
+    user: models.User,
     docId: string,
     cat: string,
     subcat: string,

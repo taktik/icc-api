@@ -1,4 +1,4 @@
-import { UtilsClass } from "../icc-x-api/crypto/utils"
+import { UtilsClass } from "../icc-x-api"
 import { expect } from "chai"
 import "mocha"
 

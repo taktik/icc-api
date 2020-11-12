@@ -1,4 +1,4 @@
-import { iccClassificationApi } from "../icc-api/iccApi"
+import { IccClassificationApi } from "../icc-api"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 
 import * as models from "../icc-api/model/models"
@@ -6,7 +6,7 @@ import * as models from "../icc-api/model/models"
 import * as _ from "lodash"
 import * as moment from "moment"
 
-export class IccClassificationXApi extends iccClassificationApi {
+export class IccClassificationXApi extends IccClassificationApi {
   crypto: IccCryptoXApi
 
   constructor(
@@ -24,11 +24,7 @@ export class IccClassificationXApi extends iccClassificationApi {
     this.crypto = crypto
   }
 
-  newInstance(
-    user: models.UserDto,
-    patient: models.PatientDto,
-    c: any
-  ): Promise<models.ClassificationDto> {
+  newInstance(user: models.User, patient: models.Patient, c: any): Promise<models.Classification> {
     const classification = _.assign(
       {
         id: this.crypto.randomUuid(),
@@ -49,10 +45,10 @@ export class IccClassificationXApi extends iccClassificationApi {
   }
 
   initDelegationsAndEncryptionKeys(
-    user: models.UserDto,
-    patient: models.PatientDto,
-    classification: models.ClassificationDto
-  ): Promise<models.ClassificationDto> {
+    user: models.User,
+    patient: models.Patient,
+    classification: models.Classification
+  ): Promise<models.Classification> {
     const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto
       .extractDelegationsSFKs(patient, hcpId!)
@@ -103,7 +99,7 @@ export class IccClassificationXApi extends iccClassificationApi {
       })
   }
 
-  findBy(hcpartyId: string, patient: models.PatientDto) {
+  findBy(hcpartyId: string, patient: models.Patient) {
     return this.crypto
       .extractDelegationsSFKs(patient, hcpartyId)
       .then(secretForeignKeys =>

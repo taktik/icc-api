@@ -1,6 +1,6 @@
 import * as _ from "lodash"
 
-import { CodeDto } from "../../icc-api/model/CodeDto"
+import { Code } from "../../icc-api/model/Code"
 
 /**
  * Normalizes the code's four main fields (type, code, version and id). The first three are considered to be
@@ -10,7 +10,7 @@ import { CodeDto } from "../../icc-api/model/CodeDto"
  * @param code The code to normalize.
  * @returns A shallow copy of the input with its type, code, version and id normalized.
  */
-export function normalizeCode(code: CodeDto): CodeDto {
+export function normalizeCode(code: Code): Code {
   code = _.clone(code)
 
   if (code.type && code.code && code.version) {

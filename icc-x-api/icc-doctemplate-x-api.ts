@@ -1,15 +1,12 @@
-import { iccDoctemplateApi } from "../icc-api/iccApi"
+import { IccDoctemplateApi } from "../icc-api"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 
-import { TextDecoder, TextEncoder } from "text-encoding"
-
 import { extend } from "lodash"
-import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
-import { DocumentTemplateDto } from "../icc-api/model/models"
+import { DocumentTemplate } from "../icc-api/model/models"
 
 // noinspection JSUnusedGlobalSymbols
-export class IccDoctemplateXApi extends iccDoctemplateApi {
+export class IccDoctemplateXApi extends IccDoctemplateApi {
   crypto: IccCryptoXApi
   fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
@@ -29,9 +26,9 @@ export class IccDoctemplateXApi extends iccDoctemplateApi {
     this.fetchImpl = fetchImpl
   }
 
-  newInstance(user: models.UserDto, template: string, c: any): Promise<DocumentTemplateDto> {
-    return new Promise<DocumentTemplateDto>((resolve, reject) => {
-      const documentTemplate: DocumentTemplateDto = extend(
+  newInstance(user: models.User, template: string, c: any): Promise<DocumentTemplate> {
+    return new Promise<DocumentTemplate>((resolve, reject) => {
+      const documentTemplate: DocumentTemplate = extend(
         {
           id: this.crypto.randomUuid(),
           _type: "org.taktik.icure.entities.DocumentTemplate",
@@ -61,7 +58,7 @@ export class IccDoctemplateXApi extends iccDoctemplateApi {
   }
 
   // noinspection JSUnusedLocalSymbols
-  findAllByOwnerId(ownerId: string): Promise<Array<models.DocumentTemplateDto>> {
+  findAllByOwnerId(ownerId: string): Promise<Array<models.DocumentTemplate>> {
     return new Promise(function(resolve, reject) {
       reject(console.log("findByHCPartyPatientSecretFKeys not implemented in document API!"))
     })

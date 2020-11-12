@@ -1,14 +1,14 @@
 import * as i18n from "./rsrc/contact.i18n"
 
 import * as _ from "lodash"
-import { iccTimeTableApi } from "../icc-api/iccApi"
+import { IccTimeTableApi } from "../icc-api"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 import { XHR } from "../icc-api/api/XHR"
 import Header = XHR.Header
-import { UserDto } from "../icc-api/model/UserDto"
-import { TimeTableDto } from "../icc-api/model/TimeTableDto"
+import { User } from "../icc-api/model/User"
+import { TimeTable } from "../icc-api/model/TimeTable"
 
-export class IccTimeTableXApi extends iccTimeTableApi {
+export class IccTimeTableXApi extends IccTimeTableApi {
   i18n: any = i18n
   crypto: IccCryptoXApi
 
@@ -27,7 +27,7 @@ export class IccTimeTableXApi extends iccTimeTableApi {
     this.crypto = crypto
   }
 
-  newInstance(user: UserDto, tt: TimeTableDto) {
+  newInstance(user: User, tt: TimeTable) {
     const timeTable = _.extend(
       {
         id: this.crypto.randomUuid(),

@@ -1,4 +1,4 @@
-import { iccHelementApi } from "../icc-api/iccApi"
+import { IccHelementApi } from "../icc-api"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 
 import * as models from "../icc-api/model/models"
@@ -7,7 +7,7 @@ import * as _ from "lodash"
 import * as moment from "moment"
 import { utils } from "./crypto/utils"
 
-export class IccHelementXApi extends iccHelementApi {
+export class IccHelementXApi extends IccHelementApi {
   crypto: IccCryptoXApi
 
   constructor(
@@ -25,12 +25,7 @@ export class IccHelementXApi extends iccHelementApi {
     this.crypto = crypto
   }
 
-  newInstance(
-    user: models.UserDto,
-    patient: models.PatientDto,
-    h: any,
-    confidential: boolean = false
-  ) {
+  newInstance(user: models.User, patient: models.Patient, h: any, confidential: boolean = false) {
     const hcpId = user.healthcarePartyId || user.patientId
     const helement = _.assign(
       {
@@ -117,7 +112,7 @@ export class IccHelementXApi extends iccHelementApi {
    * @param keepObsoleteVersions
    */
 
-  findBy(hcpartyId: string, patient: models.PatientDto, keepObsoleteVersions: boolean = false) {
+  findBy(hcpartyId: string, patient: models.Patient, keepObsoleteVersions: boolean = false) {
     return this.crypto
       .extractSFKsHierarchyFromDelegations(patient, hcpartyId)
       .then(
@@ -146,8 +141,8 @@ export class IccHelementXApi extends iccHelementApi {
               ).then(results => _.uniqBy(_.flatMap(results), x => x.id))
             : Promise.resolve([])
       )
-      .then((decryptedHelements: Array<models.HealthElementDto>) => {
-        const byIds: { [key: string]: models.HealthElementDto } = {}
+      .then((decryptedHelements: Array<models.HealthElement>) => {
+        const byIds: { [key: string]: models.HealthElement } = {}
 
         if (keepObsoleteVersions) {
           return decryptedHelements
@@ -168,7 +163,7 @@ export class IccHelementXApi extends iccHelementApi {
   findByHCPartyPatientSecretFKeys(
     hcPartyId: string,
     secretFKeys: string
-  ): Promise<Array<models.ContactDto> | any> {
+  ): Promise<Array<models.Contact> | any> {
     return super
       .findHealthElementsByHCPartyPatientForeignKeys(hcPartyId, secretFKeys)
       .then(helements => this.decrypt(hcPartyId, helements))
@@ -176,8 +171,8 @@ export class IccHelementXApi extends iccHelementApi {
 
   decrypt(
     hcpartyId: string,
-    hes: Array<models.HealthElementDto>
-  ): Promise<Array<models.HealthElementDto>> {
+    hes: Array<models.HealthElement>
+  ): Promise<Array<models.HealthElement>> {
     return Promise.all(
       hes.map(he =>
         this.crypto
@@ -227,9 +222,9 @@ export class IccHelementXApi extends iccHelementApi {
 
   // noinspection JSUnusedGlobalSymbols
   serviceToHealthElement(
-    user: models.UserDto,
-    patient: models.PatientDto,
-    heSvc: models.ServiceDto,
+    user: models.User,
+    patient: models.Patient,
+    heSvc: models.Service,
     descr: string
   ) {
     return this.newInstance(user, patient, {
@@ -251,7 +246,7 @@ export class IccHelementXApi extends iccHelementApi {
   // noinspection JSUnusedGlobalSymbols, JSMethodCanBeStatic
   stringToCode(code: string) {
     const c = code.split("|")
-    return new models.CodeDto({
+    return new models.Code({
       type: c[0],
       code: c[1],
       version: c[2],

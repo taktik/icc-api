@@ -1,6 +1,6 @@
 {
-  "name": "@taktik/icc-api",
-  "version": "3.0.51",
+  "name": "@icure/api",
+  "version": "4.0.0",
   "description": "Typescript version of iCure standalone API client",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

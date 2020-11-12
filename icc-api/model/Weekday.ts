@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStubDto } from "./CodeStubDto"
+import { CodeStub } from "./CodeStub"
 
 import { decodeBase64 } from "./ModelHelper"
 
@@ -18,6 +18,6 @@ export class Weekday {
     Object.assign(this as Weekday, json)
   }
 
-  weekday?: CodeStubDto
+  weekday?: CodeStub
   weekNumber?: number
 }

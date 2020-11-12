@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 import { InvoicesBatch } from "./InvoicesBatch"
-import { MessageDto } from "./MessageDto"
+import { Message } from "./Message"
 
 import { decodeBase64 } from "./ModelHelper"
 
@@ -20,5 +20,5 @@ export class MessageWithBatch {
   }
 
   invoicesBatch?: InvoicesBatch
-  message?: MessageDto
+  message?: Message
 }

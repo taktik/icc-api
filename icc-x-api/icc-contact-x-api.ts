@@ -1,4 +1,4 @@
-import { iccContactApi } from "../icc-api/iccApi"
+import { IccContactApi } from "../icc-api"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 
 import i18n from "./rsrc/contact.i18n"
@@ -7,10 +7,10 @@ import { utils } from "./crypto/utils"
 import * as moment from "moment"
 import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
-import { ContactDto, ServiceDto } from "../icc-api/model/models"
-import { PaginatedListContactDto } from "../icc-api/model/PaginatedListContactDto"
+import { Contact, Service } from "../icc-api/model/models"
+import { PaginatedListContact } from "../icc-api/model/PaginatedListContact"
 
-export class IccContactXApi extends iccContactApi {
+export class IccContactXApi extends IccContactApi {
   i18n: any = i18n
   crypto: IccCryptoXApi
 
@@ -30,12 +30,12 @@ export class IccContactXApi extends iccContactApi {
   }
 
   newInstance(
-    user: models.UserDto,
-    patient: models.PatientDto,
+    user: models.User,
+    patient: models.Patient,
     c: any,
     confidential: boolean = false
-  ): Promise<models.ContactDto> {
-    const contact = new models.ContactDto(
+  ): Promise<models.Contact> {
+    const contact = new models.Contact(
       _.extend(
         {
           id: this.crypto.randomUuid(),
@@ -67,11 +67,11 @@ export class IccContactXApi extends iccContactApi {
    * & encryptionKeys.
    */
   private initDelegationsAndEncryptionKeys(
-    user: models.UserDto,
-    patient: models.PatientDto,
-    contact: models.ContactDto,
+    user: models.User,
+    patient: models.Patient,
+    contact: models.Contact,
     confidential: boolean = false
-  ): Promise<models.ContactDto> {
+  ): Promise<models.Contact> {
     const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto
       .extractPreferredSfk(patient, hcpId!!, confidential)
@@ -120,7 +120,7 @@ export class IccContactXApi extends iccContactApi {
       })
   }
 
-  initEncryptionKeys(user: models.UserDto, ctc: models.ContactDto) {
+  initEncryptionKeys(user: models.User, ctc: models.Contact) {
     const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto.initEncryptionKeys(ctc, hcpId!).then(eks => {
       let promise = Promise.resolve(
@@ -166,7 +166,7 @@ export class IccContactXApi extends iccContactApi {
    * @param hcpartyId
    * @param patient (Promise)
    */
-  findBy(hcpartyId: string, patient: models.PatientDto) {
+  findBy(hcpartyId: string, patient: models.Patient) {
     return this.crypto.extractSFKsHierarchyFromDelegations(patient, hcpartyId).then(
       secretForeignKeys =>
         secretForeignKeys && secretForeignKeys.length > 0
@@ -197,8 +197,8 @@ export class IccContactXApi extends iccContactApi {
 
   async findByPatientSFKs(
     hcpartyId: string,
-    patients: Array<models.PatientDto>
-  ): Promise<Array<models.ContactDto>> {
+    patients: Array<models.Patient>
+  ): Promise<Array<models.Contact>> {
     const perHcpId: { [key: string]: string[] } = {}
     for (const patient of patients) {
       ;(await this.crypto.extractSFKsHierarchyFromDelegations(patient, hcpartyId))
@@ -227,7 +227,7 @@ export class IccContactXApi extends iccContactApi {
           Object.keys(perHcpId).map(hcpId =>
             this.findContactsByHCPartyPatientForeignKeys(
               hcpartyId,
-              new models.ListOfIdsDto({
+              new models.ListOfIds({
                 ids: perHcpId[hcpId]
               })
             )
@@ -267,7 +267,7 @@ export class IccContactXApi extends iccContactApi {
     )
   }
 
-  findByHCPartyFormIds(hcPartyId?: string, body?: models.ListOfIdsDto): never {
+  findByHCPartyFormIds(hcPartyId?: string, body?: models.ListOfIds): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
     )
@@ -279,25 +279,25 @@ export class IccContactXApi extends iccContactApi {
     )
   }
 
-  getContacts(body?: models.ListOfIdsDto): never {
+  getContacts(body?: models.ListOfIds): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
     )
   }
 
-  modifyContact(body?: ContactDto): never {
+  modifyContact(body?: Contact): never {
     throw new Error(
       "Cannot call a method that modify contacts without providing a user for de/encryption"
     )
   }
 
-  modifyContacts(body?: Array<ContactDto>): never {
+  modifyContacts(body?: Array<Contact>): never {
     throw new Error(
       "Cannot call a method that modify contacts without providing a user for de/encryption"
     )
   }
 
-  createContact(body?: ContactDto): never {
+  createContact(body?: Contact): never {
     throw new Error(
       "Cannot call a method that modify contacts without providing a user for de/encryption"
     )
@@ -308,18 +308,18 @@ export class IccContactXApi extends iccContactApi {
     secretFKeys: string,
     planOfActionIds?: string,
     skipClosedContacts?: boolean
-  ): Promise<Array<models.ContactDto> | any> {
+  ): Promise<Array<models.Contact> | any> {
     return super
       .findByHCPartyPatientSecretFKeys(hcPartyId, secretFKeys, planOfActionIds, skipClosedContacts)
       .then(contacts => this.decrypt(hcPartyId, contacts))
   }
 
   filterByWithUser(
-    user: models.UserDto,
+    user: models.User,
     startDocumentId?: string,
     limit?: number,
     body?: models.FilterChainContact
-  ): Promise<PaginatedListContactDto | any> {
+  ): Promise<PaginatedListContact | any> {
     return super
       .filterContactsBy(startDocumentId, limit, body)
       .then(ctcs =>
@@ -330,13 +330,13 @@ export class IccContactXApi extends iccContactApi {
   }
 
   listContactsByOpeningDateWithUser(
-    user: models.UserDto,
+    user: models.User,
     startKey: number,
     endKey: number,
     hcpartyid: string,
     startDocumentId?: string,
     limit?: number
-  ): Promise<PaginatedListContactDto | any> {
+  ): Promise<PaginatedListContact | any> {
     return super
       .listContactsByOpeningDate(startKey, endKey, hcpartyid, startDocumentId, limit)
       .then(ctcs => {
@@ -346,26 +346,26 @@ export class IccContactXApi extends iccContactApi {
   }
 
   findByHCPartyFormIdWithUser(
-    user: models.UserDto,
+    user: models.User,
     hcPartyId: string,
     formId: string
-  ): Promise<Array<models.ContactDto> | any> {
+  ): Promise<Array<models.Contact> | any> {
     return super
       .findByHCPartyFormId(hcPartyId, formId)
       .then(ctcs => this.decrypt((user.healthcarePartyId || user.patientId)!, ctcs))
   }
 
   findByHCPartyFormIdsWithUser(
-    user: models.UserDto,
+    user: models.User,
     hcPartyId: string,
-    body: models.ListOfIdsDto
-  ): Promise<Array<models.ContactDto> | any> {
+    body: models.ListOfIds
+  ): Promise<Array<models.Contact> | any> {
     return super
       .findByHCPartyFormIds(hcPartyId, body)
       .then(ctcs => this.decrypt((user.healthcarePartyId || user.patientId)!, ctcs))
   }
 
-  getContactWithUser(user: models.UserDto, contactId: string): Promise<models.ContactDto | any> {
+  getContactWithUser(user: models.User, contactId: string): Promise<models.Contact | any> {
     return super
       .getContact(contactId)
       .then(ctc => this.decrypt((user.healthcarePartyId || user.patientId)!, [ctc]))
@@ -373,18 +373,15 @@ export class IccContactXApi extends iccContactApi {
   }
 
   getContactsWithUser(
-    user: models.UserDto,
-    body?: models.ListOfIdsDto
-  ): Promise<Array<models.ContactDto> | any> {
+    user: models.User,
+    body?: models.ListOfIds
+  ): Promise<Array<models.Contact> | any> {
     return super
       .getContacts(body)
       .then(ctcs => this.decrypt((user.healthcarePartyId || user.patientId)!, ctcs))
   }
 
-  modifyContactWithUser(
-    user: models.UserDto,
-    body?: models.ContactDto
-  ): Promise<models.ContactDto | any> {
+  modifyContactWithUser(user: models.User, body?: models.Contact): Promise<models.Contact | any> {
     return body
       ? this.encrypt(user, [_.cloneDeep(body)])
           .then(ctcs => super.modifyContact(ctcs[0]))
@@ -394,9 +391,9 @@ export class IccContactXApi extends iccContactApi {
   }
 
   modifyContactsWithUser(
-    user: models.UserDto,
-    bodies?: Array<models.ContactDto>
-  ): Promise<models.ContactDto | any> {
+    user: models.User,
+    bodies?: Array<models.Contact>
+  ): Promise<models.Contact | any> {
     return bodies
       ? this.encrypt(user, bodies.map(c => _.cloneDeep(c)))
           .then(ctcs => super.modifyContacts(ctcs))
@@ -404,10 +401,7 @@ export class IccContactXApi extends iccContactApi {
       : Promise.resolve(null)
   }
 
-  createContactWithUser(
-    user: models.UserDto,
-    body?: models.ContactDto
-  ): Promise<models.ContactDto | any> {
+  createContactWithUser(user: models.User, body?: models.Contact): Promise<models.Contact | any> {
     return body
       ? this.encrypt(user, [_.cloneDeep(body)])
           .then(ctcs => super.createContact(ctcs[0]))
@@ -416,61 +410,54 @@ export class IccContactXApi extends iccContactApi {
       : Promise.resolve(null)
   }
 
-  encryptServices(
-    key: CryptoKey,
-    rawKey: string,
-    services: ServiceDto[]
-  ): PromiseLike<ServiceDto[]> {
+  encryptServices(key: CryptoKey, rawKey: string, services: Service[]): PromiseLike<Service[]> {
     return Promise.all(
       services.map(async svc => {
         if (!svc.content) {
           return svc
         }
 
-        return Object.values(svc.content).every(
-          c =>
-            c.compoundValue &&
-            !c.stringValue &&
-            !c.documentId &&
-            !c.measureValue &&
-            !c.medicationValue &&
-            (c.booleanValue === null || c.booleanValue === undefined) &&
-            (c.numberValue === null || c.numberValue === undefined) &&
-            !c.instantValue &&
-            !c.fuzzyDateValue &&
-            !c.binaryValue
-        )
-          ? Object.assign(svc, {
-              content: _.fromPairs(
-                await Promise.all(
-                  _.toPairs(svc.content).map(async p => {
-                    p[1].compoundValue = await this.encryptServices(
-                      key,
-                      rawKey,
-                      p[1].compoundValue!
-                    )
-                    return p
-                  })
-                )
+        if (
+          Object.values(svc.content).every(
+            c =>
+              c.compoundValue &&
+              !c.stringValue &&
+              !c.documentId &&
+              !c.measureValue &&
+              !c.medicationValue &&
+              (c.booleanValue === null || c.booleanValue === undefined) &&
+              (c.numberValue === null || c.numberValue === undefined) &&
+              !c.instantValue &&
+              !c.fuzzyDateValue &&
+              !c.binaryValue
+          )
+        ) {
+          svc.content = _.fromPairs(
+            await Promise.all(
+              _.toPairs(svc.content).map(async p => {
+                p[1].compoundValue = await this.encryptServices(key, rawKey, p[1].compoundValue!)
+                return p
+              })
+            )
+          )
+        } else {
+          svc.encryptedSelf = btoa(
+            utils.ua2text(
+              await this.crypto.AES.encrypt(
+                key,
+                utils.utf82ua(JSON.stringify({ content: svc.content })),
+                rawKey
               )
-            })
-          : Object.assign(svc, {
-              content: null,
-              encryptedSelf: btoa(
-                utils.ua2text(
-                  await this.crypto.AES.encrypt(
-                    key,
-                    utils.utf82ua(JSON.stringify({ content: svc.content })),
-                    rawKey
-                  )
-                )
-              )
-            })
+            )
+          )
+          delete svc.content
+        }
+        return svc
       })
     )
   }
 
-  encrypt(user: models.UserDto, ctcs: Array<models.ContactDto>) {
+  encrypt(user: models.User, ctcs: Array<models.Contact>) {
     const hcpartyId = (user.healthcarePartyId || user.patientId)!
     const bypassEncryption = false //Used for debug
 
@@ -510,7 +497,7 @@ export class IccContactXApi extends iccContactApi {
     )
   }
 
-  decrypt(hcpartyId: string, ctcs: Array<models.ContactDto>): Promise<Array<models.ContactDto>> {
+  decrypt(hcpartyId: string, ctcs: Array<models.Contact>): Promise<Array<models.Contact>> {
     return Promise.all(
       ctcs.map(async ctc => {
         const { extractedKeys: sfks } = await this.crypto.extractKeysFromDelegationsForHcpHierarchy(
@@ -551,10 +538,10 @@ export class IccContactXApi extends iccContactApi {
 
   decryptServices(
     hcpartyId: string,
-    svcs: Array<models.ServiceDto>,
+    svcs: Array<models.Service>,
     key?: CryptoKey,
     rawKey?: string
-  ): Promise<Array<models.ServiceDto>> {
+  ): Promise<Array<models.Service>> {
     return Promise.all(
       svcs.map(async svc => {
         if (!key) {
@@ -619,11 +606,11 @@ export class IccContactXApi extends iccContactApi {
     )
   }
 
-  contactOfService(ctcs: Array<models.ContactDto>, svcId: string): models.ContactDto | undefined {
-    let latestContact: models.ContactDto | undefined = undefined
-    let latestService: models.ServiceDto
+  contactOfService(ctcs: Array<models.Contact>, svcId: string): models.Contact | undefined {
+    let latestContact: models.Contact | undefined = undefined
+    let latestService: models.Service
     ctcs.forEach(c => {
-      const s: models.ServiceDto | undefined = c.services!.find(it => svcId === it.id)
+      const s: models.Service | undefined = c.services!.find(it => svcId === it.id)
       if (s && (!latestService || moment(s.valueDate).isAfter(moment(latestService.valueDate)))) {
         latestContact = c
         latestService = s
@@ -632,8 +619,8 @@ export class IccContactXApi extends iccContactApi {
     return latestContact
   }
 
-  filteredServices(ctcs: Array<models.ContactDto>, filter: any): Array<models.ServiceDto> {
-    const byIds: { [key: string]: models.ServiceDto } = {}
+  filteredServices(ctcs: Array<models.Contact>, filter: any): Array<models.Service> {
+    const byIds: { [key: string]: models.Service } = {}
     ctcs.forEach(c =>
       (c.services || []).filter(s => filter(s, c)).forEach(s => {
         const ps = byIds[s.id!]
@@ -647,15 +634,15 @@ export class IccContactXApi extends iccContactApi {
   }
 
   //Return a promise
-  filterServices(ctcs: Array<models.ContactDto>, filter: any): Promise<Array<models.ServiceDto>> {
+  filterServices(ctcs: Array<models.Contact>, filter: any): Promise<Array<models.Service>> {
     return Promise.resolve(this.filteredServices(ctcs, filter))
   }
 
-  services(ctc: models.ContactDto, label: string) {
+  services(ctc: models.Contact, label: string) {
     return ctc.services!.filter(s => s.label === label)
   }
 
-  preferredContent(svc: models.ServiceDto, lng: string) {
+  preferredContent(svc: models.Service, lng: string) {
     return (
       svc &&
       svc.content &&
@@ -665,7 +652,7 @@ export class IccContactXApi extends iccContactApi {
     )
   }
 
-  contentValue(c: models.ContentDto) {
+  contentValue(c: models.Content) {
     return (
       c.stringValue ||
       ((c.numberValue || c.numberValue === 0) && c.numberValue) ||
@@ -677,12 +664,12 @@ export class IccContactXApi extends iccContactApi {
     )
   }
 
-  shortServiceDescription(svc: models.ServiceDto, lng: string) {
+  shortServiceDescription(svc: models.Service, lng: string) {
     const c = this.preferredContent(svc, lng)
     return !c ? "" : this.shortContentDescription(c, lng, svc.label)
   }
 
-  shortContentDescription(c: models.ContentDto, lng: string, label?: string) {
+  shortContentDescription(c: models.Content, lng: string, label?: string) {
     return (
       c.stringValue ||
       ((c.numberValue || c.numberValue === 0) && c.numberValue) ||
@@ -695,7 +682,7 @@ export class IccContactXApi extends iccContactApi {
     )
   }
 
-  medicationValue(svc: models.ServiceDto, lng: string) {
+  medicationValue(svc: models.Service, lng: string) {
     const c =
       svc &&
       svc.content &&
@@ -749,10 +736,10 @@ export class IccContactXApi extends iccContactApi {
    */
 
   promoteServiceInContact(
-    ctc: models.ContactDto,
-    user: models.UserDto,
-    ctcs: Array<models.ContactDto>,
-    svc: models.ServiceDto,
+    ctc: models.Contact,
+    user: models.User,
+    ctcs: Array<models.Contact>,
+    svc: models.Service,
     formId: string,
     poaIds?: { [key: string]: string[] },
     heIds?: Array<string>,
@@ -789,10 +776,7 @@ export class IccContactXApi extends iccContactApi {
     const pastCtc =
       (svc.contactId && svc.contactId !== ctc.id && ctcs.find(c => c.id === svc.contactId)) ||
       ctcs.reduce(
-        (
-          selected: { s: models.ServiceDto | null; c: models.ContactDto | null },
-          c: models.ContactDto
-        ) => {
+        (selected: { s: models.Service | null; c: models.Contact | null }, c: models.Contact) => {
           const candidate = (c.services || []).find(s => s.id === svc.id)
           return ctc.id !== c.id &&
             candidate &&
@@ -845,7 +829,7 @@ export class IccContactXApi extends iccContactApi {
         )
         if (!destinationSubcontact) {
           ctc.subContacts!.push(
-            (destinationSubcontact = new models.SubContactDto({
+            (destinationSubcontact = new models.SubContact({
               formId: formId || undefined,
               planOfActionId: poaId,
               healthElementId: heId,
@@ -882,14 +866,14 @@ export class IccContactXApi extends iccContactApi {
     return (init && init(promoted)) || promoted
   }
 
-  isNumeric(svc: models.ServiceDto, lng: string) {
+  isNumeric(svc: models.Service, lng: string) {
     const c = this.preferredContent(svc, lng)
     return c && (c.measureValue || c.numberValue || c.numberValue == 0)
   }
 
   service() {
     return {
-      newInstance: (user: models.UserDto, s: any) =>
+      newInstance: (user: models.User, s: any) =>
         _.extend(
           {
             id: this.crypto.randomUuid(),
@@ -1051,10 +1035,10 @@ export class IccContactXApi extends iccContactApi {
 
         return `${m.regimen.length} x ${dayPeriod}`
       },
-      durationToString: (d: models.DurationDto, lang: string) => {
+      durationToString: (d: models.Duration, lang: string) => {
         return d.value ? `${d.value} ${this.localize(d.unit!.label, lang)}` : ""
       },
-      regimenToExtString: (r: models.RegimenItemDto, lang: string) => {
+      regimenToExtString: (r: models.RegimenItem, lang: string) => {
         const desc = myself.regimenToString(r, lang)
         return (
           (r.administratedQuantity && r.administratedQuantity.quantity && desc
@@ -1065,7 +1049,7 @@ export class IccContactXApi extends iccContactApi {
             : desc) || ""
         )
       },
-      regimenToString: (r: models.RegimenItemDto, lang: string) => {
+      regimenToString: (r: models.RegimenItem, lang: string) => {
         let res = r.date
           ? `${this.i18n[lang].the} ${moment(r.date).format("DD/MM/YYYY")}`
           : r.dayNumber

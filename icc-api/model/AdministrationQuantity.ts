@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStubDto } from "./CodeStubDto"
+import { CodeStub } from "./CodeStub"
 
 import { decodeBase64 } from "./ModelHelper"
 
@@ -19,6 +19,6 @@ export class AdministrationQuantity {
   }
 
   quantity?: number
-  administrationUnit?: CodeStubDto
+  administrationUnit?: CodeStub
   unit?: string
 }

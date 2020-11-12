@@ -1,4 +1,4 @@
-import { iccFormApi } from "../icc-api/iccApi"
+import { IccFormApi } from "../icc-api"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 
 import * as _ from "lodash"
@@ -7,7 +7,7 @@ import * as models from "../icc-api/model/models"
 import { utils } from "./crypto/utils"
 
 // noinspection JSUnusedGlobalSymbols
-export class IccFormXApi extends iccFormApi {
+export class IccFormXApi extends IccFormApi {
   crypto: IccCryptoXApi
 
   constructor(
@@ -26,7 +26,7 @@ export class IccFormXApi extends iccFormApi {
   }
 
   // noinspection JSUnusedGlobalSymbols
-  newInstance(user: models.UserDto, patient: models.PatientDto, c: any) {
+  newInstance(user: models.User, patient: models.Patient, c: any) {
     const form = _.extend(
       {
         id: this.crypto.randomUuid(),
@@ -45,10 +45,10 @@ export class IccFormXApi extends iccFormApi {
   }
 
   private initDelegationsAndEncryptionKeys(
-    user: models.UserDto,
-    patient: models.PatientDto,
-    form: models.FormDto
-  ): Promise<models.FormDto> {
+    user: models.User,
+    patient: models.Patient,
+    form: models.Form
+  ): Promise<models.Form> {
     const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto
       .extractDelegationsSFKs(patient, hcpId!)
@@ -99,7 +99,7 @@ export class IccFormXApi extends iccFormApi {
       })
   }
 
-  initEncryptionKeys(user: models.UserDto, form: models.FormDto) {
+  initEncryptionKeys(user: models.User, form: models.Form) {
     const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto.initEncryptionKeys(form, hcpId!).then(eks => {
       let promise = Promise.resolve(
@@ -142,7 +142,7 @@ export class IccFormXApi extends iccFormApi {
    * @param hcpartyId
    * @param patient (Promise)
    */
-  findBy(hcpartyId: string, patient: models.PatientDto) {
+  findBy(hcpartyId: string, patient: models.Patient) {
     return this.crypto
       .extractDelegationsSFKs(patient, hcpartyId)
       .then(secretForeignKeys =>
@@ -157,7 +157,7 @@ export class IccFormXApi extends iccFormApi {
       })
   }
 
-  decrypt(hcpartyId: string, forms: Array<models.FormDto>) {
+  decrypt(hcpartyId: string, forms: Array<models.Form>) {
     return Promise.all(
       forms.map(form =>
         this.crypto
