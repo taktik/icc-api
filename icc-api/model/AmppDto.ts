@@ -15,7 +15,6 @@ import { CommercializationDto } from "./CommercializationDto"
 import { CompanyDto } from "./CompanyDto"
 import { DmppDto } from "./DmppDto"
 import { QuantityDto } from "./QuantityDto"
-import { SamText } from "./SamText"
 import { SamTextDto } from "./SamTextDto"
 import { SupplyProblemDto } from "./SupplyProblemDto"
 
@@ -46,7 +45,7 @@ export class AmppDto {
   deliveryModusCode?: string
   deliveryModus?: SamTextDto
   deliveryModusSpecification?: SamTextDto
-  dhpcLink?: SamText
+  dhpcLink?: SamTextDto
   distributorCompany?: CompanyDto
   singleUse?: boolean
   speciallyRegulated?: number
