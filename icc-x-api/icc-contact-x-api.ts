@@ -427,45 +427,42 @@ export class IccContactXApi extends iccContactApi {
           return svc
         }
 
-        return Object.values(svc.content).every(
-          c =>
-            c.compoundValue &&
-            !c.stringValue &&
-            !c.documentId &&
-            !c.measureValue &&
-            !c.medicationValue &&
-            (c.booleanValue === null || c.booleanValue === undefined) &&
-            (c.numberValue === null || c.numberValue === undefined) &&
-            !c.instantValue &&
-            !c.fuzzyDateValue &&
-            !c.binaryValue
-        )
-          ? Object.assign(svc, {
-              content: _.fromPairs(
-                await Promise.all(
-                  _.toPairs(svc.content).map(async p => {
-                    p[1].compoundValue = await this.encryptServices(
-                      key,
-                      rawKey,
-                      p[1].compoundValue!
-                    )
-                    return p
-                  })
-                )
+        if (
+          Object.values(svc.content).every(
+            c =>
+              c.compoundValue &&
+              !c.stringValue &&
+              !c.documentId &&
+              !c.measureValue &&
+              !c.medicationValue &&
+              (c.booleanValue === null || c.booleanValue === undefined) &&
+              (c.numberValue === null || c.numberValue === undefined) &&
+              !c.instantValue &&
+              !c.fuzzyDateValue &&
+              !c.binaryValue
+          )
+        ) {
+          svc.content = _.fromPairs(
+            await Promise.all(
+              _.toPairs(svc.content).map(async p => {
+                p[1].compoundValue = await this.encryptServices(key, rawKey, p[1].compoundValue!)
+                return p
+              })
+            )
+          )
+        } else {
+          svc.encryptedSelf = btoa(
+            utils.ua2text(
+              await this.crypto.AES.encrypt(
+                key,
+                utils.utf82ua(JSON.stringify({ content: svc.content })),
+                rawKey
               )
-            })
-          : Object.assign(svc, {
-              content: null,
-              encryptedSelf: btoa(
-                utils.ua2text(
-                  await this.crypto.AES.encrypt(
-                    key,
-                    utils.utf82ua(JSON.stringify({ content: svc.content })),
-                    rawKey
-                  )
-                )
-              )
-            })
+            )
+          )
+          delete svc.content
+        }
+        return svc
       })
     )
   }
