@@ -1,6 +1,6 @@
 {
   "name": "@taktik/icc-api",
-  "version": "3.0.52",
+  "version": "3.0.53",
   "description": "Typescript version of iCure standalone API client",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,7 +11,8 @@
     "lodash": "^4.17.12",
     "moment": "^2.22.1",
     "text-encoding": "^0.7.0",
-    "uuid-encoder": "^1.1.0"
+    "uuid-encoder": "^1.1.0",
+    "node-webcrypto-ossl": "^1.0.48"
   },
   "devDependencies": {
     "@types/base64-js": "^1.2.5",
