@@ -23,9 +23,6 @@ import {
   User
 } from "../icc-api/model/models"
 
-import { timeEncode } from "./utils/formatting-util"
-import { fhcEfactControllerApi, EfactSendResponse } from "fhc-api"
-import { utils } from "./crypto/utils"
 import { IccReceiptXApi } from "./icc-receipt-x-api"
 import { IccPatientXApi } from "./icc-patient-x-api"
 
