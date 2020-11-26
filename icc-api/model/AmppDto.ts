@@ -32,6 +32,8 @@ export class AmppDto {
 
   to?: number
 
+  index?: number
+
   ctiExtended?: string
 
   leafletLink?: models.SamTextDto
@@ -100,9 +102,11 @@ export class AmppDto {
 
   dmpps?: Array<models.DmppDto>
 
-  orphan?: boolean
+  vaccineIndicationCodes?: Array<string>
 
   singleUse?: boolean
+
+  orphan?: boolean
 }
 export namespace AmppDto {
   export enum StatusEnum {

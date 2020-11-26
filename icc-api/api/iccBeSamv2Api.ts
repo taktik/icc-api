@@ -65,6 +65,30 @@ export class iccBeSamv2Api {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.AmpDto(it)))
       .catch(err => this.handleError(err))
   }
+  findPaginatedAmpsByAtc(
+    atcCode: string,
+    startKey?: string,
+    startDocumentId?: string,
+    limit?: number
+  ): Promise<models.AmpPaginatedList | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/be_samv2/amp/byAtc/{atcCode}".replace("{atcCode}", atcCode + "") +
+      "?ts=" +
+      new Date().getTime() +
+      (startKey ? "&startKey=" + startKey : "") +
+      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
+      (limit ? "&limit=" + limit : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => new models.AmpPaginatedList(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
   findPaginatedAmpsByGroupCode(
     vmpgCode: string,
     startKey?: string,
@@ -263,6 +287,30 @@ export class iccBeSamv2Api {
       .then(doc => new models.VmpGroupPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+  findPaginatedVmpGroupsByVmpGroupCode(
+    vmpgCode: string,
+    startKey?: string,
+    startDocumentId?: string,
+    limit?: number
+  ): Promise<models.VmpGroupPaginatedList | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/be_samv2/vmpgroup/byGroupCode/{vmpgCode}".replace("{vmpgCode}", vmpgCode + "") +
+      "?ts=" +
+      new Date().getTime() +
+      (startKey ? "&startKey=" + startKey : "") +
+      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
+      (limit ? "&limit=" + limit : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => new models.VmpGroupPaginatedList(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
   findPaginatedVmpsByGroupCode(
     vmpgCode: string,
     startKey?: string,
@@ -338,6 +386,30 @@ export class iccBeSamv2Api {
       .then(doc => new models.VmpPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+  findPaginatedVmpsByVmpCode(
+    vmpCode: string,
+    startKey?: string,
+    startDocumentId?: string,
+    limit?: number
+  ): Promise<models.VmpPaginatedList | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/be_samv2/vmp/byVmpCode/{vmpCode}".replace("{vmpCode}", vmpCode + "") +
+      "?ts=" +
+      new Date().getTime() +
+      (startKey ? "&startKey=" + startKey : "") +
+      (startDocumentId ? "&startDocumentId=" + startDocumentId : "") +
+      (limit ? "&limit=" + limit : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => new models.VmpPaginatedList(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
   getVersion(): Promise<models.SamVersion | any> {
     let _body = null
 
@@ -348,6 +420,84 @@ export class iccBeSamv2Api {
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.SamVersion(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+  listAmpsByDmppCodes(body?: models.ListOfIdsDto): Promise<Array<models.AmpDto> | any> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + "/be_samv2/amp/byDmppCodes" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.AmpDto(it)))
+      .catch(err => this.handleError(err))
+  }
+  listAmpsByGroupCodes(body?: models.ListOfIdsDto): Promise<models.AmpPaginatedList | any> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + "/be_samv2/amp/byGroupCodes" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => new models.AmpPaginatedList(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+  listAmpsByGroupIds(body?: models.ListOfIdsDto): Promise<models.AmpPaginatedList | any> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + "/be_samv2/amp/byGroupIds" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => new models.AmpPaginatedList(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+  listAmpsByVmpCodes(body?: models.ListOfIdsDto): Promise<models.AmpPaginatedList | any> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + "/be_samv2/amp/byVmpCodes" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => new models.AmpPaginatedList(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+  listAmpsByVmpIds(body?: models.ListOfIdsDto): Promise<models.AmpPaginatedList | any> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + "/be_samv2/amp/byVmpIds" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => new models.AmpPaginatedList(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+  listNmpsByCnks(body?: models.ListOfIdsDto): Promise<models.AmpPaginatedList | any> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + "/be_samv2/nmp/byCnks" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => new models.AmpPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
   listPharmaceuticalForms(): Promise<models.VmpGroupPaginatedList | any> {
@@ -372,6 +522,47 @@ export class iccBeSamv2Api {
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new models.VmpGroupPaginatedList(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+  listVmpGroupsByVmpGroupCodes(
+    body?: models.ListOfIdsDto
+  ): Promise<models.VmpGroupPaginatedList | any> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + "/be_samv2/vmpgroup/byGroupCodes" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => new models.VmpGroupPaginatedList(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+  listVmpsByGroupIds(body?: models.ListOfIdsDto): Promise<models.VmpPaginatedList | any> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + "/be_samv2/vmp/byGroupIds" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => new models.VmpPaginatedList(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+  listVmpsByVmpCodes(body?: models.ListOfIdsDto): Promise<models.VmpPaginatedList | any> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + "/be_samv2/vmp/byVmpCodes" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => new models.VmpPaginatedList(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
 }
