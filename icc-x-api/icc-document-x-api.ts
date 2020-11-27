@@ -563,7 +563,7 @@ export class IccDocumentXApi extends iccDocumentApi {
   }
 
   // noinspection JSUnusedGlobalSymbols
-  newInstance(user: models.UserDto, message: models.MessageDto, c: any) {
+  newInstance(user: models.UserDto, message: models.MessageDto | null, c: any) {
     const document = _.extend(
       {
         id: this.crypto.randomUuid(),
