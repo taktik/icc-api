@@ -1,10 +1,4 @@
-import {
-  IccAuthApi,
-  IccBekmehrApi,
-  IccEntityrefApi,
-  IccInsuranceApi,
-  IccPatientApi
-} from "../icc-api"
+import { IccAuthApi, IccEntityrefApi, IccInsuranceApi, IccPatientApi } from "../icc-api"
 import { IccUserXApi } from "./icc-user-x-api"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 import { IccContactXApi } from "./icc-contact-x-api"

@@ -2,7 +2,6 @@ import * as i18n from "./rsrc/contact.i18n"
 
 import * as _ from "lodash"
 import { IccTimeTableApi } from "../icc-api"
-import { XHR } from "../icc-api/api/XHR"
 import { User } from "../icc-api/model/User"
 import { TimeTable } from "../icc-api/model/TimeTable"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
