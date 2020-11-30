@@ -23,6 +23,7 @@
  */
 
 import * as models from "./models"
+import { HealthcarePartyDto } from "./HealthcarePartyDto"
 
 export class MedicationSchemeExportInfoDto {
   constructor(json: JSON | any) {
@@ -35,4 +36,6 @@ export class MedicationSchemeExportInfoDto {
   recipient?: models.HealthcarePartyDto
 
   comment?: string
+
+  serviceAuthors?: Array<HealthcarePartyDto>
 }
