@@ -38,7 +38,7 @@ export * from "./utils"
 export const apiHeaders = function(username: string, password: string) {
   return {
     Authorization: `Basic ${
-      btoa
+      typeof btoa !== "undefined"
         ? btoa(`${username}:${password}`)
         : Buffer.from(`${username}:${password}`).toString("base64")
     }`
