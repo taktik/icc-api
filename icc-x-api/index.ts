@@ -41,6 +41,16 @@ export * from "./icc-receipt-x-api"
 export { utils, UtilsClass } from "./crypto/utils"
 export * from "./utils"
 
+export const apiHeaders = function(username: string, password: string) {
+  return {
+    Authorization: `Basic ${
+      btoa
+        ? btoa(`${username}:${password}`)
+        : Buffer.from(`${username}:${password}`).toString("base64")
+    }`
+  }
+}
+
 export const Api = function(
   host: string,
   username: string,
@@ -57,13 +67,7 @@ export const Api = function(
       ? self.fetch
       : fetch
 ) {
-  const headers = {
-    Authorization: `Basic ${
-      btoa
-        ? btoa(`${username}:${password}`)
-        : Buffer.from(`${username}:${password}`).toString("base64")
-    }`
-  }
+  const headers = apiHeaders(username, password)
   const authApi = new IccAuthApi(host, headers, fetchImpl)
   const entityReferenceApi = new IccEntityrefApi(host, headers, fetchImpl)
   const userApi = new IccUserXApi(host, headers, fetchImpl)
