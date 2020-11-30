@@ -48,9 +48,6 @@
     "tslint-config-standard": "^8.0.1",
     "typescript": "^3.8.3"
   },
-  "optionalDependencies": {
-    "node-webcrypto-ossl": "^1.0.48"
-  },
   "scripts": {
     "gen": "java -classpath swagger-codegen-generators.jar io.swagger.codegen.v3.cli.SwaggerCodegen generate -i https://kraken.svc.icure.cloud/v3/api-docs -l typescript --additional-properties classPrefix=icc skipPathPrefix=/rest/v1 -o ./icc-api/",
     "genloc": "java -classpath swagger-codegen-generators.jar io.swagger.codegen.v3.cli.SwaggerCodegen generate -i http://127.0.0.1:16043/v3/api-docs -l typescript --additional-properties classPrefix=icc skipPathPrefix=/rest/v1 -o ./icc-api/",

@@ -1,7 +1,3 @@
-import * as WebCrypto from "node-webcrypto-ossl"
-// @ts-ignore
-global.crypto = new WebCrypto()
-
 import { utils } from "../icc-x-api"
 import { expect } from "chai"
 import "mocha"
