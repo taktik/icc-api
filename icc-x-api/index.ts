@@ -18,6 +18,8 @@ import { IccCalendarItemXApi } from "./icc-calendar-item-x-api"
 import { IccPatientXApi } from "./icc-patient-x-api"
 import { IccMessageXApi } from "./icc-message-x-api"
 import { IccReceiptXApi } from "./icc-receipt-x-api"
+import { IccAccesslogXApi } from "./icc-accesslog-x-api"
+import { IccTimeTableXApi } from "./icc-time-table-x-api"
 
 export * from "./icc-bekmehr-x-api"
 export * from "./icc-calendar-item-x-api"
@@ -73,6 +75,7 @@ export const Api = function(
     new IccPatientApi(host, headers, fetchImpl),
     crypto
   )
+  const accessLogApi = new IccAccesslogXApi(host, headers, cryptoApi, fetchImpl)
   const contactApi = new IccContactXApi(host, headers, cryptoApi, fetchImpl)
   const formApi = new IccFormXApi(host, headers, cryptoApi, fetchImpl)
   const invoiceApi = new IccInvoiceXApi(host, headers, cryptoApi, entityReferenceApi, fetchImpl)
@@ -82,6 +85,7 @@ export const Api = function(
   const classificationApi = new IccClassificationXApi(host, headers, cryptoApi, fetchImpl)
   const calendarItemApi = new IccCalendarItemXApi(host, headers, cryptoApi, fetchImpl)
   const receiptApi = new IccReceiptXApi(host, headers, cryptoApi, fetchImpl)
+  const timetableApi = new IccTimeTableXApi(host, headers, cryptoApi, fetchImpl)
   const patientApi = new IccPatientXApi(
     host,
     headers,
@@ -115,6 +119,7 @@ export const Api = function(
     userApi,
     patientApi,
     healthcarePartyApi,
+    accessLogApi,
     contactApi,
     healthcareElementApi,
     documentApi,
@@ -125,6 +130,7 @@ export const Api = function(
     entityReferenceApi,
     receiptApi,
     calendarItemApi,
-    classificationApi
+    classificationApi,
+    timetableApi
   }
 }

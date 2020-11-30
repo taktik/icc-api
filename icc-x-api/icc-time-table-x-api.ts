@@ -2,11 +2,10 @@ import * as i18n from "./rsrc/contact.i18n"
 
 import * as _ from "lodash"
 import { IccTimeTableApi } from "../icc-api"
-import { IccCryptoXApi } from "./icc-crypto-x-api"
 import { XHR } from "../icc-api/api/XHR"
-import Header = XHR.Header
 import { User } from "../icc-api/model/User"
 import { TimeTable } from "../icc-api/model/TimeTable"
+import { IccCryptoXApi } from "./icc-crypto-x-api"
 
 export class IccTimeTableXApi extends IccTimeTableApi {
   i18n: any = i18n

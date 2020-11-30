@@ -1,17 +1,7 @@
 import { IccReceiptApi } from "../icc-api"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
-import { utils } from "./crypto/utils"
-import * as moment from "moment"
 import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
-import {
-  AgreementResponse,
-  DmgAcknowledge,
-  DmgConsultation,
-  DmgNotification,
-  DmgRegistration,
-  TarificationConsultationResult
-} from "fhc-api"
 
 export class IccReceiptXApi extends IccReceiptApi {
   crypto: IccCryptoXApi
@@ -142,45 +132,5 @@ export class IccReceiptXApi extends IccReceiptApi {
     return this.newInstance(user, { documentId: docId, references: refs })
       .then(rcpt => this.createReceipt(rcpt))
       .then(rcpt => this.setReceiptAttachment(rcpt.id!, blobType, "", <any>blob))
-  }
-
-  logSCReceipt(
-    object:
-      | AgreementResponse
-      | DmgAcknowledge
-      | DmgConsultation
-      | DmgNotification
-      | DmgRegistration
-      | TarificationConsultationResult,
-    user: models.User,
-    docId: string,
-    cat: string,
-    subcat: string,
-    refs: Array<string> = []
-  ) {
-    return this.newInstance(user, {
-      category: cat,
-      subCategory: subcat,
-      documentId: docId,
-      references: refs.concat(
-        object.commonOutput
-          ? _.compact([
-              object.commonOutput.inputReference &&
-                `mycarenet:${cat}:inputReference:${object.commonOutput.inputReference}`,
-              object.commonOutput.inputReference &&
-                `mycarenet:${cat}:outputReference:${object.commonOutput.outputReference}`,
-              object.commonOutput.inputReference &&
-                `mycarenet:${cat}:nipReference:${object.commonOutput.nipReference}`
-            ])
-          : [],
-        ["date:" + moment().format("YYYYMMDDHHmmss")]
-      )
-    })
-      .then(rcpt => this.createReceipt(rcpt))
-      .then(rcpt =>
-        this.setReceiptAttachment(rcpt.id!, "soapConversation", "", <any>(
-          utils.ua2ArrayBuffer(utils.text2ua(JSON.stringify(object.mycarenetConversation)))
-        ))
-      )
   }
 }
