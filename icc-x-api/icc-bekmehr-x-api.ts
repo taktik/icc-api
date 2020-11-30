@@ -28,7 +28,10 @@ export class IccBekmehrXApi extends IccBekmehrApi {
     this.ctcApi = ctcApi
     this.helementApi = helementApi
 
-    this.wssHost = new URL(this.host, window.location.href).href
+    this.wssHost = new URL(
+      this.host,
+      typeof window !== "undefined" ? window.location.href : undefined
+    ).href
       .replace(/^http/, "ws")
       .replace(/\/rest\/v.+/, "/ws")
   }
