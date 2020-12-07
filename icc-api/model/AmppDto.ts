@@ -64,6 +64,8 @@ export class AmppDto {
 
   deliveryModus?: models.SamTextDto
 
+  deliveryModusSpecificationCode?: string
+
   deliveryModusSpecification?: models.SamTextDto
 
   dhpcLink?: models.SamText
