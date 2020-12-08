@@ -96,4 +96,6 @@ export class FlowItemDto {
 
   nbrOfCasualties?: string
 
+  interventionCode?: number
+
 }
