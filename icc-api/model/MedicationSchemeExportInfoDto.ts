@@ -23,4 +23,5 @@ export class MedicationSchemeExportInfoDto {
   services?: Array<ServiceDto>
   recipient?: HealthcarePartyDto
   comment?: string
+  serviceAuthors?: Array<HealthcarePartyDto>
 }

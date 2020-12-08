@@ -1137,9 +1137,12 @@ export class IccMessageXApi extends iccMessageApi {
                         totalAmount += code.reimbursement || 0
                       })
                       iv.invoiceDto.sentDate = sentDate
-                      return !!this.invoiceXApi.modifyInvoice(iv.invoiceDto).catch(() => {
-                        errors.push(`efac-management.CANNOT_UPDATE_INVOICE.${iv.invoiceDto.id}`)
-                      })
+                      return this.invoiceXApi
+                        .modifyInvoice(iv.invoiceDto)
+                        .then(() => null)
+                        .catch(() =>
+                          errors.push(`efac-management.CANNOT_UPDATE_INVOICE.${iv.invoiceDto.id}`)
+                        )
                     })
                   })
                   return promise
