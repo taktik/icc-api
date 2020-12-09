@@ -89,4 +89,13 @@ export class FlowItemDto {
   patientLastName?: string
 
   patientFirstName?: string
+
+  description?: string
+
+  remarks?: string
+
+  nbrOfCasualties?: string
+
+  interventionCode?: string
+
 }
