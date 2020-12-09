@@ -228,9 +228,28 @@ export function toInvoiceBatch(
             )
 
             const now = new Date()
-            const invoiceDate = toMoment(invoicesWithPatient[0].invoiceDto.invoiceDate!!)
-            const invoicingMonth = invoiceDate!!.month() + 1
-            const invoicingYear = invoiceDate!!.year()
+            //do invoiceDate stats
+            const invoiceDates = _.groupBy(
+              invoicesWithPatient.map(
+                inv =>
+                  !!inv && !!inv.invoiceDto && !!inv.invoiceDto.invoiceDate
+                    ? inv.invoiceDto.invoiceDate.toString().substring(0, 6) + "01"
+                    : "10000101"
+              )
+            )
+            let dateCounts: any[] = []
+            _.forOwn(invoiceDates, function(val, key) {
+              dateCounts.push({ date: key, count: val.length })
+            })
+            const invoiceDate = toMoment(
+              _.get(
+                _.head(_.orderBy(dateCounts, ["count", "date"], ["desc", "desc"])),
+                "date",
+                invoicesWithPatient[0].invoiceDto.invoiceDate
+              )
+            )
+            const invoicingMonth = !!invoiceDate ? invoiceDate.month() + 1 : 0
+            const invoicingYear = !!invoiceDate ? invoiceDate.year() : 0
 
             // The OA 500, matches the monthYear (zone 300) to check the batch sending number
             // Use sending year to prevent duplicate sending number in case of invoices made
