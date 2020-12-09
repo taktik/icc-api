@@ -1128,7 +1128,7 @@ export class IccMessageXApi extends iccMessageApi {
               })
               .then((res: EfactSendResponseWithError) => {
                 if (res.success || res.error) {
-                  let promise = Promise.resolve(true)
+                  let promise: Promise<number | boolean | null> = Promise.resolve(true)
                   let totalAmount = 0
                   _.forEach(invoices, iv => {
                     promise = promise.then(() => {
