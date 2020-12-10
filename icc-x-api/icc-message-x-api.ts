@@ -882,113 +882,115 @@ export class IccMessageXApi extends iccMessageApi {
               let promise: Promise<Array<InvoiceDto>> = Promise.resolve([])
 
               _.forEach(invoices, iv => {
-                iv.error =
-                  _(invoicingErrors)
-                    .filter(it => it.itemId === iv.id)
-                    .map(e => this.extractErrorMessage(e.error))
-                    .compact()
-                    .join("; ") || undefined
-
                 let newInvoicePromise: Promise<InvoiceDto> | null = null
-                _.each(iv.invoicingCodes, ic => {
-                  // If the invoicing code is already treated, do not treat it
-                  if (ic.canceled || ic.accepted) {
-                    return
-                  }
-
-                  // Error from the ET50/51/52 linked to the invoicingCode
-                  const codeError =
+                promise = promise.then(invoices => {
+                  iv.error =
                     _(invoicingErrors)
-                      .filter(it => it.itemId === ic.id)
+                      .filter(it => it.itemId === iv.id)
                       .map(e => this.extractErrorMessage(e.error))
                       .compact()
                       .join("; ") || undefined
 
-                  const record50: ET50Data | false =
-                    messageType === "920900" &&
-                    _.compact(
-                      _.flatMap((parsedRecords as File920900Data).records, r =>
-                        r.items!!.map(
-                          i =>
-                            _.get(i, "et50.itemReference") &&
-                            decodeBase36Uuid(i.et50!!.itemReference.trim()) === ic.id &&
-                            i.et50
-                        )
-                      )
-                    )[0]
+                  _.each(iv.invoicingCodes, ic => {
+                    // If the invoicing code is already treated, do not treat it
+                    if (ic.canceled || ic.accepted) {
+                      return
+                    }
 
-                  const zone114amount =
-                    record50 &&
-                    _.get(record50, "errorDetail.zone114") &&
-                    Number(record50.errorDetail!!.zone114)
+                    // Error from the ET50/51/52 linked to the invoicingCode
+                    const codeError =
+                      _(invoicingErrors)
+                        .filter(it => it.itemId === ic.id)
+                        .map(e => this.extractErrorMessage(e.error))
+                        .compact()
+                        .join("; ") || undefined
 
-                  if (rejectAll || codeError) {
-                    ic.accepted = false
-                    ic.canceled = true
-                    ic.pending = false
-                    ic.resent = false
-                    ic.error = codeError
-                    ic.paid = zone114amount ? Number((zone114amount / 100).toFixed(2)) : 0
-
-                    newInvoicePromise = (
-                      newInvoicePromise ||
-                      this.patientApi
-                        .getPatientIdOfChildDocumentForHcpAndHcpParents(iv, user.healthcarePartyId!)
-                        .then(patientId => this.patientApi.getPatientWithUser(user, patientId!))
-                        .then(pat =>
-                          this.invoiceXApi.newInstance(
-                            user,
-                            pat,
-                            _.omit(iv, [
-                              "id",
-                              "rev",
-                              "deletionDate",
-                              "created",
-                              "modified",
-                              "sentDate",
-                              "printedDate",
-                              "secretForeignKeys",
-                              "cryptedForeignKeys",
-                              "delegations",
-                              "encryptionKeys",
-                              "invoicingCodes",
-                              "error",
-                              "receipts",
-                              "encryptedSelf"
-                            ])
+                    const record50: ET50Data | false =
+                      messageType === "920900" &&
+                      _.compact(
+                        _.flatMap((parsedRecords as File920900Data).records, r =>
+                          r.items!!.map(
+                            i =>
+                              _.get(i, "et50.itemReference") &&
+                              decodeBase36Uuid(i.et50!!.itemReference.trim()) === ic.id &&
+                              i.et50
                           )
                         )
-                        .then(niv => {
-                          iv.correctiveInvoiceId = niv.id
-                          niv.correctedInvoiceId = iv.id
-                          return niv
-                        })
-                    ).then(niv => {
-                      niv.invoicingCodes = (niv.invoicingCodes || []).concat(
-                        _.assign({}, ic, {
-                          id: this.crypto.randomUuid(),
-                          accepted: false,
-                          canceled: false,
-                          pending: true,
-                          resent: true,
-                          archived: false
-                        })
-                      )
-                      return niv
-                    })
-                  } else {
-                    ic.accepted = true
-                    ic.canceled = false
-                    ic.pending = false
-                    ic.resent = false
-                    ic.error = undefined
-                    ic.paid = zone114amount
-                      ? Number((zone114amount / 100).toFixed(2))
-                      : ic.reimbursement
-                  }
-                })
+                      )[0]
 
-                promise = promise.then(invoices => {
+                    const zone114amount =
+                      record50 &&
+                      _.get(record50, "errorDetail.zone114") &&
+                      Number(record50.errorDetail!!.zone114)
+
+                    if (rejectAll || codeError) {
+                      ic.accepted = false
+                      ic.canceled = true
+                      ic.pending = false
+                      ic.resent = false
+                      ic.error = codeError
+                      ic.paid = zone114amount ? Number((zone114amount / 100).toFixed(2)) : 0
+
+                      newInvoicePromise = (
+                        newInvoicePromise ||
+                        this.patientApi
+                          .getPatientIdOfChildDocumentForHcpAndHcpParents(
+                            iv,
+                            user.healthcarePartyId!
+                          )
+                          .then(patientId => this.patientApi.getPatientWithUser(user, patientId!))
+                          .then(pat =>
+                            this.invoiceXApi.newInstance(
+                              user,
+                              pat,
+                              _.omit(iv, [
+                                "id",
+                                "rev",
+                                "deletionDate",
+                                "created",
+                                "modified",
+                                "sentDate",
+                                "printedDate",
+                                "secretForeignKeys",
+                                "cryptedForeignKeys",
+                                "delegations",
+                                "encryptionKeys",
+                                "invoicingCodes",
+                                "error",
+                                "receipts",
+                                "encryptedSelf"
+                              ])
+                            )
+                          )
+                          .then(niv => {
+                            iv.correctiveInvoiceId = niv.id
+                            niv.correctedInvoiceId = iv.id
+                            return niv
+                          })
+                      ).then(niv => {
+                        niv.invoicingCodes = (niv.invoicingCodes || []).concat(
+                          _.assign({}, ic, {
+                            id: this.crypto.randomUuid(),
+                            accepted: false,
+                            canceled: false,
+                            pending: true,
+                            resent: true,
+                            archived: false
+                          })
+                        )
+                        return niv
+                      })
+                    } else {
+                      ic.accepted = true
+                      ic.canceled = false
+                      ic.pending = false
+                      ic.resent = false
+                      ic.error = undefined
+                      ic.paid = zone114amount
+                        ? Number((zone114amount / 100).toFixed(2))
+                        : ic.reimbursement
+                    }
+                  })
                   return (newInvoicePromise
                     ? newInvoicePromise
                         .then(niv =>
