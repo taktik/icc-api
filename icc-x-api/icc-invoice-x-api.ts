@@ -148,7 +148,14 @@ export class IccInvoiceXApi extends iccInvoiceApi {
         if (!entityReference.id) {
           throw new Error("Cannot create invoice")
         }
-        invoice.invoiceReference = entityReference.id.substr(prefix.length)
+        
+        if (invoice.internshipNihii){
+          const ref = entityReference.id.substr(prefix.length).replace('0','1');
+          invoice.invoiceReference = ref;
+        }
+        else {
+          invoice.invoiceReference = entityReference.id.substr(prefix.length)
+        }
         return super.createInvoice(invoice)
       })
   }
