@@ -189,4 +189,17 @@ export class iccReplicationApi {
       .then(doc => new models.ReplicationDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+  startTransientReplication(body?: models.ReplicationDto): Promise<models.AccessLogDto | any> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + "/replication/transient" + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => new models.AccessLogDto(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
 }
