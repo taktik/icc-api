@@ -114,6 +114,7 @@ export const Api = function(
 
   return {
     cryptoApi,
+    authApi,
     userApi,
     patientApi,
     healthcarePartyApi,
