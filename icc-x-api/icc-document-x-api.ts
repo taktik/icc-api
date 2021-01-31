@@ -563,7 +563,7 @@ export class IccDocumentXApi extends IccDocumentApi {
   }
 
   // noinspection JSUnusedGlobalSymbols
-  newInstance(user: models.User, message: models.Message, c: any) {
+  newInstance(user: models.User, message?: models.Message, c: any = {}) {
     const document = _.extend(
       {
         id: this.crypto.randomUuid(),
@@ -575,7 +575,7 @@ export class IccDocumentXApi extends IccDocumentApi {
         codes: [],
         tags: []
       },
-      c || {}
+      c
     )
 
     return this.initDelegationsAndEncryptionKeys(user, message, document)
@@ -583,12 +583,12 @@ export class IccDocumentXApi extends IccDocumentApi {
 
   private initDelegationsAndEncryptionKeys(
     user: models.User,
-    message: models.Message | null,
+    message: models.Message | undefined = undefined,
     document: models.Document
   ): Promise<models.Document> {
     const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto
-      .extractDelegationsSFKs(message, hcpId)
+      .extractDelegationsSFKs(message || null, hcpId)
       .then(secretForeignKeys =>
         Promise.all([
           this.crypto.initObjectDelegations(
@@ -619,7 +619,7 @@ export class IccDocumentXApi extends IccDocumentApi {
             (promise = promise.then(document =>
               this.crypto
                 .addDelegationsAndEncryptionKeys(
-                  message,
+                  message || null,
                   document,
                   hcpId!,
                   delegateId,
