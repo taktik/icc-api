@@ -44,5 +44,7 @@ export class EntityTemplateDto {
 
   subType?: string
 
+  keywords?: Array<string>
+
   entity?: Array<{ [key: string]: any }>
 }
