@@ -6,6 +6,7 @@ import { utils } from "./crypto/utils"
 import { IccCryptoXApi } from "./icc-crypto-x-api"
 import { IccCalendarItemApi } from "../icc-api"
 import { CalendarItem, User } from "../icc-api/model/models"
+import { hex2ua, ua2utf8, utf8_2ua } from "./utils/binary-utils"
 
 export class IccCalendarItemXApi extends IccCalendarItemApi {
   i18n: any = i18n
@@ -355,13 +356,13 @@ export class IccCalendarItemXApi extends IccCalendarItemApi {
             )
           )
           .then((eks: { extractedKeys: Array<string>; hcpartyId: string }) =>
-            this.crypto.AES.importKey("raw", utils.hex2ua(eks.extractedKeys[0].replace(/-/g, "")))
+            this.crypto.AES.importKey("raw", hex2ua(eks.extractedKeys[0].replace(/-/g, "")))
           )
           .then((key: CryptoKey) =>
             utils.crypt(
               calendarItem,
               (obj: { [key: string]: string }) =>
-                this.crypto.AES.encrypt(key, utils.utf82ua(JSON.stringify(obj))),
+                this.crypto.AES.encrypt(key, utf8_2ua(JSON.stringify(obj))),
               this.cryptedKeys
             )
           )
@@ -390,25 +391,23 @@ export class IccCalendarItemXApi extends IccCalendarItemApi {
                 if (!sfks || !sfks.length) {
                   return Promise.resolve(calendarItem)
                 }
-                return this.crypto.AES.importKey(
-                  "raw",
-                  utils.hex2ua(sfks[0].replace(/-/g, ""))
-                ).then(key =>
-                  utils.decrypt(calendarItem, ec =>
-                    this.crypto.AES.decrypt(key, ec).then(dec => {
-                      const jsonContent = dec && utils.ua2utf8(dec)
-                      try {
-                        return JSON.parse(jsonContent)
-                      } catch (e) {
-                        console.log(
-                          "Cannot parse calendar item",
-                          calendarItem.id,
-                          jsonContent || "Invalid content"
-                        )
-                        return {}
-                      }
-                    })
-                  )
+                return this.crypto.AES.importKey("raw", hex2ua(sfks[0].replace(/-/g, ""))).then(
+                  key =>
+                    utils.decrypt(calendarItem, ec =>
+                      this.crypto.AES.decrypt(key, ec).then(dec => {
+                        const jsonContent = dec && ua2utf8(dec)
+                        try {
+                          return JSON.parse(jsonContent)
+                        } catch (e) {
+                          console.log(
+                            "Cannot parse calendar item",
+                            calendarItem.id,
+                            jsonContent || "Invalid content"
+                          )
+                          return {}
+                        }
+                      })
+                    )
                 )
               })
           : Promise.resolve(calendarItem)

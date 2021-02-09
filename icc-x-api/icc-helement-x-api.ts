@@ -6,6 +6,7 @@ import * as models from "../icc-api/model/models"
 import * as _ from "lodash"
 import * as moment from "moment"
 import { utils } from "./crypto/utils"
+import { a2b, hex2ua, string2ua, ua2utf8 } from "./utils/binary-utils"
 
 export class IccHelementXApi extends IccHelementApi {
   crypto: IccCryptoXApi
@@ -187,14 +188,14 @@ export class IccHelementXApi extends IccHelementApi {
               return Promise.resolve(he)
             }
             if (he.encryptedSelf) {
-              return this.crypto.AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, ""))).then(
+              return this.crypto.AES.importKey("raw", hex2ua(sfks[0].replace(/-/g, ""))).then(
                 key =>
                   new Promise((resolve: (value: any) => any) =>
-                    this.crypto.AES.decrypt(key, utils.text2ua(atob(he.encryptedSelf!))).then(
+                    this.crypto.AES.decrypt(key, string2ua(a2b(he.encryptedSelf!))).then(
                       dec => {
                         let jsonContent
                         try {
-                          jsonContent = dec && utils.ua2utf8(dec)
+                          jsonContent = dec && ua2utf8(dec)
                           jsonContent && _.assign(he, JSON.parse(jsonContent))
                         } catch (e) {
                           console.log(

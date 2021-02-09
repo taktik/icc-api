@@ -3,6 +3,7 @@ import { IccAuthApi, IccBekmehrApi } from "../icc-api"
 import { IccContactXApi } from "./icc-contact-x-api"
 import { IccHelementXApi } from "./icc-helement-x-api"
 import { utils } from "./crypto/utils"
+import { string2ua } from "./utils/binary-utils"
 
 export class IccBekmehrXApi extends IccBekmehrApi {
   private readonly ctcApi: IccContactXApi
@@ -47,7 +48,7 @@ export class IccBekmehrXApi extends IccBekmehrApi {
 
     const send = (command: string, uuid: string, body: any) => {
       const data = JSON.stringify({ command, uuid, body })
-      socket.send(data.length > 65000 ? utils.text2ua(data).buffer : data)
+      socket.send(data.length > 65000 ? string2ua(data).buffer : data)
     }
 
     const messageHandler = (msg: any) => {

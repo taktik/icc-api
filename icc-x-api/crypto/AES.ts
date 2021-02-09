@@ -1,5 +1,6 @@
 import { utils } from "./utils"
 import { debuglog } from "util"
+import { ua2hex } from "../utils/binary-utils"
 
 export class AESUtils {
   /********* AES Config **********/
@@ -128,7 +129,7 @@ export class AESUtils {
           return this.crypto.subtle
             .generateKey(this.aesKeyGenParams, extractable, keyUsages)
             .then(k => this.exportKey(k, "raw"), reject)
-            .then(raw => resolve(utils.ua2hex(raw)), reject)
+            .then(raw => resolve(ua2hex(raw)), reject)
         }
       }
     )

@@ -9,6 +9,7 @@ import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
 import { Contact, Service } from "../icc-api/model/models"
 import { PaginatedListContact } from "../icc-api/model/PaginatedListContact"
+import { a2b, b2a, hex2ua, string2ua, ua2string, ua2utf8, utf8_2ua } from "./utils/binary-utils"
 
 export class IccContactXApi extends IccContactApi {
   i18n: any = i18n
@@ -441,11 +442,11 @@ export class IccContactXApi extends IccContactApi {
             )
           )
         } else {
-          svc.encryptedSelf = btoa(
-            utils.ua2text(
+          svc.encryptedSelf = b2a(
+            ua2string(
               await this.crypto.AES.encrypt(
                 key,
-                utils.utf82ua(JSON.stringify({ content: svc.content })),
+                utf8_2ua(JSON.stringify({ content: svc.content })),
                 rawKey
               )
             )
@@ -478,14 +479,14 @@ export class IccContactXApi extends IccContactApi {
           initialisedCtc.encryptionKeys!
         )
         const rawKey = sfks.extractedKeys[0].replace(/-/g, "")
-        const key = await this.crypto.AES.importKey("raw", utils.hex2ua(rawKey))
+        const key = await this.crypto.AES.importKey("raw", hex2ua(rawKey))
 
         initialisedCtc.services = await this.encryptServices(key, rawKey, ctc.services || [])
-        initialisedCtc.encryptedSelf = btoa(
-          utils.ua2text(
+        initialisedCtc.encryptedSelf = b2a(
+          ua2string(
             await this.crypto.AES.encrypt(
               key,
-              utils.utf82ua(JSON.stringify({ descr: ctc.descr })),
+              utf8_2ua(JSON.stringify({ descr: ctc.descr })),
               rawKey
             )
           )
@@ -510,19 +511,19 @@ export class IccContactXApi extends IccContactApi {
           return ctc
         }
         const rawKey = sfks[0].replace(/-/g, "")
-        const key = await this.crypto.AES.importKey("raw", utils.hex2ua(rawKey))
+        const key = await this.crypto.AES.importKey("raw", hex2ua(rawKey))
 
         ctc.services = await this.decryptServices(hcpartyId, ctc.services || [], key, rawKey)
         if (ctc.encryptedSelf) {
           try {
             const dec = await this.crypto.AES.decrypt(
               key,
-              utils.text2ua(atob(ctc.encryptedSelf!)),
+              string2ua(a2b(ctc.encryptedSelf!)),
               rawKey
             )
             let jsonContent
             try {
-              jsonContent = dec && utils.ua2utf8(dec)
+              jsonContent = dec && ua2utf8(dec)
               jsonContent && _.assign(ctc, JSON.parse(jsonContent))
             } catch (e) {
               console.log("Cannot parse ctc", ctc.id, jsonContent || "<- Invalid encoding")
@@ -552,18 +553,15 @@ export class IccContactXApi extends IccContactApi {
             svc.id!,
             _.size(svc.encryptionKeys) ? svc.encryptionKeys! : svc.delegations!
           )
-          key = await this.crypto.AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
+          key = await this.crypto.AES.importKey("raw", hex2ua(sfks[0].replace(/-/g, "")))
         }
 
         if (svc.encryptedContent) {
           try {
-            const dec = await this.crypto.AES.decrypt(
-              key,
-              utils.text2ua(atob(svc.encryptedContent!))
-            )
+            const dec = await this.crypto.AES.decrypt(key, string2ua(a2b(svc.encryptedContent!)))
             let jsonContent
             try {
-              jsonContent = utils.ua2utf8(utils.truncateTrailingNulls(new Uint8Array(dec)))
+              jsonContent = ua2utf8(utils.truncateTrailingNulls(new Uint8Array(dec)))
               Object.assign(svc, { content: JSON.parse(jsonContent) })
             } catch (e) {
               console.log("Cannot parse service", svc.id, jsonContent || "<- Invalid encoding")
@@ -573,10 +571,10 @@ export class IccContactXApi extends IccContactApi {
           }
         } else if (svc.encryptedSelf) {
           try {
-            const dec = await this.crypto.AES.decrypt(key, utils.text2ua(atob(svc.encryptedSelf!)))
+            const dec = await this.crypto.AES.decrypt(key, string2ua(a2b(svc.encryptedSelf!)))
             let jsonContent
             try {
-              jsonContent = utils.ua2utf8(utils.truncateTrailingNulls(new Uint8Array(dec)))
+              jsonContent = ua2utf8(utils.truncateTrailingNulls(new Uint8Array(dec)))
               Object.assign(svc, JSON.parse(jsonContent))
             } catch (e) {
               console.log("Cannot parse service", svc.id, jsonContent || "<- Invalid encoding")

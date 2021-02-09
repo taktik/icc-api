@@ -105,7 +105,7 @@ async function initKeys(api: any, user: User) {
   let id = user.healthcarePartyId
   while (id) {
     await api.cryptoApi
-      .loadKeyPairsAsTextInBrowserLocalStorage(id, api.cryptoApi.utils.hex2ua(privateKeys[id]))
+      .loadKeyPairsAsTextInBrowserLocalStorage(id, api.cryptoApi.hex2ua(privateKeys[id]))
       .catch((error: any) => {
         console.error("Error: in loadKeyPairsAsTextInBrowserLocalStorage")
         console.error(error)

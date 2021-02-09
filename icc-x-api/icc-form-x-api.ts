@@ -5,6 +5,7 @@ import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
 
 import { utils } from "./crypto/utils"
+import { a2b, hex2ua, string2ua, ua2string } from "./utils/binary-utils"
 
 // noinspection JSUnusedGlobalSymbols
 export class IccFormXApi extends IccFormApi {
@@ -168,11 +169,11 @@ export class IccFormXApi extends IccFormApi {
           )
           .then(({ extractedKeys: sfks }) => {
             if (form.encryptedSelf) {
-              return this.crypto.AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
+              return this.crypto.AES.importKey("raw", hex2ua(sfks[0].replace(/-/g, "")))
                 .then(
                   key =>
                     new Promise((resolve: (value: any) => any) => {
-                      this.crypto.AES.decrypt(key, utils.text2ua(atob(form.encryptedSelf!))).then(
+                      this.crypto.AES.decrypt(key, string2ua(a2b(form.encryptedSelf!))).then(
                         resolve,
                         () => {
                           console.log("Cannot decrypt form", form.id)
@@ -183,7 +184,7 @@ export class IccFormXApi extends IccFormApi {
                 )
                 .then((decrypted: ArrayBuffer) => {
                   if (decrypted) {
-                    form = _.extend(form, JSON.parse(utils.ua2text(decrypted)))
+                    form = _.extend(form, JSON.parse(ua2string(decrypted)))
                   }
                   return form
                 })

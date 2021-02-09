@@ -4,6 +4,7 @@ import { IccCryptoXApi } from "./icc-crypto-x-api"
 import { extend } from "lodash"
 import * as models from "../icc-api/model/models"
 import { DocumentTemplate } from "../icc-api/model/models"
+import { string2ua } from "./utils/binary-utils"
 
 // noinspection JSUnusedGlobalSymbols
 export class IccDoctemplateXApi extends IccDoctemplateApi {
@@ -38,7 +39,7 @@ export class IccDoctemplateXApi extends IccDoctemplateApi {
           guid: this.crypto.randomUuid(),
           group: null,
           specialty: null,
-          attachment: this.crypto.utils.text2ua(template),
+          attachment: string2ua(template),
           mainUti: "public.plain-text"
         },
         c || {}

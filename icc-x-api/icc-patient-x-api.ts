@@ -23,6 +23,7 @@ import { retry } from "./utils/net-utils"
 import { utils } from "./crypto/utils"
 import { IccCalendarItemXApi } from "./icc-calendar-item-x-api"
 import { decodeBase64 } from "../icc-api/model/ModelHelper"
+import { b2a, hex2ua, string2ua, ua2hex, ua2utf8, utf8_2ua } from "./utils/binary-utils"
 
 // noinspection JSUnusedGlobalSymbols
 export class IccPatientXApi extends IccPatientApi {
@@ -198,7 +199,7 @@ export class IccPatientXApi extends IccPatientApi {
         return this.crypto
           .decryptAndImportAesHcPartyKeysForDelegators([ownerId!!], ownerId!!)
           .then(hcPartyKeys => {
-            return this.crypto.AES.encrypt(hcPartyKeys[0].key, utils.text2ua(
+            return this.crypto.AES.encrypt(hcPartyKeys[0].key, string2ua(
               patient.id + ":" + secretId
             ).buffer as ArrayBuffer)
           })
@@ -208,7 +209,7 @@ export class IccPatientXApi extends IccPatientApi {
                 owner: ownerId,
                 delegatedTo: ownerId,
                 tag: "confidential",
-                key: this.crypto.utils.ua2hex(newDelegation)
+                key: ua2hex(newDelegation)
               })
             )
             return patient.rev
@@ -616,7 +617,7 @@ export class IccPatientXApi extends IccPatientApi {
             )
           )
           .then((sfks: { extractedKeys: Array<string>; hcpartyId: string }) =>
-            this.crypto.AES.importKey("raw", utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
+            this.crypto.AES.importKey("raw", hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
           )
           .then((key: CryptoKey) =>
             utils.crypt(
@@ -624,10 +625,10 @@ export class IccPatientXApi extends IccPatientApi {
               (obj: { [key: string]: string }) =>
                 this.crypto.AES.encrypt(
                   key,
-                  utils.utf82ua(
+                  utf8_2ua(
                     JSON.stringify(obj, (k, v) => {
                       return v instanceof ArrayBuffer || v instanceof Uint8Array
-                        ? btoa(new Uint8Array(v).reduce((d, b) => d + String.fromCharCode(b), ""))
+                        ? b2a(new Uint8Array(v).reduce((d, b) => d + String.fromCharCode(b), ""))
                         : v
                     })
                   )
@@ -696,13 +697,13 @@ export class IccPatientXApi extends IccPatientApi {
                       }
                       return this.crypto.AES.importKey(
                         "raw",
-                        utils.hex2ua(sfks[0].replace(/-/g, ""))
+                        hex2ua(sfks[0].replace(/-/g, ""))
                       ).then(key =>
                         utils
                           .decrypt(p, ec =>
                             this.crypto.AES.decrypt(key, ec)
                               .then(dec => {
-                                const jsonContent = dec && utils.ua2utf8(dec)
+                                const jsonContent = dec && ua2utf8(dec)
                                 try {
                                   return JSON.parse(jsonContent)
                                 } catch (e) {

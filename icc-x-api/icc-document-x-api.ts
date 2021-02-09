@@ -5,7 +5,7 @@ import * as _ from "lodash"
 import { XHR } from "../icc-api/api/XHR"
 import * as models from "../icc-api/model/models"
 
-import { utils } from "./crypto/utils"
+import { a2b, hex2ua, string2ua, ua2string } from "./utils/binary-utils"
 
 // noinspection JSUnusedGlobalSymbols
 export class IccDocumentXApi extends IccDocumentApi {
@@ -698,22 +698,22 @@ export class IccDocumentXApi extends IccDocumentApi {
             }
 
             if (sfks.length && document.encryptedSelf) {
-              return this.crypto.AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
+              return this.crypto.AES.importKey("raw", hex2ua(sfks[0].replace(/-/g, "")))
                 .then(
                   (key: CryptoKey) =>
                     new Promise((resolve: (value: ArrayBuffer | null) => any) => {
-                      this.crypto.AES.decrypt(
-                        key,
-                        utils.text2ua(atob(document.encryptedSelf!))
-                      ).then(resolve, () => {
-                        console.log("Cannot decrypt document", document.id)
-                        resolve(null)
-                      })
+                      this.crypto.AES.decrypt(key, string2ua(a2b(document.encryptedSelf!))).then(
+                        resolve,
+                        () => {
+                          console.log("Cannot decrypt document", document.id)
+                          resolve(null)
+                        }
+                      )
                     })
                 )
                 .then((decrypted: ArrayBuffer | null) => {
                   if (decrypted) {
-                    document = _.extend(document, JSON.parse(utils.ua2text(decrypted)))
+                    document = _.extend(document, JSON.parse(ua2string(decrypted)))
                   }
                   return document
                 })

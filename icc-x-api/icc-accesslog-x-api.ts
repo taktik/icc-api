@@ -6,6 +6,7 @@ import * as models from "../icc-api/model/models"
 import * as _ from "lodash"
 import { utils } from "./crypto/utils"
 import { PaginatedListAccessLog } from "../icc-api/model/models"
+import { hex2ua, ua2utf8, utf8_2ua } from "./utils/binary-utils"
 
 export class IccAccesslogXApi extends IccAccesslogApi {
   crypto: IccCryptoXApi
@@ -154,25 +155,23 @@ export class IccAccesslogXApi extends IccAccesslogApi {
                   //console.log("Cannot decrypt contact", ctc.id)
                   return Promise.resolve(accessLog)
                 }
-                return this.crypto.AES.importKey(
-                  "raw",
-                  utils.hex2ua(sfks[0].replace(/-/g, ""))
-                ).then(key =>
-                  utils.decrypt(accessLog, ec =>
-                    this.crypto.AES.decrypt(key, ec).then(dec => {
-                      const jsonContent = dec && utils.ua2utf8(dec)
-                      try {
-                        return JSON.parse(jsonContent)
-                      } catch (e) {
-                        console.log(
-                          "Cannot parse access log",
-                          accessLog.id,
-                          jsonContent || "Invalid content"
-                        )
-                        return {}
-                      }
-                    })
-                  )
+                return this.crypto.AES.importKey("raw", hex2ua(sfks[0].replace(/-/g, ""))).then(
+                  key =>
+                    utils.decrypt(accessLog, ec =>
+                      this.crypto.AES.decrypt(key, ec).then(dec => {
+                        const jsonContent = dec && ua2utf8(dec)
+                        try {
+                          return JSON.parse(jsonContent)
+                        } catch (e) {
+                          console.log(
+                            "Cannot parse access log",
+                            accessLog.id,
+                            jsonContent || "Invalid content"
+                          )
+                          return {}
+                        }
+                      })
+                    )
                 )
               })
           : Promise.resolve(accessLog)
@@ -225,13 +224,13 @@ export class IccAccesslogXApi extends IccAccesslogApi {
             )
           )
           .then((eks: { extractedKeys: Array<string>; hcpartyId: string }) =>
-            this.crypto.AES.importKey("raw", utils.hex2ua(eks.extractedKeys[0].replace(/-/g, "")))
+            this.crypto.AES.importKey("raw", hex2ua(eks.extractedKeys[0].replace(/-/g, "")))
           )
           .then((key: CryptoKey) =>
             utils.crypt(
               accessLog,
               (obj: { [key: string]: string }) =>
-                this.crypto.AES.encrypt(key, utils.utf82ua(JSON.stringify(obj))),
+                this.crypto.AES.encrypt(key, utf8_2ua(JSON.stringify(obj))),
               this.cryptedKeys
             )
           )

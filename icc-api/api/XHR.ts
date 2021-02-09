@@ -38,6 +38,16 @@ export namespace XHR {
     }
   }
 
+  function b2a(a: string): string {
+    if (Buffer) {
+      return Buffer.from(a).toString("base64")
+    }
+    if (typeof btoa !== "undefined") {
+      return btoa(a)
+    }
+    throw new Error("Unsupported operation b2a")
+  }
+
   function fetchWithTimeout(
     url: string,
     init: RequestInit,
@@ -114,7 +124,7 @@ export namespace XHR {
                 !contentType || contentType.data === "application/json"
                   ? JSON.stringify(data, (k, v) => {
                       return v instanceof ArrayBuffer || v instanceof Uint8Array
-                        ? btoa(new Uint8Array(v).reduce((d, b) => d + String.fromCharCode(b), ""))
+                        ? b2a(new Uint8Array(v).reduce((d, b) => d + String.fromCharCode(b), ""))
                         : v
                     })
                   : data
