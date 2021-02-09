@@ -1,8 +1,8 @@
 import { IccHcpartyApi, IccPatientApi } from "../icc-api"
-import { AES, AESUtils } from "./crypto/AES"
-import { RSA, RSAUtils } from "./crypto/RSA"
-import { utils, UtilsClass } from "./crypto/utils"
-import { shamir, ShamirClass } from "./crypto/shamir"
+import { AESUtils } from "./crypto/AES"
+import { RSAUtils } from "./crypto/RSA"
+import { UtilsClass } from "./crypto/utils"
+import { ShamirClass } from "./crypto/shamir"
 
 import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
@@ -1379,7 +1379,7 @@ export class IccCryptoXApi {
           "jwk",
           this._utils.pkcs8ToJwk(privateKey),
           "jwk",
-          utils.spkiToJwk(hex2ua(publicKey))
+          this._utils.spkiToJwk(hex2ua(publicKey))
         )
       })
       .then((keyPair: { publicKey: CryptoKey; privateKey: CryptoKey }) => {
@@ -1396,7 +1396,7 @@ export class IccCryptoXApi {
     return this.hcpartyBaseApi
       .getPublicKey(healthcarePartyId)
       .then((publicKey: models.PublicKey) => {
-        const pubKey = utils.spkiToJwk(hex2ua(publicKey.hexString!))
+        const pubKey = this._utils.spkiToJwk(hex2ua(publicKey.hexString!))
 
         privKey.n = pubKey.n
         privKey.e = pubKey.e
@@ -1521,8 +1521,8 @@ export class IccCryptoXApi {
               ? this._AES
                   .generateCryptoKey(true)
                   .then(AESKey => {
-                    const ownerPubKey = utils.spkiToJwk(hex2ua(owner.publicKey!))
-                    const delegatePubKey = utils.spkiToJwk(hex2ua(delegate.publicKey!))
+                    const ownerPubKey = this._utils.spkiToJwk(hex2ua(owner.publicKey!))
+                    const delegatePubKey = this._utils.spkiToJwk(hex2ua(delegate.publicKey!))
 
                     return Promise.all([
                       this._RSA.importKey("jwk", ownerPubKey, ["encrypt"]),
@@ -1566,7 +1566,7 @@ export class IccCryptoXApi {
   checkPrivateKeyValidity(hcp: models.HealthcareParty | models.Patient): Promise<boolean> {
     return new Promise<boolean>(resolve => {
       this._RSA
-        .importKey("jwk", utils.spkiToJwk(hex2ua(hcp.publicKey!)), ["encrypt"])
+        .importKey("jwk", this._utils.spkiToJwk(hex2ua(hcp.publicKey!)), ["encrypt"])
         .then(k => this._RSA.encrypt(k, utf8_2ua("shibboleth")))
         .then(cipher => {
           const kp = this._RSA.loadKeyPairNotImported(hcp.id!)

@@ -2,7 +2,6 @@ import * as models from "../icc-api/model/models"
 import { IccAuthApi, IccBekmehrApi } from "../icc-api"
 import { IccContactXApi } from "./icc-contact-x-api"
 import { IccHelementXApi } from "./icc-helement-x-api"
-import { utils } from "./crypto/utils"
 import { string2ua } from "./utils/binary-utils"
 
 export class IccBekmehrXApi extends IccBekmehrApi {

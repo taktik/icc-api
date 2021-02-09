@@ -4,7 +4,6 @@ import { IccCryptoXApi } from "./icc-crypto-x-api"
 import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
 
-import { utils } from "./crypto/utils"
 import { a2b, hex2ua, string2ua, ua2string } from "./utils/binary-utils"
 
 // noinspection JSUnusedGlobalSymbols

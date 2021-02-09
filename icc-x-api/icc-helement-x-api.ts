@@ -5,7 +5,6 @@ import * as models from "../icc-api/model/models"
 
 import * as _ from "lodash"
 import * as moment from "moment"
-import { utils } from "./crypto/utils"
 import { a2b, hex2ua, string2ua, ua2utf8 } from "./utils/binary-utils"
 
 export class IccHelementXApi extends IccHelementApi {
