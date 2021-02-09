@@ -1506,7 +1506,7 @@ export class IccCryptoXApi {
     delegateId: string
   ): PromiseLike<models.HealthcareParty | models.Patient> {
     //Preload hcp and patient because we need them and they are going to be invalidated from the caches
-    return this.utils.notConcurrent(this.generateKeyConcurrencyMap, ownerId, () =>
+    return this._utils.notConcurrent(this.generateKeyConcurrencyMap, ownerId, () =>
       Promise.all([this.getHcpOrPatient(ownerId), this.getHcpOrPatient(delegateId)]).then(
         ([owner, delegate]) => {
           if ((owner.hcPartyKeys || {})[delegateId]) {

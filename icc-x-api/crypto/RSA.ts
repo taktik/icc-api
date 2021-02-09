@@ -80,7 +80,7 @@ export class RSAUtils {
    * @param format either 'jwk' or 'spki' or 'pkcs8'
    * @returns {Promise|*} will be RSA key (public or private)
    */
-  exportKey(cryptoKey: CryptoKey, format: string) {
+  exportKey(cryptoKey: CryptoKey, format: string): Promise<JsonWebKey | ArrayBuffer> {
     return new Promise((resolve: (value: JsonWebKey | ArrayBuffer) => any, reject) => {
       this.crypto.subtle.exportKey(format, cryptoKey).then(resolve, reject)
     })
