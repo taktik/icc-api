@@ -28,9 +28,9 @@ export class Property {
   constructor(json: JSON | any) {
     Object.assign(this as Property, json)
   }
-  type?: models.PropertyType
+  type?: models.PropertyTypeDto
 
-  typedValue?: models.TypedValue
+  typedValue?: models.TypedValueDto
 
   attachments?: { [key: string]: models.Attachment }
 
