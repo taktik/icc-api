@@ -28,6 +28,10 @@ export class FormSection {
   constructor(json: JSON | any) {
     Object.assign(this as FormSection, json)
   }
+  icon?: string
+
+  title?: string
+
   columns?: number
 
   formColumns?: Array<models.FormColumn>

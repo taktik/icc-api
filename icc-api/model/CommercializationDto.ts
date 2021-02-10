@@ -31,4 +31,12 @@ export class CommercializationDto {
   from?: number
 
   to?: number
+
+  reason?: models.SamTextDto
+
+  endOfComercialization?: models.SamTextDto
+
+  impact?: models.SamTextDto
+
+  additionalInformation?: models.SamTextDto
 }

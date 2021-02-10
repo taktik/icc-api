@@ -54,5 +54,7 @@ export class MedicalLocationDto {
 
   agendaIds?: Array<string>
 
+  options?: { [key: string]: string }
+
   guardPost?: boolean
 }

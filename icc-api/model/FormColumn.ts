@@ -31,4 +31,6 @@ export class FormColumn {
   formDataList?: Array<models.FormLayoutData>
 
   columns?: string
+
+  shouldDisplay?: boolean
 }

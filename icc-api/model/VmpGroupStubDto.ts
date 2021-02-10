@@ -28,6 +28,8 @@ export class VmpGroupStubDto {
   constructor(json: JSON | any) {
     Object.assign(this as VmpGroupStubDto, json)
   }
+  productId?: string
+
   id?: string
 
   code?: string

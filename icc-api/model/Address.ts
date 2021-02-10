@@ -58,6 +58,10 @@ export namespace Address {
     Hospital = <any>"hospital",
     Clinic = <any>"clinic",
     Hq = <any>"hq",
-    Other = <any>"other"
+    Other = <any>"other",
+    Temporary = <any>"temporary",
+    Postal = <any>"postal",
+    Diplomatic = <any>"diplomatic",
+    Reference = <any>"reference"
   }
 }

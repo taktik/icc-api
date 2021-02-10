@@ -32,6 +32,8 @@ export class MedicationSchemeExportInfoDto {
 
   services?: Array<models.ServiceDto>
 
+  serviceAuthors?: Array<models.HealthcarePartyDto>
+
   recipient?: models.HealthcarePartyDto
 
   comment?: string

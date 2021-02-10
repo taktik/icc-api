@@ -62,6 +62,22 @@ export class iccEntitytemplateApi {
       .then(doc => new models.EntityTemplateDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+  deleteEntityTemplate(entityTemplateIds: string): Promise<any | Boolean> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/entitytemplate/{entityTemplateIds}".replace("{entityTemplateIds}", entityTemplateIds + "") +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
+      .then(doc => true)
+      .catch(err => this.handleError(err))
+  }
   findAllEntityTemplates(
     type: string,
     searchString?: string,
@@ -75,6 +91,29 @@ export class iccEntitytemplateApi {
       "?ts=" +
       new Date().getTime() +
       (searchString ? "&searchString=" + searchString : "") +
+      (includeEntities ? "&includeEntities=" + includeEntities : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.EntityTemplateDto(it)))
+      .catch(err => this.handleError(err))
+  }
+  findAllEntityTemplatesByKeyword(
+    type: string,
+    keyword: string,
+    includeEntities?: boolean
+  ): Promise<Array<models.EntityTemplateDto> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/entitytemplate/findAll/{type}/keyword/{keyword}"
+        .replace("{type}", type + "")
+        .replace("{keyword}", keyword + "") +
+      "?ts=" +
+      new Date().getTime() +
       (includeEntities ? "&includeEntities=" + includeEntities : "")
     let headers = this.headers
     headers = headers
@@ -100,6 +139,31 @@ export class iccEntitytemplateApi {
       "?ts=" +
       new Date().getTime() +
       (searchString ? "&searchString=" + searchString : "") +
+      (includeEntities ? "&includeEntities=" + includeEntities : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.EntityTemplateDto(it)))
+      .catch(err => this.handleError(err))
+  }
+  findEntityTemplatesByKeyword(
+    userId: string,
+    type: string,
+    keyword: string,
+    includeEntities?: boolean
+  ): Promise<Array<models.EntityTemplateDto> | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/entitytemplate/find/{userId}/{type}/keyword/{keyword}"
+        .replace("{userId}", userId + "")
+        .replace("{type}", type + "")
+        .replace("{keyword}", keyword + "") +
+      "?ts=" +
+      new Date().getTime() +
       (includeEntities ? "&includeEntities=" + includeEntities : "")
     let headers = this.headers
     headers = headers

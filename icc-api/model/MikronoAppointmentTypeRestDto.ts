@@ -28,4 +28,17 @@ export class MikronoAppointmentTypeRestDto {
   constructor(json: JSON | any) {
     Object.assign(this as MikronoAppointmentTypeRestDto, json)
   }
+  color?: string
+
+  durationInMinutes?: number
+
+  externalRef?: string
+
+  mikronoId?: string
+
+  docIds?: Array<string>
+
+  otherInfos?: { [key: string]: string }
+
+  subjectByLanguage?: { [key: string]: string }
 }

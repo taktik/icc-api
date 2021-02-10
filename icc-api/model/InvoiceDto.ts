@@ -159,6 +159,8 @@ export class InvoiceDto {
   receipts?: { [key: string]: string }
 
   idDocument?: models.IdentityDocumentReader
+
+  options?: { [key: string]: string }
 }
 export namespace InvoiceDto {
   export enum PaymentTypeEnum {

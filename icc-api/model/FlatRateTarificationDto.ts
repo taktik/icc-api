@@ -40,6 +40,7 @@ export namespace FlatRateTarificationDto {
   export enum FlatRateTypeEnum {
     Physician = <any>"physician",
     Physiotherapist = <any>"physiotherapist",
-    Nurse = <any>"nurse"
+    Nurse = <any>"nurse",
+    Ptd = <any>"ptd"
   }
 }

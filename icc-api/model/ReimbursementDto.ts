@@ -44,6 +44,8 @@ export class ReimbursementDto {
 
   reference?: boolean
 
+  legalReferencePath?: string
+
   flatRateSystem?: boolean
 
   reimbursementBasePrice?: number

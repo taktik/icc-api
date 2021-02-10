@@ -38,6 +38,7 @@ export namespace Formula {
     OnLoad = <any>"OnLoad",
     OnChange = <any>"OnChange",
     OnSave = <any>"OnSave",
-    OnDestroy = <any>"OnDestroy"
+    OnDestroy = <any>"OnDestroy",
+    OnLoadPropertiesEditor = <any>"OnLoadPropertiesEditor"
   }
 }

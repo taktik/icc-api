@@ -64,6 +64,12 @@ export class MedicalHouseContractDto {
 
   noNurse?: boolean
 
+  signatureType?: MedicalHouseContractDto.SignatureTypeEnum
+
+  status?: number
+
+  receipts?: { [key: string]: string }
+
   startOfSuspension?: number
 
   endOfSuspension?: number
@@ -77,6 +83,12 @@ export class MedicalHouseContractDto {
   changeType?: MedicalHouseContractDto.ChangeTypeEnum
 }
 export namespace MedicalHouseContractDto {
+  export enum SignatureTypeEnum {
+    HolderEid = <any>"holderEid",
+    HolderPaper = <any>"holderPaper",
+    LegalrepresentativeEid = <any>"legalrepresentativeEid",
+    LegalrepresentativePaper = <any>"legalrepresentativePaper"
+  }
   export enum SuspensionReasonEnum {
     NotInsured = <any>"notInsured",
     NoReasonGiven = <any>"noReasonGiven",
