@@ -13,6 +13,9 @@ import { CodeStubDto } from "./CodeStubDto"
 import { ContentDto } from "./ContentDto"
 import { DelegationDto } from "./DelegationDto"
 
+/**
+ * This entity represents a Service. A Service is created in the course a contact. A contact contains a series of services (acts, observations, exchanges) performed on the patient. These services can be linked to healthcare elements
+ */
 import { decodeBase64 } from "./ModelHelper"
 
 export class ServiceDto {
@@ -20,19 +23,52 @@ export class ServiceDto {
     Object.assign(this as ServiceDto, json)
   }
 
+  /**
+   * The Id of the Service. We encourage using either a v4 UUID or a HL7 Id.
+   */
   id?: string
+  /**
+   * Id of the contact during which the service is provided
+   */
   contactId?: string
+  /**
+   * List of IDs of all sub-contacts that link the service to structural elements. Only used when the Service is emitted outside of its contact
+   */
   subContactIds?: Array<string>
+  /**
+   * List of IDs of all plans of actions (healthcare approaches) as a part of which the Service is provided. Only used when the Service is emitted outside of its contact
+   */
   plansOfActionIds?: Array<string>
+  /**
+   * List of IDs of all healthcare elements for which the service is provided. Only used when the Service is emitted outside of its contact
+   */
   healthElementsIds?: Array<string>
+  /**
+   * List of Ids of all forms linked to the Service. Only used when the Service is emitted outside of its contact.
+   */
   formIds?: Array<string>
+  /**
+   * The secret patient key, encrypted in the patient document, in clear here.
+   */
   secretForeignKeys?: Array<string>
+  /**
+   * The public patient key, encrypted here for separate Crypto Actors.
+   */
   cryptedForeignKeys?: { [key: string]: Array<DelegationDto> }
+  /**
+   * The delegations giving access to connected healthcare information.
+   */
   delegations?: { [key: string]: Array<DelegationDto> }
+  /**
+   * The contact secret encryption key used to encrypt the secured properties (like services for example), encrypted for separate Crypto Actors.
+   */
   encryptionKeys?: { [key: string]: Array<DelegationDto> }
   label?: string
   dataClassName?: string
   index?: number
+  /**
+   * The type of the content recorded in the documents for the service
+   */
   content?: { [key: string]: ContentDto }
   encryptedContent?: string
   textIndexes?: { [key: string]: string }
@@ -40,17 +76,53 @@ export class ServiceDto {
   openingDate?: number
   closingDate?: number
   formId?: string
+  /**
+   * The timestamp (unix epoch in ms) of creation of this entity, will be filled automatically if missing. Not enforced by the application server.
+   */
   created?: number
+  /**
+   * The date (unix epoch in ms) of the latest modification of this entity, will be filled automatically if missing. Not enforced by the application server.
+   */
   modified?: number
+  /**
+   * Soft delete (unix epoch in ms) timestamp of the object.
+   */
   endOfLife?: number
+  /**
+   * The id of the User that has created this form, will be filled automatically if missing. Not enforced by the application server.
+   */
   author?: string
+  /**
+   * The id of the HealthcareParty that is responsible for this form, will be filled automatically if missing. Not enforced by the application server.
+   */
   responsible?: string
+  /**
+   * The id of the medical location where this entity was created.
+   */
   medicalLocationId?: string
+  /**
+   * Text, comments on the Service provided
+   */
   comment?: string
   status?: number
+  /**
+   * List of invoicing codes
+   */
   invoicingCodes?: Array<string>
+  /**
+   * Links towards related services (possibly in other contacts)
+   */
   qualifiedLinks?: { [key: string]: Array<string> }
+  /**
+   * A code is an item from a codification system that qualifies the content of this entity. SNOMED-CT, ICPC-2 or ICD-10 codifications systems can be used for codes
+   */
   codes?: Array<CodeStubDto>
+  /**
+   * A tag is an item from a codification system that qualifies an entity as being member of a certain class, whatever the value it might have taken. If the tag qualifies the content of a field, it means that whatever the content of the field, the tag will always apply. For example, the label of a field is qualified using a tag. LOINC is a codification system typically used for tags.
+   */
   tags?: Array<CodeStubDto>
+  /**
+   * The base64 encoded data of this object, formatted as JSON and encrypted in AES using the random master key from encryptionKeys.
+   */
   encryptedSelf?: string
 }

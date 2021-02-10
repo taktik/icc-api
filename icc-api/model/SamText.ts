@@ -10,16 +10,15 @@
  * Do not edit the class manually.
  */
 
-/**
- * Status showing whether the message is read or not and the time of reading
- */
 import { decodeBase64 } from "./ModelHelper"
 
-export class MessageReadStatusDto {
+export class SamText {
   constructor(json: JSON | any) {
-    Object.assign(this as MessageReadStatusDto, json)
+    Object.assign(this as SamText, json)
   }
 
-  time?: number
-  read?: boolean
+  fr?: string
+  nl?: string
+  de?: string
+  en?: string
 }

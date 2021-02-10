@@ -10,6 +10,9 @@
  * Do not edit the class manually.
  */
 
+/**
+ * A code is an item from a codification system that qualifies the content of this entity. SNOMED-CT, ICPC-2 or ICD-10 codifications systems can be used for codes
+ */
 import { decodeBase64 } from "./ModelHelper"
 
 export class CodeStubDto {

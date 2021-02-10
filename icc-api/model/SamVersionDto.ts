@@ -19,6 +19,9 @@ export class SamVersionDto {
 
   id?: string
   rev?: string
+  /**
+   * hard delete (unix epoch in ms) timestamp of the object. Filled automatically when deletePatient is called.
+   */
   deletionDate?: number
   version?: string
   date?: number

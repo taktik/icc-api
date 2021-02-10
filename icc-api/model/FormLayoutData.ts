@@ -9,13 +9,13 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Code } from "./Code"
-import { CodeType } from "./CodeType"
 import { ContentDto } from "./ContentDto"
 import { Editor } from "./Editor"
 import { FormDataOption } from "./FormDataOption"
 import { FormPlanning } from "./FormPlanning"
 import { Formula } from "./Formula"
+import { GuiCode } from "./GuiCode"
+import { GuiCodeType } from "./GuiCodeType"
 import { Suggest } from "./Suggest"
 
 import { decodeBase64 } from "./ModelHelper"
@@ -39,8 +39,8 @@ export class FormLayoutData {
   defaultStatus?: number
   suggest?: Array<Suggest>
   plannings?: Array<FormPlanning>
-  tags?: Array<Code>
-  codes?: Array<Code>
-  codeTypes?: Array<CodeType>
+  tags?: Array<GuiCode>
+  codes?: Array<GuiCode>
+  codeTypes?: Array<GuiCodeType>
   formulas?: Array<Formula>
 }

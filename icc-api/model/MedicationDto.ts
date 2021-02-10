@@ -18,6 +18,9 @@ import { RenewalDto } from "./RenewalDto"
 import { SubstanceproductDto } from "./SubstanceproductDto"
 import { SuspensionDto } from "./SuspensionDto"
 
+/**
+ * The details of prescribed or suggested medication
+ */
 import { decodeBase64 } from "./ModelHelper"
 
 export class MedicationDto {

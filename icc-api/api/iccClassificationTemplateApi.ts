@@ -149,9 +149,9 @@ export class iccClassificationTemplateApi {
    * @param limit Number of rows
    */
   listClassificationTemplates(
-    startKey: string,
-    startDocumentId: string,
-    limit: number
+    startKey?: string,
+    startDocumentId?: string,
+    limit?: number
   ): Promise<PaginatedListClassificationTemplateDto> {
     let _body = null
 

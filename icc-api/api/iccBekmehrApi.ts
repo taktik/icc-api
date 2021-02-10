@@ -13,7 +13,6 @@ import { XHR } from "./XHR"
 import { CheckSMFPatientResult } from "../model/CheckSMFPatientResult"
 import { ContentDto } from "../model/ContentDto"
 import { DiaryNoteExportInfoDto } from "../model/DiaryNoteExportInfoDto"
-import { ImportMapping } from "../model/ImportMapping"
 import { ImportResultDto } from "../model/ImportResultDto"
 import { MedicationSchemeExportInfoDto } from "../model/MedicationSchemeExportInfoDto"
 import { SoftwareMedicalFileExportDto } from "../model/SoftwareMedicalFileExportDto"
@@ -47,7 +46,6 @@ export class iccBekmehrApi {
   /**
    *
    * @summary Check whether patients in SMF already exists in DB
-   * @param body
    * @param documentId
    * @param documentKey
    * @param patientId
@@ -57,11 +55,9 @@ export class iccBekmehrApi {
     documentId: string,
     documentKey?: string,
     patientId?: string,
-    language?: string,
-    body?: { [key: string]: Array<ImportMapping> }
+    language?: string
   ): Promise<Array<CheckSMFPatientResult>> {
     let _body = null
-    _body = body
 
     const _url =
       this.host +
@@ -72,9 +68,6 @@ export class iccBekmehrApi {
       (patientId ? "&patientId=" + encodeURIComponent(String(patientId)) : "") +
       (language ? "&language=" + encodeURIComponent(String(language)) : "")
     let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new CheckSMFPatientResult(it)))
       .catch(err => this.handleError(err))
@@ -727,7 +720,6 @@ export class iccBekmehrApi {
   /**
    *
    * @summary Import MedicationScheme into patient(s) using existing document
-   * @param body
    * @param documentId
    * @param documentKey
    * @param dryRun Dry run: do not save in database
@@ -739,11 +731,9 @@ export class iccBekmehrApi {
     documentKey?: string,
     dryRun?: boolean,
     patientId?: string,
-    language?: string,
-    body?: { [key: string]: Array<ImportMapping> }
+    language?: string
   ): Promise<Array<ImportResultDto>> {
     let _body = null
-    _body = body
 
     const _url =
       this.host +
@@ -755,9 +745,6 @@ export class iccBekmehrApi {
       (patientId ? "&patientId=" + encodeURIComponent(String(patientId)) : "") +
       (language ? "&language=" + encodeURIComponent(String(language)) : "")
     let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new ImportResultDto(it)))
       .catch(err => this.handleError(err))
@@ -766,21 +753,20 @@ export class iccBekmehrApi {
   /**
    *
    * @summary Import SMF into patient(s) using existing document
-   * @param body
    * @param documentId
    * @param documentKey
    * @param patientId
    * @param language
+   * @param dryRun
    */
   importSmf(
     documentId: string,
     documentKey?: string,
     patientId?: string,
     language?: string,
-    body?: { [key: string]: Array<ImportMapping> }
+    dryRun?: boolean
   ): Promise<Array<ImportResultDto>> {
     let _body = null
-    _body = body
 
     const _url =
       this.host +
@@ -789,11 +775,9 @@ export class iccBekmehrApi {
       new Date().getTime() +
       (documentKey ? "&documentKey=" + encodeURIComponent(String(documentKey)) : "") +
       (patientId ? "&patientId=" + encodeURIComponent(String(patientId)) : "") +
-      (language ? "&language=" + encodeURIComponent(String(language)) : "")
+      (language ? "&language=" + encodeURIComponent(String(language)) : "") +
+      (dryRun ? "&dryRun=" + encodeURIComponent(String(dryRun)) : "")
     let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new ImportResultDto(it)))
       .catch(err => this.handleError(err))
@@ -802,7 +786,6 @@ export class iccBekmehrApi {
   /**
    *
    * @summary Import sumehr into patient(s) using existing document
-   * @param body
    * @param documentId
    * @param documentKey
    * @param dryRun Dry run: do not save in database
@@ -814,11 +797,9 @@ export class iccBekmehrApi {
     documentKey?: string,
     dryRun?: boolean,
     patientId?: string,
-    language?: string,
-    body?: { [key: string]: Array<ImportMapping> }
+    language?: string
   ): Promise<Array<ImportResultDto>> {
     let _body = null
-    _body = body
 
     const _url =
       this.host +
@@ -830,9 +811,6 @@ export class iccBekmehrApi {
       (patientId ? "&patientId=" + encodeURIComponent(String(patientId)) : "") +
       (language ? "&language=" + encodeURIComponent(String(language)) : "")
     let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new ImportResultDto(it)))
       .catch(err => this.handleError(err))
@@ -841,7 +819,6 @@ export class iccBekmehrApi {
   /**
    *
    * @summary Import sumehr into patient(s) using existing document
-   * @param body
    * @param documentId
    * @param itemId
    * @param documentKey
@@ -855,11 +832,9 @@ export class iccBekmehrApi {
     documentKey?: string,
     dryRun?: boolean,
     patientId?: string,
-    language?: string,
-    body?: { [key: string]: Array<ImportMapping> }
+    language?: string
   ): Promise<Array<ImportResultDto>> {
     let _body = null
-    _body = body
 
     const _url =
       this.host +
@@ -872,9 +847,6 @@ export class iccBekmehrApi {
       (patientId ? "&patientId=" + encodeURIComponent(String(patientId)) : "") +
       (language ? "&language=" + encodeURIComponent(String(language)) : "")
     let headers = this.headers
-    headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new ImportResultDto(it)))
       .catch(err => this.handleError(err))

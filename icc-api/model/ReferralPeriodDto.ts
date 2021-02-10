@@ -10,6 +10,9 @@
  * Do not edit the class manually.
  */
 
+/**
+ * Time periods
+ */
 import { decodeBase64 } from "./ModelHelper"
 
 export class ReferralPeriodDto {
@@ -17,7 +20,16 @@ export class ReferralPeriodDto {
     Object.assign(this as ReferralPeriodDto, json)
   }
 
+  /**
+   * The date (unix epoch in ms) when the referral period initiated, will be filled instantaneously.
+   */
   startDate?: number
+  /**
+   * The date (unix epoch in ms) the referral period ended, will be instantaneously filled.
+   */
   endDate?: number
+  /**
+   * Comments made during the referral.
+   */
   comment?: string
 }

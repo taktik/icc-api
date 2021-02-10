@@ -13,7 +13,6 @@ import { XHR } from "./XHR"
 import { IndexingInfoDto } from "../model/IndexingInfoDto"
 import { ReplicationInfoDto } from "../model/ReplicationInfoDto"
 import { Unit } from "../model/Unit"
-import { UserDto } from "../model/UserDto"
 
 export class iccIcureApi {
   host: string
@@ -68,25 +67,6 @@ export class iccIcureApi {
 
   /**
    *
-   * @summary Get property types
-   * @param type
-   */
-  getPropertyTypes(type: string): Promise<Array<string>> {
-    let _body = null
-
-    const _url =
-      this.host +
-      `/icure/propertytypes/${encodeURIComponent(String(type))}` +
-      "?ts=" +
-      new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
-      .catch(err => this.handleError(err))
-  }
-
-  /**
-   *
    * @summary Get index info
    */
   getReplicationInfo(): Promise<ReplicationInfoDto> {
@@ -101,40 +81,12 @@ export class iccIcureApi {
 
   /**
    *
-   * @summary Get users stubs
-   */
-  getUsers(): Promise<Array<UserDto>> {
-    let _body = null
-
-    const _url = this.host + `/icure/u` + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new UserDto(it)))
-      .catch(err => this.handleError(err))
-  }
-
-  /**
-   *
    * @summary Get version
    */
   getVersion(): Promise<string> {
     let _body = null
 
     const _url = this.host + `/icure/v` + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => JSON.parse(JSON.stringify(doc.body)))
-      .catch(err => this.handleError(err))
-  }
-
-  /**
-   *
-   * @summary Check if a patient exists
-   */
-  isPatientReady(): Promise<string> {
-    let _body = null
-
-    const _url = this.host + `/icure/pok` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => JSON.parse(JSON.stringify(doc.body)))
@@ -205,7 +157,7 @@ export class iccIcureApi {
 
   /**
    *
-   * @summary resolve health elements conflicts
+   * @summary resolve healthcare elements conflicts
    */
   resolveHealthElementsConflicts(): Promise<Unit> {
     let _body = null

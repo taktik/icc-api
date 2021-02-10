@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 import { StrengthRangeDto } from "./StrengthRangeDto"
-import { SubstanceDto } from "./SubstanceDto"
+import { SubstanceStubDto } from "./SubstanceStubDto"
 
 import { decodeBase64 } from "./ModelHelper"
 
@@ -24,7 +24,7 @@ export class VirtualIngredientDto {
   rank?: number
   type?: VirtualIngredientDto.TypeEnum
   strengthRange?: StrengthRangeDto
-  substance?: SubstanceDto
+  substance?: SubstanceStubDto
 }
 export namespace VirtualIngredientDto {
   export type TypeEnum = "ACTIVE_SUBSTANCE" | "EXCIPIENT"

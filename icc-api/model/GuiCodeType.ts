@@ -10,16 +10,12 @@
  * Do not edit the class manually.
  */
 
-/**
- * Status showing whether the message is read or not and the time of reading
- */
 import { decodeBase64 } from "./ModelHelper"
 
-export class MessageReadStatusDto {
+export class GuiCodeType {
   constructor(json: JSON | any) {
-    Object.assign(this as MessageReadStatusDto, json)
+    Object.assign(this as GuiCodeType, json)
   }
 
-  time?: number
-  read?: boolean
+  type?: string
 }

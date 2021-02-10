@@ -10,6 +10,9 @@
  * Do not edit the class manually.
  */
 
+/**
+ * Members of the careteam involved in this approach
+ */
 import { decodeBase64 } from "./ModelHelper"
 
 export class CareTeamMembershipDto {
@@ -21,6 +24,9 @@ export class CareTeamMembershipDto {
   endDate?: number
   careTeamMemberId?: string
   membershipType?: CareTeamMembershipDto.MembershipTypeEnum
+  /**
+   * The base64 encoded data of this object, formatted as JSON and encrypted in AES using the random master key from encryptionKeys.
+   */
   encryptedSelf?: string
 }
 export namespace CareTeamMembershipDto {

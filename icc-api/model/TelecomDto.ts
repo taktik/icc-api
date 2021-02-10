@@ -10,6 +10,9 @@
  * Do not edit the class manually.
  */
 
+/**
+ * This entity represents available contact details of a user, reachable by telecom methods
+ */
 import { decodeBase64 } from "./ModelHelper"
 
 export class TelecomDto {
@@ -17,9 +20,15 @@ export class TelecomDto {
     Object.assign(this as TelecomDto, json)
   }
 
+  /**
+   * The type of telecom method being used, ex: landline phone, mobile phone, email, fax, etc.
+   */
   telecomType?: TelecomDto.TelecomTypeEnum
   telecomNumber?: string
   telecomDescription?: string
+  /**
+   * The base64 encoded data of this object, formatted as JSON and encrypted in AES using the random master key from encryptionKeys.
+   */
   encryptedSelf?: string
 }
 export namespace TelecomDto {

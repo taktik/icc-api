@@ -10,6 +10,9 @@
  * Do not edit the class manually.
  */
 
+/**
+ * Financial information (Bank, bank account) used to reimburse the patient.
+ */
 import { decodeBase64 } from "./ModelHelper"
 
 export class FinancialInstitutionInformationDto {
@@ -24,5 +27,8 @@ export class FinancialInstitutionInformationDto {
   proxyBankAccount?: string
   proxyBic?: string
   preferredFiiForPartners?: Array<string>
+  /**
+   * The base64 encoded data of this object, formatted as JSON and encrypted in AES using the random master key from encryptionKeys.
+   */
   encryptedSelf?: string
 }

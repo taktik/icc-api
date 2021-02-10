@@ -9,8 +9,11 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { PermissionCriterionDto } from "./PermissionCriterionDto"
+import { PermissionItemDto } from "./PermissionItemDto"
 
+/**
+ * If permission to modify patient data is granted or revoked
+ */
 import { decodeBase64 } from "./ModelHelper"
 
 export class PermissionDto {
@@ -18,7 +21,12 @@ export class PermissionDto {
     Object.assign(this as PermissionDto, json)
   }
 
-  grant?: number
-  revoke?: number
-  criteria?: Array<PermissionCriterionDto>
+  /**
+   * Granted permissions.
+   */
+  grants?: Array<PermissionItemDto>
+  /**
+   * Revoked permissions.
+   */
+  revokes?: Array<PermissionItemDto>
 }

@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 import { IngredientDto } from "./IngredientDto"
-import { PharmaceuticalFormDto } from "./PharmaceuticalFormDto"
+import { PharmaceuticalFormStubDto } from "./PharmaceuticalFormStubDto"
 import { RouteOfAdministrationDto } from "./RouteOfAdministrationDto"
 import { SamTextDto } from "./SamTextDto"
 
@@ -24,7 +24,7 @@ export class AmpComponentDto {
   from?: number
   to?: number
   ingredients?: Array<IngredientDto>
-  pharmaceuticalForms?: Array<PharmaceuticalFormDto>
+  pharmaceuticalForms?: Array<PharmaceuticalFormStubDto>
   routeOfAdministrations?: Array<RouteOfAdministrationDto>
   dividable?: string
   scored?: string

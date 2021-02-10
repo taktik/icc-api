@@ -9,17 +9,20 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { SamTextDto } from "./SamTextDto"
+import { StandardSubstanceDto } from "./StandardSubstanceDto"
 
-/**
- * Status showing whether the message is read or not and the time of reading
- */
 import { decodeBase64 } from "./ModelHelper"
 
-export class MessageReadStatusDto {
+export class SubstanceStubDto {
   constructor(json: JSON | any) {
-    Object.assign(this as MessageReadStatusDto, json)
+    Object.assign(this as SubstanceStubDto, json)
   }
 
-  time?: number
-  read?: boolean
+  id?: string
+  code?: string
+  chemicalForm?: string
+  name?: SamTextDto
+  note?: SamTextDto
+  standardSubstances?: Array<StandardSubstanceDto>
 }
