@@ -1,5 +1,5 @@
 import { PatientDto } from "../../icc-api/model/models"
-import { Patient } from "fhc-api"
+import { Patient } from "@taktik/fhc-api"
 import * as _ from "lodash"
 
 export function toPatient(patientDto: PatientDto): Patient {

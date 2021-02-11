@@ -12,7 +12,7 @@ import {
   DmgRegistration,
   InsurabilityInfoDto,
   TarificationConsultationResult
-} from "fhc-api"
+} from "@taktik/fhc-api"
 
 export class IccReceiptXApi extends iccReceiptApi {
   crypto: IccCryptoXApi

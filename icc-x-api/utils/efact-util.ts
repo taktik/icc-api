@@ -11,7 +11,7 @@ import {
 import { IccInvoiceXApi, IccMessageXApi } from "../../icc-x-api"
 import { iccInsuranceApi } from "../../icc-api/api/iccInsuranceApi"
 
-import { InvoicesBatch, InvoiceItem, Invoice, EIDItem } from "fhc-api"
+import { InvoicesBatch, InvoiceItem, Invoice, EIDItem } from "@taktik/fhc-api"
 import { dateEncode, toMoment } from "./formatting-util"
 import { toPatient } from "./fhc-patient-util"
 import { toInvoiceSender } from "./fhc-invoice-sender-util"

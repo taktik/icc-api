@@ -1,6 +1,6 @@
 import * as _ from "lodash"
 import { HealthcarePartyDto, TelecomDto } from "../../icc-api/model/models"
-import { Telecom } from "fhc-api"
+import { Telecom } from "@taktik/fhc-api"
 
 export interface KendoDropdownSpeciality {
   text: string

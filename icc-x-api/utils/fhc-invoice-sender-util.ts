@@ -1,5 +1,5 @@
 import { HealthcarePartyDto } from "../../icc-api/model/models"
-import { InvoiceSender } from "fhc-api"
+import { InvoiceSender } from "@taktik/fhc-api"
 import { getPhoneNumber } from "./hcp-util"
 
 export function toInvoiceSender(hcp: HealthcarePartyDto, fedCode: string) {

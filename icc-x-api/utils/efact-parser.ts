@@ -1,6 +1,6 @@
-import { EfactMessage } from "fhc-api"
-import { ErrorDetail } from "fhc-api"
-import { Record } from "fhc-api"
+import { EfactMessage } from "@taktik/fhc-api"
+import { ErrorDetail } from "@taktik/fhc-api"
+import { Record } from "@taktik/fhc-api"
 
 export interface Zone200Data extends ETData {
   isTest: boolean
