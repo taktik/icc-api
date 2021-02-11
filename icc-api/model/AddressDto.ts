@@ -79,6 +79,10 @@ export namespace AddressDto {
     | "clinic"
     | "hq"
     | "other"
+    | "temporary"
+    | "postal"
+    | "diplomatic"
+    | "reference"
   export const AddressTypeEnum = {
     Home: "home" as AddressTypeEnum,
     Work: "work" as AddressTypeEnum,
@@ -86,6 +90,10 @@ export namespace AddressDto {
     Hospital: "hospital" as AddressTypeEnum,
     Clinic: "clinic" as AddressTypeEnum,
     Hq: "hq" as AddressTypeEnum,
-    Other: "other" as AddressTypeEnum
+    Other: "other" as AddressTypeEnum,
+    Temporary: "temporary" as AddressTypeEnum,
+    Postal: "postal" as AddressTypeEnum,
+    Diplomatic: "diplomatic" as AddressTypeEnum,
+    Reference: "reference" as AddressTypeEnum
   }
 }

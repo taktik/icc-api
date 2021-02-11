@@ -9,18 +9,18 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStub } from "./CodeStub"
 
 import { decodeBase64 } from "./ModelHelper"
 
-export class ImportMapping {
+export class CodeStub {
   constructor(json: JSON | any) {
-    Object.assign(this as ImportMapping, json)
+    Object.assign(this as CodeStub, json)
   }
 
-  lifecycle?: string
-  content?: string
-  cdLocal?: string
+  id?: string
+  context?: string
+  type?: string
+  code?: string
+  version?: string
   label?: { [key: string]: string }
-  tags?: Array<CodeStub>
 }

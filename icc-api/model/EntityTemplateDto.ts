@@ -25,6 +25,7 @@ export class EntityTemplateDto {
   deletionDate?: number
   userId?: string
   descr?: string
+  keywords?: Array<string>
   entityType?: string
   subType?: string
   defaultTemplate?: boolean
