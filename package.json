@@ -10,9 +10,9 @@
     "libphonenumber-js": "^1.7.18",
     "lodash": "^4.17.12",
     "moment": "^2.22.1",
+    "node-webcrypto-ossl": "^1.0.48",
     "text-encoding": "^0.7.0",
-    "uuid-encoder": "^1.1.0",
-    "node-webcrypto-ossl": "^1.0.48"
+    "uuid-encoder": "^1.1.0"
   },
   "devDependencies": {
     "@types/base64-js": "^1.2.5",
