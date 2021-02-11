@@ -32,9 +32,20 @@ import {
   uuidBase36Half
 } from "./utils/efact-util"
 import { timeEncode } from "./utils/formatting-util"
-import { fhcEfactControllerApi, EfactSendResponse } from "fhc-api"
+import {
+  DmgClosure,
+  DmgExtension,
+  DmgsList,
+  EfactMessage,
+  EfactSendResponse,
+  ErrorDetail,
+  fhcEfactApi,
+  GenAsyncResponse,
+  HcpartyType,
+  IDHCPARTY
+} from "@taktik/fhc-api"
 import { utils } from "./crypto/utils"
-import { EfactMessage } from "fhc-api"
+
 import {
   EfactMessage920098Reader,
   EfactMessage920099Reader,
@@ -48,15 +59,9 @@ import {
   ET92Data,
   File920900Data
 } from "./utils/efact-parser"
-import { ErrorDetail } from "fhc-api"
+
 import { IccReceiptXApi } from "./icc-receipt-x-api"
-import { DmgsList } from "fhc-api"
-import { DmgClosure } from "fhc-api"
-import { DmgExtension } from "fhc-api"
 import { IccPatientXApi } from "./icc-patient-x-api"
-import { HcpartyType } from "fhc-api"
-import { IDHCPARTY } from "fhc-api"
-import { GenAsyncResponse } from "fhc-api"
 
 interface StructError {
   itemId: string | null
@@ -66,6 +71,7 @@ interface StructError {
 
 class EfactSendResponseWithError extends EfactSendResponse {
   public error: string | undefined
+
   constructor(json: JSON) {
     super(json)
   }
@@ -1056,7 +1062,7 @@ export class IccMessageXApi extends iccMessageApi {
     xFHCKeystoreId: string,
     xFHCTokenId: string,
     xFHCPassPhrase: string,
-    efactApi: fhcEfactControllerApi,
+    efactApi: fhcEfactApi,
     fhcServer: string | undefined = undefined,
     prefixer?: (fed: InsuranceDto, hcpId: string) => Promise<string>,
     isConnectedAsPmg: boolean = false,
