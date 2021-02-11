@@ -11,6 +11,9 @@
  */
 import { CodeStub } from "./CodeStub"
 
+/**
+ * List of care team members assigned for the healthcare element.
+ */
 import { decodeBase64 } from "./ModelHelper"
 
 export class CareTeamMember {
@@ -22,6 +25,9 @@ export class CareTeamMember {
   careTeamMemberType?: CareTeamMember.CareTeamMemberTypeEnum
   healthcarePartyId?: string
   quality?: CodeStub
+  /**
+   * The base64 encoded data of this object, formatted as JSON and encrypted in AES using the random master key from encryptionKeys.
+   */
   encryptedSelf?: string
 }
 export namespace CareTeamMember {

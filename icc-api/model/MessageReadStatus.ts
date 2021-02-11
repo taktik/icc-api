@@ -10,6 +10,9 @@
  * Do not edit the class manually.
  */
 
+/**
+ * Status showing whether the message is read or not and the time of reading
+ */
 import { decodeBase64 } from "./ModelHelper"
 
 export class MessageReadStatus {

@@ -11,6 +11,9 @@
  */
 import { CodeStub } from "./CodeStub"
 
+/**
+ * Values of measurements recorded. Fields included would be the value, permissible range (min. and max.), severity, unit of measurement, etc
+ */
 import { decodeBase64 } from "./ModelHelper"
 
 export class Measure {

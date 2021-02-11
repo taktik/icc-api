@@ -18,6 +18,9 @@ import { Renewal } from "./Renewal"
 import { Substanceproduct } from "./Substanceproduct"
 import { Suspension } from "./Suspension"
 
+/**
+ * The details of prescribed or suggested medication
+ */
 import { decodeBase64 } from "./ModelHelper"
 
 export class Medication {

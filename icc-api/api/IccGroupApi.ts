@@ -39,7 +39,7 @@ export class IccGroupApi {
   /**
    * Create a new group and associated dbs.  The created group will be manageable by the users that belong to the same group as the one that called createGroup. Several tasks can be executed during the group creation like DB replications towards the created DBs, users creation and healthcare parties creation
    * @summary Create a group
-   * @param body initialisationData is an object that contains the initial replications (target must be an internalTarget of value base, healthdata or patient) and the users and healthcare parties to be created
+   * @param body
    * @param id The id of the group, also used for subsequent authentication against the db (can only contain digits, letters, - and _)
    * @param name The name of the group
    * @param password The password of the group (can only contain digits, letters, - and _)

@@ -1,14 +1,4 @@
 export function decodeBase64(v: any) {
-  const a2b = (s: string) => {
-    if (Buffer) {
-      return Buffer.from(s, "base64").toString("ascii")
-    }
-    if (typeof atob !== "undefined") {
-      return atob(s)
-    }
-    throw new Error("Unsupported operation a2b")
-  }
-
   if (v instanceof ArrayBuffer) {
     return v
   }
@@ -16,7 +6,7 @@ export function decodeBase64(v: any) {
     return v.buffer
   }
   if (typeof v === "string") {
-    const bs = a2b(v as string)
+    const bs = atob(v as string)
     var data = new Uint8Array(bs.length)
     for (let i = 0; i < bs.length; i++) {
       data[i] = bs.charCodeAt(i)

@@ -10,6 +10,9 @@
  * Do not edit the class manually.
  */
 
+/**
+ * A relationship between this patient and another person.
+ */
 import { decodeBase64 } from "./ModelHelper"
 
 export class Partnership {
@@ -17,8 +20,17 @@ export class Partnership {
     Object.assign(this as Partnership, json)
   }
 
+  /**
+   * Type of relationship.
+   */
   type?: Partnership.TypeEnum
+  /**
+   * Status of the relationship.
+   */
   status?: Partnership.StatusEnum
+  /**
+   * UUID of the contact person or patient in this relationship.
+   */
   partnerId?: string
   meToOtherRelationshipDescription?: string
   otherToMeRelationshipDescription?: string

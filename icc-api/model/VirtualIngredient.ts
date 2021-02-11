@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 import { StrengthRange } from "./StrengthRange"
-import { Substance } from "./Substance"
+import { SubstanceStub } from "./SubstanceStub"
 
 import { decodeBase64 } from "./ModelHelper"
 
@@ -24,7 +24,7 @@ export class VirtualIngredient {
   rank?: number
   type?: VirtualIngredient.TypeEnum
   strengthRange?: StrengthRange
-  substance?: Substance
+  substance?: SubstanceStub
 }
 export namespace VirtualIngredient {
   export type TypeEnum = "ACTIVE_SUBSTANCE" | "EXCIPIENT"

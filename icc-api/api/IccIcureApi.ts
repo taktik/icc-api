@@ -13,7 +13,6 @@ import { XHR } from "./XHR"
 import { IndexingInfo } from "../model/IndexingInfo"
 import { ReplicationInfo } from "../model/ReplicationInfo"
 import { Unit } from "../model/Unit"
-import { User } from "../model/User"
 
 export class IccIcureApi {
   host: string
@@ -101,40 +100,12 @@ export class IccIcureApi {
 
   /**
    *
-   * @summary Get users stubs
-   */
-  getUsers(): Promise<Array<User>> {
-    let _body = null
-
-    const _url = this.host + `/icure/u` + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new User(it)))
-      .catch(err => this.handleError(err))
-  }
-
-  /**
-   *
    * @summary Get version
    */
   getVersion(): Promise<string> {
     let _body = null
 
     const _url = this.host + `/icure/v` + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => JSON.parse(JSON.stringify(doc.body)))
-      .catch(err => this.handleError(err))
-  }
-
-  /**
-   *
-   * @summary Check if a patient exists
-   */
-  isPatientReady(): Promise<string> {
-    let _body = null
-
-    const _url = this.host + `/icure/pok` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => JSON.parse(JSON.stringify(doc.body)))
@@ -205,7 +176,7 @@ export class IccIcureApi {
 
   /**
    *
-   * @summary resolve health elements conflicts
+   * @summary resolve healthcare elements conflicts
    */
   resolveHealthElementsConflicts(): Promise<Unit> {
     let _body = null

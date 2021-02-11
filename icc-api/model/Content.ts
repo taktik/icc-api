@@ -28,10 +28,19 @@ export class Content {
   numberValue?: number
   booleanValue?: boolean
   instantValue?: number
+  /**
+   * Known values in a date. The format could have a all three (day, month and year) or values on any of these three, whatever is known.
+   */
   fuzzyDateValue?: number
   binaryValue?: ArrayBuffer
+  /**
+   * Id of the document in which the content is being filled.
+   */
   documentId?: string
   measureValue?: Measure
   medicationValue?: Medication
+  /**
+   * The service for which the content is being filled
+   */
   compoundValue?: Array<Service>
 }

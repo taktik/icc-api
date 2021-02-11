@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 import { Ingredient } from "./Ingredient"
-import { PharmaceuticalForm } from "./PharmaceuticalForm"
+import { PharmaceuticalFormStub } from "./PharmaceuticalFormStub"
 import { RouteOfAdministration } from "./RouteOfAdministration"
 import { SamText } from "./SamText"
 
@@ -24,7 +24,7 @@ export class AmpComponent {
   from?: number
   to?: number
   ingredients?: Array<Ingredient>
-  pharmaceuticalForms?: Array<PharmaceuticalForm>
+  pharmaceuticalForms?: Array<PharmaceuticalFormStub>
   routeOfAdministrations?: Array<RouteOfAdministration>
   dividable?: string
   scored?: string

@@ -9,24 +9,18 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { CodeStub } from "./CodeStub"
+import { SamText } from "./SamText"
 
-/**
- * List of episodes of occurrences of the healthcare element.
- */
 import { decodeBase64 } from "./ModelHelper"
 
-export class Episode {
+export class PharmaceuticalFormStub {
   constructor(json: JSON | any) {
-    Object.assign(this as Episode, json)
+    Object.assign(this as PharmaceuticalFormStub, json)
   }
 
   id?: string
-  name?: string
-  comment?: string
-  startDate?: number
-  endDate?: number
-  /**
-   * The base64 encoded data of this object, formatted as JSON and encrypted in AES using the random master key from encryptionKeys.
-   */
-  encryptedSelf?: string
+  code?: string
+  name?: SamText
+  standardForms?: Array<CodeStub>
 }

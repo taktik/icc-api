@@ -40,8 +40,8 @@ export class IccHelementApi {
   }
 
   /**
-   * Returns an instance of created health element.
-   * @summary Create a health element with the current user
+   * Returns an instance of created healthcare element.
+   * @summary Create a healthcare element with the current user
    * @param body
    */
   createHealthElement(body?: HealthElement): Promise<HealthElement> {
@@ -59,8 +59,8 @@ export class IccHelementApi {
   }
 
   /**
-   * Response is a set containing the ID's of deleted health elements.
-   * @summary Delete health elements.
+   * Response is a set containing the ID's of deleted healthcare elements.
+   * @summary Delete healthcare elements.
    * @param healthElementIds
    */
   deleteHealthElements(healthElementIds: string): Promise<Array<DocIdentifier>> {
@@ -78,8 +78,8 @@ export class IccHelementApi {
   }
 
   /**
-   * Returns a list of health elements along with next start keys and Document ID. If the nextStartKey is Null it means that this is the last page.
-   * @summary Filter health elements for the current user (HcParty)
+   * Returns a list of healthcare elements along with next start keys and Document ID. If the nextStartKey is Null it means that this is the last page.
+   * @summary Filter healthcare elements for the current user (HcParty)
    * @param body
    */
   filterHealthElementsBy(body?: FilterChainHealthElement): Promise<Array<HealthElement>> {
@@ -98,7 +98,7 @@ export class IccHelementApi {
 
   /**
    * Keys hast to delimited by coma
-   * @summary List health elements found By Healthcare Party and secret foreign keyelementIds.
+   * @summary List healthcare elements found By Healthcare Party and secret foreign keyelementIds.
    * @param hcPartyId
    * @param secretFKeys
    */
@@ -148,7 +148,7 @@ export class IccHelementApi {
 
   /**
    *
-   * @summary Get a health element
+   * @summary Get a healthcare element
    * @param healthElementId
    */
   getHealthElement(healthElementId: string): Promise<HealthElement> {
@@ -166,8 +166,8 @@ export class IccHelementApi {
   }
 
   /**
-   * Returns the modified health element.
-   * @summary Modify a health element
+   * Returns the modified healthcare element.
+   * @summary Modify a healthcare element
    * @param body
    */
   modifyHealthElement(body?: HealthElement): Promise<HealthElement> {
@@ -185,8 +185,8 @@ export class IccHelementApi {
   }
 
   /**
-   * Returns the modified health elements.
-   * @summary Modify a batch of health elements
+   * Returns the modified healthcare elements.
+   * @summary Modify a batch of healthcare elements
    * @param body
    */
   modifyHealthElements(body?: Array<HealthElement>): Promise<Array<HealthElement>> {
@@ -204,8 +204,8 @@ export class IccHelementApi {
   }
 
   /**
-   * It delegates a health element to a healthcare party (By current healthcare party). Returns the element with new delegations.
-   * @summary Delegates a health element to a healthcare party
+   * It delegates a healthcare element to a healthcare party (By current healthcare party). Returns the element with new delegations.
+   * @summary Delegates a healthcare element to a healthcare party
    * @param body
    * @param healthElementId
    */

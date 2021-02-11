@@ -66,6 +66,9 @@ export class InvoicingCode {
   insuranceJustification?: number
   cancelPatientInterventionReason?: number
   status?: number
+  /**
+   * The base64 encoded data of this object, formatted as JSON and encrypted in AES using the random master key from encryptionKeys.
+   */
   encryptedSelf?: string
 }
 export namespace InvoicingCode {

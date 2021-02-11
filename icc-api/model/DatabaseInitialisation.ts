@@ -13,6 +13,9 @@ import { HealthcareParty } from "./HealthcareParty"
 import { Replication } from "./Replication"
 import { User } from "./User"
 
+/**
+ * initialisationData is an object that contains the initial replications (target must be an internalTarget of value base, healthdata or patient) and the users and healthcare parties to be created
+ */
 import { decodeBase64 } from "./ModelHelper"
 
 export class DatabaseInitialisation {

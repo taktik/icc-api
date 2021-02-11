@@ -9,6 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { CodeStub } from "./CodeStub"
 
 import { decodeBase64 } from "./ModelHelper"
 
@@ -19,7 +20,7 @@ export class ImportMapping {
 
   lifecycle?: string
   content?: string
-  type?: string
-  cdItem?: string
+  cdLocal?: string
   label?: { [key: string]: string }
+  tags?: Array<CodeStub>
 }

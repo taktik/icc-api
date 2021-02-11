@@ -10,6 +10,9 @@
  * Do not edit the class manually.
  */
 
+/**
+ * Contracts between the patient and the healthcare entity.
+ */
 import { decodeBase64 } from "./ModelHelper"
 
 export class MedicalHouseContract {
@@ -44,6 +47,9 @@ export class MedicalHouseContract {
   signatureType?: MedicalHouseContract.SignatureTypeEnum
   status?: number
   receipts?: { [key: string]: string }
+  /**
+   * The base64 encoded data of this object, formatted as JSON and encrypted in AES using the random master key from encryptionKeys.
+   */
   encryptedSelf?: string
 }
 export namespace MedicalHouseContract {

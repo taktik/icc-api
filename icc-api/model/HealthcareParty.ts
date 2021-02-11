@@ -14,6 +14,9 @@ import { CodeStub } from "./CodeStub"
 import { FinancialInstitutionInformation } from "./FinancialInstitutionInformation"
 import { FlatRateTarification } from "./FlatRateTarification"
 
+/**
+ * This entity is a root level object. It represents a healthcare party. It is serialized in JSON and saved in the underlying icure-healthcareParty CouchDB database.
+ */
 import { decodeBase64 } from "./ModelHelper"
 
 export class HealthcareParty {
@@ -25,37 +28,121 @@ export class HealthcareParty {
     )
   }
 
+  /**
+   * the Id of the healthcare party. We encourage using either a v4 UUID or a HL7 Id.
+   */
   id?: string
+  /**
+   * the revision of the healthcare party in the database, used for conflict management / optimistic locking.
+   */
   rev?: string
+  /**
+   * hard delete (unix epoch in ms) timestamp of the object. Filled automatically when deletePatient is called.
+   */
   deletionDate?: number
+  /**
+   * The full name of the healthcare party, used mainly when the healthcare party is an organization
+   */
   name?: string
+  /**
+   * the lastname (surname) of the healthcare party. This is the official lastname that should be used for official administrative purposes.
+   */
   lastName?: string
+  /**
+   * the firstname (name) of the healthcare party.
+   */
   firstName?: string
+  /**
+   * the gender of the healthcare party: male, female, indeterminate, changed, changedToMale, changedToFemale, unknown
+   */
   gender?: HealthcareParty.GenderEnum
+  /**
+   * Mr., Ms., Pr., Dr. ...
+   */
   civility?: string
+  /**
+   * The name of the company this healthcare party is member of
+   */
   companyName?: string
+  /**
+   * Medical specialty of the healthcare party
+   */
   speciality?: string
+  /**
+   * Bank Account identifier of the healhtcare party, IBAN, deprecated, use financial institutions instead
+   */
   bankAccount?: string
+  /**
+   * Bank Identifier Code, the SWIFT Address assigned to the bank, use financial institutions instead
+   */
   bic?: string
   proxyBankAccount?: string
   proxyBic?: string
+  /**
+   * All details included in the invoice header
+   */
   invoiceHeader?: string
+  /**
+   * Identifier number for institution type if the healthcare party is an enterprise
+   */
   cbe?: string
+  /**
+   * Identifier number for the institution if the healthcare party is an organization
+   */
   ehp?: string
+  /**
+   * The id of the user that usually handles this healthcare party.
+   */
   userId?: string
+  /**
+   * Id of parent of the user representing the healthcare party.
+   */
   parentId?: string
   convention?: number
+  /**
+   * National Institute for Health and Invalidity Insurance number assigned to healthcare parties (institution or person).
+   */
   nihii?: string
   nihiiSpecCode?: string
+  /**
+   * Social security inscription number.
+   */
   ssin?: string
+  /**
+   * The list of addresses (with address type).
+   */
   addresses?: Array<Address>
+  /**
+   * The list of languages spoken by the patient ordered by fluency (alpha-2 code http://www.loc.gov/standards/iso639-2/ascii_8bits.html).
+   */
   languages?: Array<string>
+  /**
+   * A picture usually saved in JPEG format.
+   */
   picture?: ArrayBuffer
+  /**
+   * The healthcare party's status: 'trainee' or 'withconvention' or 'accredited'
+   */
   statuses?: Array<HealthcareParty.StatusesEnum>
+  /**
+   * Medical specialty of the healthcare party codified using FHIR or Kmehr codificaiton scheme
+   */
   specialityCodes?: Array<CodeStub>
+  /**
+   * The type of format for contacting the healthcare party, ex: mobile, phone, email, etc.
+   */
   sendFormats?: { [key: string]: string }
+  /**
+   * Text notes.
+   */
   notes?: string
+  /**
+   * List of financial information (Bank, bank account).
+   */
   financialInstitutionInformation?: Array<FinancialInstitutionInformation>
+  /**
+   * The invoicing scheme this healthcare party adheres to : 'service fee' or 'flat rate'
+   */
   billingType?: string
   type?: string
   contactPerson?: string
@@ -63,8 +150,17 @@ export class HealthcareParty {
   flatRateTarifications?: Array<FlatRateTarification>
   importedData?: { [key: string]: string }
   options?: { [key: string]: string }
+  /**
+   * For each couple of HcParties (delegator and delegate), this map contains the exchange AES key. The delegator is always this hcp, the key of the map is the id of the delegate. The AES exchange key is encrypted using RSA twice : once using this hcp public key (index 0 in the Array) and once using the other hcp public key (index 1 in the Array). For a pair of HcParties. Each HcParty always has one AES exchange key for himself.
+   */
   hcPartyKeys?: { [key: string]: Array<string> }
+  /**
+   * The privateKeyShamirPartitions are used to share this hcp's private RSA key with a series of other hcParties using Shamir's algorithm. The key of the map is the hcp Id with whom this partition has been shared. The value is \"threshold⎮partition in hex\" encrypted using the the partition's holder's public RSA key
+   */
   privateKeyShamirPartitions?: { [key: string]: string }
+  /**
+   * The public key of this hcp
+   */
   publicKey?: string
 }
 export namespace HealthcareParty {

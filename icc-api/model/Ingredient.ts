@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 import { Quantity } from "./Quantity"
-import { Substance } from "./Substance"
+import { SubstanceStub } from "./SubstanceStub"
 
 import { decodeBase64 } from "./ModelHelper"
 
@@ -27,7 +27,7 @@ export class Ingredient {
   strengthDescription?: string
   strength?: Quantity
   additionalInformation?: string
-  substance?: Substance
+  substance?: SubstanceStub
 }
 export namespace Ingredient {
   export type TypeEnum = "ACTIVE_SUBSTANCE" | "EXCIPIENT"

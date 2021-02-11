@@ -26,26 +26,14 @@ export namespace XHR {
     errorCode: string
     headers: Headers
     message: string
-    url: string
 
-    constructor(url: string, message: string, status: number, errorCode: string, headers: Headers) {
+    constructor(message: string, status: number, errorCode: string, headers: Headers) {
       super(message)
-      this.url = url
       this.statusCode = status
       this.message = message
       this.errorCode = errorCode
       this.headers = headers
     }
-  }
-
-  function b2a(a: string): string {
-    if (Buffer) {
-      return Buffer.from(a).toString("base64")
-    }
-    if (typeof btoa !== "undefined") {
-      return btoa(a)
-    }
-    throw new Error("Unsupported operation b2a")
   }
 
   function fetchWithTimeout(
@@ -124,7 +112,7 @@ export namespace XHR {
                 !contentType || contentType.data === "application/json"
                   ? JSON.stringify(data, (k, v) => {
                       return v instanceof ArrayBuffer || v instanceof Uint8Array
-                        ? b2a(new Uint8Array(v).reduce((d, b) => d + String.fromCharCode(b), ""))
+                        ? btoa(new Uint8Array(v).reduce((d, b) => d + String.fromCharCode(b), ""))
                         : v
                     })
                   : data
@@ -139,8 +127,8 @@ export namespace XHR {
           error: string
           message: string
           status: number
-        } = await response.json()
-        throw new XHRError(url, error.message, error.status, error.error, response.headers)
+        } = await response.blob().then(async data => await new Response(data).json())
+        throw new XHRError(error.message, error.status, error.error, response.headers)
       }
       const ct = contentTypeOverride || response.headers.get("content-type") || "text/plain"
       return (ct.startsWith("application/json")

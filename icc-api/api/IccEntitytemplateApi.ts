@@ -103,6 +103,34 @@ export class IccEntitytemplateApi {
 
   /**
    * Returns a list of entityTemplates matched with given input.
+   * @summary Finding entityTemplates by entityTemplate, type and version with pagination.
+   * @param type
+   * @param keyword
+   * @param includeEntities
+   */
+  findAllEntityTemplatesByKeyword(
+    type: string,
+    keyword: string,
+    includeEntities?: boolean
+  ): Promise<Array<EntityTemplate>> {
+    let _body = null
+
+    const _url =
+      this.host +
+      `/entitytemplate/findAll/${encodeURIComponent(String(type))}/keyword/${encodeURIComponent(
+        String(keyword)
+      )}` +
+      "?ts=" +
+      new Date().getTime() +
+      (includeEntities ? "&includeEntities=" + encodeURIComponent(String(includeEntities)) : "")
+    let headers = this.headers
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new EntityTemplate(it)))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   * Returns a list of entityTemplates matched with given input.
    * @summary Finding entityTemplates by userId, entityTemplate, type and version with pagination.
    * @param userId
    * @param type
@@ -125,6 +153,36 @@ export class IccEntitytemplateApi {
       "?ts=" +
       new Date().getTime() +
       (searchString ? "&searchString=" + encodeURIComponent(String(searchString)) : "") +
+      (includeEntities ? "&includeEntities=" + encodeURIComponent(String(includeEntities)) : "")
+    let headers = this.headers
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new EntityTemplate(it)))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   * Returns a list of entityTemplates matched with given input.
+   * @summary Finding entityTemplates by userId, type and keyword.
+   * @param userId
+   * @param type
+   * @param keyword
+   * @param includeEntities
+   */
+  findEntityTemplatesByKeyword(
+    userId: string,
+    type: string,
+    keyword: string,
+    includeEntities?: boolean
+  ): Promise<Array<EntityTemplate>> {
+    let _body = null
+
+    const _url =
+      this.host +
+      `/entitytemplate/find/${encodeURIComponent(String(userId))}/${encodeURIComponent(
+        String(type)
+      )}/keyword/${encodeURIComponent(String(keyword))}` +
+      "?ts=" +
+      new Date().getTime() +
       (includeEntities ? "&includeEntities=" + encodeURIComponent(String(includeEntities)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)

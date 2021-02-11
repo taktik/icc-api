@@ -22,8 +22,8 @@ export class AppointmentImport {
   customerId?: string
   customerComments?: string
   title?: string
-  endTime?: Date
-  startTime?: Date
+  endTime?: number
+  startTime?: number
   type?: string
   appointmentTypeId?: string
   ownerRef?: string
@@ -35,7 +35,7 @@ export class AppointmentImport {
   street?: string
   sex?: string
   externalId?: string
-  customerBirthDate?: Date
+  customerBirthDate?: number
   customerGsm?: string
   customerFixPhone?: string
 }

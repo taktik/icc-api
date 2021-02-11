@@ -9,24 +9,20 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { SamText } from "./SamText"
+import { StandardSubstance } from "./StandardSubstance"
 
-/**
- * List of episodes of occurrences of the healthcare element.
- */
 import { decodeBase64 } from "./ModelHelper"
 
-export class Episode {
+export class SubstanceStub {
   constructor(json: JSON | any) {
-    Object.assign(this as Episode, json)
+    Object.assign(this as SubstanceStub, json)
   }
 
   id?: string
-  name?: string
-  comment?: string
-  startDate?: number
-  endDate?: number
-  /**
-   * The base64 encoded data of this object, formatted as JSON and encrypted in AES using the random master key from encryptionKeys.
-   */
-  encryptedSelf?: string
+  code?: string
+  chemicalForm?: string
+  name?: SamText
+  note?: SamText
+  standardSubstances?: Array<StandardSubstance>
 }

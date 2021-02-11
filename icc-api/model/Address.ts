@@ -11,6 +11,9 @@
  */
 import { Telecom } from "./Telecom"
 
+/**
+ * This entity represents an Address
+ */
 import { decodeBase64 } from "./ModelHelper"
 
 export class Address {
@@ -18,17 +21,53 @@ export class Address {
     Object.assign(this as Address, json)
   }
 
+  /**
+   * The type of place the address represents, ex: home, office, hospital, clinic, etc.
+   */
   addressType?: Address.AddressTypeEnum
+  /**
+   * Descriptive notes about the address
+   */
   descr?: string
+  /**
+   * Street name
+   */
   street?: string
+  /**
+   * Building / house number
+   */
   houseNumber?: string
+  /**
+   * Post / PO box number
+   */
   postboxNumber?: string
+  /**
+   * Postal/PIN/ZIP/Area code
+   */
   postalCode?: string
+  /**
+   * Name of city in the address
+   */
   city?: string
+  /**
+   * Name of state in the Address
+   */
   state?: string
+  /**
+   * Name / code of country in the address
+   */
   country?: string
+  /**
+   * Additional notes
+   */
   note?: string
+  /**
+   * List of other contact details available through telecom services, ex: email, phone number, fax, etc.
+   */
   telecoms?: Array<Telecom>
+  /**
+   * The base64 encoded data of this object, formatted as JSON and encrypted in AES using the random master key from encryptionKeys.
+   */
   encryptedSelf?: string
 }
 export namespace Address {
@@ -40,6 +79,10 @@ export namespace Address {
     | "clinic"
     | "hq"
     | "other"
+    | "temporary"
+    | "postal"
+    | "diplomatic"
+    | "reference"
   export const AddressTypeEnum = {
     Home: "home" as AddressTypeEnum,
     Work: "work" as AddressTypeEnum,
@@ -47,6 +90,10 @@ export namespace Address {
     Hospital: "hospital" as AddressTypeEnum,
     Clinic: "clinic" as AddressTypeEnum,
     Hq: "hq" as AddressTypeEnum,
-    Other: "other" as AddressTypeEnum
+    Other: "other" as AddressTypeEnum,
+    Temporary: "temporary" as AddressTypeEnum,
+    Postal: "postal" as AddressTypeEnum,
+    Diplomatic: "diplomatic" as AddressTypeEnum,
+    Reference: "reference" as AddressTypeEnum
   }
 }

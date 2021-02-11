@@ -221,7 +221,7 @@ export class IccPatientApi {
   /**
    * Returns a list of patients along with next start keys and Document ID. If the nextStartKey is Null it means that this is the last page.
    * @summary Find patients for the current user (HcParty)
-   * @param healthcarePartyId HealthcareParty Id, if unset will user user&#x27;s hcpId
+   * @param healthcarePartyId HealthcareParty Id. If not set, will use user&#x27;s hcpId
    * @param filterValue Optional value for filtering results
    * @param startKey The start key for pagination: a JSON representation of an array containing all the necessary components to form the Complex Key&#x27;s startKey
    * @param startDocumentId A patient document ID

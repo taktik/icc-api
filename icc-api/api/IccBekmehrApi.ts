@@ -771,12 +771,14 @@ export class IccBekmehrApi {
    * @param documentKey
    * @param patientId
    * @param language
+   * @param dryRun
    */
   importSmf(
     documentId: string,
     documentKey?: string,
     patientId?: string,
     language?: string,
+    dryRun?: boolean,
     body?: { [key: string]: Array<ImportMapping> }
   ): Promise<Array<ImportResult>> {
     let _body = null
@@ -789,7 +791,8 @@ export class IccBekmehrApi {
       new Date().getTime() +
       (documentKey ? "&documentKey=" + encodeURIComponent(String(documentKey)) : "") +
       (patientId ? "&patientId=" + encodeURIComponent(String(patientId)) : "") +
-      (language ? "&language=" + encodeURIComponent(String(language)) : "")
+      (language ? "&language=" + encodeURIComponent(String(language)) : "") +
+      (dryRun ? "&dryRun=" + encodeURIComponent(String(dryRun)) : "")
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
