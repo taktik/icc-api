@@ -1132,8 +1132,8 @@ export class IccMessageXApi extends iccMessageApi {
                 }
                 return { error: errorMessage }
               })
-              .then((res: EfactSendResponseWithError) => {
-                if (res.success || res.error) {
+              .then((res: EfactSendResponse | { error: any }) => {
+                if ((res as any).success || (res as any).error) {
                   let promise = Promise.resolve(null)
                   let totalAmount = 0
                   _.forEach(invoices, iv => {
@@ -1173,7 +1173,8 @@ export class IccMessageXApi extends iccMessageApi {
                         Object.assign(message, {
                           sent: sentDate,
                           status:
-                            (message.status || 0) | (res.success ? 1 << 7 : 0) /*STATUS_SENT*/,
+                            (message.status || 0) |
+                            ((res as any).success ? 1 << 7 : 0) /*STATUS_SENT*/,
                           metas: {
                             ioFederationCode: batch.ioFederationCode,
                             numericalRef: batch.numericalRef,
@@ -1181,15 +1182,15 @@ export class IccMessageXApi extends iccMessageApi {
                             invoiceYear: _.padStart("" + batch.invoicingYear, 4, "0"),
                             totalAmount: totalAmount,
                             fhc_server: fhcServer,
-                            errors: res.error
+                            errors: (res as any).error
                           }
                         })
                       )
                     )
                     .then((msg: MessageDto) => {
-                      if (res.success) {
+                      if ((res as any).success) {
                         // Continue even if error ...
-                        this.saveMessageAttachment(user, msg, res)
+                        this.saveMessageAttachment(user, msg, res as EfactSendResponseWithError)
                       }
                       return msg
                     })
