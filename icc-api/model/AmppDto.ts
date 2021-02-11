@@ -68,7 +68,7 @@ export class AmppDto {
 
   deliveryModusSpecification?: models.SamTextDto
 
-  dhpcLink?: models.SamText
+  dhpcLink?: models.SamTextDto
 
   distributorCompany?: models.CompanyDto
 
