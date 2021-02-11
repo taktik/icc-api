@@ -889,6 +889,7 @@ export class IccMessageXApi extends iccMessageApi {
                       .map(e => this.extractErrorMessage(e.error))
                       .compact()
                       .join("; ") || undefined
+
                   _.each(iv.invoicingCodes, ic => {
                     // If the invoicing code is already treated, do not treat it
                     if (ic.canceled || ic.accepted) {
@@ -1127,7 +1128,7 @@ export class IccMessageXApi extends iccMessageApi {
               })
               .then((res: EfactSendResponseWithError) => {
                 if (res.success || res.error) {
-                  let promise = Promise.resolve(true)
+                  let promise = Promise.resolve(null)
                   let totalAmount = 0
                   _.forEach(invoices, iv => {
                     promise = promise.then(() => {
@@ -1139,9 +1140,10 @@ export class IccMessageXApi extends iccMessageApi {
                       return this.invoiceXApi
                         .modifyInvoice(iv.invoiceDto)
                         .then(() => null)
-                        .catch(() =>
+                        .catch(() => {
                           errors.push(`efac-management.CANNOT_UPDATE_INVOICE.${iv.invoiceDto.id}`)
-                        )
+                          return null
+                        })
                     })
                   })
                   return promise
