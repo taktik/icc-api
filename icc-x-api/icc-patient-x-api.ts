@@ -247,7 +247,10 @@ export class IccPatientXApi extends iccPatientApi {
     user: models.UserDto,
     externalId: string
   ): Promise<models.PatientDto | any> {
-    return super.findByExternalId(externalId).then(pats => this.decrypt(user, pats))
+    return super
+      .findByExternalId(externalId)
+      .then(p => this.decrypt(user, [p]))
+      .then(pats => pats[0])
   }
 
   findByNameBirthSsinAuto(
