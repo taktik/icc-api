@@ -536,7 +536,7 @@ export class IccContactXApi extends iccContactApi {
                                     let jsonContent
                                     try {
                                       jsonContent = utils.ua2utf8(
-                                        utils.truncateTrailingNulls(new Uint8Array(s!)) // MS modification
+                                        utils.truncateTrailingNulls(new Uint8Array(s!))
                                       )
                                       resolve(s && JSON.parse(jsonContent))
                                     } catch (e) {
