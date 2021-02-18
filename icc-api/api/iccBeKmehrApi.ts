@@ -237,6 +237,23 @@ export class iccBeKmehrApi {
       .then(doc => doc.body)
       .catch(err => this.handleError(err))
   }
+  generatePatientInfoExport(patientId: string, language?: string): Promise<ArrayBuffer | any> {
+    let _body = null
+
+    const _url =
+      this.host +
+      "/be_kmehr/patientinfo/{patientId}/export".replace("{patientId}", patientId + "") +
+      "?ts=" +
+      new Date().getTime() +
+      (language ? "&language=" + language : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => doc.body)
+      .catch(err => this.handleError(err))
+  }
   generatePrescriptionExport(
     patientId: string,
     id: string,
