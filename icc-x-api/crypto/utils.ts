@@ -3,6 +3,7 @@ import * as moment from "moment"
 import { Moment } from "moment"
 import * as _ from "lodash"
 import { TextDecoder } from "util"
+import { TextEncoder } from "util"
 
 export class UtilsClass {
   private textDecoder = TextDecoder ? new TextDecoder() : null
