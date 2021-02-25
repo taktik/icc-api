@@ -70,7 +70,7 @@ export class InvoicingCodeDto  {
 
   units?: number
 
-  side?: number
+  side?: InvoicingCodeDto.SideEnum
 
   timeOfDay?: number
 
@@ -135,5 +135,10 @@ export namespace InvoicingCodeDto {
     Debitcard = <any>"debitcard",
     Paypal = <any>"paypal",
     Bitcoin = <any>"bitcoin"
+  }
+  export enum SideEnum {
+    None = <any>"None",
+    Left = <any>"Left",
+    Right = <any>"Right"
   }
 }
