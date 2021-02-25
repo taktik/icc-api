@@ -338,7 +338,7 @@ function toInvoiceItem(
   return invoiceItem
 }
 
-function getSideCode(code: number) {
+export function getSideCode(code: number) {
   return code === 0
     ? InvoiceItem.SideCodeEnum.None
     : code === 1
@@ -346,6 +346,16 @@ function getSideCode(code: number) {
       : code === 2
         ? InvoiceItem.SideCodeEnum.Right
         : InvoiceItem.SideCodeEnum.None
+}
+
+export function getSideNumber(code: InvoiceItem.SideCodeEnum) {
+  return code === InvoiceItem.SideCodeEnum.None
+    ? 0
+    : code === InvoiceItem.SideCodeEnum.Left
+      ? 1
+      : code === InvoiceItem.SideCodeEnum.Right
+        ? 2
+        : 0
 }
 
 function getTimeOfDay(code: number) {
