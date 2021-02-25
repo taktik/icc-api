@@ -1,6 +1,5 @@
 import * as _ from "lodash"
-import { HealthcarePartyDto } from "../../icc-api/model/models"
-import { Telecom } from "fhc-api"
+import { HealthcarePartyDto, TelecomDtoEmbed } from "../../icc-api/model/models"
 
 export interface KendoDropdownSpeciality {
   text: string
@@ -109,9 +108,9 @@ export function getPhoneNumber(
 ): number | null {
   const phoneNumbers = (hcp.addresses || []).map(a => {
     const t = (a.telecoms || []).find(
-      (t: Telecom) =>
-        t.telecomType === Telecom.TelecomTypeEnum.Phone ||
-        t.telecomType === Telecom.TelecomTypeEnum.Mobile
+      (t: TelecomDtoEmbed) =>
+        t.telecomType === TelecomDtoEmbed.TelecomTypeEnum.Phone ||
+        t.telecomType === TelecomDtoEmbed.TelecomTypeEnum.Mobile
     )
     let res = t && t.telecomNumber
     if (res && maxLength) {
