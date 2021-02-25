@@ -329,7 +329,7 @@ function toInvoiceItem(
   invoiceItem.prescriberNorm = getPrescriberNorm(invoicingCode.prescriberNorm || 0)
   invoiceItem.reimbursedAmount = Number(((invoicingCode.reimbursement || 0) * 100).toFixed(0))
   invoiceItem.relatedCode = Number(invoicingCode.relatedCode || 0)
-  invoiceItem.sideCode = invoicingCode.side
+  invoiceItem.sideCode = getSideCode(invoicingCode.side || 0)
   invoiceItem.timeOfDay = getTimeOfDay(invoicingCode.timeOfDay || 0)
   invoiceItem.units = invoicingCode.units || 1
   invoiceItem.derogationMaxNumber = getDerogationMaxNumber(invoicingCode.derogationMaxNumber || 0)
