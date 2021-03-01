@@ -451,6 +451,19 @@ export class IccPatientXApi extends iccPatientApi {
     )
   }
 
+  // NEVER EVER modify non-decrypted patient back, only meant as "readonly" for performance purposes
+  listEncryptedPatientsByHcParty(
+    hcPartyId: string,
+    sortField?: string,
+    startKey?: string,
+    startDocumentId?: string,
+    limit?: number,
+    sortDirection?: string
+  ): Promise<models.PatientPaginatedList | any> {
+    return super
+      .listPatientsByHcParty(hcPartyId, sortField, startKey, startDocumentId, limit, sortDirection)
+  }
+
   listPatientsByHcPartyWithUser(
     user: models.UserDto,
     hcPartyId: string,
