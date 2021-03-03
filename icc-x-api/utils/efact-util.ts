@@ -322,7 +322,7 @@ function toInvoiceItem(
 
   invoiceItem.override3rdPayerCode = invoicingCode.override3rdPayerCode
   invoiceItem.patientFee = Number(((invoicingCode.patientIntervention || 0) * 100).toFixed(0))
-  invoiceItem.percentNorm = InvoiceItem.PercentNormEnum.None
+  invoiceItem.percentNorm = getPercentNorm(invoicingCode.percentNorm || 0)
   invoiceItem.personalInterventionCoveredByThirdPartyCode =
     invoicingCode.cancelPatientInterventionReason
   invoiceItem.prescriberNihii = invoicingCode.prescriberNihii
@@ -337,6 +337,26 @@ function toInvoiceItem(
   invoiceItem.internshipNihii = invoiceDto.internshipNihii
 
   return invoiceItem
+}
+
+export function getPercentNorm(norm: number) {
+  return norm === 0
+    ? InvoiceItem.PercentNormEnum.None
+    : norm === 1
+      ? InvoiceItem.PercentNormEnum.SurgicalAid1
+      : norm === 2
+        ? InvoiceItem.PercentNormEnum.SurgicalAid2
+        : norm === 3
+          ? InvoiceItem.PercentNormEnum.ReducedFee
+          : norm === 4
+            ? InvoiceItem.PercentNormEnum.Ah1n1
+            : norm === 5
+              ? InvoiceItem.PercentNormEnum.HalfPriceSecondAct
+              : norm === 6
+                ? InvoiceItem.PercentNormEnum.InvoiceException
+                : norm === 7
+                  ? InvoiceItem.PercentNormEnum.ForInformation
+                  : InvoiceItem.PercentNormEnum.None
 }
 
 export function getSideCode(code: number) {
