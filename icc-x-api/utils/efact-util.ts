@@ -329,7 +329,7 @@ function toInvoiceItem(
   invoiceItem.prescriberNorm = getPrescriberNorm(invoicingCode.prescriberNorm || 0)
   invoiceItem.reimbursedAmount = Number(((invoicingCode.reimbursement || 0) * 100).toFixed(0))
   invoiceItem.relatedCode = Number(invoicingCode.relatedCode || 0)
-  invoiceItem.sideCode = invoicingCode.side
+  invoiceItem.sideCode = getSideCode(invoicingCode.side || 0)
   invoiceItem.timeOfDay = getTimeOfDay(invoicingCode.timeOfDay || 0)
   invoiceItem.units = invoicingCode.units || 1
   invoiceItem.derogationMaxNumber = getDerogationMaxNumber(invoicingCode.derogationMaxNumber || 0)
@@ -338,7 +338,7 @@ function toInvoiceItem(
   return invoiceItem
 }
 
-function getSideCode(code: number) {
+export function getSideCode(code: number) {
   return code === 0
     ? InvoiceItem.SideCodeEnum.None
     : code === 1
@@ -346,6 +346,16 @@ function getSideCode(code: number) {
       : code === 2
         ? InvoiceItem.SideCodeEnum.Right
         : InvoiceItem.SideCodeEnum.None
+}
+
+export function getSideNumber(code: InvoiceItem.SideCodeEnum) {
+  return code === InvoiceItem.SideCodeEnum.None
+    ? 0
+    : code === InvoiceItem.SideCodeEnum.Left
+      ? 1
+      : code === InvoiceItem.SideCodeEnum.Right
+        ? 2
+        : 0
 }
 
 function getTimeOfDay(code: number) {

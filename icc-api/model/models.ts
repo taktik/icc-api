@@ -158,9 +158,7 @@ export * from "./PlaceDto"
 export * from "./PlanOfActionDto"
 export * from "./Predicate"
 export * from "./PricingDto"
-export * from "./Property" // FIXME: genloc: not in genloc
 export * from "./PropertyDto"
-export * from "./PropertyType" // FIXME: genloc: not in genloc
 export * from "./PropertyTypeDto"
 export * from "./PublicKeyDto"
 export * from "./QuantityDto"
@@ -205,7 +203,6 @@ export * from "./TelecomDtoEmbed"
 export * from "./TimeTableDto"
 export * from "./TimeTableHourDto"
 export * from "./TimeTableItemDto"
-export * from "./TypedValue" // FIXME: genloc: not in genloc
 export * from "./TypedValueDto"
 export * from "./UserDto"
 export * from "./UserPaginatedList"
