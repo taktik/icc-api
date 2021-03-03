@@ -189,6 +189,17 @@ export class iccMessageApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.MessageDto(it)))
       .catch(err => this.handleError(err))
 }
+  listMessagesByTransportGuids(hcpId?: string, body?: models.ListOfIdsDto): Promise<Array<models.MessageDto> | any> {
+    let _body = null
+    _body = body
+    
+    const _url = this.host + "/message/byTransportGuid/list" + "?ts=" + new Date().getTime()  + (hcpId ? "&hcpId=" + hcpId : "")
+    let headers = this.headers
+    headers = headers.filter(h => h.header !== "Content-Type").concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.MessageDto(it)))
+      .catch(err => this.handleError(err))
+}
   modifyMessage(body?: models.MessageDto): Promise<models.MessageDto | any> {
     let _body = null
     _body = body
