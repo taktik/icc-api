@@ -62,6 +62,8 @@ export class InvoiceItem  {
 
   prescriberNihii?: string
 
+  prescriptionDate?: number
+
   personalInterventionCoveredByThirdPartyCode?: number
 
   doctorIdentificationNumber?: string

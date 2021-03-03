@@ -139,7 +139,7 @@ export class iccUserApi {
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.UserDto(it)))
       .catch(err => this.handleError(err))
-}
+  }
   getUser(userId: string): Promise<models.UserDto | any> {
     let _body = null
     
