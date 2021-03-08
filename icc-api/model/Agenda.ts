@@ -12,8 +12,6 @@
 import { CodeStub } from "./CodeStub"
 import { Right } from "./Right"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class Agenda {
   constructor(json: JSON | any) {
     Object.assign(this as Agenda, json)
