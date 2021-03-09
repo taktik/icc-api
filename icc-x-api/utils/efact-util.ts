@@ -366,6 +366,7 @@ function toInvoiceItem(
   invoiceItem.personalInterventionCoveredByThirdPartyCode =
     invoicingCode.cancelPatientInterventionReason
   invoiceItem.prescriberNihii = invoicingCode.prescriberNihii
+  invoiceItem.prescriptionDate = invoicingCode.prescriptionDate
   invoiceItem.prescriberNorm = getPrescriberNorm(invoicingCode.prescriberNorm || 0)
   invoiceItem.reimbursedAmount = Number(((invoicingCode.reimbursement || 0) * 100).toFixed(0))
   invoiceItem.relatedCode = Number(invoicingCode.relatedCode || 0)
