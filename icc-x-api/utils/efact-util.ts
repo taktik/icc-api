@@ -40,7 +40,7 @@ const base36UUID = new UuidEncoder()
 function ensureNoFederation(invoices: Array<InvoiceWithPatient>, insurances: Array<InsuranceDto>) {
   // We will check here for recipient which are federations (except 306).
 
-  const federations = insurances.filter(i => i.code !== "306" && i.id === i.parent)
+  const federations = insurances.filter(i => i.code !== "306" && i.code !== "675" && i.id === i.parent)
 
   if (federations.length > 0) {
     console.error(
@@ -164,7 +164,8 @@ export function toInvoiceBatch(
   fileRef: string,
   insuranceApi: iccInsuranceApi,
   invoiceXApi: IccInvoiceXApi,
-  messageXApi: IccMessageXApi
+  messageXApi: IccMessageXApi,
+  flatrateInvoice: boolean = false
 ): Promise<InvoicesBatch> {
   return insuranceApi
     .getInsurances(
@@ -196,6 +197,10 @@ export function toInvoiceBatch(
 
             invoicesBatch.batchRef = batchRef
             invoicesBatch.fileRef = fileRef
+            invoicesBatch.magneticInvoice = flatrateInvoice //flatrateInvoice have some different fields
+            if (flatrateInvoice) {
+              invoicesBatch.invoiceContent = 0
+            }
             invoicesBatch.invoices = _.map(
               invoicesWithPatient,
               (invWithPat: InvoiceWithPatient) => {
@@ -214,15 +219,34 @@ export function toInvoiceBatch(
                   invoice,
                   invWithPat.patientDto,
                   insurance,
-                  relatedInvoiceInfo
+                  relatedInvoiceInfo,
+                  flatrateInvoice
                 )
               }
             )
 
             const now = new Date()
-            const invoiceDate = toMoment(invoicesWithPatient[0].invoiceDto.invoiceDate!!)
-            const invoicingMonth = invoiceDate!!.month() + 1
-            const invoicingYear = invoiceDate!!.year()
+            const invoiceDates = _.groupBy(
+              invoicesWithPatient.map(
+                inv =>
+                  !!inv && !!inv.invoiceDto && !!inv.invoiceDto.invoiceDate
+                    ? inv.invoiceDto.invoiceDate.toString().substring(0, 6) + "01"
+                    : "10000101"
+              )
+            )
+            let dateCounts: any[] = []
+            _.forOwn(invoiceDates, function(val, key) {
+              dateCounts.push({ date: key, count: val.length })
+            })
+            const invoiceDate = toMoment(
+              _.get(
+                _.head(_.orderBy(dateCounts, ["count", "date"], ["desc", "desc"])),
+                "date",
+                invoicesWithPatient[0].invoiceDto.invoiceDate!!
+              )
+            )
+            const invoicingMonth = !!invoiceDate ? invoiceDate.month() + 1 : 0
+            const invoicingYear = !!invoiceDate ? invoiceDate.year() : 0
 
             // The OA 500, matches the monthYear (zone 300) to check the batch sending number
             // Use sending year to prevent duplicate sending number in case of invoices made
@@ -252,7 +276,8 @@ function toInvoice(
   invoiceDto: InvoiceDto,
   patientDto: PatientDto,
   insurance: InsuranceDto,
-  relatedInvoiceInfo: RelatedInvoiceInfo | undefined
+  relatedInvoiceInfo: RelatedInvoiceInfo | undefined,
+  flatrateInvoice: boolean = false
 ): Invoice {
   const invoice = new Invoice({})
   const invoiceYear = moment(invoiceDto.created)
@@ -270,7 +295,8 @@ function toInvoice(
       invoiceDto.supervisorNihii || nihiiHealthcareProvider,
       patientDto,
       invoiceDto,
-      invoicingCodeDto
+      invoicingCodeDto,
+      flatrateInvoice
     )
   })
   invoice.patient = toPatient(patientDto)
@@ -291,7 +317,9 @@ function toInvoice(
   // TODO : fix me later
   invoice.reason = Invoice.ReasonEnum.Other
   invoice.creditNote = invoiceDto.creditNote
-
+  if (flatrateInvoice) {
+    invoice.startOfCoveragePeriod = invoiceDto.invoicingCodes!![0].contractDate
+  }
   return invoice
 }
 
@@ -299,11 +327,20 @@ function toInvoiceItem(
   nihiiHealthcareProvider: string,
   patientDto: PatientDto,
   invoiceDto: InvoiceDto,
-  invoicingCode: InvoicingCodeDto
+  invoicingCode: InvoicingCodeDto,
+  flatrateInvoice: boolean = false
 ): InvoiceItem {
   const invoiceItem = new InvoiceItem({})
   invoiceItem.codeNomenclature = Number(invoicingCode.tarificationId!!.split("|")[1])
   invoiceItem.dateCode = dateEncode(toMoment(invoicingCode.dateCode!!)!!.toDate())
+  invoiceItem.endDateCode =
+    invoiceItem.codeNomenclature === 109594 // Prétrajet de soins diabète
+      ? dateEncode(toMoment(invoicingCode.dateCode!!)!!.toDate())
+      : dateEncode(
+      toMoment(invoicingCode.dateCode!!)!!
+        .endOf("month")
+        .toDate()
+      )
   invoiceItem.doctorIdentificationNumber = nihiiHealthcareProvider
   invoiceItem.doctorSupplement = Number(((invoicingCode.doctorSupplement || 0) * 100).toFixed(0))
   if (invoicingCode.eidReadingHour && invoicingCode.eidReadingValue) {
@@ -322,11 +359,10 @@ function toInvoiceItem(
 
   invoiceItem.override3rdPayerCode = invoicingCode.override3rdPayerCode
   invoiceItem.patientFee = Number(((invoicingCode.patientIntervention || 0) * 100).toFixed(0))
-  invoiceItem.percentNorm = getPercentNorm(invoicingCode.percentNorm || 0)
+  invoiceItem.percentNorm = InvoiceItem.PercentNormEnum.None
   invoiceItem.personalInterventionCoveredByThirdPartyCode =
     invoicingCode.cancelPatientInterventionReason
   invoiceItem.prescriberNihii = invoicingCode.prescriberNihii
-  invoiceItem.prescriptionDate = invoicingCode.prescriptionDate
   invoiceItem.prescriberNorm = getPrescriberNorm(invoicingCode.prescriberNorm || 0)
   invoiceItem.reimbursedAmount = Number(((invoicingCode.reimbursement || 0) * 100).toFixed(0))
   invoiceItem.relatedCode = Number(invoicingCode.relatedCode || 0)
@@ -339,27 +375,7 @@ function toInvoiceItem(
   return invoiceItem
 }
 
-export function getPercentNorm(norm: number) {
-  return norm === 0
-    ? InvoiceItem.PercentNormEnum.None
-    : norm === 1
-      ? InvoiceItem.PercentNormEnum.SurgicalAid1
-      : norm === 2
-        ? InvoiceItem.PercentNormEnum.SurgicalAid2
-        : norm === 3
-          ? InvoiceItem.PercentNormEnum.ReducedFee
-          : norm === 4
-            ? InvoiceItem.PercentNormEnum.Ah1n1
-            : norm === 5
-              ? InvoiceItem.PercentNormEnum.HalfPriceSecondAct
-              : norm === 6
-                ? InvoiceItem.PercentNormEnum.InvoiceException
-                : norm === 7
-                  ? InvoiceItem.PercentNormEnum.ForInformation
-                  : InvoiceItem.PercentNormEnum.None
-}
-
-export function getSideCode(code: number) {
+function getSideCode(code: number) {
   return code === 0
     ? InvoiceItem.SideCodeEnum.None
     : code === 1
@@ -367,16 +383,6 @@ export function getSideCode(code: number) {
       : code === 2
         ? InvoiceItem.SideCodeEnum.Right
         : InvoiceItem.SideCodeEnum.None
-}
-
-export function getSideNumber(code: InvoiceItem.SideCodeEnum) {
-  return code === InvoiceItem.SideCodeEnum.None
-    ? 0
-    : code === InvoiceItem.SideCodeEnum.Left
-      ? 1
-      : code === InvoiceItem.SideCodeEnum.Right
-        ? 2
-        : 0
 }
 
 function getTimeOfDay(code: number) {
