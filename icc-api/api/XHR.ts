@@ -104,7 +104,7 @@ export namespace XHR {
             if (response.status >= 400) {
                 throw new XHRError(response.statusText, response.status, response.status, response.headers)
             }
-            const ct = response.headers.get("content-type") || "text/plain"
+            const ct = contentTypeOverride || response.headers.get("content-type") || "text/plain" //FIXME genloc: contentTypeOverride is used by Medispring
             return (ct.startsWith("application/json")
                     ? response.json()
                     : ct.startsWith("application/xml") || ct.startsWith("text/")
