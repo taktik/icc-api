@@ -24,7 +24,7 @@ import { utils } from "./crypto/utils"
 import { IccCalendarItemXApi } from "./icc-calendar-item-x-api"
 import { decodeBase64 } from "../icc-api/model/ModelHelper"
 
-enum SharedContent {
+export enum SharedContent {
   ALL = "all",
   ENCRYPTION = "encryption" // for extractor, no delegations, no secret foreign keys, only encryption
 }
