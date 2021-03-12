@@ -24,6 +24,11 @@ import { utils } from "./crypto/utils"
 import { DelegationDto } from "../icc-api/model/models"
 import { IccCalendarItemXApi } from "./icc-calendar-item-x-api"
 
+enum SharedContent {
+  ALL = "all",
+  ENCRYPTION = "encryption" // for extractor, no delegations, no secret foreign keys, only encryption
+}
+
 // noinspection JSUnusedGlobalSymbols
 export class IccPatientXApi extends iccPatientApi {
   crypto: IccCryptoXApi
@@ -708,7 +713,8 @@ export class IccPatientXApi extends iccPatientApi {
     patId: string,
     ownerId: string,
     delegateIds: Array<string>,
-    delegationTags: { [key: string]: Array<string> }
+    delegationTags: { [key: string]: Array<string> },
+    sharedContent: SharedContent = SharedContent.ALL
   ): Promise<{
     patient: models.PatientDto | null
     statuses: { [key: string]: { success: boolean | null; error: Error | null } }
@@ -896,54 +902,51 @@ export class IccPatientXApi extends iccPatientApi {
                         )
                     ) as Promise<Array<models.CalendarItemDto>>
                   ]).then(([hes, frms, ctcs, ivs, cls, cis]) => {
+                    let cloneDelegations = function(x: models.IcureStubDto) {
+                      return sharedContent === SharedContent.ALL
+                        ? _.clone(x.delegations)
+                        : undefined
+                    }
+                    let cloneCryptedForeignKeys = function(x: models.IcureStubDto) {
+                      return sharedContent === SharedContent.ALL
+                        ? _.clone(x.cryptedForeignKeys)
+                        : undefined
+                    }
+                    let cloneEncryptionKeys = function(x: models.IcureStubDto) {
+                      return [SharedContent.ALL, SharedContent.ENCRYPTION].includes(sharedContent)
+                        ? _.clone(x.encryptionKeys)
+                        : undefined
+                    }
+                    let cloneKeysAndDelegations = function(x: models.IcureStubDto) {
+                      return {
+                        delegations: cloneDelegations(x),
+                        cryptedForeignKeys: cloneCryptedForeignKeys(x),
+                        encryptionKeys: cloneEncryptionKeys(x)
+                      }
+                    }
+
                     const ctcsStubs = ctcs.map(c => ({
                       id: c.id,
                       rev: c.rev,
-                      delegations: _.clone(c.delegations),
-                      cryptedForeignKeys: _.clone(c.cryptedForeignKeys),
-                      encryptionKeys: _.clone(c.encryptionKeys)
+                      ...cloneKeysAndDelegations(c)
                     }))
                     const oHes = hes.map(x =>
-                      _.assign(new IcureStubDto({}), x, {
-                        delegations: _.clone(x.delegations),
-                        cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
-                        encryptionKeys: _.clone(x.encryptionKeys)
-                      })
+                      _.assign(new IcureStubDto({}), x, cloneKeysAndDelegations(x))
                     )
                     const oFrms = frms.map(x =>
-                      _.assign(new IcureStubDto({}), x, {
-                        delegations: _.clone(x.delegations),
-                        cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
-                        encryptionKeys: _.clone(x.encryptionKeys)
-                      })
+                      _.assign(new IcureStubDto({}), x, cloneKeysAndDelegations(x))
                     )
                     const oCtcsStubs = ctcsStubs.map(x =>
-                      _.assign({}, x, {
-                        delegations: _.clone(x.delegations),
-                        cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
-                        encryptionKeys: _.clone(x.encryptionKeys)
-                      })
+                      _.assign({}, x, cloneKeysAndDelegations(x))
                     )
                     const oIvs = ivs.map(x =>
-                      _.assign(new InvoiceDto({}), x, {
-                        delegations: _.clone(x.delegations),
-                        cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
-                        encryptionKeys: _.clone(x.encryptionKeys)
-                      })
+                      _.assign(new InvoiceDto({}), x, cloneKeysAndDelegations(x))
                     )
                     const oCls = cls.map(x =>
-                      _.assign(new ClassificationDto({}), x, {
-                        delegations: _.clone(x.delegations),
-                        cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
-                        encryptionKeys: _.clone(x.encryptionKeys)
-                      })
+                      _.assign(new ClassificationDto({}), x, cloneKeysAndDelegations(x))
                     )
                     const oCis = cis.map(x =>
-                      _.assign(new CalendarItemDto({}), x, {
-                        delegations: _.clone(x.delegations),
-                        cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
-                        encryptionKeys: _.clone(x.encryptionKeys)
-                      })
+                      _.assign(new CalendarItemDto({}), x, cloneKeysAndDelegations(x))
                     )
 
                     const docIds: { [key: string]: number } = {}
@@ -962,13 +965,7 @@ export class IccPatientXApi extends iccPatientApi {
                     return retry(() =>
                       this.documentApi.getDocuments(new ListOfIdsDto({ ids: Object.keys(docIds) }))
                     ).then((docs: Array<DocumentDto>) => {
-                      const oDocs = docs.map(x =>
-                        _.assign({}, x, {
-                          delegations: _.clone(x.delegations),
-                          cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
-                          encryptionKeys: _.clone(x.encryptionKeys)
-                        })
-                      )
+                      const oDocs = docs.map(x => _.assign({}, x, cloneKeysAndDelegations(x)))
 
                       let markerPromise: Promise<any> = Promise.resolve(null)
                       delegateIds.forEach(delegateId => {
