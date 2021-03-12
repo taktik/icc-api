@@ -24,7 +24,7 @@ import { utils } from "./crypto/utils"
 import { DelegationDto } from "../icc-api/model/models"
 import { IccCalendarItemXApi } from "./icc-calendar-item-x-api"
 
-enum SharedContent {
+export enum SharedContent {
   ALL = "all",
   ENCRYPTION = "encryption" // for extractor, no delegations, no secret foreign keys, only encryption
 }
