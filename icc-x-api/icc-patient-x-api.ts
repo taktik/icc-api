@@ -1116,7 +1116,9 @@ export class IccPatientXApi extends iccPatientApi {
                                   return patient
                                 })
                         })
-                        ;(tags.includes("medicalInformation") || tags.includes("all")) &&
+                        ;(tags.includes("medicalInformation") ||
+                          tags.includes("anonymousMedicalInformation") ||
+                          tags.includes("all")) &&
                           (markerPromise = addDelegationsAndKeys(
                             hes,
                             markerPromise,
@@ -1130,7 +1132,9 @@ export class IccPatientXApi extends iccPatientApi {
                             delegateId,
                             patient
                           ))
-                        ;(tags.includes("medicalInformation") || tags.includes("all")) &&
+                        ;(tags.includes("medicalInformation") ||
+                          tags.includes("anonymousMedicalInformation") ||
+                          tags.includes("all")) &&
                           (markerPromise = addDelegationsAndKeys(
                             ctcsStubs,
                             markerPromise,
@@ -1171,7 +1175,9 @@ export class IccPatientXApi extends iccPatientApi {
                         .then(() => {
                           //console.log("scd")
                           return (
-                            ((allTags.includes("medicalInformation") || allTags.includes("all")) &&
+                            ((allTags.includes("medicalInformation") ||
+                              allTags.includes("anonymousMedicalInformation") ||
+                              allTags.includes("all")) &&
                               (ctcsStubs &&
                                 ctcsStubs.length &&
                                 !_.isEqual(oCtcsStubs, ctcsStubs)) &&
@@ -1188,7 +1194,9 @@ export class IccPatientXApi extends iccPatientApi {
                         .then(() => {
                           //console.log("shed")
                           return (
-                            ((allTags.includes("medicalInformation") || allTags.includes("all")) &&
+                            ((allTags.includes("medicalInformation") ||
+                              allTags.includes("anonymousMedicalInformation") ||
+                              allTags.includes("all")) &&
                               (hes && hes.length && !_.isEqual(oHes, hes)) &&
                               this.helementApi
                                 .setHealthElementsDelegations(hes)
