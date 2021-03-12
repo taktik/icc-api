@@ -831,7 +831,12 @@ export class IccPatientXApi extends iccPatientApi {
       const allTags = _.uniq(_.flatMap(Object.values(delegationTags)))
       const status = {
         contacts: {
-          success: allTags.includes("medicalInformation") || allTags.includes("all") ? false : null,
+          success:
+            allTags.includes("medicalInformation") ||
+            allTags.includes("anonymousMedicalInformation") ||
+            allTags.includes("all")
+              ? false
+              : null,
           error: null,
           modified: 0
         },
@@ -841,7 +846,12 @@ export class IccPatientXApi extends iccPatientApi {
           modified: 0
         },
         healthElements: {
-          success: allTags.includes("medicalInformation") || allTags.includes("all") ? false : null,
+          success:
+            allTags.includes("medicalInformation") ||
+            allTags.includes("anonymousMedicalInformation") ||
+            allTags.includes("all")
+              ? false
+              : null,
           error: null,
           modified: 0
         },
