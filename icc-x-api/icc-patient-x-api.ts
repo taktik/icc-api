@@ -983,48 +983,52 @@ export class IccPatientXApi extends iccPatientApi {
                         markerPromise = markerPromise.then(() => {
                           //Share patient
                           //console.log(`share ${patient.id} to ${delegateId}`)
-                          return this.crypto
-                            .addDelegationsAndEncryptionKeys(
-                              null,
-                              patient,
-                              ownerId,
-                              delegateId,
-                              delSfks[0],
-                              ecKeys[0]
-                            )
-                            .then(async patient => {
-                              if (delSfks.length > 1) {
-                                return delSfks
-                                  .slice(1)
-                                  .reduce(
-                                    async (
-                                      patientPromise: Promise<models.PatientDto>,
-                                      delSfk: string
-                                    ) => {
-                                      const patient = await patientPromise
-                                      return this.crypto
-                                        .addDelegationsAndEncryptionKeys(
-                                          null,
-                                          patient,
-                                          ownerId,
-                                          delegateId,
-                                          delSfk,
-                                          null
-                                        )
-                                        .catch((e: any) => {
-                                          console.log(e)
-                                          return patient
-                                        })
-                                    },
-                                    Promise.resolve(patient)
-                                  )
-                              }
-                              return patient
-                            })
-                            .catch(e => {
-                              console.log(e)
-                              return patient
-                            })
+                          return tags.includes("anonymousMedicalInformation")
+                            ? patient
+                            : this.crypto
+                                .addDelegationsAndEncryptionKeys(
+                                  null,
+                                  patient,
+                                  ownerId,
+                                  delegateId,
+                                  delSfks[0],
+                                  ecKeys[0]
+                                )
+                                .then(async patient => {
+                                  if (delSfks.length > 1) {
+                                    return delSfks
+                                      .slice(1)
+                                      .reduce(
+                                        async (
+                                          patientPromise: Promise<models.PatientDto>,
+                                          delSfk: string
+                                        ) => {
+                                          const patient = await patientPromise
+                                          return tags.includes("anonymousMedicalInformation")
+                                            ? patient
+                                            : this.crypto
+                                                .addDelegationsAndEncryptionKeys(
+                                                  null,
+                                                  patient,
+                                                  ownerId,
+                                                  delegateId,
+                                                  delSfk,
+                                                  null
+                                                )
+                                                .catch((e: any) => {
+                                                  console.log(e)
+                                                  return patient
+                                                })
+                                        },
+                                        Promise.resolve(patient)
+                                      )
+                                  }
+                                  return patient
+                                })
+                                .catch(e => {
+                                  console.log(e)
+                                  return patient
+                                })
                         })
                         ;(tags.includes("medicalInformation") || tags.includes("all")) &&
                           (markerPromise = addDelegationsAndKeys(
@@ -1206,19 +1210,22 @@ export class IccPatientXApi extends iccPatientApi {
                         })
                     })
                   })
-                : this.modifyPatientWithUser(
-                    user,
-                    _.assign(patient, {
-                      delegations: _.assign(
-                        patient.delegations,
-                        delegateIds
-                          .filter(id => !patient.delegations || !patient.delegations[id]) //If there are delegations do not modify
-                          .reduce(
-                            (acc, del: String) => Object.assign(acc, _.fromPairs([[del, []]])),
-                            patient.delegations || {}
+                : (allTags.includes("anonymousMedicalInformation")
+                    ? Promise.resolve(patient)
+                    : this.modifyPatientWithUser(
+                        user,
+                        _.assign(patient, {
+                          delegations: _.assign(
+                            patient.delegations,
+                            delegateIds
+                              .filter(id => !patient.delegations || !patient.delegations[id]) //If there are delegations do not modify
+                              .reduce(
+                                (acc, del: String) => Object.assign(acc, _.fromPairs([[del, []]])),
+                                patient.delegations || {}
+                              )
                           )
+                        })
                       )
-                    })
                   )
                     .then(p => {
                       status.patient.success = true
