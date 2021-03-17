@@ -24,11 +24,6 @@ import { utils } from "./crypto/utils"
 import { DelegationDto } from "../icc-api/model/models"
 import { IccCalendarItemXApi } from "./icc-calendar-item-x-api"
 
-export enum SharedContent {
-  ALL = "all",
-  ENCRYPTION = "encryption" // for extractor, no delegations, no secret foreign keys, only encryption
-}
-
 // noinspection JSUnusedGlobalSymbols
 export class IccPatientXApi extends iccPatientApi {
   crypto: IccCryptoXApi
@@ -713,8 +708,7 @@ export class IccPatientXApi extends iccPatientApi {
     patId: string,
     ownerId: string,
     delegateIds: Array<string>,
-    delegationTags: { [key: string]: Array<string> },
-    sharedContent: SharedContent = SharedContent.ALL
+    delegationTags: { [key: string]: Array<string> }
   ): Promise<{
     patient: models.PatientDto | null
     statuses: { [key: string]: { success: boolean | null; error: Error | null } }
@@ -752,9 +746,18 @@ export class IccPatientXApi extends iccPatientApi {
       )
     }
 
+    const allTags: string[] = _.uniq(_.flatMap(Object.values(delegationTags)))
+
+    // Determine which keys to share, depending on the delegation tag. For example, anonymousMedicalData only shares encryption keys and no delegations or secret foreign keys.
+    const shareDelegations: boolean = allTags !== ["anonymousMedicalInformation"]
+    const shareEncryptionKeys: boolean = true
+    const shareCryptedForeignKeys: boolean = allTags !== ["anonymousMedicalInformation"]
+
+    // Anonymous sharing, will not change anything to the patient, only its contacts and health elements.
+    const shareAnonymously: boolean = allTags === ["anonymousMedicalInformation"]
+
     return this.hcpartyApi.getHealthcareParty(ownerId).then(hcp => {
       const parentId = hcp.parentId
-      const allTags = _.uniq(_.flatMap(Object.values(delegationTags)))
       const status = {
         contacts: {
           success:
@@ -912,26 +915,13 @@ export class IccPatientXApi extends iccPatientApi {
                         )
                     ) as Promise<Array<models.CalendarItemDto>>
                   ]).then(([hes, frms, ctcs, ivs, cls, cis]) => {
-                    let cloneDelegations = function(x: models.IcureStubDto) {
-                      return sharedContent === SharedContent.ALL
-                        ? _.clone(x.delegations)
-                        : undefined
-                    }
-                    let cloneCryptedForeignKeys = function(x: models.IcureStubDto) {
-                      return sharedContent === SharedContent.ALL
-                        ? _.clone(x.cryptedForeignKeys)
-                        : undefined
-                    }
-                    let cloneEncryptionKeys = function(x: models.IcureStubDto) {
-                      return [SharedContent.ALL, SharedContent.ENCRYPTION].includes(sharedContent)
-                        ? _.clone(x.encryptionKeys)
-                        : undefined
-                    }
                     let cloneKeysAndDelegations = function(x: models.IcureStubDto) {
                       return {
-                        delegations: cloneDelegations(x),
-                        cryptedForeignKeys: cloneCryptedForeignKeys(x),
-                        encryptionKeys: cloneEncryptionKeys(x)
+                        delegations: shareDelegations ? _.clone(x.delegations) : undefined,
+                        cryptedForeignKeys: shareCryptedForeignKeys
+                          ? _.clone(x.cryptedForeignKeys)
+                          : undefined,
+                        encryptionKeys: shareEncryptionKeys ? _.clone(x.encryptionKeys) : undefined
                       }
                     }
 
@@ -983,7 +973,7 @@ export class IccPatientXApi extends iccPatientApi {
                         markerPromise = markerPromise.then(() => {
                           //Share patient
                           //console.log(`share ${patient.id} to ${delegateId}`)
-                          return tags.includes("anonymousMedicalInformation")
+                          return shareAnonymously
                             ? patient
                             : this.crypto
                                 .addDelegationsAndEncryptionKeys(
@@ -1004,7 +994,7 @@ export class IccPatientXApi extends iccPatientApi {
                                           delSfk: string
                                         ) => {
                                           const patient = await patientPromise
-                                          return tags.includes("anonymousMedicalInformation")
+                                          return shareAnonymously
                                             ? patient
                                             : this.crypto
                                                 .addDelegationsAndEncryptionKeys(
