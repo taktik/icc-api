@@ -36,7 +36,7 @@ export class IccContactXApi extends iccContactApi {
       _.extend(
         {
           id: this.crypto.randomUuid(),
-          _type: "org.taktik.icure.entities.Contact",
+          java_type: "org.taktik.icure.entities.Contact",
           created: new Date().getTime(),
           modified: new Date().getTime(),
           responsible: user.healthcarePartyId || user.patientId,
@@ -967,7 +967,7 @@ export class IccContactXApi extends iccContactApi {
         _.extend(
           {
             id: this.crypto.randomUuid(),
-            _type: "org.taktik.icure.entities.embed.Service",
+            java_type: "org.taktik.icure.entities.embed.Service",
             created: new Date().getTime(),
             modified: new Date().getTime(),
             responsible: user.healthcarePartyId || user.patientId,

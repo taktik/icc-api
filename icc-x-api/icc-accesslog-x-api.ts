@@ -33,7 +33,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
     const accessslog = _.assign(
       {
         id: this.crypto.randomUuid(),
-        _type: "org.taktik.icure.entities.AccessLog",
+        java_type: "org.taktik.icure.entities.AccessLog",
         created: new Date().getTime(),
         modified: new Date().getTime(),
         date: +new Date(),

@@ -28,7 +28,7 @@ export class IccFormXApi extends iccFormApi {
     const form = _.extend(
       {
         id: this.crypto.randomUuid(),
-        _type: "org.taktik.icure.entities.Form",
+        java_type: "org.taktik.icure.entities.Form",
         created: new Date().getTime(),
         modified: new Date().getTime(),
         responsible: user.healthcarePartyId || user.patientId,

@@ -114,7 +114,7 @@ export class IccMessageXApi extends iccMessageApi {
     const message = _.extend(
       {
         id: this.crypto.randomUuid(),
-        _type: "org.taktik.icure.entities.Message",
+        java_type: "org.taktik.icure.entities.Message",
         created: new Date().getTime(),
         modified: new Date().getTime(),
         responsible: user.healthcarePartyId,
