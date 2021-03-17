@@ -75,7 +75,7 @@ export class IccPatientXApi extends iccPatientApi {
     const patient = _.extend(
       {
         id: this.crypto.randomUuid(),
-        _type: "org.taktik.icure.entities.Patient",
+        java_type: "org.taktik.icure.entities.Patient",
         created: new Date().getTime(),
         modified: new Date().getTime(),
         responsible: user.healthcarePartyId || user.patientId,

@@ -32,7 +32,7 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
     const calendarItem = _.extend(
       {
         id: this.crypto.randomUuid(),
-        _type: "org.taktik.icure.entities.CalendarItem",
+        java_type: "org.taktik.icure.entities.CalendarItem",
         created: new Date().getTime(),
         modified: new Date().getTime(),
         responsible: hcpId,
@@ -77,7 +77,7 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
     const calendarItem = _.extend(
       {
         id: this.crypto.randomUuid(),
-        _type: "org.taktik.icure.entities.CalendarItem",
+        java_type: "org.taktik.icure.entities.CalendarItem",
         created: new Date().getTime(),
         modified: new Date().getTime(),
         responsible: user.healthcarePartyId || user.patientId,

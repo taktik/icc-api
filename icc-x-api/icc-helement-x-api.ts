@@ -33,7 +33,7 @@ export class IccHelementXApi extends iccHelementApi {
     const helement = _.assign(
       {
         id: this.crypto.randomUuid(),
-        _type: "org.taktik.icure.entities.HealthElement",
+        java_type: "org.taktik.icure.entities.HealthElement",
         created: new Date().getTime(),
         modified: new Date().getTime(),
         responsible: hcpId,

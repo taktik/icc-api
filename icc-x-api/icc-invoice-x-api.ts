@@ -35,7 +35,7 @@ export class IccInvoiceXApi extends iccInvoiceApi {
         {
           id: this.crypto.randomUuid(),
           groupId: this.crypto.randomUuid(),
-          _type: "org.taktik.icure.entities.Invoice",
+          java_type: "org.taktik.icure.entities.Invoice",
           created: new Date().getTime(),
           modified: new Date().getTime(),
           responsible: user.healthcarePartyId || user.patientId,

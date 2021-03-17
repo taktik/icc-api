@@ -30,7 +30,7 @@ export class IccClassificationXApi extends iccClassificationApi {
     const classification = _.assign(
       {
         id: this.crypto.randomUuid(),
-        _type: "org.taktik.icure.entities.Classification",
+        java_type: "org.taktik.icure.entities.Classification",
         created: new Date().getTime(),
         modified: new Date().getTime(),
         responsible: user.healthcarePartyId || user.patientId,
