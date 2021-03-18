@@ -32,7 +32,7 @@ export class IccDoctemplateXApi extends iccDoctemplateApi {
       const documentTemplate: DocumentTemplateDto = extend(
         {
           id: this.crypto.randomUuid(),
-          _type: "org.taktik.icure.entities.DocumentTemplate",
+          java_type: "org.taktik.icure.entities.DocumentTemplate",
           owner: user.id,
           created: new Date().getTime(),
           modified: new Date().getTime(),
