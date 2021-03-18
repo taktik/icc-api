@@ -562,7 +562,7 @@ export class IccDocumentXApi extends iccDocumentApi {
     const document = _.extend(
       {
         id: this.crypto.randomUuid(),
-        _type: "org.taktik.icure.entities.Document",
+        java_type: "org.taktik.icure.entities.Document",
         created: new Date().getTime(),
         modified: new Date().getTime(),
         responsible: user.healthcarePartyId || user.patientId,
