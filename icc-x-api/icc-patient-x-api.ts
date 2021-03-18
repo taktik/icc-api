@@ -823,12 +823,14 @@ export class IccPatientXApi extends iccPatientApi {
     const allTags: string[] = _.uniq(_.flatMap(Object.values(delegationTags)))
 
     // Determine which keys to share, depending on the delegation tag. For example, anonymousMedicalData only shares encryption keys and no delegations or secret foreign keys.
-    const shareDelegations: boolean = allTags !== ["anonymousMedicalInformation"]
+    const shareDelegations: boolean = allTags.some(tag => tag != "anonymousMedicalInformation")
     const shareEncryptionKeys: boolean = true
-    const shareCryptedForeignKeys: boolean = allTags !== ["anonymousMedicalInformation"]
+    const shareCryptedForeignKeys: boolean = allTags.some(
+      tag => tag != "anonymousMedicalInformation"
+    )
 
     // Anonymous sharing, will not change anything to the patient, only its contacts and health elements.
-    const shareAnonymously: boolean = allTags === ["anonymousMedicalInformation"]
+    const shareAnonymously: boolean = allTags.every(tag => tag == "anonymousMedicalInformation")
 
     return this.hcpartyApi.getHealthcareParty(ownerId).then(hcp => {
       const parentId = hcp.parentId
