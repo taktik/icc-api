@@ -759,12 +759,28 @@ export class IccPatientXApi extends iccPatientApi {
       )
     }
 
+    const allTags: string[] = _.uniq(_.flatMap(Object.values(delegationTags)))
+
+    // Determine which keys to share, depending on the delegation tag. For example, anonymousMedicalData only shares encryption keys and no delegations or secret foreign keys.
+    const shareDelegations: boolean = allTags.some(tag => tag != "anonymousMedicalInformation")
+    const shareEncryptionKeys: boolean = true
+    const shareCryptedForeignKeys: boolean = allTags.some(
+      tag => tag != "anonymousMedicalInformation"
+    )
+
+    // Anonymous sharing, will not change anything to the patient, only its contacts and health elements.
+    const shareAnonymously: boolean = allTags.every(tag => tag == "anonymousMedicalInformation")
+
     return this.hcpartyApi.getHealthcareParty(ownerId).then(hcp => {
       const parentId = hcp.parentId
-      const allTags = _.uniq(_.flatMap(Object.values(delegationTags)))
       const status = {
         contacts: {
-          success: allTags.includes("medicalInformation") || allTags.includes("all") ? false : null,
+          success:
+            allTags.includes("medicalInformation") ||
+            allTags.includes("anonymousMedicalInformation") ||
+            allTags.includes("all")
+              ? false
+              : null,
           error: null,
           modified: 0
         },
@@ -774,7 +790,12 @@ export class IccPatientXApi extends iccPatientApi {
           modified: 0
         },
         healthElements: {
-          success: allTags.includes("medicalInformation") || allTags.includes("all") ? false : null,
+          success:
+            allTags.includes("medicalInformation") ||
+            allTags.includes("anonymousMedicalInformation") ||
+            allTags.includes("all")
+              ? false
+              : null,
           error: null,
           modified: 0
         },
@@ -909,54 +930,38 @@ export class IccPatientXApi extends iccPatientApi {
                         )
                     ) as Promise<Array<models.CalendarItemDto>>
                   ]).then(([hes, frms, ctcs, ivs, cls, cis]) => {
+                    let cloneKeysAndDelegations = function(x: models.IcureStubDto) {
+                      return {
+                        delegations: shareDelegations ? _.clone(x.delegations) : undefined,
+                        cryptedForeignKeys: shareCryptedForeignKeys
+                          ? _.clone(x.cryptedForeignKeys)
+                          : undefined,
+                        encryptionKeys: shareEncryptionKeys ? _.clone(x.encryptionKeys) : undefined
+                      }
+                    }
+
                     const ctcsStubs = ctcs.map(c => ({
                       id: c.id,
                       rev: c.rev,
-                      delegations: _.clone(c.delegations),
-                      cryptedForeignKeys: _.clone(c.cryptedForeignKeys),
-                      encryptionKeys: _.clone(c.encryptionKeys)
+                      ...cloneKeysAndDelegations(c)
                     }))
                     const oHes = hes.map(x =>
-                      _.assign(new IcureStubDto({}), x, {
-                        delegations: _.clone(x.delegations),
-                        cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
-                        encryptionKeys: _.clone(x.encryptionKeys)
-                      })
+                      _.assign(new IcureStubDto({}), x, cloneKeysAndDelegations(x))
                     )
                     const oFrms = frms.map(x =>
-                      _.assign(new IcureStubDto({}), x, {
-                        delegations: _.clone(x.delegations),
-                        cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
-                        encryptionKeys: _.clone(x.encryptionKeys)
-                      })
+                      _.assign(new IcureStubDto({}), x, cloneKeysAndDelegations(x))
                     )
                     const oCtcsStubs = ctcsStubs.map(x =>
-                      _.assign({}, x, {
-                        delegations: _.clone(x.delegations),
-                        cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
-                        encryptionKeys: _.clone(x.encryptionKeys)
-                      })
+                      _.assign({}, x, cloneKeysAndDelegations(x))
                     )
                     const oIvs = ivs.map(x =>
-                      _.assign(new InvoiceDto({}), x, {
-                        delegations: _.clone(x.delegations),
-                        cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
-                        encryptionKeys: _.clone(x.encryptionKeys)
-                      })
+                      _.assign(new InvoiceDto({}), x, cloneKeysAndDelegations(x))
                     )
                     const oCls = cls.map(x =>
-                      _.assign(new ClassificationDto({}), x, {
-                        delegations: _.clone(x.delegations),
-                        cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
-                        encryptionKeys: _.clone(x.encryptionKeys)
-                      })
+                      _.assign(new ClassificationDto({}), x, cloneKeysAndDelegations(x))
                     )
                     const oCis = cis.map(x =>
-                      _.assign(new CalendarItemDto({}), x, {
-                        delegations: _.clone(x.delegations),
-                        cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
-                        encryptionKeys: _.clone(x.encryptionKeys)
-                      })
+                      _.assign(new CalendarItemDto({}), x, cloneKeysAndDelegations(x))
                     )
 
                     const docIds: { [key: string]: number } = {}
@@ -975,13 +980,7 @@ export class IccPatientXApi extends iccPatientApi {
                     return retry(() =>
                       this.documentApi.getDocuments(new ListOfIdsDto({ ids: Object.keys(docIds) }))
                     ).then((docs: Array<DocumentDto>) => {
-                      const oDocs = docs.map(x =>
-                        _.assign({}, x, {
-                          delegations: _.clone(x.delegations),
-                          cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
-                          encryptionKeys: _.clone(x.encryptionKeys)
-                        })
-                      )
+                      const oDocs = docs.map(x => _.assign({}, x, cloneKeysAndDelegations(x)))
 
                       let markerPromise: Promise<any> = Promise.resolve(null)
                       delegateIds.forEach(delegateId => {
@@ -989,50 +988,56 @@ export class IccPatientXApi extends iccPatientApi {
                         markerPromise = markerPromise.then(() => {
                           //Share patient
                           //console.log(`share ${patient.id} to ${delegateId}`)
-                          return this.crypto
-                            .addDelegationsAndEncryptionKeys(
-                              null,
-                              patient,
-                              ownerId,
-                              delegateId,
-                              delSfks[0],
-                              ecKeys[0]
-                            )
-                            .then(async patient => {
-                              if (delSfks.length > 1) {
-                                return delSfks
-                                  .slice(1)
-                                  .reduce(
-                                    async (
-                                      patientPromise: Promise<models.PatientDto>,
-                                      delSfk: string
-                                    ) => {
-                                      const patient = await patientPromise
-                                      return this.crypto
-                                        .addDelegationsAndEncryptionKeys(
-                                          null,
-                                          patient,
-                                          ownerId,
-                                          delegateId,
-                                          delSfk,
-                                          null
-                                        )
-                                        .catch((e: any) => {
-                                          console.log(e)
-                                          return patient
-                                        })
-                                    },
-                                    Promise.resolve(patient)
-                                  )
-                              }
-                              return patient
-                            })
-                            .catch(e => {
-                              console.log(e)
-                              return patient
-                            })
+                          return shareAnonymously
+                            ? patient
+                            : this.crypto
+                                .addDelegationsAndEncryptionKeys(
+                                  null,
+                                  patient,
+                                  ownerId,
+                                  delegateId,
+                                  delSfks[0],
+                                  ecKeys[0]
+                                )
+                                .then(async patient => {
+                                  if (delSfks.length > 1) {
+                                    return delSfks
+                                      .slice(1)
+                                      .reduce(
+                                        async (
+                                          patientPromise: Promise<models.PatientDto>,
+                                          delSfk: string
+                                        ) => {
+                                          const patient = await patientPromise
+                                          return shareAnonymously
+                                            ? patient
+                                            : this.crypto
+                                                .addDelegationsAndEncryptionKeys(
+                                                  null,
+                                                  patient,
+                                                  ownerId,
+                                                  delegateId,
+                                                  delSfk,
+                                                  null
+                                                )
+                                                .catch((e: any) => {
+                                                  console.log(e)
+                                                  return patient
+                                                })
+                                        },
+                                        Promise.resolve(patient)
+                                      )
+                                  }
+                                  return patient
+                                })
+                                .catch(e => {
+                                  console.log(e)
+                                  return patient
+                                })
                         })
-                        ;(tags.includes("medicalInformation") || tags.includes("all")) &&
+                        ;(tags.includes("medicalInformation") ||
+                          tags.includes("anonymousMedicalInformation") ||
+                          tags.includes("all")) &&
                           (markerPromise = addDelegationsAndKeys(
                             hes,
                             markerPromise,
@@ -1046,7 +1051,9 @@ export class IccPatientXApi extends iccPatientApi {
                             delegateId,
                             patient
                           ))
-                        ;(tags.includes("medicalInformation") || tags.includes("all")) &&
+                        ;(tags.includes("medicalInformation") ||
+                          tags.includes("anonymousMedicalInformation") ||
+                          tags.includes("all")) &&
                           (markerPromise = addDelegationsAndKeys(
                             ctcsStubs,
                             markerPromise,
@@ -1087,7 +1094,9 @@ export class IccPatientXApi extends iccPatientApi {
                         .then(() => {
                           //console.log("scd")
                           return (
-                            ((allTags.includes("medicalInformation") || allTags.includes("all")) &&
+                            ((allTags.includes("medicalInformation") ||
+                              allTags.includes("anonymousMedicalInformation") ||
+                              allTags.includes("all")) &&
                               (ctcsStubs &&
                                 ctcsStubs.length &&
                                 !_.isEqual(oCtcsStubs, ctcsStubs)) &&
@@ -1104,7 +1113,9 @@ export class IccPatientXApi extends iccPatientApi {
                         .then(() => {
                           //console.log("shed")
                           return (
-                            ((allTags.includes("medicalInformation") || allTags.includes("all")) &&
+                            ((allTags.includes("medicalInformation") ||
+                              allTags.includes("anonymousMedicalInformation") ||
+                              allTags.includes("all")) &&
                               (hes && hes.length && !_.isEqual(oHes, hes)) &&
                               this.helementApi
                                 .setHealthElementsDelegations(hes)
@@ -1212,19 +1223,22 @@ export class IccPatientXApi extends iccPatientApi {
                         })
                     })
                   })
-                : this.modifyPatientWithUser(
-                    user,
-                    _.assign(patient, {
-                      delegations: _.assign(
-                        patient.delegations,
-                        delegateIds
-                          .filter(id => !patient.delegations || !patient.delegations[id]) //If there are delegations do not modify
-                          .reduce(
-                            (acc, del: String) => Object.assign(acc, _.fromPairs([[del, []]])),
-                            patient.delegations || {}
+                : (allTags.includes("anonymousMedicalInformation")
+                    ? Promise.resolve(patient)
+                    : this.modifyPatientWithUser(
+                        user,
+                        _.assign(patient, {
+                          delegations: _.assign(
+                            patient.delegations,
+                            delegateIds
+                              .filter(id => !patient.delegations || !patient.delegations[id]) //If there are delegations do not modify
+                              .reduce(
+                                (acc, del: String) => Object.assign(acc, _.fromPairs([[del, []]])),
+                                patient.delegations || {}
+                              )
                           )
+                        })
                       )
-                    })
                   )
                     .then(p => {
                       status.patient.success = true
