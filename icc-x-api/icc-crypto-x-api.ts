@@ -1722,7 +1722,6 @@ export class IccCryptoXApi {
         })
         .then(plainText => {
           const pt = this._utils.ua2utf8(plainText)
-          console.log(pt)
           resolve(pt === "shibboleth")
         })
         .catch(() => resolve(false))
