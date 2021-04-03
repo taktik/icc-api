@@ -333,14 +333,12 @@ function toInvoiceItem(
   const invoiceItem = new InvoiceItem({})
   invoiceItem.codeNomenclature = Number(invoicingCode.tarificationId!!.split("|")[1])
   invoiceItem.dateCode = dateEncode(toMoment(invoicingCode.dateCode!!)!!.toDate())
-  invoiceItem.endDateCode =
-    invoiceItem.codeNomenclature === 109594 // Prétrajet de soins diabète
-      ? dateEncode(toMoment(invoicingCode.dateCode!!)!!.toDate())
-      : dateEncode(
+  if (invoiceItem.codeNomenclature === 109594) {// Prétrajet de soins diabète
+    invoiceItem.endDateCode = dateEncode(
       toMoment(invoicingCode.dateCode!!)!!
         .endOf("month")
-        .toDate()
-      )
+        .toDate());
+  }
   invoiceItem.doctorIdentificationNumber = nihiiHealthcareProvider
   invoiceItem.doctorSupplement = Number(((invoicingCode.doctorSupplement || 0) * 100).toFixed(0))
   if (invoicingCode.eidReadingHour && invoicingCode.eidReadingValue) {
