@@ -116,7 +116,10 @@ export class IccContactXApi extends iccContactApi {
                 })
             ))
         )
-        ;(user.autoDelegations ? user.autoDelegations.anonymousMedicalInformation : []).forEach(
+        ;(user.autoDelegations
+          ? user.autoDelegations.anonymousMedicalInformation || []
+          : []
+        ).forEach(
           delegateId =>
             (promise = promise.then(contact =>
               this.crypto
