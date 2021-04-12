@@ -11,8 +11,6 @@
  */
 import { SamText } from "./SamText"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class CommentedClassification {
   constructor(json: JSON | any) {
     Object.assign(this as CommentedClassification, json)

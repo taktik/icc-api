@@ -13,14 +13,13 @@ import { Measure } from "./Measure"
 import { Medication } from "./Medication"
 import { Service } from "./Service"
 
-import { decodeBase64 } from "./ModelHelper"
-
+import { b64_2ab } from "./ModelHelper"
 export class Content {
   constructor(json: JSON | any) {
     Object.assign(
       this as Content,
       json,
-      json.binaryValue ? { binaryValue: decodeBase64(json.binaryValue) } : {}
+      json.binaryValue ? { binaryValue: b64_2ab(json.binaryValue) } : {}
     )
   }
 

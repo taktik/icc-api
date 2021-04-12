@@ -67,25 +67,6 @@ export class IccIcureApi {
 
   /**
    *
-   * @summary Get property types
-   * @param type
-   */
-  getPropertyTypes(type: string): Promise<Array<string>> {
-    let _body = null
-
-    const _url =
-      this.host +
-      `/icure/propertytypes/${encodeURIComponent(String(type))}` +
-      "?ts=" +
-      new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
-      .catch(err => this.handleError(err))
-  }
-
-  /**
-   *
    * @summary Get index info
    */
   getReplicationInfo(): Promise<ReplicationInfo> {

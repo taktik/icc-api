@@ -12,8 +12,6 @@
 import { SamText } from "./SamText"
 import { VmpGroupStub } from "./VmpGroupStub"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class VmpStub {
   constructor(json: JSON | any) {
     Object.assign(this as VmpStub, json)

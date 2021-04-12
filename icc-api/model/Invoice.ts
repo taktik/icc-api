@@ -18,8 +18,6 @@ import { Payment } from "./Payment"
 /**
  * This entity is a root level object. It represents an Invoice. It is serialized in JSON and saved in the underlying iCure CouchDB database.
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class Invoice {
   constructor(json: JSON | any) {
     Object.assign(this as Invoice, json)

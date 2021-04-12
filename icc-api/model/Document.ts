@@ -15,8 +15,6 @@ import { Delegation } from "./Delegation"
 /**
  * This entity is a root level object. It represents a Document. It is serialized in JSON and saved in the underlying CouchDB database.
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class Document {
   constructor(json: JSON | any) {
     Object.assign(this as Document, json)

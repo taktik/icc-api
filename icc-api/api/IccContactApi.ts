@@ -174,6 +174,26 @@ export class IccContactApi {
 
   /**
    *
+   * @summary List contacts found By externalId.
+   * @param externalId
+   */
+  findByExternalId(externalId: string): Promise<Array<Contact>> {
+    let _body = null
+
+    const _url =
+      this.host +
+      `/contact/byExternalId` +
+      "?ts=" +
+      new Date().getTime() +
+      (externalId ? "&externalId=" + encodeURIComponent(String(externalId)) : "")
+    let headers = this.headers
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new Contact(it)))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   *
    * @summary List contacts found By Healthcare Party and form Id.
    * @param hcPartyId
    * @param formId
@@ -248,6 +268,28 @@ export class IccContactApi {
       (skipClosedContacts
         ? "&skipClosedContacts=" + encodeURIComponent(String(skipClosedContacts))
         : "")
+    let headers = this.headers
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new Contact(it)))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   *
+   * @summary List contacts found By Healthcare Party and service Id.
+   * @param hcPartyId
+   * @param serviceId
+   */
+  findByHCPartyServiceId(hcPartyId: string, serviceId: string): Promise<Array<Contact>> {
+    let _body = null
+
+    const _url =
+      this.host +
+      `/contact/byHcPartyServiceId` +
+      "?ts=" +
+      new Date().getTime() +
+      (hcPartyId ? "&hcPartyId=" + encodeURIComponent(String(hcPartyId)) : "") +
+      (serviceId ? "&serviceId=" + encodeURIComponent(String(serviceId)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new Contact(it)))
@@ -433,6 +475,26 @@ export class IccContactApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new Service(it)))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   * Returns a list of services
+   * @summary List services by related association id
+   * @param associationId
+   */
+  listServicesByAssociationId(associationId: string): Promise<Array<Service>> {
+    let _body = null
+
+    const _url =
+      this.host +
+      `/contact/service/associationId` +
+      "?ts=" +
+      new Date().getTime() +
+      (associationId ? "&associationId=" + encodeURIComponent(String(associationId)) : "")
+    let headers = this.headers
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new Service(it)))
       .catch(err => this.handleError(err))
   }

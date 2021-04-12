@@ -13,8 +13,6 @@
 /**
  * Contracts between the patient and the healthcare entity.
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class MedicalHouseContract {
   constructor(json: JSON | any) {
     Object.assign(this as MedicalHouseContract, json)

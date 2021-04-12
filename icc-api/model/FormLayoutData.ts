@@ -18,8 +18,6 @@ import { GuiCode } from "./GuiCode"
 import { GuiCodeType } from "./GuiCodeType"
 import { Suggest } from "./Suggest"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class FormLayoutData {
   constructor(json: JSON | any) {
     Object.assign(this as FormLayoutData, json)

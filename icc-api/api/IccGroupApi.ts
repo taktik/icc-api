@@ -12,6 +12,7 @@
 import { XHR } from "./XHR"
 import { DatabaseInitialisation } from "../model/DatabaseInitialisation"
 import { Group } from "../model/Group"
+import { Unit } from "../model/Unit"
 
 export class IccGroupApi {
   host: string
@@ -79,6 +80,27 @@ export class IccGroupApi {
   }
 
   /**
+   * Init design docs for provided group
+   * @summary Init design docs
+   * @param id The id of the group
+   * @param warmup Warmup the design doc
+   */
+  initDesignDocs(id: string, warmup?: boolean): Promise<Unit> {
+    let _body = null
+
+    const _url =
+      this.host +
+      `/group/${encodeURIComponent(String(id))}/dd` +
+      "?ts=" +
+      new Date().getTime() +
+      (warmup ? "&warmup=" + encodeURIComponent(String(warmup)) : "")
+    let headers = this.headers
+    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
+      .then(doc => new Unit(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
    * List existing groups
    * @summary List groups
    */
@@ -113,8 +135,8 @@ export class IccGroupApi {
   }
 
   /**
-   * Create a new gorup with associated dbs
-   * @summary List groups
+   * Update password for provided group
+   * @summary Set group password
    * @param id The id of the group
    * @param password The new password for the group (can only contain digits, letters, - and _)
    */

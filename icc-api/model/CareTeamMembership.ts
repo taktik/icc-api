@@ -13,8 +13,6 @@
 /**
  * Members of the careteam involved in this approach
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class CareTeamMembership {
   constructor(json: JSON | any) {
     Object.assign(this as CareTeamMembership, json)

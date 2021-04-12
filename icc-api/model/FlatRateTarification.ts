@@ -11,8 +11,6 @@
  */
 import { Valorisation } from "./Valorisation"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class FlatRateTarification {
   constructor(json: JSON | any) {
     Object.assign(this as FlatRateTarification, json)

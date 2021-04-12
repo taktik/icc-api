@@ -12,8 +12,6 @@
 import { NumeratorRange } from "./NumeratorRange"
 import { Quantity } from "./Quantity"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class StrengthRange {
   constructor(json: JSON | any) {
     Object.assign(this as StrengthRange, json)

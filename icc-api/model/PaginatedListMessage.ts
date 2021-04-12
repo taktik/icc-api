@@ -12,8 +12,6 @@
 import { Message } from "./Message"
 import { PaginatedDocumentKeyIdPairObject } from "./PaginatedDocumentKeyIdPairObject"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class PaginatedListMessage {
   constructor(json: JSON | any) {
     Object.assign(this as PaginatedListMessage, json)

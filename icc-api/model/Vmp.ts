@@ -16,8 +16,6 @@ import { VmpGroupStub } from "./VmpGroupStub"
 import { Vtm } from "./Vtm"
 import { Wada } from "./Wada"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class Vmp {
   constructor(json: JSON | any) {
     Object.assign(this as Vmp, json)

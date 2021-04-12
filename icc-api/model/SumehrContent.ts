@@ -14,8 +14,6 @@ import { Partnership } from "./Partnership"
 import { PatientHealthCareParty } from "./PatientHealthCareParty"
 import { Service } from "./Service"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class SumehrContent {
   constructor(json: JSON | any) {
     Object.assign(this as SumehrContent, json)

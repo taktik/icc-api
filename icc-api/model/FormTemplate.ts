@@ -13,8 +13,6 @@ import { CodeStub } from "./CodeStub"
 import { DocumentGroup } from "./DocumentGroup"
 import { FormLayout } from "./FormLayout"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class FormTemplate {
   constructor(json: JSON | any) {
     Object.assign(this as FormTemplate, json)

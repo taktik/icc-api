@@ -13,8 +13,6 @@ import { NoGenericPrescriptionReason } from "./NoGenericPrescriptionReason"
 import { NoSwitchReason } from "./NoSwitchReason"
 import { SamText } from "./SamText"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class VmpGroup {
   constructor(json: JSON | any) {
     Object.assign(this as VmpGroup, json)

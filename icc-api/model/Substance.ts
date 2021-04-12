@@ -12,8 +12,6 @@
 import { SamText } from "./SamText"
 import { StandardSubstance } from "./StandardSubstance"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class Substance {
   constructor(json: JSON | any) {
     Object.assign(this as Substance, json)

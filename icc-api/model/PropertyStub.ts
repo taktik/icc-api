@@ -15,8 +15,6 @@ import { TypedValueObject } from "./TypedValueObject"
 /**
  * Extra properties for the user. Those properties are typed (see class Property)
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class PropertyStub {
   constructor(json: JSON | any) {
     Object.assign(this as PropertyStub, json)

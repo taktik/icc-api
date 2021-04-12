@@ -12,8 +12,6 @@
 import { CodeStub } from "./CodeStub"
 import { SamText } from "./SamText"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class VirtualForm {
   constructor(json: JSON | any) {
     Object.assign(this as VirtualForm, json)

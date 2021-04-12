@@ -13,8 +13,6 @@
 /**
  * List of all services provided to the patient under a given contact which is linked by this sub-contact to other structuring elements.
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class ServiceLink {
   constructor(json: JSON | any) {
     Object.assign(this as ServiceLink, json)

@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-
-import { decodeBase64 } from "./ModelHelper"
+import { Attachment } from "./Attachment"
+import { RevisionInfo } from "./RevisionInfo"
 
 export class EntityTemplate {
   constructor(json: JSON | any) {
@@ -19,15 +19,17 @@ export class EntityTemplate {
 
   id?: string
   rev?: string
-  /**
-   * hard delete (unix epoch in ms) timestamp of the object. Filled automatically when deletePatient is called.
-   */
-  deletionDate?: number
+  deleted?: number
   userId?: string
   descr?: string
   keywords?: Array<string>
   entityType?: string
   subType?: string
-  defaultTemplate?: boolean
+  isDefaultTemplate?: boolean
   entity?: Array<{ [key: string]: any }>
+  attachments?: { [key: string]: Attachment }
+  revsInfo?: Array<RevisionInfo>
+  conflicts?: Array<string>
+  revHistory?: { [key: string]: string }
+  javaType?: string
 }

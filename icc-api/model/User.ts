@@ -15,8 +15,6 @@ import { PropertyStub } from "./PropertyStub"
 /**
  * This entity is a root level object. It represents an user that can log in to the iCure platform. It is serialized in JSON and saved in the underlying icure-base CouchDB database.
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class User {
   constructor(json: JSON | any) {
     Object.assign(this as User, json)

@@ -13,8 +13,6 @@
 /**
  * This class represents a coverage of a patient by an insurance during a period or time.
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class Insurability {
   constructor(json: JSON | any) {
     Object.assign(this as Insurability, json)

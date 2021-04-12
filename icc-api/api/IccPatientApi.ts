@@ -46,7 +46,26 @@ export class IccPatientApi {
 
   /**
    * Returns the id and _rev of created patients
-   * @summary Modify a patient
+   * @summary Create patients in bulk
+   * @param body
+   */
+  bulkCreatePatients(body?: Array<Patient>): Promise<Array<IdWithRev>> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/patient/bulk` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new IdWithRev(it)))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   * Returns the id and _rev of modified patients
+   * @summary Modify patients in bulk
    * @param body
    */
   bulkUpdatePatients(body?: Array<Patient>): Promise<Array<IdWithRev>> {
@@ -58,7 +77,7 @@ export class IccPatientApi {
     headers = headers
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new IdWithRev(it)))
       .catch(err => this.handleError(err))
   }
@@ -204,7 +223,7 @@ export class IccPatientApi {
    * @summary Get Paginated List of Patients sorted by Access logs descending
    * @param externalId A external ID
    */
-  findByExternalId(externalId: string): Promise<Patient> {
+  findByExternalId1(externalId: string): Promise<Patient> {
     let _body = null
 
     const _url =

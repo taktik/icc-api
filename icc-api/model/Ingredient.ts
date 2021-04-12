@@ -12,8 +12,6 @@
 import { Quantity } from "./Quantity"
 import { SubstanceStub } from "./SubstanceStub"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class Ingredient {
   constructor(json: JSON | any) {
     Object.assign(this as Ingredient, json)

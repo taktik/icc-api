@@ -18,8 +18,6 @@ import { Quantity } from "./Quantity"
 import { SamText } from "./SamText"
 import { SupplyProblem } from "./SupplyProblem"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class Ampp {
   constructor(json: JSON | any) {
     Object.assign(this as Ampp, json)

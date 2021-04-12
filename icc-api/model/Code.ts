@@ -11,8 +11,6 @@
  */
 import { Periodicity } from "./Periodicity"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class Code {
   constructor(json: JSON | any) {
     Object.assign(this as Code, json)

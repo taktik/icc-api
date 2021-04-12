@@ -15,8 +15,6 @@ import { ServiceLink } from "./ServiceLink"
 /**
  * This entity represents a sub-contact. It is serialized in JSON and saved in the underlying icure-contact CouchDB database.
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class SubContact {
   constructor(json: JSON | any) {
     Object.assign(this as SubContact, json)

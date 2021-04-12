@@ -16,8 +16,6 @@ import { Delegation } from "./Delegation"
 /**
  * This entity represents a Service. A Service is created in the course a contact. A contact contains a series of services (acts, observations, exchanges) performed on the patient. These services can be linked to healthcare elements
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class Service {
   constructor(json: JSON | any) {
     Object.assign(this as Service, json)
@@ -112,7 +110,7 @@ export class Service {
   /**
    * Links towards related services (possibly in other contacts)
    */
-  qualifiedLinks?: { [key: string]: Array<string> }
+  qualifiedLinks?: { [key: string]: { [key: string]: string } }
   /**
    * A code is an item from a codification system that qualifies the content of this entity. SNOMED-CT, ICPC-2 or ICD-10 codifications systems can be used for codes
    */

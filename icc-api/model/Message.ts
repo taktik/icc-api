@@ -16,8 +16,6 @@ import { MessageReadStatus } from "./MessageReadStatus"
 /**
  * This entity is a root level object. It represents a Message. It is serialized in JSON and saved in the underlying CouchDB database.
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class Message {
   constructor(json: JSON | any) {
     Object.assign(this as Message, json)

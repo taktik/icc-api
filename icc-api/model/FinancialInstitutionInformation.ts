@@ -13,8 +13,6 @@
 /**
  * Financial information (Bank, bank account) used to reimburse the patient.
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class FinancialInstitutionInformation {
   constructor(json: JSON | any) {
     Object.assign(this as FinancialInstitutionInformation, json)

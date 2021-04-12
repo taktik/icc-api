@@ -12,8 +12,6 @@
 import { CodeStub } from "./CodeStub"
 import { KeywordSubword } from "./KeywordSubword"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class Keyword {
   constructor(json: JSON | any) {
     Object.assign(this as Keyword, json)

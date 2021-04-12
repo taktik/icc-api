@@ -76,7 +76,7 @@ export class IccUserApi {
   }
 
   /**
-   * Create a user. HealthcareParty ID should be set. Email has to be set and the Login has to be null. On server-side, Email will be used for Login.
+   * Create a user. HealthcareParty ID should be set. Email or Login have to be set. If login hasn't been set, Email will be used for Login instead.
    * @summary Create a user
    * @param body
    */

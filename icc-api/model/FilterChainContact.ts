@@ -12,8 +12,6 @@
 import { AbstractFilterContact } from "./AbstractFilterContact"
 import { Predicate } from "./Predicate"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class FilterChainContact {
   constructor(json: JSON | any) {
     Object.assign(this as FilterChainContact, json)

@@ -13,8 +13,6 @@ import { CodeStub } from "./CodeStub"
 import { Delegation } from "./Delegation"
 import { TimeTableItem } from "./TimeTableItem"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class TimeTable {
   constructor(json: JSON | any) {
     Object.assign(this as TimeTable, json)

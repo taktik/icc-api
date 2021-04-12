@@ -17,8 +17,6 @@ import { HealthcareParty } from "./HealthcareParty"
 import { MimeAttachment } from "./MimeAttachment"
 import { Patient } from "./Patient"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class ImportResult {
   constructor(json: JSON | any) {
     Object.assign(this as ImportResult, json)

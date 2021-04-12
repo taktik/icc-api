@@ -14,8 +14,6 @@ import { ReferralPeriod } from "./ReferralPeriod"
 /**
  * One or several periods of care by an hcp for this patient
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class PatientHealthCareParty {
   constructor(json: JSON | any) {
     Object.assign(this as PatientHealthCareParty, json)

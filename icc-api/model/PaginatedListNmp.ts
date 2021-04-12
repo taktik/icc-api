@@ -12,8 +12,6 @@
 import { Nmp } from "./Nmp"
 import { PaginatedDocumentKeyIdPairObject } from "./PaginatedDocumentKeyIdPairObject"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class PaginatedListNmp {
   constructor(json: JSON | any) {
     Object.assign(this as PaginatedListNmp, json)

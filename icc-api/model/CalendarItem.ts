@@ -15,8 +15,6 @@ import { CodeStub } from "./CodeStub"
 import { Delegation } from "./Delegation"
 import { FlowItem } from "./FlowItem"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class CalendarItem {
   constructor(json: JSON | any) {
     Object.assign(this as CalendarItem, json)

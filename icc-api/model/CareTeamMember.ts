@@ -14,8 +14,6 @@ import { CodeStub } from "./CodeStub"
 /**
  * List of care team members assigned for the healthcare element.
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class CareTeamMember {
   constructor(json: JSON | any) {
     Object.assign(this as CareTeamMember, json)

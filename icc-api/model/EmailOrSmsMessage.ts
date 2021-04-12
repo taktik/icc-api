@@ -11,8 +11,6 @@
  */
 import { MimeAttachment } from "./MimeAttachment"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class EmailOrSmsMessage {
   constructor(json: JSON | any) {
     Object.assign(this as EmailOrSmsMessage, json)

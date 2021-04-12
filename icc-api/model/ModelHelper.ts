@@ -1,4 +1,4 @@
-export function decodeBase64(v: any) {
+export function b64_2ab(v: any) {
   if (v instanceof ArrayBuffer) {
     return v
   }

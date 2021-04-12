@@ -12,8 +12,6 @@
 import { ClassificationTemplate } from "./ClassificationTemplate"
 import { PaginatedDocumentKeyIdPairObject } from "./PaginatedDocumentKeyIdPairObject"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class PaginatedListClassificationTemplate {
   constructor(json: JSON | any) {
     Object.assign(this as PaginatedListClassificationTemplate, json)

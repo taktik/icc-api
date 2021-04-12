@@ -12,8 +12,6 @@
 import { CodeStub } from "./CodeStub"
 import { Delegation } from "./Delegation"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class Form {
   constructor(json: JSON | any) {
     Object.assign(this as Form, json)
@@ -64,6 +62,9 @@ export class Form {
    */
   deletionDate?: number
   openingDate?: number
+  status?: string
+  version?: number
+  lid?: string
   /**
    * Name/basic description of the form
    */
@@ -71,7 +72,7 @@ export class Form {
   /**
    * A unique external id (from another external source).
    */
-  externalUuid?: string
+  formUuid?: string
   /**
    * Id of the form template being used to display the form
    */

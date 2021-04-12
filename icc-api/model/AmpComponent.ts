@@ -14,8 +14,6 @@ import { PharmaceuticalFormStub } from "./PharmaceuticalFormStub"
 import { RouteOfAdministration } from "./RouteOfAdministration"
 import { SamText } from "./SamText"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class AmpComponent {
   constructor(json: JSON | any) {
     Object.assign(this as AmpComponent, json)

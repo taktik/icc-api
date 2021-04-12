@@ -14,8 +14,6 @@ import { Telecom } from "./Telecom"
 /**
  * This entity represents an Address
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class Address {
   constructor(json: JSON | any) {
     Object.assign(this as Address, json)

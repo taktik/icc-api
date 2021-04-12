@@ -12,8 +12,6 @@
 import { CodeStub } from "./CodeStub"
 import { Employer } from "./Employer"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class EmploymentInfo {
   constructor(json: JSON | any) {
     Object.assign(this as EmploymentInfo, json)

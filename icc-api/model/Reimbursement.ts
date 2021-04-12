@@ -13,8 +13,6 @@ import { Copayment } from "./Copayment"
 import { Pricing } from "./Pricing"
 import { ReimbursementCriterion } from "./ReimbursementCriterion"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class Reimbursement {
   constructor(json: JSON | any) {
     Object.assign(this as Reimbursement, json)

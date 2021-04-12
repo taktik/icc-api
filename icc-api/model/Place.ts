@@ -11,8 +11,6 @@
  */
 import { Address } from "./Address"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class Place {
   constructor(json: JSON | any) {
     Object.assign(this as Place, json)

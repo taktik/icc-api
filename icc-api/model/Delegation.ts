@@ -13,8 +13,6 @@
 /**
  * When a document needs to be encrypted, the responsible generates a cryptographically random master key (different from the delegation key, never to appear in clear anywhere in the db. He/she encrypts it using his own AES exchange key and stores it as a delegation
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class Delegation {
   constructor(json: JSON | any) {
     Object.assign(this as Delegation, json)

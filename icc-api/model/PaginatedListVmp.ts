@@ -12,8 +12,6 @@
 import { PaginatedDocumentKeyIdPairObject } from "./PaginatedDocumentKeyIdPairObject"
 import { Vmp } from "./Vmp"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class PaginatedListVmp {
   constructor(json: JSON | any) {
     Object.assign(this as PaginatedListVmp, json)

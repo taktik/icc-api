@@ -24,15 +24,10 @@ import { SchoolingInfo } from "./SchoolingInfo"
 /**
  * This entity is a root level object. It represents a patient It is serialized in JSON and saved in the underlying icure-patient CouchDB database.
  */
-import { decodeBase64 } from "./ModelHelper"
-
+import { b64_2ab } from "./ModelHelper"
 export class Patient {
   constructor(json: JSON | any) {
-    Object.assign(
-      this as Patient,
-      json,
-      json.picture ? { picture: decodeBase64(json.picture) } : {}
-    )
+    Object.assign(this as Patient, json, json.picture ? { picture: b64_2ab(json.picture) } : {})
   }
 
   /**
@@ -74,7 +69,7 @@ export class Patient {
   /**
    * hard delete (unix epoch in ms) timestamp of the object. Filled automatically when deletePatient is called.
    */
-  deleted?: number
+  deletionDate?: number
   /**
    * the firstname (name) of the patient.
    */

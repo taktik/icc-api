@@ -13,8 +13,6 @@
 /**
  * A relationship between this patient and another person.
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class Partnership {
   constructor(json: JSON | any) {
     Object.assign(this as Partnership, json)

@@ -12,8 +12,6 @@
 import { StrengthRange } from "./StrengthRange"
 import { SubstanceStub } from "./SubstanceStub"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class VirtualIngredient {
   constructor(json: JSON | any) {
     Object.assign(this as VirtualIngredient, json)

@@ -14,8 +14,6 @@ import { PermissionItem } from "./PermissionItem"
 /**
  * If permission to modify patient data is granted or revoked
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class Permission {
   constructor(json: JSON | any) {
     Object.assign(this as Permission, json)

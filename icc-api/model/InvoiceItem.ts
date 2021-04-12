@@ -11,8 +11,6 @@
  */
 import { EIDItem } from "./EIDItem"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class InvoiceItem {
   constructor(json: JSON | any) {
     Object.assign(this as InvoiceItem, json)
@@ -35,6 +33,7 @@ export class InvoiceItem {
   derogationMaxNumber?: InvoiceItem.DerogationMaxNumberEnum
   prescriberNorm?: InvoiceItem.PrescriberNormEnum
   prescriberNihii?: string
+  prescriptionDate?: number
   personalInterventionCoveredByThirdPartyCode?: number
   doctorIdentificationNumber?: string
   invoiceRef?: string

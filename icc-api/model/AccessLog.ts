@@ -15,8 +15,6 @@ import { Delegation } from "./Delegation"
 /**
  * This entity represents Access Log.
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class AccessLog {
   constructor(json: JSON | any) {
     Object.assign(this as AccessLog, json)

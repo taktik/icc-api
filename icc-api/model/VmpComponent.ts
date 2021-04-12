@@ -14,8 +14,6 @@ import { SamText } from "./SamText"
 import { VirtualForm } from "./VirtualForm"
 import { VirtualIngredient } from "./VirtualIngredient"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class VmpComponent {
   constructor(json: JSON | any) {
     Object.assign(this as VmpComponent, json)

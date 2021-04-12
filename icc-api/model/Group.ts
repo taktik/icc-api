@@ -13,8 +13,6 @@
 /**
  * This entity represents a group
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class Group {
   constructor(json: JSON | any) {
     Object.assign(this as Group, json)

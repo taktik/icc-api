@@ -38,24 +38,6 @@ export namespace XHR {
     }
   }
 
-  export function b64_2ab(v: any) {
-    if (v instanceof ArrayBuffer) {
-      return v
-    }
-    if (v instanceof Uint8Array) {
-      return v.buffer
-    }
-    if (typeof v === "string") {
-      const bs = atob(v as string)
-      var data = new Uint8Array(bs.length)
-      for (let i = 0; i < bs.length; i++) {
-        data[i] = bs.charCodeAt(i)
-      }
-      return data.buffer
-    }
-    return v
-  }
-
   function b2a(a: string): string {
     if (Buffer) {
       return Buffer.from(a).toString("base64")

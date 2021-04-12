@@ -15,8 +15,6 @@ import { CodeStub } from "./CodeStub"
 /**
  * List of healthcare approaches.
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class PlanOfAction {
   constructor(json: JSON | any) {
     Object.assign(this as PlanOfAction, json)

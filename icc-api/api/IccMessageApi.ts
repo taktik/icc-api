@@ -394,6 +394,31 @@ export class IccMessageApi {
 
   /**
    *
+   * @summary Get all messages for current HC Party and provided transportGuids
+   * @param body
+   * @param hcpId
+   */
+  listMessagesByTransportGuids(hcpId: string, body?: ListOfIds): Promise<Array<Message>> {
+    let _body = null
+    _body = body
+
+    const _url =
+      this.host +
+      `/message/byTransportGuid/list` +
+      "?ts=" +
+      new Date().getTime() +
+      (hcpId ? "&hcpId=" + encodeURIComponent(String(hcpId)) : "")
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new Message(it)))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   *
    * @summary Updates a message
    * @param body
    */

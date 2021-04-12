@@ -15,8 +15,6 @@ import { Company } from "./Company"
 import { SamText } from "./SamText"
 import { VmpStub } from "./VmpStub"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class Amp {
   constructor(json: JSON | any) {
     Object.assign(this as Amp, json)

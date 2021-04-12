@@ -17,8 +17,6 @@ import { SubContact } from "./SubContact"
 /**
  * This entity is a root level object. It represents a contact. It is serialized in JSON and saved in the underlying icure-contact CouchDB database.
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class Contact {
   constructor(json: JSON | any) {
     Object.assign(this as Contact, json)

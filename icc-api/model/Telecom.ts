@@ -13,8 +13,6 @@
 /**
  * This entity represents available contact details of a user, reachable by telecom methods
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class Telecom {
   constructor(json: JSON | any) {
     Object.assign(this as Telecom, json)

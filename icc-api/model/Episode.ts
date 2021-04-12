@@ -13,8 +13,6 @@
 /**
  * List of episodes of occurrences of the healthcare element.
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class Episode {
   constructor(json: JSON | any) {
     Object.assign(this as Episode, json)

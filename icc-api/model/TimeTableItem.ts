@@ -11,8 +11,6 @@
  */
 import { TimeTableHour } from "./TimeTableHour"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class TimeTableItem {
   constructor(json: JSON | any) {
     Object.assign(this as TimeTableItem, json)

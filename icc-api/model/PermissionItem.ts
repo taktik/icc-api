@@ -14,8 +14,6 @@ import { Predicate } from "./Predicate"
 /**
  * Revoked permissions.
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class PermissionItem {
   constructor(json: JSON | any) {
     Object.assign(this as PermissionItem, json)

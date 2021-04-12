@@ -17,14 +17,13 @@ import { FlatRateTarification } from "./FlatRateTarification"
 /**
  * This entity is a root level object. It represents a healthcare party. It is serialized in JSON and saved in the underlying icure-healthcareParty CouchDB database.
  */
-import { decodeBase64 } from "./ModelHelper"
-
+import { b64_2ab } from "./ModelHelper"
 export class HealthcareParty {
   constructor(json: JSON | any) {
     Object.assign(
       this as HealthcareParty,
       json,
-      json.picture ? { picture: decodeBase64(json.picture) } : {}
+      json.picture ? { picture: b64_2ab(json.picture) } : {}
     )
   }
 

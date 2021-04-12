@@ -11,8 +11,6 @@
  */
 import { CodeStub } from "./CodeStub"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class ApplicationSettings {
   constructor(json: JSON | any) {
     Object.assign(this as ApplicationSettings, json)

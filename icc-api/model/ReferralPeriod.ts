@@ -13,8 +13,6 @@
 /**
  * Time periods
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class ReferralPeriod {
   constructor(json: JSON | any) {
     Object.assign(this as ReferralPeriod, json)

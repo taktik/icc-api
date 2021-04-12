@@ -21,8 +21,6 @@ import { Suspension } from "./Suspension"
 /**
  * The details of prescribed or suggested medication
  */
-import { decodeBase64 } from "./ModelHelper"
-
 export class Medication {
   constructor(json: JSON | any) {
     Object.assign(this as Medication, json)

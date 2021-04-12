@@ -12,8 +12,6 @@
 import { InvoiceItem } from "./InvoiceItem"
 import { Patient } from "./Patient"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class EfactInvoice {
   constructor(json: JSON | any) {
     Object.assign(this as EfactInvoice, json)

@@ -13,8 +13,6 @@ import { LetterValue } from "./LetterValue"
 import { Periodicity } from "./Periodicity"
 import { Valorisation } from "./Valorisation"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class Tarification {
   constructor(json: JSON | any) {
     Object.assign(this as Tarification, json)

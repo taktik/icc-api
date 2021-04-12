@@ -12,8 +12,6 @@
 import { Invoice } from "./Invoice"
 import { PaginatedDocumentKeyIdPairObject } from "./PaginatedDocumentKeyIdPairObject"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class PaginatedListInvoice {
   constructor(json: JSON | any) {
     Object.assign(this as PaginatedListInvoice, json)

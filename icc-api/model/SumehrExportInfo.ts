@@ -13,8 +13,6 @@ import { HealthElement } from "./HealthElement"
 import { HealthcareParty } from "./HealthcareParty"
 import { Service } from "./Service"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class SumehrExportInfo {
   constructor(json: JSON | any) {
     Object.assign(this as SumehrExportInfo, json)

@@ -11,8 +11,6 @@
  */
 import { HealthcareParty } from "./HealthcareParty"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class DiaryNoteExportInfo {
   constructor(json: JSON | any) {
     Object.assign(this as DiaryNoteExportInfo, json)

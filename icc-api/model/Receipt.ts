@@ -12,8 +12,6 @@
 import { CodeStub } from "./CodeStub"
 import { Delegation } from "./Delegation"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class Receipt {
   constructor(json: JSON | any) {
     Object.assign(this as Receipt, json)

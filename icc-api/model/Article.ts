@@ -13,8 +13,6 @@ import { CodeStub } from "./CodeStub"
 import { Content } from "./Content"
 import { Delegation } from "./Delegation"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class Article {
   constructor(json: JSON | any) {
     Object.assign(this as Article, json)

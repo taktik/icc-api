@@ -12,8 +12,6 @@
 import { PaginatedDocumentKeyIdPairObject } from "./PaginatedDocumentKeyIdPairObject"
 import { User } from "./User"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class PaginatedListUser {
   constructor(json: JSON | any) {
     Object.assign(this as PaginatedListUser, json)

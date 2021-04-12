@@ -257,16 +257,32 @@ export class IccFormApi {
   /**
    *
    * @summary Gets a form
-   * @param externalUuid
+   * @param formUuid
    */
-  getFormByExternalUuid(externalUuid: string): Promise<Form> {
+  getFormByExternalUuid(formUuid: string): Promise<Form> {
     let _body = null
 
     const _url =
       this.host +
-      `/form/externaluuid/${encodeURIComponent(String(externalUuid))}` +
+      `/form/formUuid/${encodeURIComponent(String(formUuid))}` +
       "?ts=" +
       new Date().getTime()
+    let headers = this.headers
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => new Form(doc.body as JSON))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   *
+   * @summary Gets a form
+   * @param lid
+   */
+  getFormBylid(lid: string): Promise<Form> {
+    let _body = null
+
+    const _url =
+      this.host + `/form/lid/${encodeURIComponent(String(lid))}` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => new Form(doc.body as JSON))
@@ -332,6 +348,41 @@ export class IccFormApi {
       .filter(h => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new Form(it)))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   *
+   * @summary Gets all forms by formUuid
+   * @param formUuid
+   */
+  getFormsByExternalUuid(formUuid: string): Promise<Array<Form>> {
+    let _body = null
+
+    const _url =
+      this.host +
+      `/form/all/formUuid/${encodeURIComponent(String(formUuid))}` +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new Form(it)))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   *
+   * @summary Gets all forms by lid
+   * @param lid
+   */
+  getFormsBylid(lid: string): Promise<Array<Form>> {
+    let _body = null
+
+    const _url =
+      this.host + `/form/all/lid/${encodeURIComponent(String(lid))}` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new Form(it)))
       .catch(err => this.handleError(err))
   }

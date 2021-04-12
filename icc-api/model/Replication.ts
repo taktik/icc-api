@@ -11,8 +11,6 @@
  */
 import { DatabaseSynchronization } from "./DatabaseSynchronization"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class Replication {
   constructor(json: JSON | any) {
     Object.assign(this as Replication, json)

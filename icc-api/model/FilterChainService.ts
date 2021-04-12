@@ -12,8 +12,6 @@
 import { AbstractFilterService } from "./AbstractFilterService"
 import { Predicate } from "./Predicate"
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class FilterChainService {
   constructor(json: JSON | any) {
     Object.assign(this as FilterChainService, json)
