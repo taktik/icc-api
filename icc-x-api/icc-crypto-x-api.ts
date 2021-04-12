@@ -904,34 +904,27 @@ export class IccCryptoXApi {
    * @returns - an updated `child` object that will contain updated SPKs, CFKs, EKs
    *  */
 
-  addDelegationsAndEncryptionKeys(
-    //TODO: suggested name: updateChildGenericDelegationsFromDelegatorToDelegate
-    parent: models.Patient | models.Message | null,
-    child:
+  addDelegationsAndEncryptionKeys<
+    T extends
       | models.AccessLog
       | models.Patient
+      | models.Form
       | models.Contact
       | models.Invoice
       | models.Document
       | models.HealthElement
       | models.CalendarItem
       | models.Classification
-      | models.Receipt,
+      | models.Receipt
+  >(
+    //TODO: suggested name: updateChildGenericDelegationsFromDelegatorToDelegate
+    parent: models.Patient | models.Message | null,
+    child: T,
     ownerId: string,
     delegateId: string,
     secretDelegationKey: string,
     secretEncryptionKey: string | null
-  ): Promise<
-    | models.AccessLog
-    | models.Patient
-    | models.Contact
-    | models.Invoice
-    | models.Document
-    | models.HealthElement
-    | models.CalendarItem
-    | models.Classification
-    | models.Receipt
-  > {
+  ): Promise<T> {
     if (parent)
       this.throwDetailedExceptionForInvalidParameter(
         "parent.id",

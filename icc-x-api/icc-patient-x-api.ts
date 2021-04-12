@@ -22,7 +22,7 @@ import {
 import { retry } from "./utils"
 import { utils } from "./crypto/utils"
 import { IccCalendarItemXApi } from "./icc-calendar-item-x-api"
-import { decodeBase64 } from "../icc-api/model/ModelHelper"
+import { b64_2ab } from "../icc-api/model/ModelHelper"
 import { b2a, hex2ua, string2ua, ua2hex, ua2utf8, utf8_2ua } from "./utils/binary-utils"
 
 // noinspection JSUnusedGlobalSymbols
@@ -197,16 +197,16 @@ export class IccPatientXApi extends IccPatientApi {
 
   filterByWithUser(
     user: models.User,
+    filterChain: models.FilterChainPatient,
     startKey?: string,
     startDocumentId?: string,
     limit?: number,
     skip?: number,
     sort?: string,
-    desc?: boolean,
-    body?: models.FilterChainPatient
+    desc?: boolean
   ): Promise<models.PaginatedListPatient | any> {
     return super
-      .filterPatientsBy(startKey, startDocumentId, limit, skip, sort, desc, body)
+      .filterPatientsBy(startKey, startDocumentId, limit, skip, sort, desc, filterChain)
       .then(pl => this.decrypt(user, pl.rows!, false).then(dr => Object.assign(pl, { rows: dr })))
   }
 
@@ -666,7 +666,7 @@ export class IccPatientXApi extends IccPatientApi {
                           )
                           .then(p => {
                             if (p.picture && !(p.picture instanceof ArrayBuffer)) {
-                              p.picture = decodeBase64(p.picture)
+                              p.picture = b64_2ab(p.picture)
                             }
                             return p
                           })
@@ -721,7 +721,14 @@ export class IccPatientXApi extends IccPatientApi {
     statuses: { [key: string]: { success: boolean | null; error: Error | null } }
   } | null> {
     const addDelegationsAndKeys = (
-      dtos: Array<models.Form>,
+      dtos: Array<
+        | models.Form
+        | models.Document
+        | models.Contact
+        | models.HealthElement
+        | models.Classification
+        | models.CalendarItem
+      >,
       markerPromise: Promise<any>,
       delegateId: string,
       patient: models.Patient | null

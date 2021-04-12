@@ -10,8 +10,6 @@
  * Do not edit the class manually.
  */
 
-import { decodeBase64 } from "./ModelHelper"
-
 export class PermissionCriterion {
   constructor(json: JSON | any) {
     Object.assign(this as PermissionCriterion, json)

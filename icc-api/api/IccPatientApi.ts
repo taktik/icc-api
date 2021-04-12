@@ -223,7 +223,7 @@ export class IccPatientApi {
    * @summary Get Paginated List of Patients sorted by Access logs descending
    * @param externalId A external ID
    */
-  findByExternalId1(externalId: string): Promise<Patient> {
+  findByExternalId(externalId: string): Promise<Patient> {
     let _body = null
 
     const _url =
