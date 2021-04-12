@@ -116,15 +116,16 @@ export class IccAccesslogXApi extends iccAccesslogApi {
   findBy(hcpartyId: string, patient: models.PatientDto) {
     return this.crypto
       .extractDelegationsSFKs(patient, hcpartyId)
-      .then(secretForeignKeys =>
-        secretForeignKeys &&
-        secretForeignKeys.extractedKeys &&
-        secretForeignKeys.extractedKeys.length > 0
-          ? this.findByHCPartyPatientSecretFKeys(
-              secretForeignKeys.hcpartyId!,
-              secretForeignKeys.extractedKeys.join(",")
-            )
-          : Promise.resolve([])
+      .then(
+        secretForeignKeys =>
+          secretForeignKeys &&
+          secretForeignKeys.extractedKeys &&
+          secretForeignKeys.extractedKeys.length > 0
+            ? this.findByHCPartyPatientSecretFKeys(
+                secretForeignKeys.hcpartyId!,
+                secretForeignKeys.extractedKeys.join(",")
+              )
+            : Promise.resolve([])
       )
   }
 
@@ -220,9 +221,9 @@ export class IccAccesslogXApi extends iccAccesslogApi {
       accessLogs.map(accessLog =>
         (accessLog.encryptionKeys && Object.keys(accessLog.encryptionKeys).length
           ? Promise.resolve(accessLog)
-          : this.initEncryptionKeys(user, accessLog)
+          : (this.initEncryptionKeys(user, accessLog) as Promise<any>)
         )
-          .then(accessLog =>
+          .then((accessLog: any) =>
             this.crypto.extractKeysFromDelegationsForHcpHierarchy(
               (user.healthcarePartyId || user.patientId)!,
               accessLog.id!,
@@ -387,7 +388,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
       const {
         rows: logs,
         nextKeyPair: newNextKeyPair
-      }: models.AccessLogPaginatedList = await super.findByUserAfterDate(
+      }: models.AccessLogPaginatedList = (await super.findByUserAfterDate(
         userId,
         "USER_ACCESS",
         startDate,
@@ -395,7 +396,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
         nextKeyPair && nextKeyPair.startKeyDocId!,
         numberRequestedAccessLogs,
         true
-      )
+      )) as models.AccessLogPaginatedList
       const logsWithPatientId: AccessLogWithPatientId[] = await this.decrypt(
         (user.healthcarePartyId || user.patientId)!,
         logs as AccessLogDto[]

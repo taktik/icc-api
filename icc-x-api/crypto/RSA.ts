@@ -37,7 +37,7 @@ export class RSAUtils {
 
     return new Promise((resolve: (value: CryptoKey | CryptoKeyPair) => any, reject) => {
       this.crypto.subtle
-        .generateKey(this.rsaHashedParams, extractable, keyUsages)
+        .generateKey(this.rsaHashedParams, extractable, keyUsages as any)
         .then(resolve, reject)
     })
   }
@@ -119,7 +119,7 @@ export class RSAUtils {
     var extractable = true
     return new Promise((resolve: (value: CryptoKey) => any, reject) => {
       this.crypto.subtle
-        .importKey(format, keydata, this.rsaHashedParams, extractable, keyUsages)
+        .importKey(format as any, keydata, this.rsaHashedParams, extractable, keyUsages as any)
         .then(resolve, reject)
     })
   }

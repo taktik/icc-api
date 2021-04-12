@@ -115,12 +115,12 @@ export class AESUtils {
         const keyUsages = ["decrypt", "encrypt"]
         if (toHex === undefined || !toHex) {
           return this.crypto.subtle
-            .generateKey(this.aesKeyGenParams, extractable, keyUsages)
-            .then(resolve, reject)
+            .generateKey(this.aesKeyGenParams as any, extractable, keyUsages as any)
+            .then(resolve as any, reject)
         } else {
           return this.crypto.subtle
-            .generateKey(this.aesKeyGenParams, extractable, keyUsages)
-            .then(k => this.exportKey(k, "raw"), reject)
+            .generateKey(this.aesKeyGenParams as any, extractable, keyUsages as any)
+            .then((k: any) => this.exportKey(k, "raw"), reject)
             .then(raw => resolve(utils.ua2hex(raw)), reject)
         }
       }
@@ -165,7 +165,7 @@ export class AESUtils {
       var extractable = true
       var keyUsages = ["decrypt", "encrypt"]
       return this.crypto.subtle
-        .importKey(format, aesKey, this.aesKeyGenParams.name, extractable, keyUsages)
+        .importKey(format as any, aesKey, this.aesKeyGenParams.name, extractable, keyUsages as any)
         .then(resolve, reject)
     })
   }
