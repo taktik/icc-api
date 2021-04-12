@@ -19,7 +19,7 @@ import {
   Invoice,
   ListOfIds
 } from "../icc-api/model/models"
-import { retry } from "./utils/net-utils"
+import { retry } from "./utils"
 import { utils } from "./crypto/utils"
 import { IccCalendarItemXApi } from "./icc-calendar-item-x-api"
 import { decodeBase64 } from "../icc-api/model/ModelHelper"
@@ -37,63 +37,7 @@ export class IccPatientXApi extends IccPatientApi {
   classificationApi: IccClassificationXApi
   calendarItemApi: IccCalendarItemXApi
 
-  private cryptedKeys: Array<string>
-
-  public static api(
-    host: string,
-    username: string,
-    password: string,
-    crypto: Crypto = typeof window !== "undefined"
-      ? window.crypto
-      : typeof self !== "undefined"
-        ? self.crypto
-        : ({} as Crypto),
-    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    "undefined"
-      ? window.fetch
-      : typeof self !== "undefined"
-        ? self.fetch
-        : fetch
-  ) {
-    const headers = {
-      Authorization: `Basic ${Buffer.from(`${username}:${password}`).toString("base64")}`
-    }
-    const hcPartyApi = new IccHcpartyXApi(host, headers, fetchImpl)
-    const cryptoApi = new IccCryptoXApi(
-      host,
-      headers,
-      hcPartyApi,
-      new IccPatientApi(host, headers, fetchImpl),
-      crypto
-    )
-    return new IccPatientXApi(
-      host,
-      headers,
-      cryptoApi,
-      new IccContactXApi(host, headers, cryptoApi, fetchImpl),
-      new IccFormXApi(host, headers, cryptoApi, fetchImpl),
-      new IccHelementXApi(host, headers, cryptoApi, fetchImpl),
-      new IccInvoiceXApi(
-        host,
-        headers,
-        cryptoApi,
-        new IccEntityrefApi(host, headers, fetchImpl),
-        fetchImpl
-      ),
-      new IccDocumentXApi(
-        host,
-        headers,
-        cryptoApi,
-        new IccAuthApi(host, headers, fetchImpl),
-        fetchImpl
-      ),
-      hcPartyApi,
-      new IccClassificationXApi(host, headers, cryptoApi, fetchImpl),
-      new IccCalendarItemXApi(host, headers, cryptoApi, fetchImpl),
-      ["note"],
-      fetchImpl
-    )
-  }
+  private readonly encryptedKeys: Array<string>
 
   constructor(
     host: string,
@@ -107,7 +51,7 @@ export class IccPatientXApi extends IccPatientApi {
     hcpartyApi: IccHcpartyXApi,
     classificationApi: IccClassificationXApi,
     calendarItemaApi: IccCalendarItemXApi,
-    cryptedKeys: Array<string> = ["note"],
+    encryptedKeys: Array<string> = ["note"],
     fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
     "undefined"
       ? window.fetch
@@ -126,7 +70,7 @@ export class IccPatientXApi extends IccPatientApi {
     this.classificationApi = classificationApi
     this.calendarItemApi = calendarItemaApi
 
-    this.cryptedKeys = cryptedKeys
+    this.encryptedKeys = encryptedKeys
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -633,7 +577,7 @@ export class IccPatientXApi extends IccPatientApi {
                     })
                   )
                 ),
-              this.cryptedKeys
+              this.encryptedKeys
             )
           )
       )

@@ -5,8 +5,8 @@ export function b2a(a: string): string {
   if (Buffer) {
     return Buffer.from(a).toString("base64")
   }
-  if (typeof b2a !== "undefined") {
-    return b2a(a)
+  if (typeof btoa !== "undefined") {
+    return btoa(a)
   }
   throw new Error("Unsupported operation b2a")
 }
