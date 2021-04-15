@@ -96,7 +96,9 @@ export class RSAUtils {
    */
   encrypt(publicKey: CryptoKey, plainData: Uint8Array) {
     return new Promise((resolve: (value: ArrayBuffer) => any, reject) => {
-      this.crypto.subtle.encrypt(this.rsaParams, publicKey, plainData).then(resolve, reject)
+      this.crypto.subtle
+        .encrypt(this.rsaParams, publicKey, plainData.buffer ? plainData.buffer : plainData)
+        .then(resolve, reject) //Node prefers arrayBuffer
     })
   }
 
