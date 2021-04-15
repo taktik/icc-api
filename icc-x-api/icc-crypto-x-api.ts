@@ -478,7 +478,7 @@ export class IccCryptoXApi {
 
     const secretId = this.randomUuid()
     return this.getHcpOrPatient(ownerId)
-      .then(owner => owner.hcPartyKeys![ownerId][0])
+      .then(owner => this.getOrCreateHcPartyKey(owner, ownerId))
       .then(encryptedHcPartyKey =>
         this.decryptHcPartyKey(ownerId, ownerId, encryptedHcPartyKey, true)
       )
@@ -588,14 +588,7 @@ export class IccCryptoXApi {
     )
 
     return this.getHcpOrPatient(ownerId)
-      .then(owner => {
-        if (!owner.hcPartyKeys![delegateId]) {
-          return this.generateKeyForDelegate(ownerId, delegateId).then(
-            owner => owner.hcPartyKeys![delegateId][0]
-          )
-        }
-        return Promise.resolve(owner.hcPartyKeys![delegateId][0])
-      })
+      .then(owner => this.getOrCreateHcPartyKey(owner, delegateId))
       .then(encryptedHcPartyKey =>
         this.decryptHcPartyKey(ownerId, delegateId, encryptedHcPartyKey, true)
       )
@@ -734,6 +727,14 @@ export class IccCryptoXApi {
       )
   }
 
+  private getOrCreateHcPartyKey(owner: HealthcareParty | Patient, delegateId: string) {
+    return !owner.hcPartyKeys![delegateId]
+      ? this.generateKeyForDelegate(owner.id!, delegateId).then(
+          owner => owner.hcPartyKeys![delegateId][0]
+        )
+      : Promise.resolve(owner.hcPartyKeys![delegateId][0])
+  }
+
   /**
    * Retrieve the owners HealthCareParty key, decrypt it, and
    * use it to encrypt & initialize the "encryptionKeys" object
@@ -815,14 +816,7 @@ export class IccCryptoXApi {
     )
 
     return this.getHcpOrPatient(ownerId)
-      .then(owner => {
-        if (!owner.hcPartyKeys![delegateId]) {
-          return this.generateKeyForDelegate(ownerId, delegateId).then(
-            owner => owner.hcPartyKeys![delegateId][0]
-          )
-        }
-        return Promise.resolve(owner.hcPartyKeys![delegateId][0])
-      })
+      .then(owner => this.getOrCreateHcPartyKey(owner, delegateId))
       .then(encryptedHcPartyKey =>
         this.decryptHcPartyKey(ownerId, delegateId, encryptedHcPartyKey, true)
       )
