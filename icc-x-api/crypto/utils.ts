@@ -2,7 +2,19 @@ import * as base64js from "base64-js"
 import * as moment from "moment"
 import { Moment } from "moment"
 import * as _ from "lodash"
-import { a2b, b2a, base64url, hex2ua, string2ua, ua2hex, ua2string } from "../utils/binary-utils"
+import {
+  a2b,
+  b2a,
+  ua2b64Url,
+  hex2ua,
+  string2ua,
+  ua2b64,
+  ua2hex,
+  ua2string,
+  b64Url2ua,
+  b64_2ua
+} from "../utils/binary-utils"
+import { ASN1, Stream } from "../utils/asn1"
 
 export class UtilsClass {
   constructor() {}
@@ -26,38 +38,63 @@ export class UtilsClass {
     }
   }
 
-  spkiToJwk(buf: Uint8Array): { kty: string; n: string; e: string } {
-    var hex = ua2hex(buf)
-    if (!hex.startsWith("3082") || !hex.substr(8).startsWith("0282010100")) {
-      hex = hex.substr(48)
-      buf = hex2ua(hex)
-    }
-    var key: any = {}
-    var offset = buf[1] & 0x80 ? buf[1] - 0x80 + 2 : 2
+  spkiToJwk(buf: Uint8Array): { kty: string; alg: string; n: string; e: string; ext: boolean } {
+    const pubkeyAsn1 = ASN1.decode(new Stream(buf, 0))
+    //Case PKCS#8
+    //16
+    //  16
+    //    06
+    //    05
+    //--03
+    //----16
+    //------2
+    //------2
+    let modulusRaw: ASN1 | undefined = undefined
+    let exponentRaw: ASN1 | undefined = undefined
 
-    function read() {
-      var s = buf[offset + 1]
+    if (
+      pubkeyAsn1.tag.tagNumber === 16 &&
+      pubkeyAsn1.sub[0].tag.tagNumber === 16 &&
+      pubkeyAsn1.sub[0].sub[0].tag.tagNumber === 6
+    ) {
+      const oidRaw = pubkeyAsn1.sub[0].sub[0]
+      const oidStart = oidRaw.header + oidRaw.stream.pos
+      const oid = oidRaw.stream.parseOID(oidStart, oidStart + oidRaw.length, 32)
 
-      if (s & 0x80) {
-        var n = s - 0x80
-        s = n === 2 ? 256 * buf[offset + 2] + buf[offset + 3] : buf[offset + 2]
-        offset += n
+      if (oid === "1.2.840.113549.1.1.1") {
+        modulusRaw = pubkeyAsn1.sub[1].sub[0].sub[0]
+        exponentRaw = pubkeyAsn1.sub[1].sub[0].sub[1]
       }
-
-      offset += 2
-
-      var b = buf.slice(offset, offset + s)
-      offset += s
-      return b
+    } else {
+      if (
+        pubkeyAsn1.tag.tagNumber === 16 &&
+        pubkeyAsn1.sub[0].tag.tagNumber === 2 &&
+        pubkeyAsn1.sub[1].tag.tagNumber === 2
+      ) {
+        modulusRaw = pubkeyAsn1.sub[0]
+        exponentRaw = pubkeyAsn1.sub[1]
+      }
     }
 
-    key.modulus = read()
-    key.publicExponent = read()
+    if (!modulusRaw || !exponentRaw) {
+      throw new Error("Invalid spki format")
+    }
+
+    const modulusStart = modulusRaw.header + modulusRaw.stream.pos + 1
+    const modulusEnd = modulusRaw.length + modulusRaw.stream.pos + modulusRaw.header
+    const modulusHex = modulusRaw.stream.hexDump(modulusStart, modulusEnd, true)
+    const modulus = hex2ua(modulusHex)
+    const exponentStart = exponentRaw.header + exponentRaw.stream.pos
+    const exponentEnd = exponentRaw.length + exponentRaw.stream.pos + exponentRaw.header
+    const exponentHex = exponentRaw.stream.hexDump(exponentStart, exponentEnd, true)
+    const exponent = hex2ua(exponentHex)
 
     return {
       kty: "RSA",
-      n: base64url(this.minimalRep(key.modulus)),
-      e: base64url(this.minimalRep(key.publicExponent))
+      alg: "RSA-OAEP",
+      ext: true,
+      n: ua2b64Url(this.minimalRep(modulus)),
+      e: ua2b64Url(this.minimalRep(exponent))
     }
   }
 
@@ -98,14 +135,14 @@ export class UtilsClass {
 
     return {
       kty: "RSA",
-      n: base64url(this.minimalRep(key.modulus)),
-      e: base64url(this.minimalRep(key.publicExponent)),
-      d: base64url(this.minimalRep(key.privateExponent)),
-      p: base64url(this.minimalRep(key.prime1)),
-      q: base64url(this.minimalRep(key.prime2)),
-      dp: base64url(this.minimalRep(key.exponent1)),
-      dq: base64url(this.minimalRep(key.exponent2)),
-      qi: base64url(this.minimalRep(key.coefficient))
+      n: ua2b64Url(this.minimalRep(key.modulus)),
+      e: ua2b64Url(this.minimalRep(key.publicExponent)),
+      d: ua2b64Url(this.minimalRep(key.privateExponent)),
+      p: ua2b64Url(this.minimalRep(key.prime1)),
+      q: ua2b64Url(this.minimalRep(key.prime2)),
+      dp: ua2b64Url(this.minimalRep(key.exponent1)),
+      dq: ua2b64Url(this.minimalRep(key.exponent2)),
+      qi: ua2b64Url(this.minimalRep(key.coefficient))
     }
   }
 

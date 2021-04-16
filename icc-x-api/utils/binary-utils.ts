@@ -3,7 +3,8 @@ const textEncoder = TextEncoder ? new TextEncoder() : null
 
 export function b2a(a: string): string {
   if (Buffer) {
-    return Buffer.from(a).toString("base64")
+    const buf = Buffer.from(a, "latin1")
+    return buf.toString("base64")
   }
   if (typeof btoa !== "undefined") {
     return btoa(a)
@@ -13,7 +14,8 @@ export function b2a(a: string): string {
 
 export function a2b(s: string): string {
   if (Buffer) {
-    return Buffer.from(s, "base64").toString("ascii")
+    const buf = new Buffer(s, "base64")
+    return buf.toString("latin1")
   }
   if (typeof atob !== "undefined") {
     return atob(s)
@@ -231,11 +233,20 @@ export function ua2string(_ua: Uint8Array | ArrayBuffer): string {
   return str
 }
 
-export function base64url(ua: Uint8Array | ArrayBuffer): string {
+export function ua2b64Url(ua: Uint8Array | ArrayBuffer): string {
   return ua2b64(ua)
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
     .replace(/=/g, "")
+}
+
+export function b64Url2ua(ua: string): ArrayBuffer {
+  return b64_2ua(
+    ua
+      .replace(/-/g, "+")
+      .replace(/_/g, "/")
+      .replace(/=/g, "") + (ua.length % 4 === 3 ? "=" : ua.length % 4 === 2 ? "==" : "")
+  )
 }
 
 export function hex2string(hexStr: string): string {
