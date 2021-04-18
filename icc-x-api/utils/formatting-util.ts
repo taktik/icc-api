@@ -1,4 +1,4 @@
-import { parseNumber, formatNumber, isValidNumber } from "libphonenumber-js"
+import { parseNumber, formatNumber, isValidNumber, ParsedNumber } from "libphonenumber-js"
 
 import * as moment from "moment"
 import * as _ from "lodash"
@@ -13,7 +13,7 @@ const ibanRegExp = new RegExp("^(\\d{4})(\\d{4})(\\d{4})(\\d{4})$")
 
 const patterns = {
   IBAN: (iban: string) => /^BE\d{14}$/.test(iban) && isValidIBAN(iban),
-  IBANBE: (iban: string) => /^BE\d{14}$/.test(iban) && isValidIBAN(iban)
+  IBANBE: (iban: string) => /^BE\d{14}$/.test(iban) && isValidIBAN(iban),
 }
 
 //http://ht5ifv.serprest.pt/extensions/tools/IBAN/
@@ -85,7 +85,7 @@ export function phoneNumberValidate(phoneNumber: string): boolean {
 }
 
 export function phoneNumberFormat(phoneNumber: string): string {
-  const parsedPhoneNumber = parseNumber(phoneNumber, DEFAULT_COUNTRY)
+  const parsedPhoneNumber = parseNumber(phoneNumber, DEFAULT_COUNTRY) as ParsedNumber
   if (_.isEmpty(parsedPhoneNumber)) {
     // The number is not valid, so we leave the input string as-is.
     return phoneNumber

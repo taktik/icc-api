@@ -9,7 +9,7 @@ export class RSAUtils {
     name: "RSA-OAEP",
     modulusLength: 2048,
     publicExponent: new Uint8Array([0x01, 0x00, 0x01]), // Equivalent to 65537 (Fermat F4), read http://en.wikipedia.org/wiki/65537_(number)
-    hash: { name: "sha-1" }
+    hash: { name: "sha-1" },
   }
   rsaLocalStoreIdPrefix: string = "org.taktik.icure.rsa."
   rsaKeyPairs: any = {}
@@ -19,8 +19,8 @@ export class RSAUtils {
     crypto: Crypto = typeof window !== "undefined"
       ? window.crypto
       : typeof self !== "undefined"
-        ? self.crypto
-        : ({} as Crypto)
+      ? self.crypto
+      : ({} as Crypto)
   ) {
     this.crypto = crypto
   }
@@ -33,7 +33,7 @@ export class RSAUtils {
    */
   generateKeyPair() {
     var extractable = true
-    var keyUsages = ["decrypt", "encrypt"]
+    var keyUsages: KeyUsage[] = ["decrypt", "encrypt"]
 
     return new Promise((resolve: (value: CryptoKey | CryptoKeyPair) => any, reject) => {
       this.crypto.subtle
@@ -61,10 +61,10 @@ export class RSAUtils {
     var pubPromise = this.crypto.subtle.exportKey(pubKeyFormat, keyPair.publicKey)
     var privPromise = this.crypto.subtle.exportKey(privKeyFormat, keyPair.privateKey)
 
-    return Promise.all([pubPromise, privPromise]).then(function(results) {
+    return Promise.all([pubPromise, privPromise]).then(function (results) {
       return {
         publicKey: results[0],
-        privateKey: results[1]
+        privateKey: results[1],
       }
     })
   }
@@ -120,7 +120,7 @@ export class RSAUtils {
    * @param keyUsages Array of usages. For example, ['encrypt'] for public key.
    * @returns {*}
    */
-  importKey(format: string, keydata: JsonWebKey | ArrayBuffer, keyUsages: Array<string>) {
+  importKey(format: string, keydata: JsonWebKey | ArrayBuffer, keyUsages: KeyUsage[]) {
     var extractable = true
     return new Promise((resolve: (value: CryptoKey) => any, reject) => {
       this.crypto.subtle
@@ -174,10 +174,10 @@ export class RSAUtils {
       ["encrypt"]
     )
 
-    return Promise.all([pubPromise, privPromise]).then(function(results) {
+    return Promise.all([pubPromise, privPromise]).then(function (results) {
       return {
         publicKey: results[0],
-        privateKey: results[1]
+        privateKey: results[1],
       }
     })
   }
@@ -227,7 +227,7 @@ export class RSAUtils {
             if (jwkKeyPair.publicKey && jwkKeyPair.privateKey) {
               this.importKeyPair("jwk", jwkKeyPair.privateKey, "jwk", jwkKeyPair.publicKey).then(
                 resolve,
-                err => {
+                (err) => {
                   console.log("Error in RSA.importKeyPair: " + err)
                   reject(err)
                 }
