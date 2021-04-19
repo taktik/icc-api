@@ -66,122 +66,180 @@ export type AbstractFilter<T> = T extends Patient
       | YetToBeImplementedFilter<T>
 
 class FilterBuilder<T> {
-  filter?: AbstractFilter<T>
+  builder?: (builder: FilterBuilder<T>) => AbstractFilter<T>
 
-  constructor(filter?: AbstractFilter<T>) {
-    this.filter = filter
+  constructor(builder?: (builder: FilterBuilder<T>) => AbstractFilter<T>) {
+    this.builder = builder
+  }
+
+  build(): AbstractFilter<T> | undefined {
+    return this.builder?.(this)
+  }
+
+  isNull(): boolean {
+    return !this.builder
   }
 
   listOf(elements: T[]): FilterBuilder<T> {
-    return new FilterBuilder<T>(new ConstantFilter<T>(elements) as AbstractFilter<T>)
+    return new FilterBuilder<T>(() => new ConstantFilter<T>(elements) as AbstractFilter<T>)
   }
 
-  and(filter: AbstractFilter<T>): FilterBuilder<T> {
-    return this.filter
-      ? new FilterBuilder(
-          new IntersectionFilter<T>([this.filter, filter]) as AbstractFilter<T>
-        )
-      : new FilterBuilder(filter)
-  }
-
-  add(filter: AbstractFilter<T>): FilterBuilder<T> {
-    return this.filter
-      ? new FilterBuilder(
-          new UnionFilter<T>([this.filter, filter]) as AbstractFilter<T>
-        )
-      : new FilterBuilder(filter)
-  }
-
-  minus(filter: AbstractFilter<T>): FilterBuilder<T> {
-    return this.filter
-      ? new FilterBuilder(new ComplementFilter<T>(this.filter, filter) as AbstractFilter<T>)
+  and(): FilterBuilder<T> {
+    const currentFilter = this.build()
+    return currentFilter
+      ? new FilterBuilder<T>((builder: FilterBuilder<T>) => {
+          const otherFilter = builder.build()
+          return otherFilter
+            ? (new IntersectionFilter<T>([currentFilter, otherFilter]) as AbstractFilter<T>)
+            : currentFilter
+        })
       : this
+  }
+
+  or(): FilterBuilder<T> {
+    const currentFilter = this.build()
+    return currentFilter
+      ? new FilterBuilder<T>((builder: FilterBuilder<T>) => {
+          const otherFilter = builder.build()
+          return otherFilter
+            ? (new UnionFilter<T>([currentFilter, otherFilter]) as AbstractFilter<T>)
+            : currentFilter
+        })
+      : this
+  }
+
+  minus(): FilterBuilder<T> {
+    const currentFilter = this.build()
+    return currentFilter
+      ? new FilterBuilder<T>((builder: FilterBuilder<T>) => {
+          const otherFilter = builder.build()
+          return otherFilter
+            ? (new ComplementFilter<T>(currentFilter, otherFilter) as AbstractFilter<T>)
+            : currentFilter
+        })
+      : this.listOf([])
   }
 }
 
 class PatientFilterBuilder extends FilterBuilder<Patient> {
   hcpId?: string
 
-  constructor(filter?: AbstractFilter<Patient>, hcpId?: string) {
-    super(filter)
+  constructor(
+    builder?: (builder: FilterBuilder<Patient>) => AbstractFilter<Patient>,
+    hcpId?: string
+  ) {
+    super(builder)
     this.hcpId = hcpId
   }
 
-  and(filter: AbstractFilter<Patient>): PatientFilterBuilder {
-    return this.filter
-      ? new PatientFilterBuilder(
-          new IntersectionFilter<Patient>([this.filter, filter]) as AbstractFilter<Patient>
-        )
-      : new PatientFilterBuilder(filter)
+  listOf(elements: Patient[]): PatientFilterBuilder {
+    return new PatientFilterBuilder(
+      () => new ConstantFilter<Patient>(elements) as AbstractFilter<Patient>
+    )
   }
 
-  add(filter: AbstractFilter<Patient>): PatientFilterBuilder {
-    return this.filter
-      ? new PatientFilterBuilder(
-          new UnionFilter<Patient>([this.filter, filter]) as AbstractFilter<Patient>
-        )
-      : new PatientFilterBuilder(filter)
-  }
-
-  minus(filter: AbstractFilter<Patient>): PatientFilterBuilder {
-    return this.filter
-      ? new PatientFilterBuilder(
-          new ComplementFilter<Patient>(this.filter, filter) as AbstractFilter<Patient>
-        )
+  and(): PatientFilterBuilder {
+    const currentFilter = this.build()
+    return currentFilter
+      ? new PatientFilterBuilder((builder: FilterBuilder<Patient>) => {
+          const otherFilter = builder.build()
+          return otherFilter
+            ? (new IntersectionFilter<Patient>([
+                currentFilter,
+                otherFilter,
+              ]) as AbstractFilter<Patient>)
+            : currentFilter
+        }, this.hcpId)
       : this
   }
 
+  or(): PatientFilterBuilder {
+    const currentFilter = this.build()
+    return currentFilter
+      ? new PatientFilterBuilder((builder: FilterBuilder<Patient>) => {
+          const otherFilter = builder.build()
+          return otherFilter
+            ? (new UnionFilter<Patient>([currentFilter, otherFilter]) as AbstractFilter<Patient>)
+            : currentFilter
+        }, this.hcpId)
+      : this
+  }
+
+  minus(): PatientFilterBuilder {
+    const currentFilter = this.build()
+    return currentFilter
+      ? new PatientFilterBuilder((builder: FilterBuilder<Patient>) => {
+          const otherFilter = builder.build()
+          return otherFilter
+            ? (new ComplementFilter<Patient>(currentFilter, otherFilter) as AbstractFilter<Patient>)
+            : currentFilter
+        }, this.hcpId)
+      : this.listOf([])
+  }
+
   forHcp(hcpId: string): PatientFilterBuilder {
-    return new PatientFilterBuilder(this.filter, hcpId)
+    return new PatientFilterBuilder(this.builder, hcpId)
   }
 
   all(): PatientFilterBuilder {
-    return new PatientFilterBuilder(new PatientByHcPartyFilter({ healthcarePartyId: this.hcpId }))
+    return new PatientFilterBuilder(
+      () => new PatientByHcPartyFilter({ healthcarePartyId: this.hcpId }),
+      this.hcpId
+    )
   }
 
   activePatients(): PatientFilterBuilder {
     return new PatientFilterBuilder(
-      new PatientByHcPartyAndActiveFilter({ healthcarePartyId: this.hcpId, active: true })
+      () => new PatientByHcPartyAndActiveFilter({ healthcarePartyId: this.hcpId, active: true }),
+      this.hcpId
     )
   }
 
   inactivePatients(): PatientFilterBuilder {
     return new PatientFilterBuilder(
-      new PatientByHcPartyAndActiveFilter({ healthcarePartyId: this.hcpId, active: false })
+      () => new PatientByHcPartyAndActiveFilter({ healthcarePartyId: this.hcpId, active: false }),
+      this.hcpId
     )
   }
 
   withExternalId(externalId: string): PatientFilterBuilder {
     return new PatientFilterBuilder(
-      new PatientByHcPartyAndExternalIdFilter({
-        healthcarePartyId: this.hcpId,
-        externalId: externalId,
-      })
+      () =>
+        new PatientByHcPartyAndExternalIdFilter({
+          healthcarePartyId: this.hcpId,
+          externalId: externalId,
+        }),
+      this.hcpId
     )
   }
 
   withSsins(ssins: string[]): PatientFilterBuilder {
     return new PatientFilterBuilder(
-      new PatientByHcPartyAndSsinsFilter({ healthcarePartyId: this.hcpId, ssins: ssins })
+      () => new PatientByHcPartyAndSsinsFilter({ healthcarePartyId: this.hcpId, ssins: ssins }),
+      this.hcpId
     )
   }
 
   withDateOfBirthBetween(from?: number, to?: number): PatientFilterBuilder {
     return new PatientFilterBuilder(
-      new PatientByHcPartyDateOfBirthBetweenFilter({
-        healthcarePartyId: this.hcpId,
-        minDateOfBirth: from,
-        maxDateOfBirth: to,
-      })
+      () =>
+        new PatientByHcPartyDateOfBirthBetweenFilter({
+          healthcarePartyId: this.hcpId,
+          minDateOfBirth: from,
+          maxDateOfBirth: to,
+        }),
+      this.hcpId
     )
   }
 
   byDateOfBirth(dateOfBirth: number): PatientFilterBuilder {
     return new PatientFilterBuilder(
-      new PatientByHcPartyDateOfBirthFilter({
-        healthcarePartyId: this.hcpId,
-        dateOfBirth: dateOfBirth,
-      })
+      () =>
+        new PatientByHcPartyDateOfBirthFilter({
+          healthcarePartyId: this.hcpId,
+          dateOfBirth: dateOfBirth,
+        }),
+      this.hcpId
     )
   }
 
@@ -204,344 +262,33 @@ class PatientFilterBuilder extends FilterBuilder<Patient> {
     profession?: String
   ): PatientFilterBuilder {
     return new PatientFilterBuilder(
-      new PatientByHcPartyGenderEducationProfession({
-        healthcarePartyId: this.hcpId,
-        gender: gender,
-        education: education,
-        profession: profession,
-      })
+      () =>
+        new PatientByHcPartyGenderEducationProfession({
+          healthcarePartyId: this.hcpId,
+          gender: gender,
+          education: education,
+          profession: profession,
+        }),
+      this.hcpId
     )
   }
 
   byIds(ids: string[]): PatientFilterBuilder {
-    return new PatientFilterBuilder(new PatientByIdsFilter({ ids: ids }))
+    return new PatientFilterBuilder(() => new PatientByIdsFilter({ ids: ids }), this.hcpId)
   }
 
   searchByName(name: string): PatientFilterBuilder {
     return new PatientFilterBuilder(
-      new PatientByHcPartyNameContainsFuzzyFilter({
-        healthcarePartyId: this.hcpId,
-        searchString: name,
-      })
-    )
-  }
-
-  orActivePatients(): PatientFilterBuilder {
-    return this.add(
-      new PatientFilterBuilder(
-        new PatientByHcPartyAndActiveFilter({ healthcarePartyId: this.hcpId, active: true })
-      ) as AbstractFilterPatient
-    )
-  }
-
-  orInactivePatients(): PatientFilterBuilder {
-    return this.add(
-      new PatientFilterBuilder(
-        new PatientByHcPartyAndActiveFilter({ healthcarePartyId: this.hcpId, active: false })
-      )
-    )
-  }
-
-  orWithExternalId(externalId: string): PatientFilterBuilder {
-    return this.add(
-      new PatientFilterBuilder(
-        new PatientByHcPartyAndExternalIdFilter({
-          healthcarePartyId: this.hcpId,
-          externalId: externalId,
-        })
-      )
-    )
-  }
-
-  orWithSsins(ssins: string[]): PatientFilterBuilder {
-    return this.add(
-      new PatientFilterBuilder(
-        new PatientByHcPartyAndSsinsFilter({ healthcarePartyId: this.hcpId, ssins: ssins })
-      )
-    )
-  }
-
-  orWithDateOfBirthBetween(from?: number, to?: number): PatientFilterBuilder {
-    return this.add(
-      new PatientFilterBuilder(
-        new PatientByHcPartyDateOfBirthBetweenFilter({
-          healthcarePartyId: this.hcpId,
-          minDateOfBirth: from,
-          maxDateOfBirth: to,
-        })
-      )
-    )
-  }
-
-  orByDateOfBirth(dateOfBirth: number): PatientFilterBuilder {
-    return this.add(
-      new PatientFilterBuilder(
-        new PatientByHcPartyDateOfBirthFilter({
-          healthcarePartyId: this.hcpId,
-          dateOfBirth: dateOfBirth,
-        })
-      )
-    )
-  }
-
-  orOlderThan(age: number): PatientFilterBuilder {
-    return this.add(
-      this.withDateOfBirthBetween(
-        undefined,
-        parseInt(format(add(new Date(), { years: -age }), "yyyyMMdd"))
-      )
-    )
-  }
-
-  orYoungerThan(age: number): PatientFilterBuilder {
-    return this.add(
-      this.withDateOfBirthBetween(parseInt(format(add(new Date(), { years: -age }), "yyyyMMdd")))
-    )
-  }
-
-  orByGenderEducationProfession(
-    gender?: GenderEnum,
-    education?: String,
-    profession?: String
-  ): PatientFilterBuilder {
-    return this.add(
-      new PatientFilterBuilder(
-        new PatientByHcPartyGenderEducationProfession({
-          healthcarePartyId: this.hcpId,
-          gender: gender,
-          education: education,
-          profession: profession,
-        })
-      )
-    )
-  }
-
-  orByIds(ids: string[]): PatientFilterBuilder {
-    return this.add(new PatientFilterBuilder(new PatientByIdsFilter({ ids: ids })))
-  }
-
-  orSearchByName(name: string): PatientFilterBuilder {
-    return this.add(
-      new PatientFilterBuilder(
+      () =>
         new PatientByHcPartyNameContainsFuzzyFilter({
           healthcarePartyId: this.hcpId,
           searchString: name,
-        })
-      )
-    )
-  }
-
-  andActivePatients(): PatientFilterBuilder {
-    return this.and(
-      new PatientFilterBuilder(
-        new PatientByHcPartyAndActiveFilter({ healthcarePartyId: this.hcpId, active: true })
-      ) as AbstractFilterPatient
-    )
-  }
-
-  andInactivePatients(): PatientFilterBuilder {
-    return this.and(
-      new PatientFilterBuilder(
-        new PatientByHcPartyAndActiveFilter({ healthcarePartyId: this.hcpId, active: false })
-      )
-    )
-  }
-
-  andWithExternalId(externalId: string): PatientFilterBuilder {
-    return this.and(
-      new PatientFilterBuilder(
-        new PatientByHcPartyAndExternalIdFilter({
-          healthcarePartyId: this.hcpId,
-          externalId: externalId,
-        })
-      )
-    )
-  }
-
-  andWithSsins(ssins: string[]): PatientFilterBuilder {
-    return this.and(
-      new PatientFilterBuilder(
-        new PatientByHcPartyAndSsinsFilter({ healthcarePartyId: this.hcpId, ssins: ssins })
-      )
-    )
-  }
-
-  andWithDateOfBirthBetween(from?: number, to?: number): PatientFilterBuilder {
-    return this.and(
-      new PatientFilterBuilder(
-        new PatientByHcPartyDateOfBirthBetweenFilter({
-          healthcarePartyId: this.hcpId,
-          minDateOfBirth: from,
-          maxDateOfBirth: to,
-        })
-      )
-    )
-  }
-
-  andByDateOfBirth(dateOfBirth: number): PatientFilterBuilder {
-    return this.and(
-      new PatientFilterBuilder(
-        new PatientByHcPartyDateOfBirthFilter({
-          healthcarePartyId: this.hcpId,
-          dateOfBirth: dateOfBirth,
-        })
-      )
-    )
-  }
-
-  andOlderThan(age: number): PatientFilterBuilder {
-    return this.and(
-      this.withDateOfBirthBetween(
-        undefined,
-        parseInt(format(add(new Date(), { years: -age }), "yyyyMMdd"))
-      )
-    )
-  }
-
-  andYoungerThan(age: number): PatientFilterBuilder {
-    return this.and(
-      this.withDateOfBirthBetween(parseInt(format(add(new Date(), { years: -age }), "yyyyMMdd")))
-    )
-  }
-
-  andByGenderEducationProfession(
-    gender?: GenderEnum,
-    education?: String,
-    profession?: String
-  ): PatientFilterBuilder {
-    return this.and(
-      new PatientFilterBuilder(
-        new PatientByHcPartyGenderEducationProfession({
-          healthcarePartyId: this.hcpId,
-          gender: gender,
-          education: education,
-          profession: profession,
-        })
-      )
-    )
-  }
-
-  andByIds(ids: string[]): PatientFilterBuilder {
-    return this.and(new PatientFilterBuilder(new PatientByIdsFilter({ ids: ids })))
-  }
-
-  andSearchByName(name: string): PatientFilterBuilder {
-    return this.and(
-      new PatientFilterBuilder(
-        new PatientByHcPartyNameContainsFuzzyFilter({
-          healthcarePartyId: this.hcpId,
-          searchString: name,
-        })
-      )
-    )
-  }
-
-  minusActivePatients(): PatientFilterBuilder {
-    return this.minus(
-      new PatientFilterBuilder(
-        new PatientByHcPartyAndActiveFilter({ healthcarePartyId: this.hcpId, active: true })
-      ) as AbstractFilterPatient
-    )
-  }
-
-  minusInactivePatients(): PatientFilterBuilder {
-    return this.minus(
-      new PatientFilterBuilder(
-        new PatientByHcPartyAndActiveFilter({ healthcarePartyId: this.hcpId, active: false })
-      )
-    )
-  }
-
-  minusWithExternalId(externalId: string): PatientFilterBuilder {
-    return this.minus(
-      new PatientFilterBuilder(
-        new PatientByHcPartyAndExternalIdFilter({
-          healthcarePartyId: this.hcpId,
-          externalId: externalId,
-        })
-      )
-    )
-  }
-
-  minusWithSsins(ssins: string[]): PatientFilterBuilder {
-    return this.minus(
-      new PatientFilterBuilder(
-        new PatientByHcPartyAndSsinsFilter({ healthcarePartyId: this.hcpId, ssins: ssins })
-      )
-    )
-  }
-
-  minusWithDateOfBirthBetween(from?: number, to?: number): PatientFilterBuilder {
-    return this.minus(
-      new PatientFilterBuilder(
-        new PatientByHcPartyDateOfBirthBetweenFilter({
-          healthcarePartyId: this.hcpId,
-          minDateOfBirth: from,
-          maxDateOfBirth: to,
-        })
-      )
-    )
-  }
-
-  minusByDateOfBirth(dateOfBirth: number): PatientFilterBuilder {
-    return this.minus(
-      new PatientFilterBuilder(
-        new PatientByHcPartyDateOfBirthFilter({
-          healthcarePartyId: this.hcpId,
-          dateOfBirth: dateOfBirth,
-        })
-      )
-    )
-  }
-
-  minusOlderThan(age: number): PatientFilterBuilder {
-    return this.minus(
-      this.withDateOfBirthBetween(
-        undefined,
-        parseInt(format(add(new Date(), { years: -age }), "yyyyMMdd"))
-      )
-    )
-  }
-
-  minusYoungerThan(age: number): PatientFilterBuilder {
-    return this.minus(
-      this.withDateOfBirthBetween(parseInt(format(add(new Date(), { years: -age }), "yyyyMMdd")))
-    )
-  }
-
-  minusByGenderEducationProfession(
-    gender?: GenderEnum,
-    education?: String,
-    profession?: String
-  ): PatientFilterBuilder {
-    return this.minus(
-      new PatientFilterBuilder(
-        new PatientByHcPartyGenderEducationProfession({
-          healthcarePartyId: this.hcpId,
-          gender: gender,
-          education: education,
-          profession: profession,
-        })
-      )
-    )
-  }
-
-  minusByIds(ids: string[]): PatientFilterBuilder {
-    return this.minus(new PatientFilterBuilder(new PatientByIdsFilter({ ids: ids })))
-  }
-
-  minusSearchByName(name: string): PatientFilterBuilder {
-    return this.minus(
-      new PatientFilterBuilder(
-        new PatientByHcPartyNameContainsFuzzyFilter({
-          healthcarePartyId: this.hcpId,
-          searchString: name,
-        })
-      )
+        }),
+      this.hcpId
     )
   }
 
   build(): AbstractFilterPatient {
-    return this.filter || this.all().build()
+    return this.builder?.(this) || this.all().build()
   }
 }
