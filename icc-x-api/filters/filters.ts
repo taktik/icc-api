@@ -213,6 +213,10 @@ class PatientFilterBuilder extends FilterBuilder<Patient> {
     return super.or() as PatientFilterBuilder
   }
 
+  minus(): PatientFilterBuilder {
+    return super.minus() as PatientFilterBuilder
+  }
+
   forHcp(hcpId: string): PatientFilterBuilder {
     return this.composer(
       this,
@@ -312,7 +316,8 @@ class PatientFilterBuilder extends FilterBuilder<Patient> {
 
   youngerThan(age: number): PatientFilterBuilder {
     return this.withDateOfBirthBetween(
-      parseInt(format(add(new Date(), { years: -age }), "yyyyMMdd"))
+      parseInt(format(add(new Date(), { years: -age }), "yyyyMMdd")),
+      99991231
     )
   }
 
