@@ -75,6 +75,7 @@ class FilterBuilder<T> {
   listOf(elements: T[]): FilterBuilder<T> {
     return new FilterBuilder<T>(new ConstantFilter<T>(elements) as AbstractFilter<T>)
   }
+
   and(filter: AbstractFilter<T>): FilterBuilder<T> {
     return this.filter
       ? new FilterBuilder(
@@ -82,6 +83,7 @@ class FilterBuilder<T> {
         )
       : new FilterBuilder(filter)
   }
+
   add(filter: AbstractFilter<T>): FilterBuilder<T> {
     return this.filter
       ? new FilterBuilder(
@@ -89,6 +91,7 @@ class FilterBuilder<T> {
         )
       : new FilterBuilder(filter)
   }
+
   minus(filter: AbstractFilter<T>): FilterBuilder<T> {
     return this.filter
       ? new FilterBuilder(new ComplementFilter<T>(this.filter, filter) as AbstractFilter<T>)
@@ -107,19 +110,23 @@ class PatientFilterBuilder extends FilterBuilder<Patient> {
   forHcp(hcpId: string): PatientFilterBuilder {
     return new PatientFilterBuilder(this.filter, hcpId)
   }
+
   all(): PatientFilterBuilder {
     return new PatientFilterBuilder(new PatientByHcPartyFilter({ healthcarePartyId: this.hcpId }))
   }
+
   activePatients(): PatientFilterBuilder {
     return new PatientFilterBuilder(
       new PatientByHcPartyAndActiveFilter({ healthcarePartyId: this.hcpId, active: true })
     )
   }
+
   inactivePatients(): PatientFilterBuilder {
     return new PatientFilterBuilder(
       new PatientByHcPartyAndActiveFilter({ healthcarePartyId: this.hcpId, active: false })
     )
   }
+
   withExternalId(externalId: string): PatientFilterBuilder {
     return new PatientFilterBuilder(
       new PatientByHcPartyAndExternalIdFilter({
@@ -128,11 +135,13 @@ class PatientFilterBuilder extends FilterBuilder<Patient> {
       })
     )
   }
+
   withSsins(ssins: string[]): PatientFilterBuilder {
     return new PatientFilterBuilder(
       new PatientByHcPartyAndSsinsFilter({ healthcarePartyId: this.hcpId, ssins: ssins })
     )
   }
+
   withDateOfBirthBetween(from?: number, to?: number): PatientFilterBuilder {
     return new PatientFilterBuilder(
       new PatientByHcPartyDateOfBirthBetweenFilter({
@@ -142,6 +151,7 @@ class PatientFilterBuilder extends FilterBuilder<Patient> {
       })
     )
   }
+
   byDateOfBirth(dateOfBirth: number): PatientFilterBuilder {
     return new PatientFilterBuilder(
       new PatientByHcPartyDateOfBirthFilter({
@@ -150,17 +160,20 @@ class PatientFilterBuilder extends FilterBuilder<Patient> {
       })
     )
   }
+
   olderThan(age: number): PatientFilterBuilder {
     return this.withDateOfBirthBetween(
       undefined,
       parseInt(format(add(new Date(), { years: -age }), "yyyyMMdd"))
     )
   }
+
   youngerThan(age: number): PatientFilterBuilder {
     return this.withDateOfBirthBetween(
       parseInt(format(add(new Date(), { years: -age }), "yyyyMMdd"))
     )
   }
+
   byGenderEducationProfession(
     gender?: GenderEnum,
     education?: String,
@@ -175,9 +188,11 @@ class PatientFilterBuilder extends FilterBuilder<Patient> {
       })
     )
   }
+
   byIds(ids: string[]): PatientFilterBuilder {
     return new PatientFilterBuilder(new PatientByIdsFilter({ ids: ids }))
   }
+
   searchByName(name: string): PatientFilterBuilder {
     return new PatientFilterBuilder(
       new PatientByHcPartyNameContainsFuzzyFilter({
