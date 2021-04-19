@@ -309,7 +309,7 @@ class PatientFilterBuilder extends FilterBuilder<Patient> {
 
   olderThan(age: number): PatientFilterBuilder {
     return this.withDateOfBirthBetween(
-      undefined,
+      10000101,
       parseInt(format(add(new Date(), { years: -age }), "yyyyMMdd"))
     )
   }
