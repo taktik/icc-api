@@ -66,18 +66,38 @@ export type AbstractFilter<T> = T extends Patient
       | YetToBeImplementedFilter<T>
 
 class FilterBuilder<T> {
-  builder?: (builder: FilterBuilder<T>) => AbstractFilter<T>
+  filterProvider?: (builder: FilterBuilder<T>) => AbstractFilter<T>
+  composer: (
+    thisFilterBuilder: FilterBuilder<T>,
+    otherFilterBuilder: FilterBuilder<T>
+  ) => FilterBuilder<T> = (
+    thisFilterBuilder: FilterBuilder<T>,
+    otherFilterBuilder: FilterBuilder<T>
+  ) => otherFilterBuilder
 
-  constructor(builder?: (builder: FilterBuilder<T>) => AbstractFilter<T>) {
-    this.builder = builder
+  constructor(
+    filterProvider?: (builder: FilterBuilder<T>) => AbstractFilter<T>,
+    composer?: (
+      thisFilterBuilder: FilterBuilder<T>,
+      otherFilterBuilder: FilterBuilder<T>
+    ) => FilterBuilder<T>
+  ) {
+    this.filterProvider = filterProvider
+    composer && (this.composer = composer)
   }
 
-  build(): AbstractFilter<T> | undefined {
-    return this.builder?.(this)
+  clone(
+    filterProvider?: (builder: FilterBuilder<T>) => AbstractFilter<T>,
+    composer?: (
+      thisFilterBuilder: FilterBuilder<T>,
+      otherFilterBuilder: FilterBuilder<T>
+    ) => FilterBuilder<T>
+  ): FilterBuilder<T> {
+    return new FilterBuilder(filterProvider, composer)
   }
 
   isNull(): boolean {
-    return !this.builder
+    return !this.filterProvider
   }
 
   listOf(elements: T[]): FilterBuilder<T> {
@@ -85,39 +105,72 @@ class FilterBuilder<T> {
   }
 
   and(): FilterBuilder<T> {
-    const currentFilter = this.build()
+    const currentFilter = this.filterProvider?.(this)
     return currentFilter
-      ? new FilterBuilder<T>((builder: FilterBuilder<T>) => {
-          const otherFilter = builder.build()
-          return otherFilter
-            ? (new IntersectionFilter<T>([currentFilter, otherFilter]) as AbstractFilter<T>)
-            : currentFilter
-        })
+      ? this.clone(
+          (builder: FilterBuilder<T>) => {
+            const otherFilter = builder.filterProvider?.(builder)
+            return otherFilter
+              ? (new IntersectionFilter<T>([currentFilter, otherFilter]) as AbstractFilter<T>)
+              : currentFilter
+          },
+          (thisFilterBuilder: FilterBuilder<T>, otherFilterBuilder: FilterBuilder<T>) => {
+            const thisFilterProvider = thisFilterBuilder.filterProvider
+            return thisFilterProvider
+              ? this.clone(
+                  () => thisFilterProvider(otherFilterBuilder),
+                  otherFilterBuilder.composer
+                )
+              : otherFilterBuilder
+          }
+        )
       : this
   }
 
   or(): FilterBuilder<T> {
-    const currentFilter = this.build()
+    const currentFilter = this.filterProvider?.(this)
     return currentFilter
-      ? new FilterBuilder<T>((builder: FilterBuilder<T>) => {
-          const otherFilter = builder.build()
-          return otherFilter
-            ? (new UnionFilter<T>([currentFilter, otherFilter]) as AbstractFilter<T>)
-            : currentFilter
-        })
+      ? this.clone(
+          (builder: FilterBuilder<T>) => {
+            const otherFilter = builder.filterProvider?.(builder)
+            return otherFilter
+              ? (new UnionFilter<T>([currentFilter, otherFilter]) as AbstractFilter<T>)
+              : currentFilter
+          },
+          (thisFilterBuilder: FilterBuilder<T>, otherFilterBuilder: FilterBuilder<T>) => {
+            const thisFilterProvider = thisFilterBuilder.filterProvider
+            return thisFilterProvider
+              ? this.clone(
+                  () => thisFilterProvider(otherFilterBuilder),
+                  otherFilterBuilder.composer
+                )
+              : otherFilterBuilder
+          }
+        )
       : this
   }
 
   minus(): FilterBuilder<T> {
-    const currentFilter = this.build()
+    const currentFilter = this.filterProvider?.(this)
     return currentFilter
-      ? new FilterBuilder<T>((builder: FilterBuilder<T>) => {
-          const otherFilter = builder.build()
-          return otherFilter
-            ? (new ComplementFilter<T>(currentFilter, otherFilter) as AbstractFilter<T>)
-            : currentFilter
-        })
-      : this.listOf([])
+      ? this.clone(
+          (builder: FilterBuilder<T>) => {
+            const otherFilter = builder.filterProvider?.(builder)
+            return otherFilter
+              ? (new ComplementFilter<T>(currentFilter, otherFilter) as AbstractFilter<T>)
+              : (new ConstantFilter<T>([]) as AbstractFilter<T>)
+          },
+          (thisFilterBuilder: FilterBuilder<T>, otherFilterBuilder: FilterBuilder<T>) => {
+            const thisFilterProvider = thisFilterBuilder.filterProvider
+            return thisFilterProvider
+              ? this.clone(
+                  () => thisFilterProvider(otherFilterBuilder),
+                  otherFilterBuilder.composer
+                )
+              : otherFilterBuilder
+          }
+        )
+      : this
   }
 }
 
@@ -125,11 +178,25 @@ class PatientFilterBuilder extends FilterBuilder<Patient> {
   hcpId?: string
 
   constructor(
-    builder?: (builder: FilterBuilder<Patient>) => AbstractFilter<Patient>,
-    hcpId?: string
+    filterProvider?: (builder: FilterBuilder<Patient>) => AbstractFilter<Patient>,
+    hcpId?: string,
+    composer?: (
+      thisFilterBuilder: FilterBuilder<Patient>,
+      otherFilterBuilder: FilterBuilder<Patient>
+    ) => FilterBuilder<Patient>
   ) {
-    super(builder)
+    super(filterProvider, composer)
     this.hcpId = hcpId
+  }
+
+  clone(
+    filterProvider?: (builder: FilterBuilder<Patient>) => AbstractFilter<Patient>,
+    composer?: (
+      thisFilterBuilder: FilterBuilder<Patient>,
+      otherFilterBuilder: FilterBuilder<Patient>
+    ) => FilterBuilder<Patient>
+  ): FilterBuilder<Patient> {
+    return new PatientFilterBuilder(filterProvider, this.hcpId, composer)
   }
 
   listOf(elements: Patient[]): PatientFilterBuilder {
@@ -139,108 +206,101 @@ class PatientFilterBuilder extends FilterBuilder<Patient> {
   }
 
   and(): PatientFilterBuilder {
-    const currentFilter = this.build()
-    return currentFilter
-      ? new PatientFilterBuilder((builder: FilterBuilder<Patient>) => {
-          const otherFilter = builder.build()
-          return otherFilter
-            ? (new IntersectionFilter<Patient>([
-                currentFilter,
-                otherFilter,
-              ]) as AbstractFilter<Patient>)
-            : currentFilter
-        }, this.hcpId)
-      : this
+    return super.and() as PatientFilterBuilder
   }
 
   or(): PatientFilterBuilder {
-    const currentFilter = this.build()
-    return currentFilter
-      ? new PatientFilterBuilder((builder: FilterBuilder<Patient>) => {
-          const otherFilter = builder.build()
-          return otherFilter
-            ? (new UnionFilter<Patient>([currentFilter, otherFilter]) as AbstractFilter<Patient>)
-            : currentFilter
-        }, this.hcpId)
-      : this
-  }
-
-  minus(): PatientFilterBuilder {
-    const currentFilter = this.build()
-    return currentFilter
-      ? new PatientFilterBuilder((builder: FilterBuilder<Patient>) => {
-          const otherFilter = builder.build()
-          return otherFilter
-            ? (new ComplementFilter<Patient>(currentFilter, otherFilter) as AbstractFilter<Patient>)
-            : currentFilter
-        }, this.hcpId)
-      : this.listOf([])
+    return super.or() as PatientFilterBuilder
   }
 
   forHcp(hcpId: string): PatientFilterBuilder {
-    return new PatientFilterBuilder(this.builder, hcpId)
+    return this.composer(
+      this,
+      new PatientFilterBuilder(this.filterProvider, hcpId)
+    ) as PatientFilterBuilder
   }
 
   all(): PatientFilterBuilder {
-    return new PatientFilterBuilder(
-      () => new PatientByHcPartyFilter({ healthcarePartyId: this.hcpId }),
-      this.hcpId
-    )
+    return this.composer(
+      this,
+      new PatientFilterBuilder(
+        () => new PatientByHcPartyFilter({ healthcarePartyId: this.hcpId }),
+        this.hcpId
+      )
+    ) as PatientFilterBuilder
   }
 
   activePatients(): PatientFilterBuilder {
-    return new PatientFilterBuilder(
-      () => new PatientByHcPartyAndActiveFilter({ healthcarePartyId: this.hcpId, active: true }),
-      this.hcpId
-    )
+    return this.composer(
+      this,
+      new PatientFilterBuilder(
+        () => new PatientByHcPartyAndActiveFilter({ healthcarePartyId: this.hcpId, active: true }),
+        this.hcpId
+      )
+    ) as PatientFilterBuilder
   }
 
   inactivePatients(): PatientFilterBuilder {
-    return new PatientFilterBuilder(
-      () => new PatientByHcPartyAndActiveFilter({ healthcarePartyId: this.hcpId, active: false }),
-      this.hcpId
-    )
+    return this.composer(
+      this,
+      new PatientFilterBuilder(
+        () => new PatientByHcPartyAndActiveFilter({ healthcarePartyId: this.hcpId, active: false }),
+        this.hcpId
+      )
+    ) as PatientFilterBuilder
   }
 
   withExternalId(externalId: string): PatientFilterBuilder {
-    return new PatientFilterBuilder(
-      () =>
-        new PatientByHcPartyAndExternalIdFilter({
-          healthcarePartyId: this.hcpId,
-          externalId: externalId,
-        }),
-      this.hcpId
-    )
+    return this.composer(
+      this,
+      new PatientFilterBuilder(
+        () =>
+          new PatientByHcPartyAndExternalIdFilter({
+            healthcarePartyId: this.hcpId,
+            externalId: externalId,
+          }),
+        this.hcpId
+      )
+    ) as PatientFilterBuilder
   }
 
   withSsins(ssins: string[]): PatientFilterBuilder {
-    return new PatientFilterBuilder(
-      () => new PatientByHcPartyAndSsinsFilter({ healthcarePartyId: this.hcpId, ssins: ssins }),
-      this.hcpId
-    )
+    return this.composer(
+      this,
+      new PatientFilterBuilder(
+        () => new PatientByHcPartyAndSsinsFilter({ healthcarePartyId: this.hcpId, ssins: ssins }),
+        this.hcpId
+      )
+    ) as PatientFilterBuilder
   }
 
   withDateOfBirthBetween(from?: number, to?: number): PatientFilterBuilder {
-    return new PatientFilterBuilder(
-      () =>
-        new PatientByHcPartyDateOfBirthBetweenFilter({
-          healthcarePartyId: this.hcpId,
-          minDateOfBirth: from,
-          maxDateOfBirth: to,
-        }),
-      this.hcpId
-    )
+    return this.composer(
+      this,
+      new PatientFilterBuilder(
+        () =>
+          new PatientByHcPartyDateOfBirthBetweenFilter({
+            healthcarePartyId: this.hcpId,
+            minDateOfBirth: from,
+            maxDateOfBirth: to,
+          }),
+        this.hcpId
+      )
+    ) as PatientFilterBuilder
   }
 
   byDateOfBirth(dateOfBirth: number): PatientFilterBuilder {
-    return new PatientFilterBuilder(
-      () =>
-        new PatientByHcPartyDateOfBirthFilter({
-          healthcarePartyId: this.hcpId,
-          dateOfBirth: dateOfBirth,
-        }),
-      this.hcpId
-    )
+    return this.composer(
+      this,
+      new PatientFilterBuilder(
+        () =>
+          new PatientByHcPartyDateOfBirthFilter({
+            healthcarePartyId: this.hcpId,
+            dateOfBirth: dateOfBirth,
+          }),
+        this.hcpId
+      )
+    ) as PatientFilterBuilder
   }
 
   olderThan(age: number): PatientFilterBuilder {
@@ -261,34 +321,43 @@ class PatientFilterBuilder extends FilterBuilder<Patient> {
     education?: String,
     profession?: String
   ): PatientFilterBuilder {
-    return new PatientFilterBuilder(
-      () =>
-        new PatientByHcPartyGenderEducationProfession({
-          healthcarePartyId: this.hcpId,
-          gender: gender,
-          education: education,
-          profession: profession,
-        }),
-      this.hcpId
-    )
+    return this.composer(
+      this,
+      new PatientFilterBuilder(
+        () =>
+          new PatientByHcPartyGenderEducationProfession({
+            healthcarePartyId: this.hcpId,
+            gender: gender,
+            education: education,
+            profession: profession,
+          }),
+        this.hcpId
+      )
+    ) as PatientFilterBuilder
   }
 
   byIds(ids: string[]): PatientFilterBuilder {
-    return new PatientFilterBuilder(() => new PatientByIdsFilter({ ids: ids }), this.hcpId)
+    return this.composer(
+      this,
+      new PatientFilterBuilder(() => new PatientByIdsFilter({ ids: ids }), this.hcpId)
+    ) as PatientFilterBuilder
   }
 
   searchByName(name: string): PatientFilterBuilder {
-    return new PatientFilterBuilder(
-      () =>
-        new PatientByHcPartyNameContainsFuzzyFilter({
-          healthcarePartyId: this.hcpId,
-          searchString: name,
-        }),
-      this.hcpId
-    )
+    return this.composer(
+      this,
+      new PatientFilterBuilder(
+        () =>
+          new PatientByHcPartyNameContainsFuzzyFilter({
+            healthcarePartyId: this.hcpId,
+            searchString: name,
+          }),
+        this.hcpId
+      )
+    ) as PatientFilterBuilder
   }
 
   build(): AbstractFilterPatient {
-    return this.builder?.(this) || this.all().build()
+    return this.filterProvider?.(this) || this.all().build()
   }
 }
