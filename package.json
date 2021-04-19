@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "dependencies": {
+    "date-fns": "^2.21.1",
     "libphonenumber-js": "^1.7.18",
     "lodash": "^4.17.20",
     "moment": "^2.22.1",
