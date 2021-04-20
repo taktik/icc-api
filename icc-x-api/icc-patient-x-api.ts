@@ -1,15 +1,15 @@
-import { IccPatientApi, IccEntityrefApi, IccAuthApi } from "../icc-api"
-import { IccCryptoXApi } from "./icc-crypto-x-api"
-import { IccContactXApi } from "./icc-contact-x-api"
-import { IccFormXApi } from "./icc-form-x-api"
-import { IccHcpartyXApi } from "./icc-hcparty-x-api"
-import { IccInvoiceXApi } from "./icc-invoice-x-api"
-import { IccDocumentXApi } from "./icc-document-x-api"
-import { IccHelementXApi } from "./icc-helement-x-api"
-import { IccClassificationXApi } from "./icc-classification-x-api"
+import { IccPatientApi, IccEntityrefApi, IccAuthApi } from '../icc-api'
+import { IccCryptoXApi } from './icc-crypto-x-api'
+import { IccContactXApi } from './icc-contact-x-api'
+import { IccFormXApi } from './icc-form-x-api'
+import { IccHcpartyXApi } from './icc-hcparty-x-api'
+import { IccInvoiceXApi } from './icc-invoice-x-api'
+import { IccDocumentXApi } from './icc-document-x-api'
+import { IccHelementXApi } from './icc-helement-x-api'
+import { IccClassificationXApi } from './icc-classification-x-api'
 
-import * as _ from "lodash"
-import * as models from "../icc-api/model/models"
+import * as _ from 'lodash'
+import * as models from '../icc-api/model/models'
 import {
   CalendarItem,
   Classification,
@@ -19,12 +19,12 @@ import {
   Invoice,
   ListOfIds,
   Patient,
-} from "../icc-api/model/models"
-import { retry } from "./utils"
-import { utils } from "./crypto/utils"
-import { IccCalendarItemXApi } from "./icc-calendar-item-x-api"
-import { b64_2ab } from "../icc-api/model/ModelHelper"
-import { b2a, hex2ua, string2ua, ua2hex, ua2utf8, utf8_2ua } from "./utils/binary-utils"
+} from '../icc-api/model/models'
+import { retry } from './utils'
+import { utils } from './crypto/utils'
+import { IccCalendarItemXApi } from './icc-calendar-item-x-api'
+import { b64_2ab } from '../icc-api/model/ModelHelper'
+import { b2a, hex2ua, string2ua, ua2hex, ua2utf8, utf8_2ua } from './utils/binary-utils'
 
 // noinspection JSUnusedGlobalSymbols
 export class IccPatientXApi extends IccPatientApi {
@@ -52,11 +52,11 @@ export class IccPatientXApi extends IccPatientApi {
     hcpartyApi: IccHcpartyXApi,
     classificationApi: IccClassificationXApi,
     calendarItemaApi: IccCalendarItemXApi,
-    encryptedKeys: Array<string> = ["note"],
+    encryptedKeys: Array<string> = ['note'],
     fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    "undefined"
+    'undefined'
       ? window.fetch
-      : typeof self !== "undefined"
+      : typeof self !== 'undefined'
       ? self.fetch
       : fetch
   ) {
@@ -79,7 +79,7 @@ export class IccPatientXApi extends IccPatientApi {
     const patient = _.extend(
       {
         id: this.crypto.randomUuid(),
-        _type: "org.taktik.icure.entities.Patient",
+        _type: 'org.taktik.icure.entities.Patient',
         created: new Date().getTime(),
         modified: new Date().getTime(),
         responsible: user.healthcarePartyId || user.patientId,
@@ -138,23 +138,23 @@ export class IccPatientXApi extends IccPatientApi {
     user: models.User
   ): Promise<models.Patient | null> {
     const ownerId = user.healthcarePartyId || user.patientId
-    return this.crypto.extractPreferredSfk(patient, ownerId!!, true).then((k) => {
+    return this.crypto.extractPreferredSfk(patient, ownerId!, true).then((k) => {
       if (!k) {
         const secretId = this.crypto.randomUuid()
         return this.crypto
-          .decryptAndImportAesHcPartyKeysForDelegators([ownerId!!], ownerId!!)
+          .decryptAndImportAesHcPartyKeysForDelegators([ownerId!], ownerId!)
           .then((hcPartyKeys) => {
             return this.crypto.AES.encrypt(
               hcPartyKeys[0].key,
-              string2ua(patient.id + ":" + secretId).buffer as ArrayBuffer
+              string2ua(patient.id + ':' + secretId).buffer as ArrayBuffer
             )
           })
           .then((newDelegation) => {
-            ;(patient.delegations!![ownerId!!] || (patient.delegations!![ownerId!!] = [])).push(
+            ;(patient.delegations![ownerId!] || (patient.delegations![ownerId!] = [])).push(
               new Delegation({
                 owner: ownerId,
                 delegatedTo: ownerId,
-                tag: "confidential",
+                tag: 'confidential',
                 key: ua2hex(newDelegation),
               })
             )
@@ -170,7 +170,7 @@ export class IccPatientXApi extends IccPatientApi {
 
   createPatient(body?: models.Patient): never {
     throw new Error(
-      "Cannot call a method that returns contacts without providing a user for de/encryption"
+      'Cannot call a method that returns contacts without providing a user for de/encryption'
     )
   }
 
@@ -193,7 +193,7 @@ export class IccPatientXApi extends IccPatientApi {
     body?: models.FilterChainPatient
   ): never {
     throw new Error(
-      "Cannot call a method that returns contacts without providing a user for de/encryption"
+      'Cannot call a method that returns contacts without providing a user for de/encryption'
     )
   }
 
@@ -223,7 +223,7 @@ export class IccPatientXApi extends IccPatientApi {
     limit?: number
   ): never {
     throw new Error(
-      "Cannot call a method that returns contacts without providing a user for de/encryption"
+      'Cannot call a method that returns contacts without providing a user for de/encryption'
     )
   }
 
@@ -245,7 +245,7 @@ export class IccPatientXApi extends IccPatientApi {
 
   findByAccessLogUserAfterDate_1(externalId: string): never {
     throw new Error(
-      "Cannot call a method that returns contacts without providing a user for de/encryption"
+      'Cannot call a method that returns contacts without providing a user for de/encryption'
     )
   }
 
@@ -265,7 +265,7 @@ export class IccPatientXApi extends IccPatientApi {
     sortDirection?: string
   ): never {
     throw new Error(
-      "Cannot call a method that returns contacts without providing a user for de/encryption"
+      'Cannot call a method that returns contacts without providing a user for de/encryption'
     )
   }
 
@@ -294,7 +294,7 @@ export class IccPatientXApi extends IccPatientApi {
 
   fuzzySearch(firstName?: string, lastName?: string, dateOfBirth?: number): never {
     throw new Error(
-      "Cannot call a method that returns contacts without providing a user for de/encryption"
+      'Cannot call a method that returns contacts without providing a user for de/encryption'
     )
   }
 
@@ -311,7 +311,7 @@ export class IccPatientXApi extends IccPatientApi {
 
   getPatient(patientId: string): never {
     throw new Error(
-      "Cannot call a method that returns contacts without providing a user for de/encryption"
+      'Cannot call a method that returns contacts without providing a user for de/encryption'
     )
   }
 
@@ -328,7 +328,7 @@ export class IccPatientXApi extends IccPatientApi {
 
   getPatients(body?: models.ListOfIds): never {
     throw new Error(
-      "Cannot call a method that returns contacts without providing a user for de/encryption"
+      'Cannot call a method that returns contacts without providing a user for de/encryption'
     )
   }
 
@@ -347,7 +347,7 @@ export class IccPatientXApi extends IccPatientApi {
     limit?: number
   ): never {
     throw new Error(
-      "Cannot call a method that returns contacts without providing a user for de/encryption"
+      'Cannot call a method that returns contacts without providing a user for de/encryption'
     )
   }
 
@@ -368,7 +368,7 @@ export class IccPatientXApi extends IccPatientApi {
 
   listDeletedPatients_2(firstName?: string, lastName?: string): never {
     throw new Error(
-      "Cannot call a method that returns contacts without providing a user for de/encryption"
+      'Cannot call a method that returns contacts without providing a user for de/encryption'
     )
   }
 
@@ -384,7 +384,7 @@ export class IccPatientXApi extends IccPatientApi {
 
   listOfMergesAfter(date: number): never {
     throw new Error(
-      "Cannot call a method that returns contacts without providing a user for de/encryption"
+      'Cannot call a method that returns contacts without providing a user for de/encryption'
     )
   }
 
@@ -399,7 +399,7 @@ export class IccPatientXApi extends IccPatientApi {
     limit?: number
   ): never {
     throw new Error(
-      "Cannot call a method that returns contacts without providing a user for de/encryption"
+      'Cannot call a method that returns contacts without providing a user for de/encryption'
     )
   }
 
@@ -426,7 +426,7 @@ export class IccPatientXApi extends IccPatientApi {
     sortDirection?: string
   ): never {
     throw new Error(
-      "Cannot call a method that returns contacts without providing a user for de/encryption"
+      'Cannot call a method that returns contacts without providing a user for de/encryption'
     )
   }
 
@@ -455,7 +455,7 @@ export class IccPatientXApi extends IccPatientApi {
     sortDirection?: string
   ): never {
     throw new Error(
-      "Cannot call a method that returns contacts without providing a user for de/encryption"
+      'Cannot call a method that returns contacts without providing a user for de/encryption'
     )
   }
 
@@ -484,7 +484,7 @@ export class IccPatientXApi extends IccPatientApi {
     sortDirection?: string
   ): never {
     throw new Error(
-      "Cannot call a method that returns contacts without providing a user for de/encryption"
+      'Cannot call a method that returns contacts without providing a user for de/encryption'
     )
   }
 
@@ -506,7 +506,7 @@ export class IccPatientXApi extends IccPatientApi {
 
   mergeInto(toId: string, fromIds: string): never {
     throw new Error(
-      "Cannot call a method that returns contacts without providing a user for de/encryption"
+      'Cannot call a method that returns contacts without providing a user for de/encryption'
     )
   }
 
@@ -523,7 +523,7 @@ export class IccPatientXApi extends IccPatientApi {
 
   modifyPatient(body?: models.Patient): never {
     throw new Error(
-      "Cannot call a method that returns contacts without providing a user for de/encryption"
+      'Cannot call a method that returns contacts without providing a user for de/encryption'
     )
   }
 
@@ -547,7 +547,7 @@ export class IccPatientXApi extends IccPatientApi {
     end?: number
   ): never {
     throw new Error(
-      "Cannot call a method that returns contacts without providing a user for de/encryption"
+      'Cannot call a method that returns contacts without providing a user for de/encryption'
     )
   }
 
@@ -580,7 +580,7 @@ export class IccPatientXApi extends IccPatientApi {
             )
           )
           .then((sfks: { extractedKeys: Array<string>; hcpartyId: string }) =>
-            this.crypto.AES.importKey("raw", hex2ua(sfks.extractedKeys[0].replace(/-/g, "")))
+            this.crypto.AES.importKey('raw', hex2ua(sfks.extractedKeys[0].replace(/-/g, '')))
           )
           .then((key: CryptoKey) =>
             utils.crypt(
@@ -591,7 +591,7 @@ export class IccPatientXApi extends IccPatientApi {
                   utf8_2ua(
                     JSON.stringify(obj, (k, v) => {
                       return v instanceof ArrayBuffer || v instanceof Uint8Array
-                        ? b2a(new Uint8Array(v).reduce((d, b) => d + String.fromCharCode(b), ""))
+                        ? b2a(new Uint8Array(v).reduce((d, b) => d + String.fromCharCode(b), ''))
                         : v
                     })
                   )
@@ -606,7 +606,7 @@ export class IccPatientXApi extends IccPatientApi {
   decrypt(
     user: models.User,
     pats: Array<models.Patient>,
-    fillDelegations: boolean = true
+    fillDelegations = true
   ): Promise<Array<models.Patient>> {
     return (user.healthcarePartyId
       ? this.hcpartyApi
@@ -659,8 +659,8 @@ export class IccPatientXApi extends IccPatientApi {
                         return Promise.resolve(p)
                       }
                       return this.crypto.AES.importKey(
-                        "raw",
-                        hex2ua(sfks[0].replace(/-/g, ""))
+                        'raw',
+                        hex2ua(sfks[0].replace(/-/g, ''))
                       ).then((key) =>
                         utils
                           .decrypt(p, (ec) =>
@@ -671,15 +671,15 @@ export class IccPatientXApi extends IccPatientApi {
                                   return JSON.parse(jsonContent)
                                 } catch (e) {
                                   console.log(
-                                    "Cannot parse patient",
+                                    'Cannot parse patient',
                                     p.id,
-                                    jsonContent || "Invalid content"
+                                    jsonContent || 'Invalid content'
                                   )
                                   return p
                                 }
                               })
                               .catch((err) => {
-                                console.log("Cannot decrypt patient", p.id, err)
+                                console.log('Cannot decrypt patient', p.id, err)
                                 return p
                               })
                           )
@@ -784,38 +784,38 @@ export class IccPatientXApi extends IccPatientApi {
       const allTags = _.uniq(_.flatMap(Object.values(delegationTags)))
       const status = {
         contacts: {
-          success: allTags.includes("medicalInformation") || allTags.includes("all") ? false : null,
+          success: allTags.includes('medicalInformation') || allTags.includes('all') ? false : null,
           error: null,
           modified: 0,
         },
         forms: {
-          success: allTags.includes("medicalInformation") || allTags.includes("all") ? false : null,
+          success: allTags.includes('medicalInformation') || allTags.includes('all') ? false : null,
           error: null,
           modified: 0,
         },
         healthElements: {
-          success: allTags.includes("medicalInformation") || allTags.includes("all") ? false : null,
+          success: allTags.includes('medicalInformation') || allTags.includes('all') ? false : null,
           error: null,
           modified: 0,
         },
         invoices: {
           success:
-            allTags.includes("financialInformation") || allTags.includes("all") ? false : null,
+            allTags.includes('financialInformation') || allTags.includes('all') ? false : null,
           error: null,
           modified: 0,
         },
         documents: {
-          success: allTags.includes("medicalInformation") || allTags.includes("all") ? false : null,
+          success: allTags.includes('medicalInformation') || allTags.includes('all') ? false : null,
           error: null,
           modified: 0,
         },
         classifications: {
-          success: allTags.includes("medicalInformation") || allTags.includes("all") ? false : null,
+          success: allTags.includes('medicalInformation') || allTags.includes('all') ? false : null,
           error: null,
           modified: 0,
         },
         calendarItems: {
-          success: allTags.includes("medicalInformation") || allTags.includes("all") ? false : null,
+          success: allTags.includes('medicalInformation') || allTags.includes('all') ? false : null,
           error: null,
           modified: 0,
         },
@@ -836,7 +836,7 @@ export class IccPatientXApi extends IccPatientApi {
           if (!patient) {
             status.patient = {
               success: false,
-              error: new Error("Patient does not exist or cannot initialise encryption keys"),
+              error: new Error('Patient does not exist or cannot initialise encryption keys'),
             }
             return Promise.resolve({ patient: patient, statuses: status })
           }
@@ -850,16 +850,16 @@ export class IccPatientXApi extends IccPatientApi {
                       this.helementApi
                         .findHealthElementsDelegationsStubsByHCPartyPatientForeignKeys(
                           ownerId,
-                          delSfks.join(",")
+                          delSfks.join(',')
                         )
                         .then((hes) =>
                           parentId
                             ? this.helementApi
                                 .findHealthElementsDelegationsStubsByHCPartyPatientForeignKeys(
                                   parentId,
-                                  delSfks.join(",")
+                                  delSfks.join(',')
                                 )
-                                .then((moreHes) => _.uniqBy(hes.concat(moreHes), "id"))
+                                .then((moreHes) => _.uniqBy(hes.concat(moreHes), 'id'))
                             : hes
                         )
                     ) as Promise<Array<models.IcureStub>>,
@@ -867,27 +867,27 @@ export class IccPatientXApi extends IccPatientApi {
                       this.formApi
                         .findFormsDelegationsStubsByHCPartyPatientForeignKeys(
                           ownerId,
-                          delSfks.join(",")
+                          delSfks.join(',')
                         )
                         .then((frms) =>
                           parentId
                             ? this.formApi
                                 .findFormsDelegationsStubsByHCPartyPatientForeignKeys(
                                   parentId,
-                                  delSfks.join(",")
+                                  delSfks.join(',')
                                 )
-                                .then((moreFrms) => _.uniqBy(frms.concat(moreFrms), "id"))
+                                .then((moreFrms) => _.uniqBy(frms.concat(moreFrms), 'id'))
                             : frms
                         )
                     ) as Promise<Array<models.Form>>,
                     retry(() =>
                       this.contactApi
-                        .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
+                        .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(','))
                         .then((ctcs) =>
                           parentId
                             ? this.contactApi
-                                .findByHCPartyPatientSecretFKeys(parentId, delSfks.join(","))
-                                .then((moreCtcs) => _.uniqBy(ctcs.concat(moreCtcs), "id"))
+                                .findByHCPartyPatientSecretFKeys(parentId, delSfks.join(','))
+                                .then((moreCtcs) => _.uniqBy(ctcs.concat(moreCtcs), 'id'))
                             : ctcs
                         )
                     ) as Promise<Array<models.Contact>>,
@@ -895,41 +895,41 @@ export class IccPatientXApi extends IccPatientApi {
                       this.invoiceApi
                         .findInvoicesDelegationsStubsByHCPartyPatientForeignKeys(
                           ownerId,
-                          delSfks.join(",")
+                          delSfks.join(',')
                         )
                         .then((ivs) =>
                           parentId
                             ? this.invoiceApi
                                 .findInvoicesDelegationsStubsByHCPartyPatientForeignKeys(
                                   parentId,
-                                  delSfks.join(",")
+                                  delSfks.join(',')
                                 )
-                                .then((moreIvs) => _.uniqBy(ivs.concat(moreIvs), "id"))
+                                .then((moreIvs) => _.uniqBy(ivs.concat(moreIvs), 'id'))
                             : ivs
                         )
                     ) as Promise<Array<models.IcureStub>>,
                     retry(() =>
                       this.classificationApi
-                        .findClassificationsByHCPartyPatientForeignKeys(ownerId, delSfks.join(","))
+                        .findClassificationsByHCPartyPatientForeignKeys(ownerId, delSfks.join(','))
                         .then((cls) =>
                           parentId
                             ? this.classificationApi
                                 .findClassificationsByHCPartyPatientForeignKeys(
                                   parentId,
-                                  delSfks.join(",")
+                                  delSfks.join(',')
                                 )
-                                .then((moreCls) => _.uniqBy(cls.concat(moreCls), "id"))
+                                .then((moreCls) => _.uniqBy(cls.concat(moreCls), 'id'))
                             : cls
                         )
                     ) as Promise<Array<models.Classification>>,
                     retry(() =>
                       this.calendarItemApi
-                        .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
+                        .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(','))
                         .then((cls) =>
                           parentId
                             ? this.calendarItemApi
-                                .findByHCPartyPatientSecretFKeys(parentId, delSfks.join(","))
-                                .then((moreCls) => _.uniqBy(cls.concat(moreCls), "id"))
+                                .findByHCPartyPatientSecretFKeys(parentId, delSfks.join(','))
+                                .then((moreCls) => _.uniqBy(cls.concat(moreCls), 'id'))
                             : cls
                         )
                     ) as Promise<Array<models.CalendarItem>>,
@@ -1057,49 +1057,49 @@ export class IccPatientXApi extends IccPatientApi {
                               return patient
                             })
                         })
-                        ;(tags.includes("medicalInformation") || tags.includes("all")) &&
+                        ;(tags.includes('medicalInformation') || tags.includes('all')) &&
                           (markerPromise = addDelegationsAndKeys(
                             hes,
                             markerPromise,
                             delegateId,
                             patient
                           ))
-                        ;(tags.includes("medicalInformation") || tags.includes("all")) &&
+                        ;(tags.includes('medicalInformation') || tags.includes('all')) &&
                           (markerPromise = addDelegationsAndKeys(
                             frms,
                             markerPromise,
                             delegateId,
                             patient
                           ))
-                        ;(tags.includes("medicalInformation") || tags.includes("all")) &&
+                        ;(tags.includes('medicalInformation') || tags.includes('all')) &&
                           (markerPromise = addDelegationsAndKeys(
                             ctcsStubs,
                             markerPromise,
                             delegateId,
                             patient
                           ))
-                        ;(tags.includes("medicalInformation") || tags.includes("all")) &&
+                        ;(tags.includes('medicalInformation') || tags.includes('all')) &&
                           (markerPromise = addDelegationsAndKeys(
                             cls,
                             markerPromise,
                             delegateId,
                             patient
                           ))
-                        ;(tags.includes("medicalInformation") || tags.includes("all")) &&
+                        ;(tags.includes('medicalInformation') || tags.includes('all')) &&
                           (markerPromise = addDelegationsAndKeys(
                             cis,
                             markerPromise,
                             delegateId,
                             patient
                           ))
-                        ;(tags.includes("financialInformation") || tags.includes("all")) &&
+                        ;(tags.includes('financialInformation') || tags.includes('all')) &&
                           (markerPromise = addDelegationsAndKeys(
                             ivs,
                             markerPromise,
                             delegateId,
                             patient
                           ))
-                        ;(tags.includes("medicalInformation") || tags.includes("all")) &&
+                        ;(tags.includes('medicalInformation') || tags.includes('all')) &&
                           (markerPromise = addDelegationsAndKeys(
                             docs,
                             markerPromise,
@@ -1112,7 +1112,7 @@ export class IccPatientXApi extends IccPatientApi {
                         .then(() => {
                           //console.log("scd")
                           return (
-                            ((allTags.includes("medicalInformation") || allTags.includes("all")) &&
+                            ((allTags.includes('medicalInformation') || allTags.includes('all')) &&
                               ctcsStubs &&
                               ctcsStubs.length &&
                               !_.isEqual(oCtcsStubs, ctcsStubs) &&
@@ -1129,7 +1129,7 @@ export class IccPatientXApi extends IccPatientApi {
                         .then(() => {
                           //console.log("shed")
                           return (
-                            ((allTags.includes("medicalInformation") || allTags.includes("all")) &&
+                            ((allTags.includes('medicalInformation') || allTags.includes('all')) &&
                               hes &&
                               hes.length &&
                               !_.isEqual(oHes, hes) &&
@@ -1146,7 +1146,7 @@ export class IccPatientXApi extends IccPatientApi {
                         .then(() => {
                           //console.log("sfd")
                           return (
-                            ((allTags.includes("medicalInformation") || allTags.includes("all")) &&
+                            ((allTags.includes('medicalInformation') || allTags.includes('all')) &&
                               frms &&
                               frms.length &&
                               !_.isEqual(oFrms, frms) &&
@@ -1163,8 +1163,8 @@ export class IccPatientXApi extends IccPatientApi {
                         .then(() => {
                           //console.log("sid")
                           return (
-                            ((allTags.includes("financialInformation") ||
-                              allTags.includes("all")) &&
+                            ((allTags.includes('financialInformation') ||
+                              allTags.includes('all')) &&
                               ivs &&
                               ivs.length &&
                               !_.isEqual(oIvs, ivs) &&
@@ -1181,7 +1181,7 @@ export class IccPatientXApi extends IccPatientApi {
                         .then(() => {
                           //console.log("sdd")
                           return (
-                            ((allTags.includes("medicalInformation") || allTags.includes("all")) &&
+                            ((allTags.includes('medicalInformation') || allTags.includes('all')) &&
                               docs &&
                               docs.length &&
                               !_.isEqual(oDocs, docs) &&
@@ -1198,7 +1198,7 @@ export class IccPatientXApi extends IccPatientApi {
                         .then(() => {
                           //console.log("scld")
                           return (
-                            ((allTags.includes("medicalInformation") || allTags.includes("all")) &&
+                            ((allTags.includes('medicalInformation') || allTags.includes('all')) &&
                               cls &&
                               cls.length &&
                               !_.isEqual(oCls, cls) &&
@@ -1215,7 +1215,7 @@ export class IccPatientXApi extends IccPatientApi {
                         .then(() => {
                           //console.log("scid")
                           return (
-                            ((allTags.includes("medicalInformation") || allTags.includes("all")) &&
+                            ((allTags.includes('medicalInformation') || allTags.includes('all')) &&
                               cis &&
                               cis.length &&
                               !_.isEqual(oCis, cis) &&
@@ -1251,7 +1251,7 @@ export class IccPatientXApi extends IccPatientApi {
                         delegateIds
                           .filter((id) => !patient.delegations || !patient.delegations[id]) //If there are delegations do not modify
                           .reduce(
-                            (acc, del: String) => Object.assign(acc, _.fromPairs([[del, []]])),
+                            (acc, del: string) => Object.assign(acc, _.fromPairs([[del, []]])),
                             patient.delegations || {}
                           )
                       ),
@@ -1294,73 +1294,73 @@ export class IccPatientXApi extends IccPatientApi {
                 ? Promise.all([
                     retry(() =>
                       this.helementApi
-                        .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
+                        .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(','))
                         .then((hes) =>
                           parentId
                             ? this.helementApi
-                                .findByHCPartyPatientSecretFKeys(parentId, delSfks.join(","))
-                                .then((moreHes) => _.uniqBy(hes.concat(moreHes), "id"))
+                                .findByHCPartyPatientSecretFKeys(parentId, delSfks.join(','))
+                                .then((moreHes) => _.uniqBy(hes.concat(moreHes), 'id'))
                             : hes
                         )
                     ) as Promise<Array<models.IcureStub>>,
                     retry(() =>
                       this.formApi
-                        .findFormsByHCPartyPatientForeignKeys(ownerId, delSfks.join(","))
+                        .findFormsByHCPartyPatientForeignKeys(ownerId, delSfks.join(','))
                         .then((frms) =>
                           parentId
                             ? this.formApi
-                                .findFormsByHCPartyPatientForeignKeys(parentId, delSfks.join(","))
-                                .then((moreFrms) => _.uniqBy(frms.concat(moreFrms), "id"))
+                                .findFormsByHCPartyPatientForeignKeys(parentId, delSfks.join(','))
+                                .then((moreFrms) => _.uniqBy(frms.concat(moreFrms), 'id'))
                             : frms
                         )
                     ) as Promise<Array<models.Form>>,
                     retry(() =>
                       this.contactApi
-                        .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
+                        .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(','))
                         .then((ctcs) =>
                           parentId
                             ? this.contactApi
-                                .findByHCPartyPatientSecretFKeys(parentId, delSfks.join(","))
-                                .then((moreCtcs) => _.uniqBy(ctcs.concat(moreCtcs), "id"))
+                                .findByHCPartyPatientSecretFKeys(parentId, delSfks.join(','))
+                                .then((moreCtcs) => _.uniqBy(ctcs.concat(moreCtcs), 'id'))
                             : ctcs
                         )
                     ) as Promise<Array<models.Contact>>,
                     retry(() =>
                       this.invoiceApi
-                        .findInvoicesByHCPartyPatientForeignKeys(ownerId, delSfks.join(","))
+                        .findInvoicesByHCPartyPatientForeignKeys(ownerId, delSfks.join(','))
                         .then((ivs) =>
                           parentId
                             ? this.invoiceApi
                                 .findInvoicesByHCPartyPatientForeignKeys(
                                   parentId,
-                                  delSfks.join(",")
+                                  delSfks.join(',')
                                 )
-                                .then((moreIvs) => _.uniqBy(ivs.concat(moreIvs), "id"))
+                                .then((moreIvs) => _.uniqBy(ivs.concat(moreIvs), 'id'))
                             : ivs
                         )
                     ) as Promise<Array<models.IcureStub>>,
                     retry(() =>
                       this.classificationApi
-                        .findClassificationsByHCPartyPatientForeignKeys(ownerId, delSfks.join(","))
+                        .findClassificationsByHCPartyPatientForeignKeys(ownerId, delSfks.join(','))
                         .then((cls) =>
                           parentId
                             ? this.classificationApi
                                 .findClassificationsByHCPartyPatientForeignKeys(
                                   parentId,
-                                  delSfks.join(",")
+                                  delSfks.join(',')
                                 )
-                                .then((moreCls) => _.uniqBy(cls.concat(moreCls), "id"))
+                                .then((moreCls) => _.uniqBy(cls.concat(moreCls), 'id'))
                             : cls
                         )
                     ) as Promise<Array<models.Classification>>,
                     retry(() =>
                       this.calendarItemApi
-                        .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
+                        .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(','))
                         .then((cls) =>
                           parentId
                             ? this.calendarItemApi
-                                .findByHCPartyPatientSecretFKeys(parentId, delSfks.join(","))
-                                .then((moreCls) => _.uniqBy(cls.concat(moreCls), "id"))
+                                .findByHCPartyPatientSecretFKeys(parentId, delSfks.join(','))
+                                .then((moreCls) => _.uniqBy(cls.concat(moreCls), 'id'))
                             : cls
                         )
                     ) as Promise<Array<models.CalendarItem>>,
@@ -1410,8 +1410,8 @@ export class IccPatientXApi extends IccPatientApi {
     })
   }
 
-  checkInami(inami: String): Boolean {
-    const num_inami = inami.replace(new RegExp("[^(0-9)]", "g"), "")
+  checkInami(inami: string): boolean {
+    const num_inami = inami.replace(new RegExp('[^(0-9)]', 'g'), '')
 
     const checkDigit = num_inami.substr(6, 2)
     const numSansCheck = num_inami.substr(0, 6)
@@ -1430,7 +1430,7 @@ export class IccPatientXApi extends IccPatientApi {
   }
 
   isValidSsin(ssin: string) {
-    ssin = ssin.replace(new RegExp("[^(0-9)]", "g"), "")
+    ssin = ssin.replace(new RegExp('[^(0-9)]', 'g'), '')
     let isValidNiss = false
 
     const normalNumber = /^[0-9][0-9](([0][0-9])|([1][0-2]))(([0-2][0-9])|([3][0-1]))(([0-9]{2}[1-9])|([0-9][1-9][0-9])|([1-9][0-9]{2}))(([0-8][0-9])|([9][0-7]))$/.test(
@@ -1447,7 +1447,7 @@ export class IccPatientXApi extends IccPatientApi {
       isValidNiss =
         97 - (Number(ssin.substr(0, 9)) % 97) === Number(ssin.substr(9, 2))
           ? true
-          : 97 - (Number("2" + ssin.substr(0, 9)) % 97) === Number(ssin.substr(9, 2))
+          : 97 - (Number('2' + ssin.substr(0, 9)) % 97) === Number(ssin.substr(9, 2))
     }
 
     return isValidNiss
@@ -1463,9 +1463,9 @@ export class IccPatientXApi extends IccPatientApi {
 
     if (multipleParentIds) {
       throw (
-        "Child document with id " +
+        'Child document with id ' +
         childDocument.id +
-        " contains multiple parent ids in its CFKs for hcpId: " +
+        ' contains multiple parent ids in its CFKs for hcpId: ' +
         hcpId
       )
     }
@@ -1474,9 +1474,9 @@ export class IccPatientXApi extends IccPatientApi {
 
     if (!parentId) {
       throw (
-        "Parent id is empty in CFK of child document with id " +
+        'Parent id is empty in CFK of child document with id ' +
         childDocument.id +
-        " for hcpId: " +
+        ' for hcpId: ' +
         hcpId
       )
     }
@@ -1489,9 +1489,9 @@ export class IccPatientXApi extends IccPatientApi {
       mergeLevel++
       if (mergeLevel === maxMergeLevel) {
         throw (
-          "Too many merged levels for parent (Patient) of child document " +
+          'Too many merged levels for parent (Patient) of child document ' +
           childDocument.id +
-          " ; hcpId: " +
+          ' ; hcpId: ' +
           hcpId
         )
       }

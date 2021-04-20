@@ -9,14 +9,14 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { AmppComponent } from "./AmppComponent"
-import { Atc } from "./Atc"
-import { Commercialization } from "./Commercialization"
-import { Company } from "./Company"
-import { Dmpp } from "./Dmpp"
-import { Quantity } from "./Quantity"
-import { SamText } from "./SamText"
-import { SupplyProblem } from "./SupplyProblem"
+import { AmppComponent } from './AmppComponent'
+import { Atc } from './Atc'
+import { Commercialization } from './Commercialization'
+import { Company } from './Company'
+import { Dmpp } from './Dmpp'
+import { Quantity } from './Quantity'
+import { SamText } from './SamText'
+import { SupplyProblem } from './SupplyProblem'
 
 export class Ampp {
   constructor(json: JSON | any) {
@@ -65,10 +65,10 @@ export class Ampp {
   vaccineIndicationCodes?: Array<string>
 }
 export namespace Ampp {
-  export type StatusEnum = "AUTHORIZED" | "SUSPENDED" | "REVOKED"
+  export type StatusEnum = 'AUTHORIZED' | 'SUSPENDED' | 'REVOKED'
   export const StatusEnum = {
-    AUTHORIZED: "AUTHORIZED" as StatusEnum,
-    SUSPENDED: "SUSPENDED" as StatusEnum,
-    REVOKED: "REVOKED" as StatusEnum
+    AUTHORIZED: 'AUTHORIZED' as StatusEnum,
+    SUSPENDED: 'SUSPENDED' as StatusEnum,
+    REVOKED: 'REVOKED' as StatusEnum,
   }
 }

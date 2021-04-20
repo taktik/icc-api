@@ -28,12 +28,12 @@ export class CareTeamMembership {
   encryptedSelf?: string
 }
 export namespace CareTeamMembership {
-  export type MembershipTypeEnum = "doctor" | "mutuality" | "patient" | "specialist" | "other"
+  export type MembershipTypeEnum = 'doctor' | 'mutuality' | 'patient' | 'specialist' | 'other'
   export const MembershipTypeEnum = {
-    Doctor: "doctor" as MembershipTypeEnum,
-    Mutuality: "mutuality" as MembershipTypeEnum,
-    Patient: "patient" as MembershipTypeEnum,
-    Specialist: "specialist" as MembershipTypeEnum,
-    Other: "other" as MembershipTypeEnum
+    Doctor: 'doctor' as MembershipTypeEnum,
+    Mutuality: 'mutuality' as MembershipTypeEnum,
+    Patient: 'patient' as MembershipTypeEnum,
+    Specialist: 'specialist' as MembershipTypeEnum,
+    Other: 'other' as MembershipTypeEnum,
   }
 }

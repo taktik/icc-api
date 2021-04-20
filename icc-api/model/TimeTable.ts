@@ -9,9 +9,9 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStub } from "./CodeStub"
-import { Delegation } from "./Delegation"
-import { TimeTableItem } from "./TimeTableItem"
+import { CodeStub } from './CodeStub'
+import { Delegation } from './Delegation'
+import { TimeTableItem } from './TimeTableItem'
 
 export class TimeTable {
   constructor(json: JSON | any) {

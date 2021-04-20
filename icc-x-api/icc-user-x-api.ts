@@ -1,5 +1,5 @@
-import { IccUserApi } from "../icc-api/api/IccUserApi"
-import { b2a } from "./utils/binary-utils"
+import { IccUserApi } from '../icc-api/api/IccUserApi'
+import { b2a } from './utils/binary-utils'
 
 export class IccUserXApi extends IccUserApi {
   fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response>
@@ -8,11 +8,11 @@ export class IccUserXApi extends IccUserApi {
     host: string,
     headers: { [key: string]: string },
     fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    "undefined"
+    'undefined'
       ? window.fetch
-      : typeof self !== "undefined"
-        ? self.fetch
-        : fetch
+      : typeof self !== 'undefined'
+      ? self.fetch
+      : fetch
   ) {
     super(host, headers, fetchImpl)
     this.fetchImpl = fetchImpl

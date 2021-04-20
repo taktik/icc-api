@@ -20,18 +20,18 @@ export class Formula {
 }
 export namespace Formula {
   export type LifecycleEnum =
-    | "OnCreate"
-    | "OnLoad"
-    | "OnChange"
-    | "OnSave"
-    | "OnDestroy"
-    | "OnLoadPropertiesEditor"
+    | 'OnCreate'
+    | 'OnLoad'
+    | 'OnChange'
+    | 'OnSave'
+    | 'OnDestroy'
+    | 'OnLoadPropertiesEditor'
   export const LifecycleEnum = {
-    OnCreate: "OnCreate" as LifecycleEnum,
-    OnLoad: "OnLoad" as LifecycleEnum,
-    OnChange: "OnChange" as LifecycleEnum,
-    OnSave: "OnSave" as LifecycleEnum,
-    OnDestroy: "OnDestroy" as LifecycleEnum,
-    OnLoadPropertiesEditor: "OnLoadPropertiesEditor" as LifecycleEnum
+    OnCreate: 'OnCreate' as LifecycleEnum,
+    OnLoad: 'OnLoad' as LifecycleEnum,
+    OnChange: 'OnChange' as LifecycleEnum,
+    OnSave: 'OnSave' as LifecycleEnum,
+    OnDestroy: 'OnDestroy' as LifecycleEnum,
+    OnLoadPropertiesEditor: 'OnLoadPropertiesEditor' as LifecycleEnum,
   }
 }

@@ -1,4 +1,4 @@
-import { utils } from "./utils"
+import { utils } from './utils'
 
 export class ShamirClass {
   // Protected settings object
@@ -45,31 +45,31 @@ export class ShamirClass {
       39,
       9,
       5,
-      83
+      83,
     ],
     // warning for insecure PRNG
     warning:
-      "WARNING:\nA secure random number generator was not found.\nUsing Math.random(), which is NOT cryptographically strong!",
+      'WARNING:\nA secure random number generator was not found.\nUsing Math.random(), which is NOT cryptographically strong!',
     logs: [] as Array<number>,
-    exps: [] as Array<number>
+    exps: [] as Array<number>,
   }
   private crypto: Crypto
 
   constructor(
-    crypto: Crypto = typeof window !== "undefined"
+    crypto: Crypto = typeof window !== 'undefined'
       ? window.crypto
-      : typeof self !== "undefined"
-        ? self.crypto
-        : ({} as Crypto)
+      : typeof self !== 'undefined'
+      ? self.crypto
+      : ({} as Crypto)
   ) {
     this.crypto = crypto
   }
 
   init() {
-    const primitive = this.config.primitivePolynomials[this.config.bits]!!
+    const primitive = this.config.primitivePolynomials[this.config.bits]!
     let x = 1
 
-    for (var i = 0; i < this.config.size; i++) {
+    for (let i = 0; i < this.config.size; i++) {
       this.config.exps[i] = x
       this.config.logs[x] = i
       x <<= 1
@@ -85,11 +85,11 @@ export class ShamirClass {
   // Returns array of integers (each less than 2^bits-1), with each element
   // representing a `bits`-length segment of the input string from right to left,
   // i.e. parts[0] represents the right-most `bits`-length segment of the input string.
-  split(str: string, padLength: number = 0) {
+  split(str: string, padLength = 0) {
     if (padLength) {
       str = this.padLeft(str, padLength)
     }
-    var parts = []
+    const parts = []
     for (var i = str.length; i > this.config.bits; i -= this.config.bits) {
       parts.push(parseInt(str.slice(i - this.config.bits, i), 2))
     }
@@ -98,13 +98,13 @@ export class ShamirClass {
   }
 
   bin2hex(str: string) {
-    var hex = "",
+    let hex = '',
       num
     str = this.padLeft(str, 4)
-    for (var i = str.length; i >= 4; i -= 4) {
+    for (let i = str.length; i >= 4; i -= 4) {
       num = parseInt(str.slice(i - 4, i), 2)
       if (isNaN(num)) {
-        throw new Error("Invalid binary character.")
+        throw new Error('Invalid binary character.')
       }
       hex = num.toString(16) + hex
     }
@@ -112,12 +112,12 @@ export class ShamirClass {
   }
 
   hex2bin(str: string) {
-    var bin = "",
+    let bin = '',
       num
-    for (var i = str.length - 1; i >= 0; i--) {
+    for (let i = str.length - 1; i >= 0; i--) {
       num = parseInt(str[i], 16)
       if (isNaN(num)) {
-        throw new Error("Invalid hex character.")
+        throw new Error('Invalid hex character.')
       }
       bin = this.padLeft(num.toString(2), 4) + bin
     }
@@ -126,13 +126,13 @@ export class ShamirClass {
   }
 
   padLeft(str: string, bits: number = this.config.bits) {
-    var missing = str.length % bits
-    return (missing ? new Array(bits - missing + 1).join("0") : "") + str
+    const missing = str.length % bits
+    return (missing ? new Array(bits - missing + 1).join('0') : '') + str
   }
 
   random(bits: number) {
     const construct = (bits: number, arr: Uint32Array, size: number) => {
-      let str = "",
+      let str = '',
         i = 0
       const len = arr.length - 1
       while (i < len || str.length < bits) {
@@ -143,7 +143,7 @@ export class ShamirClass {
       return (str.match(/0/g) || []).length === str.length ? null : str
     }
 
-    var elems = Math.ceil(bits / 32),
+    let elems = Math.ceil(bits / 32),
       str = null,
       arr = new Uint32Array(elems)
 
@@ -162,52 +162,52 @@ export class ShamirClass {
 
     if (numShares % 1 !== 0 || numShares < 2) {
       throw new Error(
-        "Number of shares must be an integer between 2 and 2^bits-1 (" +
+        'Number of shares must be an integer between 2 and 2^bits-1 (' +
           this.config.max +
-          "), inclusive."
+          '), inclusive.'
       )
     }
     if (numShares > this.config.max) {
       var neededBits = Math.ceil(Math.log(numShares + 1) / Math.LN2)
       throw new Error(
-        "Number of shares must be an integer between 2 and 2^bits-1 (" +
+        'Number of shares must be an integer between 2 and 2^bits-1 (' +
           this.config.max +
-          "), inclusive. To create " +
+          '), inclusive. To create ' +
           numShares +
-          " shares, use at least " +
+          ' shares, use at least ' +
           neededBits +
-          " bits."
+          ' bits.'
       )
     }
     if (threshold % 1 !== 0 || threshold < 2) {
       throw new Error(
-        "Threshold number of shares must be an integer between 2 and 2^bits-1 (" +
+        'Threshold number of shares must be an integer between 2 and 2^bits-1 (' +
           this.config.max +
-          "), inclusive."
+          '), inclusive.'
       )
     }
     if (threshold > this.config.max) {
       var neededBits = Math.ceil(Math.log(threshold + 1) / Math.LN2)
       throw new Error(
-        "Threshold number of shares must be an integer between 2 and 2^bits-1 (" +
+        'Threshold number of shares must be an integer between 2 and 2^bits-1 (' +
           this.config.max +
-          "), inclusive.  To use a threshold of " +
+          '), inclusive.  To use a threshold of ' +
           threshold +
-          ", use at least " +
+          ', use at least ' +
           neededBits +
-          " bits."
+          ' bits.'
       )
     }
 
     // append a 1 so that we can preserve the correct number of leading zeros in our secret
-    const secret = this.split("1" + this.hex2bin(secretString), 0)
+    const secret = this.split('1' + this.hex2bin(secretString), 0)
     const x = new Array(numShares),
       y = new Array(numShares)
-    for (var i = 0, len = secret.length; i < len; i++) {
-      var subShares = this._getShares(secret[i], numShares, threshold)
-      for (var j = 0; j < numShares; j++) {
+    for (let i = 0, len = secret.length; i < len; i++) {
+      const subShares = this._getShares(secret[i], numShares, threshold)
+      for (let j = 0; j < numShares; j++) {
         x[j] = x[j] || subShares[j].x.toString(this.config.radix)
-        y[j] = this.padLeft(subShares[j].y.toString(2)) + (y[j] ? y[j] : "")
+        y[j] = this.padLeft(subShares[j].y.toString(2)) + (y[j] ? y[j] : '')
       }
     }
     const padding = this.config.max.toString(this.config.radix).length
@@ -224,8 +224,8 @@ export class ShamirClass {
   // Note: no error-checking at this stage! If `secrets` is NOT
   // a NUMBER less than 2^bits-1, the output will be incorrect!
   _getShares(secret: number, numShares: number, threshold: number) {
-    var shares = []
-    var coeffs = [secret]
+    const shares = []
+    const coeffs = [secret]
 
     for (var i = 1; i < threshold; i++) {
       coeffs[i] = parseInt(this.random(this.config.bits), 16)
@@ -233,7 +233,7 @@ export class ShamirClass {
     for (var i = 1, len = numShares + 1; i < len; i++) {
       shares[i - 1] = {
         x: i,
-        y: this.horner(i, coeffs)
+        y: this.horner(i, coeffs),
       }
     }
     return shares
@@ -245,9 +245,9 @@ export class ShamirClass {
   //       so if fx===0, just set fx to coeff[i] because
   //       using the exp/log form will result in incorrect value
   horner(x: number, coeffs: Array<number>) {
-    var logx = this.config.logs[x]
-    var fx = 0
-    for (var i = coeffs.length - 1; i >= 0; i--) {
+    const logx = this.config.logs[x]
+    let fx = 0
+    for (let i = coeffs.length - 1; i >= 0; i--) {
       if (fx === 0) {
         fx = coeffs[i]
         continue
@@ -258,34 +258,34 @@ export class ShamirClass {
   }
 
   processShare(share: string) {
-    var bits = parseInt(share[0], 16)
+    const bits = parseInt(share[0], 16)
     if (bits && (bits % 1 !== 0 || bits < this.config.minBits || bits > this.config.maxBits)) {
       throw new Error(
-        "Number of bits must be an integer between " +
+        'Number of bits must be an integer between ' +
           this.config.minBits +
-          " and " +
+          ' and ' +
           this.config.maxBits +
-          ", inclusive."
+          ', inclusive.'
       )
     }
 
-    var max = Math.pow(2, bits) - 1
-    var idLength = max.toString(this.config.radix).length
+    const max = Math.pow(2, bits) - 1
+    const idLength = max.toString(this.config.radix).length
 
-    var id = parseInt(share.substr(1, idLength), this.config.radix)
+    const id = parseInt(share.substr(1, idLength), this.config.radix)
     if (id % 1 !== 0 || id < 1 || id > max) {
       throw new Error(
-        "Share id must be an integer between 1 and " + this.config.max + ", inclusive."
+        'Share id must be an integer between 1 and ' + this.config.max + ', inclusive.'
       )
     }
     share = share.substr(idLength + 1)
     if (!share.length) {
-      throw new Error("Invalid share: zero-length share.")
+      throw new Error('Invalid share: zero-length share.')
     }
     return {
       bits: bits,
       id: id,
-      value: share
+      value: share,
     }
   }
 
@@ -294,22 +294,22 @@ export class ShamirClass {
       this.init()
     }
 
-    let x: Array<number> = []
-    let y: Array<Array<number>> = []
-    let result = ""
+    const x: Array<number> = []
+    const y: Array<Array<number>> = []
+    let result = ''
     let idx: number
 
     for (var i = 0, len = shares.length; i < len; i++) {
       const share = this.processShare(shares[i])
 
-      if (x.includes(share["id"])) {
+      if (x.includes(share['id'])) {
         // repeated x value?
         continue
       }
 
-      idx = x.push(share["id"]) - 1
-      const shareValues = this.split(this.hex2bin(share["value"]))
-      for (var j = 0, len2 = shareValues.length; j < len2; j++) {
+      idx = x.push(share['id']) - 1
+      const shareValues = this.split(this.hex2bin(share['value']))
+      for (let j = 0, len2 = shareValues.length; j < len2; j++) {
         y[j] = y[j] || []
         y[j][idx] = shareValues[j]
       }
@@ -321,7 +321,7 @@ export class ShamirClass {
 
     if (at === 0) {
       // reconstructing the secret
-      return this.bin2hex(result.slice(result.indexOf("1") + 1))
+      return this.bin2hex(result.slice(result.indexOf('1') + 1))
     } else {
       // generating a new share
       return this.bin2hex(result)
@@ -335,20 +335,20 @@ export class ShamirClass {
   // Generate a new share with id `id` (a number between 1 and 2^bits-1)
   // `id` can be a Number or a String in the default radix (16)
   newShare(id: number | string, shares: Array<string>) {
-    if (typeof id === "string") {
+    if (typeof id === 'string') {
       id = parseInt(id, this.config.radix)
     }
 
-    var share = this.processShare(shares[0])
-    var max = Math.pow(2, share["bits"]) - 1
+    const share = this.processShare(shares[0])
+    const max = Math.pow(2, share['bits']) - 1
 
     if (id % 1 !== 0 || id < 1 || id > max) {
       throw new Error(
-        "Share id must be an integer between 1 and " + this.config.max + ", inclusive."
+        'Share id must be an integer between 1 and ' + this.config.max + ', inclusive.'
       )
     }
 
-    var padding = max.toString(this.config.radix).length
+    const padding = max.toString(this.config.radix).length
     return (
       this.config.bits.toString(16).toUpperCase() +
       this.padLeft(id.toString(this.config.radix), padding) +

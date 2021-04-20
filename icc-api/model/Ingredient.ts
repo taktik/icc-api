@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Quantity } from "./Quantity"
-import { SubstanceStub } from "./SubstanceStub"
+import { Quantity } from './Quantity'
+import { SubstanceStub } from './SubstanceStub'
 
 export class Ingredient {
   constructor(json: JSON | any) {
@@ -28,9 +28,9 @@ export class Ingredient {
   substance?: SubstanceStub
 }
 export namespace Ingredient {
-  export type TypeEnum = "ACTIVE_SUBSTANCE" | "EXCIPIENT"
+  export type TypeEnum = 'ACTIVE_SUBSTANCE' | 'EXCIPIENT'
   export const TypeEnum = {
-    ACTIVESUBSTANCE: "ACTIVE_SUBSTANCE" as TypeEnum,
-    EXCIPIENT: "EXCIPIENT" as TypeEnum
+    ACTIVESUBSTANCE: 'ACTIVE_SUBSTANCE' as TypeEnum,
+    EXCIPIENT: 'EXCIPIENT' as TypeEnum,
   }
 }

@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStub } from "./CodeStub"
-import { ServiceLink } from "./ServiceLink"
+import { CodeStub } from './CodeStub'
+import { ServiceLink } from './ServiceLink'
 
 /**
  * This entity represents a sub-contact. It is serialized in JSON and saved in the underlying icure-contact CouchDB database.

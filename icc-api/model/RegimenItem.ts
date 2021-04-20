@@ -9,9 +9,9 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { AdministrationQuantity } from "./AdministrationQuantity"
-import { CodeStub } from "./CodeStub"
-import { Weekday } from "./Weekday"
+import { AdministrationQuantity } from './AdministrationQuantity'
+import { CodeStub } from './CodeStub'
+import { Weekday } from './Weekday'
 
 export class RegimenItem {
   constructor(json: JSON | any) {

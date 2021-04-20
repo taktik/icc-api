@@ -1,9 +1,9 @@
-import { IccInvoiceApi, IccEntityrefApi } from "../icc-api"
-import { IccCryptoXApi } from "./icc-crypto-x-api"
+import { IccInvoiceApi, IccEntityrefApi } from '../icc-api'
+import { IccCryptoXApi } from './icc-crypto-x-api'
 
-import * as _ from "lodash"
-import * as models from "../icc-api/model/models"
-import { Invoice } from "../icc-api/model/models"
+import * as _ from 'lodash'
+import * as models from '../icc-api/model/models'
+import { Invoice } from '../icc-api/model/models'
 
 export class IccInvoiceXApi extends IccInvoiceApi {
   crypto: IccCryptoXApi
@@ -15,11 +15,11 @@ export class IccInvoiceXApi extends IccInvoiceApi {
     crypto: IccCryptoXApi,
     entityrefApi: IccEntityrefApi,
     fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    "undefined"
+    'undefined'
       ? window.fetch
-      : typeof self !== "undefined"
-        ? self.fetch
-        : fetch
+      : typeof self !== 'undefined'
+      ? self.fetch
+      : fetch
   ) {
     super(host, headers, fetchImpl)
     this.crypto = crypto
@@ -32,14 +32,14 @@ export class IccInvoiceXApi extends IccInvoiceApi {
         {
           id: this.crypto.randomUuid(),
           groupId: this.crypto.randomUuid(),
-          _type: "org.taktik.icure.entities.Invoice",
+          _type: 'org.taktik.icure.entities.Invoice',
           created: new Date().getTime(),
           modified: new Date().getTime(),
           responsible: user.healthcarePartyId || user.patientId,
           author: user.id,
           codes: [],
           tags: [],
-          invoicingCodes: []
+          invoicingCodes: [],
         },
         inv || {}
       )
@@ -56,7 +56,7 @@ export class IccInvoiceXApi extends IccInvoiceApi {
     const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto
       .extractDelegationsSFKs(patient, hcpId)
-      .then(secretForeignKeys =>
+      .then((secretForeignKeys) =>
         Promise.all([
           this.crypto.initObjectDelegations(
             invoice,
@@ -64,17 +64,17 @@ export class IccInvoiceXApi extends IccInvoiceApi {
             hcpId!,
             secretForeignKeys.extractedKeys[0]
           ),
-          this.crypto.initEncryptionKeys(invoice, hcpId!)
+          this.crypto.initEncryptionKeys(invoice, hcpId!),
         ])
       )
-      .then(initData => {
+      .then((initData) => {
         const dels = initData[0]
         const eks = initData[1]
         _.extend(invoice, {
           delegations: dels.delegations,
           cryptedForeignKeys: dels.cryptedForeignKeys,
           secretForeignKeys: dels.secretForeignKeys,
-          encryptionKeys: eks.encryptionKeys
+          encryptionKeys: eks.encryptionKeys,
         })
 
         let promise = Promise.resolve(invoice)
@@ -82,8 +82,8 @@ export class IccInvoiceXApi extends IccInvoiceApi {
           ? (user.autoDelegations.all || []).concat(user.autoDelegations.financialInformation || [])
           : []
         ).forEach(
-          delegateId =>
-            (promise = promise.then(invoice =>
+          (delegateId) =>
+            (promise = promise.then((invoice) =>
               this.crypto
                 .addDelegationsAndEncryptionKeys(
                   patient,
@@ -93,7 +93,7 @@ export class IccInvoiceXApi extends IccInvoiceApi {
                   dels.secretId,
                   eks.secretId
                 )
-                .catch(e => {
+                .catch((e) => {
                   console.log(e)
                   return invoice
                 })
@@ -105,23 +105,23 @@ export class IccInvoiceXApi extends IccInvoiceApi {
 
   initEncryptionKeys(user: models.User, invoice: models.Invoice) {
     const hcpId = user.healthcarePartyId || user.patientId
-    return this.crypto.initEncryptionKeys(invoice, hcpId!).then(eks => {
+    return this.crypto.initEncryptionKeys(invoice, hcpId!).then((eks) => {
       let promise = Promise.resolve(
         _.extend(invoice, {
-          encryptionKeys: eks.encryptionKeys
+          encryptionKeys: eks.encryptionKeys,
         })
       )
       ;(user.autoDelegations
         ? (user.autoDelegations.all || []).concat(user.autoDelegations.financialInformation || [])
         : []
       ).forEach(
-        delegateId =>
-          (promise = promise.then(invoice =>
+        (delegateId) =>
+          (promise = promise.then((invoice) =>
             this.crypto
               .appendEncryptionKeys(invoice, hcpId!, delegateId, eks.secretId)
-              .then(extraEks => {
+              .then((extraEks) => {
                 return _.extend(invoice, {
-                  encryptionKeys: extraEks.encryptionKeys
+                  encryptionKeys: extraEks.encryptionKeys,
                 })
               })
           ))
@@ -138,12 +138,12 @@ export class IccInvoiceXApi extends IccInvoiceApi {
       invoice.id = this.crypto.randomUuid()
     }
     return this.getNextInvoiceReference(prefix, this.entityrefApi)
-      .then(reference =>
+      .then((reference) =>
         this.createInvoiceReference(reference, invoice.id!, prefix, this.entityrefApi)
       )
-      .then(entityReference => {
+      .then((entityReference) => {
         if (!entityReference.id) {
-          throw new Error("Cannot create invoice")
+          throw new Error('Cannot create invoice')
         }
         invoice.invoiceReference = entityReference.id.substr(prefix.length)
         return super.createInvoice(invoice)
@@ -153,7 +153,7 @@ export class IccInvoiceXApi extends IccInvoiceApi {
   getNextInvoiceReference(prefix: string, entityrefApi: IccEntityrefApi): Promise<number> {
     return entityrefApi.getLatest(prefix).then((entRef: models.EntityReference) => {
       if (!entRef || !entRef.id || !entRef.id!.startsWith(prefix)) return 1
-      const sequenceNumber = entRef.id!.split(":").pop() || 0
+      const sequenceNumber = entRef.id!.split(':').pop() || 0
       return Number(sequenceNumber) + 1
     })
   }
@@ -167,11 +167,11 @@ export class IccInvoiceXApi extends IccInvoiceApi {
     return entityrefApi
       .createEntityReference(
         new models.EntityReference({
-          id: prefix + nextReference.toString().padStart(6, "0"),
-          docId
+          id: prefix + nextReference.toString().padStart(6, '0'),
+          docId,
         })
       )
-      .catch(err => {
+      .catch((err) => {
         console.log(err)
         return this.createInvoiceReference(nextReference + 1, docId, prefix, entityrefApi)
       })
@@ -195,14 +195,14 @@ export class IccInvoiceXApi extends IccInvoiceApi {
   findBy(hcpartyId: string, patient: models.Patient): Promise<Array<models.Invoice>> {
     return this.crypto
       .extractDelegationsSFKs(patient, hcpartyId)
-      .then(secretForeignKeys =>
+      .then((secretForeignKeys) =>
         this.findInvoicesByHCPartyPatientForeignKeys(
           secretForeignKeys.hcpartyId!,
-          secretForeignKeys.extractedKeys.join(",")
+          secretForeignKeys.extractedKeys.join(',')
         )
       )
-      .then(invoices => this.decrypt(hcpartyId, invoices))
-      .then(function(decryptedInvoices) {
+      .then((invoices) => this.decrypt(hcpartyId, invoices))
+      .then(function (decryptedInvoices) {
         return decryptedInvoices
       })
   }

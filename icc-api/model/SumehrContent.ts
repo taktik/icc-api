@@ -9,10 +9,10 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { HealthElement } from "./HealthElement"
-import { Partnership } from "./Partnership"
-import { PatientHealthCareParty } from "./PatientHealthCareParty"
-import { Service } from "./Service"
+import { HealthElement } from './HealthElement'
+import { Partnership } from './Partnership'
+import { PatientHealthCareParty } from './PatientHealthCareParty'
+import { Service } from './Service'
 
 export class SumehrContent {
   constructor(json: JSON | any) {

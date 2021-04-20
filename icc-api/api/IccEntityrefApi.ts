@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { XHR } from "./XHR"
-import { EntityReference } from "../model/EntityReference"
+import { XHR } from './XHR'
+import { EntityReference } from '../model/EntityReference'
 
 export class IccEntityrefApi {
   host: string
@@ -23,7 +23,7 @@ export class IccEntityrefApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -44,14 +44,14 @@ export class IccEntityrefApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/entityref` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/entityref` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new EntityReference(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new EntityReference(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -60,16 +60,16 @@ export class IccEntityrefApi {
    * @param prefix
    */
   getLatest(prefix: string): Promise<EntityReference> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/entityref/latest/${encodeURIComponent(String(prefix))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new EntityReference(doc.body as JSON))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new EntityReference(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 }

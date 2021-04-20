@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { FormSection } from "./FormSection"
-import { Tag } from "./Tag"
+import { FormSection } from './FormSection'
+import { Tag } from './Tag'
 
 export class FormLayout {
   constructor(json: JSON | any) {

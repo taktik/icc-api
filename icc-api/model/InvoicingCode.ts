@@ -71,22 +71,22 @@ export class InvoicingCode {
 }
 export namespace InvoicingCode {
   export type PaymentTypeEnum =
-    | "cash"
-    | "wired"
-    | "insurance"
-    | "creditcard"
-    | "debitcard"
-    | "paypal"
-    | "bitcoin"
-    | "other"
+    | 'cash'
+    | 'wired'
+    | 'insurance'
+    | 'creditcard'
+    | 'debitcard'
+    | 'paypal'
+    | 'bitcoin'
+    | 'other'
   export const PaymentTypeEnum = {
-    Cash: "cash" as PaymentTypeEnum,
-    Wired: "wired" as PaymentTypeEnum,
-    Insurance: "insurance" as PaymentTypeEnum,
-    Creditcard: "creditcard" as PaymentTypeEnum,
-    Debitcard: "debitcard" as PaymentTypeEnum,
-    Paypal: "paypal" as PaymentTypeEnum,
-    Bitcoin: "bitcoin" as PaymentTypeEnum,
-    Other: "other" as PaymentTypeEnum
+    Cash: 'cash' as PaymentTypeEnum,
+    Wired: 'wired' as PaymentTypeEnum,
+    Insurance: 'insurance' as PaymentTypeEnum,
+    Creditcard: 'creditcard' as PaymentTypeEnum,
+    Debitcard: 'debitcard' as PaymentTypeEnum,
+    Paypal: 'paypal' as PaymentTypeEnum,
+    Bitcoin: 'bitcoin' as PaymentTypeEnum,
+    Other: 'other' as PaymentTypeEnum,
   }
 }

@@ -9,9 +9,9 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStub } from "./CodeStub"
-import { Delegation } from "./Delegation"
-import { MessageReadStatus } from "./MessageReadStatus"
+import { CodeStub } from './CodeStub'
+import { Delegation } from './Delegation'
+import { MessageReadStatus } from './MessageReadStatus'
 
 /**
  * This entity is a root level object. It represents a Message. It is serialized in JSON and saved in the underlying CouchDB database.

@@ -9,9 +9,9 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { XHR } from "./XHR"
-import { DocIdentifier } from "../model/DocIdentifier"
-import { FrontEndMigration } from "../model/FrontEndMigration"
+import { XHR } from './XHR'
+import { DocIdentifier } from '../model/DocIdentifier'
+import { FrontEndMigration } from '../model/FrontEndMigration'
 
 export class IccFrontendmigrationApi {
   host: string
@@ -24,7 +24,7 @@ export class IccFrontendmigrationApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -45,14 +45,14 @@ export class IccFrontendmigrationApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/frontendmigration` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/frontendmigration` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new FrontEndMigration(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new FrontEndMigration(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -61,17 +61,17 @@ export class IccFrontendmigrationApi {
    * @param frontEndMigrationId
    */
   deleteFrontEndMigration(frontEndMigrationId: string): Promise<DocIdentifier> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/frontendmigration/${encodeURIComponent(String(frontEndMigrationId))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
-      .then(doc => new DocIdentifier(doc.body as JSON))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new DocIdentifier(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -80,17 +80,17 @@ export class IccFrontendmigrationApi {
    * @param frontEndMigrationId
    */
   getFrontEndMigration(frontEndMigrationId: string): Promise<FrontEndMigration> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/frontendmigration/${encodeURIComponent(String(frontEndMigrationId))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new FrontEndMigration(doc.body as JSON))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new FrontEndMigration(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -99,17 +99,17 @@ export class IccFrontendmigrationApi {
    * @param frontEndMigrationName
    */
   getFrontEndMigrationByName(frontEndMigrationName: string): Promise<Array<FrontEndMigration>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/frontendmigration/byName/${encodeURIComponent(String(frontEndMigrationName))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new FrontEndMigration(it)))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new FrontEndMigration(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -117,13 +117,13 @@ export class IccFrontendmigrationApi {
    * @summary Gets a front end migration
    */
   getFrontEndMigrations(): Promise<Array<FrontEndMigration>> {
-    let _body = null
+    const _body = null
 
-    const _url = this.host + `/frontendmigration` + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new FrontEndMigration(it)))
-      .catch(err => this.handleError(err))
+    const _url = this.host + `/frontendmigration` + '?ts=' + new Date().getTime()
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new FrontEndMigration(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -135,13 +135,13 @@ export class IccFrontendmigrationApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/frontendmigration` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/frontendmigration` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new FrontEndMigration(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new FrontEndMigration(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 }

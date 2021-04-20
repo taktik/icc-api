@@ -9,10 +9,10 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { XHR } from "./XHR"
-import { ByteArray } from "../model/ByteArray"
-import { DocIdentifier } from "../model/DocIdentifier"
-import { DocumentTemplate } from "../model/DocumentTemplate"
+import { XHR } from './XHR'
+import { ByteArray } from '../model/ByteArray'
+import { DocIdentifier } from '../model/DocIdentifier'
+import { DocumentTemplate } from '../model/DocumentTemplate'
 
 export class IccDoctemplateApi {
   host: string
@@ -25,7 +25,7 @@ export class IccDoctemplateApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -46,14 +46,14 @@ export class IccDoctemplateApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/doctemplate` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/doctemplate` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new DocumentTemplate(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new DocumentTemplate(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -62,17 +62,17 @@ export class IccDoctemplateApi {
    * @param documentTemplateIds
    */
   deleteDocumentTemplate(documentTemplateIds: string): Promise<Array<DocIdentifier>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/doctemplate/${encodeURIComponent(String(documentTemplateIds))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new DocIdentifier(it)))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -80,13 +80,13 @@ export class IccDoctemplateApi {
    * @summary Gets all document templates for all users
    */
   findAllDocumentTemplates(): Promise<Array<DocumentTemplate>> {
-    let _body = null
+    const _body = null
 
-    const _url = this.host + `/doctemplate/find/all` + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new DocumentTemplate(it)))
-      .catch(err => this.handleError(err))
+    const _url = this.host + `/doctemplate/find/all` + '?ts=' + new Date().getTime()
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocumentTemplate(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -94,13 +94,13 @@ export class IccDoctemplateApi {
    * @summary Gets all document templates for current user
    */
   findDocumentTemplates(): Promise<Array<DocumentTemplate>> {
-    let _body = null
+    const _body = null
 
-    const _url = this.host + `/doctemplate` + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new DocumentTemplate(it)))
-      .catch(err => this.handleError(err))
+    const _url = this.host + `/doctemplate` + '?ts=' + new Date().getTime()
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocumentTemplate(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -109,17 +109,17 @@ export class IccDoctemplateApi {
    * @param documentTypeCode
    */
   findDocumentTemplatesByDocumentType(documentTypeCode: string): Promise<Array<DocumentTemplate>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/doctemplate/byDocumentType/${encodeURIComponent(String(documentTypeCode))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new DocumentTemplate(it)))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocumentTemplate(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -130,17 +130,17 @@ export class IccDoctemplateApi {
   findDocumentTemplatesByDocumentTypeForCurrentUser(
     documentTypeCode: string
   ): Promise<Array<DocumentTemplate>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/doctemplate/byDocumentTypeForCurrentUser/${encodeURIComponent(String(documentTypeCode))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new DocumentTemplate(it)))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocumentTemplate(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -149,17 +149,17 @@ export class IccDoctemplateApi {
    * @param specialityCode
    */
   findDocumentTemplatesBySpeciality(specialityCode: string): Promise<Array<DocumentTemplate>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/doctemplate/bySpecialty/${encodeURIComponent(String(specialityCode))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new DocumentTemplate(it)))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocumentTemplate(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -169,19 +169,19 @@ export class IccDoctemplateApi {
    * @param attachmentId
    */
   getAttachmentText(documentTemplateId: string, attachmentId: string): Promise<ArrayBuffer> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/doctemplate/${encodeURIComponent(
         String(documentTemplateId)
       )}/attachmentText/${encodeURIComponent(String(attachmentId))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => doc.body)
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => doc.body)
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -190,17 +190,17 @@ export class IccDoctemplateApi {
    * @param documentTemplateId
    */
   getDocumentTemplate(documentTemplateId: string): Promise<DocumentTemplate> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/doctemplate/${encodeURIComponent(String(documentTemplateId))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new DocumentTemplate(doc.body as JSON))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new DocumentTemplate(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -213,19 +213,19 @@ export class IccDoctemplateApi {
     documentTemplateId: string,
     attachmentId: string
   ): Promise<ArrayBuffer> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/doctemplate/${encodeURIComponent(
         String(documentTemplateId)
       )}/attachment/${encodeURIComponent(String(attachmentId))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => doc.body)
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => doc.body)
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -244,15 +244,15 @@ export class IccDoctemplateApi {
     const _url =
       this.host +
       `/doctemplate/${encodeURIComponent(String(documentTemplateId))}/attachment` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/octet-stream"))
-    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new DocumentTemplate(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/octet-stream'))
+    return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new DocumentTemplate(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -271,15 +271,15 @@ export class IccDoctemplateApi {
     const _url =
       this.host +
       `/doctemplate/${encodeURIComponent(String(documentTemplateId))}/attachmentJson` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/octet-stream"))
-    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new DocumentTemplate(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/octet-stream'))
+    return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new DocumentTemplate(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -298,14 +298,14 @@ export class IccDoctemplateApi {
     const _url =
       this.host +
       `/doctemplate/${encodeURIComponent(String(documentTemplateId))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new DocumentTemplate(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new DocumentTemplate(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 }

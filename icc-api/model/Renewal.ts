@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Duration } from "./Duration"
+import { Duration } from './Duration'
 
 export class Renewal {
   constructor(json: JSON | any) {

@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Message } from "./Message"
-import { PaginatedDocumentKeyIdPairObject } from "./PaginatedDocumentKeyIdPairObject"
+import { Message } from './Message'
+import { PaginatedDocumentKeyIdPairObject } from './PaginatedDocumentKeyIdPairObject'
 
 export class PaginatedListMessage {
   constructor(json: JSON | any) {

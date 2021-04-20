@@ -18,10 +18,10 @@ export class SumehrValidity {
   sumehrValid?: SumehrValidity.SumehrValidEnum
 }
 export namespace SumehrValidity {
-  export type SumehrValidEnum = "absent" | "uptodate" | "outdated"
+  export type SumehrValidEnum = 'absent' | 'uptodate' | 'outdated'
   export const SumehrValidEnum = {
-    Absent: "absent" as SumehrValidEnum,
-    Uptodate: "uptodate" as SumehrValidEnum,
-    Outdated: "outdated" as SumehrValidEnum
+    Absent: 'absent' as SumehrValidEnum,
+    Uptodate: 'uptodate' as SumehrValidEnum,
+    Outdated: 'outdated' as SumehrValidEnum,
   }
 }

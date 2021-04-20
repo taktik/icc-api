@@ -9,10 +9,10 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { XHR } from "./XHR"
-import { ListOfIds } from "../model/ListOfIds"
-import { PaginatedListTarification } from "../model/PaginatedListTarification"
-import { Tarification } from "../model/Tarification"
+import { XHR } from './XHR'
+import { ListOfIds } from '../model/ListOfIds'
+import { PaginatedListTarification } from '../model/PaginatedListTarification'
+import { Tarification } from '../model/Tarification'
 
 export class IccTarificationApi {
   host: string
@@ -25,7 +25,7 @@ export class IccTarificationApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -46,14 +46,14 @@ export class IccTarificationApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/tarification` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/tarification` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Tarification(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Tarification(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -74,23 +74,23 @@ export class IccTarificationApi {
     startDocumentId?: string,
     limit?: number
   ): Promise<PaginatedListTarification> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/tarification` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (region ? "&region=" + encodeURIComponent(String(region)) : "") +
-      (type ? "&type=" + encodeURIComponent(String(type)) : "") +
-      (tarification ? "&tarification=" + encodeURIComponent(String(tarification)) : "") +
-      (version ? "&version=" + encodeURIComponent(String(version)) : "") +
-      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
-      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListTarification(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      (region ? '&region=' + encodeURIComponent(String(region)) : '') +
+      (type ? '&type=' + encodeURIComponent(String(type)) : '') +
+      (tarification ? '&tarification=' + encodeURIComponent(String(tarification)) : '') +
+      (version ? '&version=' + encodeURIComponent(String(version)) : '') +
+      (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
+      (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new PaginatedListTarification(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -111,23 +111,23 @@ export class IccTarificationApi {
     startDocumentId?: string,
     limit?: number
   ): Promise<PaginatedListTarification> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/tarification/byLabel` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (region ? "&region=" + encodeURIComponent(String(region)) : "") +
-      (types ? "&types=" + encodeURIComponent(String(types)) : "") +
-      (language ? "&language=" + encodeURIComponent(String(language)) : "") +
-      (label ? "&label=" + encodeURIComponent(String(label)) : "") +
-      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
-      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListTarification(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      (region ? '&region=' + encodeURIComponent(String(region)) : '') +
+      (types ? '&types=' + encodeURIComponent(String(types)) : '') +
+      (language ? '&language=' + encodeURIComponent(String(language)) : '') +
+      (label ? '&label=' + encodeURIComponent(String(label)) : '') +
+      (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
+      (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new PaginatedListTarification(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -144,21 +144,21 @@ export class IccTarificationApi {
     tarification?: string,
     version?: string
   ): Promise<Array<Tarification>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/tarification/byRegionTypeTarification` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (region ? "&region=" + encodeURIComponent(String(region)) : "") +
-      (type ? "&type=" + encodeURIComponent(String(type)) : "") +
-      (tarification ? "&tarification=" + encodeURIComponent(String(tarification)) : "") +
-      (version ? "&version=" + encodeURIComponent(String(version)) : "")
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new Tarification(it)))
-      .catch(err => this.handleError(err))
+      (region ? '&region=' + encodeURIComponent(String(region)) : '') +
+      (type ? '&type=' + encodeURIComponent(String(type)) : '') +
+      (tarification ? '&tarification=' + encodeURIComponent(String(tarification)) : '') +
+      (version ? '&version=' + encodeURIComponent(String(version)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new Tarification(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -167,17 +167,17 @@ export class IccTarificationApi {
    * @param tarificationId Tarification id
    */
   getTarification(tarificationId: string): Promise<Tarification> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/tarification/${encodeURIComponent(String(tarificationId))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Tarification(doc.body as JSON))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Tarification(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -192,19 +192,19 @@ export class IccTarificationApi {
     tarification: string,
     version: string
   ): Promise<Tarification> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/tarification/${encodeURIComponent(String(type))}/${encodeURIComponent(
         String(tarification)
       )}/${encodeURIComponent(String(version))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Tarification(doc.body as JSON))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Tarification(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -216,14 +216,14 @@ export class IccTarificationApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/tarification/byIds` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/tarification/byIds` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new Tarification(it)))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new Tarification(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -235,13 +235,13 @@ export class IccTarificationApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/tarification` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/tarification` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Tarification(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Tarification(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 }

@@ -9,9 +9,9 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { NoGenericPrescriptionReason } from "./NoGenericPrescriptionReason"
-import { NoSwitchReason } from "./NoSwitchReason"
-import { SamText } from "./SamText"
+import { NoGenericPrescriptionReason } from './NoGenericPrescriptionReason'
+import { NoSwitchReason } from './NoSwitchReason'
+import { SamText } from './SamText'
 
 export class VmpGroup {
   constructor(json: JSON | any) {

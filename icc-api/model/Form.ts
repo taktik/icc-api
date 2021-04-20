@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStub } from "./CodeStub"
-import { Delegation } from "./Delegation"
+import { CodeStub } from './CodeStub'
+import { Delegation } from './Delegation'
 
 export class Form {
   constructor(json: JSON | any) {

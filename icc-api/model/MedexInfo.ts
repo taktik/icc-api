@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { HealthcareParty } from "./HealthcareParty"
-import { Patient } from "./Patient"
+import { HealthcareParty } from './HealthcareParty'
+import { Patient } from './Patient'
 
 export class MedexInfo {
   constructor(json: JSON | any) {

@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Nmp } from "./Nmp"
-import { PaginatedDocumentKeyIdPairObject } from "./PaginatedDocumentKeyIdPairObject"
+import { Nmp } from './Nmp'
+import { PaginatedDocumentKeyIdPairObject } from './PaginatedDocumentKeyIdPairObject'
 
 export class PaginatedListNmp {
   constructor(json: JSON | any) {

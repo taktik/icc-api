@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { EIDItem } from "./EIDItem"
+import { EIDItem } from './EIDItem'
 
 export class InvoiceItem {
   constructor(json: JSON | any) {
@@ -40,63 +40,63 @@ export class InvoiceItem {
   percentNorm?: InvoiceItem.PercentNormEnum
 }
 export namespace InvoiceItem {
-  export type SideCodeEnum = "None" | "Left" | "Right"
+  export type SideCodeEnum = 'None' | 'Left' | 'Right'
   export const SideCodeEnum = {
-    None: "None" as SideCodeEnum,
-    Left: "Left" as SideCodeEnum,
-    Right: "Right" as SideCodeEnum
+    None: 'None' as SideCodeEnum,
+    Left: 'Left' as SideCodeEnum,
+    Right: 'Right' as SideCodeEnum,
   }
-  export type TimeOfDayEnum = "Other" | "Night" | "Weekend" | "Bankholiday" | "Urgent"
+  export type TimeOfDayEnum = 'Other' | 'Night' | 'Weekend' | 'Bankholiday' | 'Urgent'
   export const TimeOfDayEnum = {
-    Other: "Other" as TimeOfDayEnum,
-    Night: "Night" as TimeOfDayEnum,
-    Weekend: "Weekend" as TimeOfDayEnum,
-    Bankholiday: "Bankholiday" as TimeOfDayEnum,
-    Urgent: "Urgent" as TimeOfDayEnum
+    Other: 'Other' as TimeOfDayEnum,
+    Night: 'Night' as TimeOfDayEnum,
+    Weekend: 'Weekend' as TimeOfDayEnum,
+    Bankholiday: 'Bankholiday' as TimeOfDayEnum,
+    Urgent: 'Urgent' as TimeOfDayEnum,
   }
   export type DerogationMaxNumberEnum =
-    | "Other"
-    | "DerogationMaxNumber"
-    | "OtherPrescription"
-    | "SecondPrestationOfDay"
-    | "ThirdAndNextPrestationOfDay"
+    | 'Other'
+    | 'DerogationMaxNumber'
+    | 'OtherPrescription'
+    | 'SecondPrestationOfDay'
+    | 'ThirdAndNextPrestationOfDay'
   export const DerogationMaxNumberEnum = {
-    Other: "Other" as DerogationMaxNumberEnum,
-    DerogationMaxNumber: "DerogationMaxNumber" as DerogationMaxNumberEnum,
-    OtherPrescription: "OtherPrescription" as DerogationMaxNumberEnum,
-    SecondPrestationOfDay: "SecondPrestationOfDay" as DerogationMaxNumberEnum,
-    ThirdAndNextPrestationOfDay: "ThirdAndNextPrestationOfDay" as DerogationMaxNumberEnum
+    Other: 'Other' as DerogationMaxNumberEnum,
+    DerogationMaxNumber: 'DerogationMaxNumber' as DerogationMaxNumberEnum,
+    OtherPrescription: 'OtherPrescription' as DerogationMaxNumberEnum,
+    SecondPrestationOfDay: 'SecondPrestationOfDay' as DerogationMaxNumberEnum,
+    ThirdAndNextPrestationOfDay: 'ThirdAndNextPrestationOfDay' as DerogationMaxNumberEnum,
   }
   export type PrescriberNormEnum =
-    | "None"
-    | "OnePrescriber"
-    | "SelfPrescriber"
-    | "AddedCode"
-    | "ManyPrescribers"
+    | 'None'
+    | 'OnePrescriber'
+    | 'SelfPrescriber'
+    | 'AddedCode'
+    | 'ManyPrescribers'
   export const PrescriberNormEnum = {
-    None: "None" as PrescriberNormEnum,
-    OnePrescriber: "OnePrescriber" as PrescriberNormEnum,
-    SelfPrescriber: "SelfPrescriber" as PrescriberNormEnum,
-    AddedCode: "AddedCode" as PrescriberNormEnum,
-    ManyPrescribers: "ManyPrescribers" as PrescriberNormEnum
+    None: 'None' as PrescriberNormEnum,
+    OnePrescriber: 'OnePrescriber' as PrescriberNormEnum,
+    SelfPrescriber: 'SelfPrescriber' as PrescriberNormEnum,
+    AddedCode: 'AddedCode' as PrescriberNormEnum,
+    ManyPrescribers: 'ManyPrescribers' as PrescriberNormEnum,
   }
   export type PercentNormEnum =
-    | "None"
-    | "SurgicalAid1"
-    | "SurgicalAid2"
-    | "ReducedFee"
-    | "Ah1n1"
-    | "HalfPriceSecondAct"
-    | "InvoiceException"
-    | "ForInformation"
+    | 'None'
+    | 'SurgicalAid1'
+    | 'SurgicalAid2'
+    | 'ReducedFee'
+    | 'Ah1n1'
+    | 'HalfPriceSecondAct'
+    | 'InvoiceException'
+    | 'ForInformation'
   export const PercentNormEnum = {
-    None: "None" as PercentNormEnum,
-    SurgicalAid1: "SurgicalAid1" as PercentNormEnum,
-    SurgicalAid2: "SurgicalAid2" as PercentNormEnum,
-    ReducedFee: "ReducedFee" as PercentNormEnum,
-    Ah1n1: "Ah1n1" as PercentNormEnum,
-    HalfPriceSecondAct: "HalfPriceSecondAct" as PercentNormEnum,
-    InvoiceException: "InvoiceException" as PercentNormEnum,
-    ForInformation: "ForInformation" as PercentNormEnum
+    None: 'None' as PercentNormEnum,
+    SurgicalAid1: 'SurgicalAid1' as PercentNormEnum,
+    SurgicalAid2: 'SurgicalAid2' as PercentNormEnum,
+    ReducedFee: 'ReducedFee' as PercentNormEnum,
+    Ah1n1: 'Ah1n1' as PercentNormEnum,
+    HalfPriceSecondAct: 'HalfPriceSecondAct' as PercentNormEnum,
+    InvoiceException: 'InvoiceException' as PercentNormEnum,
+    ForInformation: 'ForInformation' as PercentNormEnum,
   }
 }

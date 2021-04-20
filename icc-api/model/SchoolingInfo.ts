@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStub } from "./CodeStub"
+import { CodeStub } from './CodeStub'
 
 export class SchoolingInfo {
   constructor(json: JSON | any) {

@@ -9,15 +9,15 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Address } from "./Address"
-import { CodeStub } from "./CodeStub"
-import { FinancialInstitutionInformation } from "./FinancialInstitutionInformation"
-import { FlatRateTarification } from "./FlatRateTarification"
+import { Address } from './Address'
+import { CodeStub } from './CodeStub'
+import { FinancialInstitutionInformation } from './FinancialInstitutionInformation'
+import { FlatRateTarification } from './FlatRateTarification'
 
 /**
  * This entity is a root level object. It represents a healthcare party. It is serialized in JSON and saved in the underlying icure-healthcareParty CouchDB database.
  */
-import { b64_2ab } from "./ModelHelper"
+import { b64_2ab } from './ModelHelper'
 export class HealthcareParty {
   constructor(json: JSON | any) {
     Object.assign(
@@ -163,20 +163,20 @@ export class HealthcareParty {
   publicKey?: string
 }
 export namespace HealthcareParty {
-  export type GenderEnum = "M" | "F" | "I" | "C" | "Y" | "X" | "U"
+  export type GenderEnum = 'M' | 'F' | 'I' | 'C' | 'Y' | 'X' | 'U'
   export const GenderEnum = {
-    M: "M" as GenderEnum,
-    F: "F" as GenderEnum,
-    I: "I" as GenderEnum,
-    C: "C" as GenderEnum,
-    Y: "Y" as GenderEnum,
-    X: "X" as GenderEnum,
-    U: "U" as GenderEnum
+    M: 'M' as GenderEnum,
+    F: 'F' as GenderEnum,
+    I: 'I' as GenderEnum,
+    C: 'C' as GenderEnum,
+    Y: 'Y' as GenderEnum,
+    X: 'X' as GenderEnum,
+    U: 'U' as GenderEnum,
   }
-  export type StatusesEnum = "trainee" | "withconvention" | "accreditated"
+  export type StatusesEnum = 'trainee' | 'withconvention' | 'accreditated'
   export const StatusesEnum = {
-    Trainee: "trainee" as StatusesEnum,
-    Withconvention: "withconvention" as StatusesEnum,
-    Accreditated: "accreditated" as StatusesEnum
+    Trainee: 'trainee' as StatusesEnum,
+    Withconvention: 'withconvention' as StatusesEnum,
+    Accreditated: 'accreditated' as StatusesEnum,
   }
 }

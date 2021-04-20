@@ -9,10 +9,10 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { RouteOfAdministration } from "./RouteOfAdministration"
-import { SamText } from "./SamText"
-import { VirtualForm } from "./VirtualForm"
-import { VirtualIngredient } from "./VirtualIngredient"
+import { RouteOfAdministration } from './RouteOfAdministration'
+import { SamText } from './SamText'
+import { VirtualForm } from './VirtualForm'
+import { VirtualIngredient } from './VirtualIngredient'
 
 export class VmpComponent {
   constructor(json: JSON | any) {

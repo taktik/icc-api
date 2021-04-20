@@ -9,9 +9,9 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { XHR } from "./XHR"
-import { DocIdentifier } from "../model/DocIdentifier"
-import { MedicalLocation } from "../model/MedicalLocation"
+import { XHR } from './XHR'
+import { DocIdentifier } from '../model/DocIdentifier'
+import { MedicalLocation } from '../model/MedicalLocation'
 
 export class IccMedicallocationApi {
   host: string
@@ -24,7 +24,7 @@ export class IccMedicallocationApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -45,14 +45,14 @@ export class IccMedicallocationApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/medicallocation` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/medicallocation` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new MedicalLocation(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new MedicalLocation(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -61,17 +61,17 @@ export class IccMedicallocationApi {
    * @param locationIds
    */
   deleteMedicalLocation(locationIds: string): Promise<Array<DocIdentifier>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/medicallocation/${encodeURIComponent(String(locationIds))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new DocIdentifier(it)))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -80,17 +80,17 @@ export class IccMedicallocationApi {
    * @param locationId
    */
   getMedicalLocation(locationId: string): Promise<MedicalLocation> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/medicallocation/${encodeURIComponent(String(locationId))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new MedicalLocation(doc.body as JSON))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new MedicalLocation(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -98,13 +98,13 @@ export class IccMedicallocationApi {
    * @summary Gets all medical locations
    */
   getMedicalLocations(): Promise<Array<MedicalLocation>> {
-    let _body = null
+    const _body = null
 
-    const _url = this.host + `/medicallocation` + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new MedicalLocation(it)))
-      .catch(err => this.handleError(err))
+    const _url = this.host + `/medicallocation` + '?ts=' + new Date().getTime()
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new MedicalLocation(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -116,13 +116,13 @@ export class IccMedicallocationApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/medicallocation` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/medicallocation` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new MedicalLocation(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new MedicalLocation(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 }

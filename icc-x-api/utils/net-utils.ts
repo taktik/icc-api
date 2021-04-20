@@ -34,7 +34,7 @@ export interface MissingRowsChunk<X> {
 }
 
 export function sleep(ms: number): Promise<any> {
-  return new Promise(resolve => setTimeout(resolve, ms))
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 export function retry<P>(
@@ -45,11 +45,10 @@ export function retry<P>(
 ): Promise<P> {
   let retry = 0
   const doFn: () => Promise<P> = () => {
-    return fn().catch(
-      e =>
-        retry++ < retryCount
-          ? (sleepTime && sleep((sleepTime *= exponentialFactor)).then(() => doFn())) || doFn()
-          : Promise.reject(e)
+    return fn().catch((e) =>
+      retry++ < retryCount
+        ? (sleepTime && sleep((sleepTime *= exponentialFactor)).then(() => doFn())) || doFn()
+        : Promise.reject(e)
     )
   }
   return doFn()
@@ -79,7 +78,7 @@ export async function getRowsUsingPagination<X>(
         rows: acc,
         nextKey: newResult.nextKey,
         nextDocId: newResult.nextDocId,
-        done: false
+        done: false,
       }
     } else {
       return executePaginator(newResult, acc, limit)
@@ -116,7 +115,7 @@ export async function getRowsUsingPagination<X>(
               missing: [startOfZoi, endIdx],
               lastEndIdx,
               lastKey,
-              lastDocId
+              lastDocId,
             })
             lastTreatedIdx = endOfZoi
           }
@@ -130,7 +129,7 @@ export async function getRowsUsingPagination<X>(
                 endIdx: chunk.endIdx,
                 rows: chunk.rows.slice(startOfZoi - chunk.startIdx, chunk.endIdx - chunk.startIdx),
                 nextKey: null,
-                nextDocId: null
+                nextDocId: null,
               })
               lastTreatedIdx = chunk.endIdx
             } else {
@@ -141,7 +140,7 @@ export async function getRowsUsingPagination<X>(
                 endIdx: endOfZoi,
                 rows: chunk.rows.slice(startOfZoi - chunk.startIdx, endOfZoi - chunk.startIdx),
                 nextKey: null,
-                nextDocId: null
+                nextDocId: null,
               })
               lastTreatedIdx = endOfZoi
             }
@@ -153,14 +152,14 @@ export async function getRowsUsingPagination<X>(
                 missing: [startOfZoi, chunk.startIdx],
                 lastEndIdx,
                 lastKey,
-                lastDocId
+                lastDocId,
               })
               rows.push({
                 startIdx: chunk.startIdx,
                 endIdx: endOfZoi,
                 rows: chunk.rows.slice(0, endOfZoi - chunk.startIdx),
                 nextKey: null,
-                nextDocId: null
+                nextDocId: null,
               })
               lastTreatedIdx = endOfZoi
             } else {
@@ -170,14 +169,14 @@ export async function getRowsUsingPagination<X>(
                 missing: [startOfZoi, chunk.startIdx],
                 lastEndIdx,
                 lastKey,
-                lastDocId
+                lastDocId,
               })
               rows.push({
                 startIdx: chunk.startIdx,
                 endIdx: chunk.endIdx,
                 rows: chunk.rows.slice(0, chunk.endIdx - chunk.startIdx),
                 nextKey: null,
-                nextDocId: null
+                nextDocId: null,
               })
               lastTreatedIdx = chunk.endIdx
             }
@@ -192,7 +191,7 @@ export async function getRowsUsingPagination<X>(
         missing: [startIdx, endIdx],
         lastKey: lastKey,
         lastDocId: lastDocId,
-        lastEndIdx: lastEndIdx
+        lastEndIdx: lastEndIdx,
       })
     } else {
       const lastRow = rows.length ? rows[rows.length - 1] : undefined
@@ -205,38 +204,40 @@ export async function getRowsUsingPagination<X>(
           missing: [(lastRow as RowsChunk<X>).startIdx + lastRow.rows.length, endIdx],
           lastKey: lastKey,
           lastDocId: lastDocId,
-          lastEndIdx: lastEndIdx
+          lastEndIdx: lastEndIdx,
         })
       }
     }
 
     // Once we we have determined which where the missing chunks. Go fetch them based on the lastKey/lastDocId + the limit computed with the lastEndIndex
     await Promise.all(
-      rows.filter((r: any) => r.missing).map(async (r: any) => {
-        const missing = r as MissingRowsChunk<X>
-        const { rows, nextKey, nextDocId } = await executePaginator(
-          {
-            nextKey: missing.lastKey,
-            nextDocId: missing.lastDocId,
-            rows: [],
-            done: false
-          },
-          [],
-          missing.missing[1] - missing.lastEndIdx
-        )
+      rows
+        .filter((r: any) => r.missing)
+        .map(async (r: any) => {
+          const missing = r as MissingRowsChunk<X>
+          const { rows, nextKey, nextDocId } = await executePaginator(
+            {
+              nextKey: missing.lastKey,
+              nextDocId: missing.lastDocId,
+              rows: [],
+              done: false,
+            },
+            [],
+            missing.missing[1] - missing.lastEndIdx
+          )
 
-        missing.rows = rows.slice(
-          missing.missing[0] - missing.lastEndIdx,
-          missing.missing[1] - missing.lastEndIdx
-        )
-        cache[missing.lastEndIdx] = {
-          rows,
-          startIdx: missing.missing[0],
-          endIdx: missing.missing[1],
-          nextKey: nextKey || null,
-          nextDocId: nextDocId || null
-        }
-      })
+          missing.rows = rows.slice(
+            missing.missing[0] - missing.lastEndIdx,
+            missing.missing[1] - missing.lastEndIdx
+          )
+          cache[missing.lastEndIdx] = {
+            rows,
+            startIdx: missing.missing[0],
+            endIdx: missing.missing[1],
+            nextKey: nextKey || null,
+            nextDocId: nextDocId || null,
+          }
+        })
     )
     return (rows || []).reduce(
       (acc: X[], r: MissingRowsChunk<X> | RowsChunk<X>) =>
@@ -254,7 +255,7 @@ export async function getRowsUsingPagination<X>(
         nextKey: null,
         nextDocId: null,
         rows: [],
-        done: false
+        done: false,
       },
       [],
       undefined

@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { SamText } from "./SamText"
+import { SamText } from './SamText'
 
 export class StandardSubstance {
   constructor(json: JSON | any) {
@@ -23,11 +23,11 @@ export class StandardSubstance {
   url?: string
 }
 export namespace StandardSubstance {
-  export type TypeEnum = "CAS" | "DM_D" | "EDQM" | "SNOMED_CT"
+  export type TypeEnum = 'CAS' | 'DM_D' | 'EDQM' | 'SNOMED_CT'
   export const TypeEnum = {
-    CAS: "CAS" as TypeEnum,
-    DMD: "DM_D" as TypeEnum,
-    EDQM: "EDQM" as TypeEnum,
-    SNOMEDCT: "SNOMED_CT" as TypeEnum
+    CAS: 'CAS' as TypeEnum,
+    DMD: 'DM_D' as TypeEnum,
+    EDQM: 'EDQM' as TypeEnum,
+    SNOMEDCT: 'SNOMED_CT' as TypeEnum,
   }
 }

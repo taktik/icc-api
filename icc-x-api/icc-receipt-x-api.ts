@@ -1,7 +1,7 @@
-import { IccReceiptApi } from "../icc-api"
-import { IccCryptoXApi } from "./icc-crypto-x-api"
-import * as _ from "lodash"
-import * as models from "../icc-api/model/models"
+import { IccReceiptApi } from '../icc-api'
+import { IccCryptoXApi } from './icc-crypto-x-api'
+import * as _ from 'lodash'
+import * as models from '../icc-api/model/models'
 
 export class IccReceiptXApi extends IccReceiptApi {
   crypto: IccCryptoXApi
@@ -11,11 +11,11 @@ export class IccReceiptXApi extends IccReceiptApi {
     headers: { [key: string]: string },
     crypto: IccCryptoXApi,
     fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    "undefined"
+    'undefined'
       ? window.fetch
-      : typeof self !== "undefined"
-        ? self.fetch
-        : fetch
+      : typeof self !== 'undefined'
+      ? self.fetch
+      : fetch
   ) {
     super(host, headers, fetchImpl)
     this.crypto = crypto
@@ -26,13 +26,13 @@ export class IccReceiptXApi extends IccReceiptApi {
       _.extend(
         {
           id: this.crypto.randomUuid(),
-          _type: "org.taktik.icure.entities.Receipt",
+          _type: 'org.taktik.icure.entities.Receipt',
           created: new Date().getTime(),
           modified: new Date().getTime(),
           responsible: user.healthcarePartyId || user.patientId,
           author: user.id,
           codes: [],
-          tags: []
+          tags: [],
         },
         r || {}
       )
@@ -52,15 +52,15 @@ export class IccReceiptXApi extends IccReceiptApi {
         (user.healthcarePartyId || user.patientId)!,
         null
       ),
-      this.crypto.initEncryptionKeys(receipt, (user.healthcarePartyId || user.patientId)!)
-    ]).then(initData => {
+      this.crypto.initEncryptionKeys(receipt, (user.healthcarePartyId || user.patientId)!),
+    ]).then((initData) => {
       const dels = initData[0]
       const eks = initData[1]
       _.extend(receipt, {
         delegations: dels.delegations,
         cryptedForeignKeys: dels.cryptedForeignKeys,
         secretForeignKeys: dels.secretForeignKeys,
-        encryptionKeys: eks.encryptionKeys
+        encryptionKeys: eks.encryptionKeys,
       })
 
       let promise = Promise.resolve(receipt)
@@ -68,8 +68,8 @@ export class IccReceiptXApi extends IccReceiptApi {
         ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
         : []
       ).forEach(
-        delegateId =>
-          (promise = promise.then(receipt =>
+        (delegateId) =>
+          (promise = promise.then((receipt) =>
             this.crypto
               .addDelegationsAndEncryptionKeys(
                 null,
@@ -79,7 +79,7 @@ export class IccReceiptXApi extends IccReceiptApi {
                 dels.secretId,
                 eks.secretId
               )
-              .catch(e => {
+              .catch((e) => {
                 console.log(e)
                 return receipt
               })
@@ -92,18 +92,18 @@ export class IccReceiptXApi extends IccReceiptApi {
   initEncryptionKeys(user: models.User, rcpt: models.Receipt) {
     return this.crypto
       .initEncryptionKeys(rcpt, (user.healthcarePartyId || user.patientId)!)
-      .then(eks => {
+      .then((eks) => {
         let promise = Promise.resolve(
           _.extend(rcpt, {
-            encryptionKeys: eks.encryptionKeys
+            encryptionKeys: eks.encryptionKeys,
           })
         )
         ;(user.autoDelegations
           ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
           : []
         ).forEach(
-          delegateId =>
-            (promise = promise.then(receipt =>
+          (delegateId) =>
+            (promise = promise.then((receipt) =>
               this.crypto
                 .appendEncryptionKeys(
                   receipt,
@@ -111,9 +111,9 @@ export class IccReceiptXApi extends IccReceiptApi {
                   delegateId,
                   eks.secretId
                 )
-                .then(extraEks => {
+                .then((extraEks) => {
                   return _.extend(receipt, {
-                    encryptionKeys: extraEks.encryptionKeys
+                    encryptionKeys: extraEks.encryptionKeys,
                   })
                 })
             ))
@@ -130,7 +130,7 @@ export class IccReceiptXApi extends IccReceiptApi {
     blob: ArrayBuffer
   ) {
     return this.newInstance(user, { documentId: docId, references: refs })
-      .then(rcpt => this.createReceipt(rcpt))
-      .then(rcpt => this.setReceiptAttachment(rcpt.id!, blobType, "", <any>blob))
+      .then((rcpt) => this.createReceipt(rcpt))
+      .then((rcpt) => this.setReceiptAttachment(rcpt.id!, blobType, '', <any>blob))
   }
 }

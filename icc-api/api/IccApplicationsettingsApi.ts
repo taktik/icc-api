@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { XHR } from "./XHR"
-import { ApplicationSettings } from "../model/ApplicationSettings"
+import { XHR } from './XHR'
+import { ApplicationSettings } from '../model/ApplicationSettings'
 
 export class IccApplicationsettingsApi {
   host: string
@@ -23,7 +23,7 @@ export class IccApplicationsettingsApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -40,12 +40,12 @@ export class IccApplicationsettingsApi {
    * @summary Gets all application settings
    */
   getApplicationSettings(): Promise<Array<ApplicationSettings>> {
-    let _body = null
+    const _body = null
 
-    const _url = this.host + `/appsettings` + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new ApplicationSettings(it)))
-      .catch(err => this.handleError(err))
+    const _url = this.host + `/appsettings` + '?ts=' + new Date().getTime()
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new ApplicationSettings(it)))
+      .catch((err) => this.handleError(err))
   }
 }

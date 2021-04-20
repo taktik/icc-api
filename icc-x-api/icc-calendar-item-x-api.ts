@@ -1,26 +1,26 @@
-import * as i18n from "./rsrc/contact.i18n"
+import * as i18n from './rsrc/contact.i18n'
 
-import * as _ from "lodash"
-import * as models from "../icc-api/model/models"
-import { utils } from "./crypto/utils"
-import { IccCryptoXApi } from "./icc-crypto-x-api"
-import { IccCalendarItemApi } from "../icc-api"
-import { CalendarItem, User } from "../icc-api/model/models"
-import { hex2ua, ua2utf8, utf8_2ua } from "./utils/binary-utils"
+import * as _ from 'lodash'
+import * as models from '../icc-api/model/models'
+import { utils } from './crypto/utils'
+import { IccCryptoXApi } from './icc-crypto-x-api'
+import { IccCalendarItemApi } from '../icc-api'
+import { CalendarItem, User } from '../icc-api/model/models'
+import { hex2ua, ua2utf8, utf8_2ua } from './utils/binary-utils'
 
 export class IccCalendarItemXApi extends IccCalendarItemApi {
   i18n: any = i18n
   crypto: IccCryptoXApi
-  cryptedKeys = ["details", "title"]
+  cryptedKeys = ['details', 'title']
 
   constructor(
     host: string,
     headers: { [key: string]: string },
     crypto: IccCryptoXApi,
     fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    "undefined"
+    'undefined'
       ? window.fetch
-      : typeof self !== "undefined"
+      : typeof self !== 'undefined'
       ? self.fetch
       : fetch
   ) {
@@ -34,7 +34,7 @@ export class IccCalendarItemXApi extends IccCalendarItemApi {
     const calendarItem = _.extend(
       {
         id: this.crypto.randomUuid(),
-        _type: "org.taktik.icure.entities.CalendarItem",
+        _type: 'org.taktik.icure.entities.CalendarItem',
         created: new Date().getTime(),
         modified: new Date().getTime(),
         responsible: hcpId,
@@ -79,7 +79,7 @@ export class IccCalendarItemXApi extends IccCalendarItemApi {
     const calendarItem = _.extend(
       {
         id: this.crypto.randomUuid(),
-        _type: "org.taktik.icure.entities.CalendarItem",
+        _type: 'org.taktik.icure.entities.CalendarItem',
         created: new Date().getTime(),
         modified: new Date().getTime(),
         responsible: user.healthcarePartyId || user.patientId,
@@ -156,7 +156,7 @@ export class IccCalendarItemXApi extends IccCalendarItemApi {
         secretForeignKeys.extractedKeys.length > 0
         ? this.findByHCPartyPatientSecretFKeys(
             secretForeignKeys.hcpartyId!,
-            secretForeignKeys.extractedKeys.join(",")
+            secretForeignKeys.extractedKeys.join(',')
           )
         : Promise.resolve([])
     })
@@ -173,7 +173,7 @@ export class IccCalendarItemXApi extends IccCalendarItemApi {
 
   createCalendarItem(body?: CalendarItem): never {
     throw new Error(
-      "Cannot call a method that must encrypt a calendar item without providing a user for de/encryption"
+      'Cannot call a method that must encrypt a calendar item without providing a user for de/encryption'
     )
   }
 
@@ -200,7 +200,7 @@ export class IccCalendarItemXApi extends IccCalendarItemApi {
 
   getCalendarItem(calendarItemId: string): never {
     throw new Error(
-      "Cannot call a method that must en/decrypt a calendar item without providing a user for de/encryption"
+      'Cannot call a method that must en/decrypt a calendar item without providing a user for de/encryption'
     )
   }
 
@@ -214,7 +214,7 @@ export class IccCalendarItemXApi extends IccCalendarItemApi {
 
   getCalendarItems(): never {
     throw new Error(
-      "Cannot call a method that must en/decrypt a calendar item without providing a user for de/encryption"
+      'Cannot call a method that must en/decrypt a calendar item without providing a user for de/encryption'
     )
   }
 
@@ -231,7 +231,7 @@ export class IccCalendarItemXApi extends IccCalendarItemApi {
 
   getCalendarItemsWithIds(body?: models.ListOfIds): never {
     throw new Error(
-      "Cannot call a method that must en/decrypt a calendar item without providing a user for de/encryption"
+      'Cannot call a method that must en/decrypt a calendar item without providing a user for de/encryption'
     )
   }
 
@@ -254,7 +254,7 @@ export class IccCalendarItemXApi extends IccCalendarItemApi {
     hcPartyId?: string
   ): never {
     throw new Error(
-      "Cannot call a method that must en/decrypt a calendar item without providing a user for de/encryption"
+      'Cannot call a method that must en/decrypt a calendar item without providing a user for de/encryption'
     )
   }
 
@@ -273,13 +273,13 @@ export class IccCalendarItemXApi extends IccCalendarItemApi {
 
   getCalendarsByPeriodAndAgendaId(startDate?: number, endDate?: number, agendaId?: string): never {
     throw new Error(
-      "Cannot call a method that must en/decrypt a calendar item without providing a user for de/encryption"
+      'Cannot call a method that must en/decrypt a calendar item without providing a user for de/encryption'
     )
   }
 
   modifyCalendarItem(body?: CalendarItem): never {
     throw new Error(
-      "Cannot call a method that must encrypt a calendar item without providing a user for de/encryption"
+      'Cannot call a method that must encrypt a calendar item without providing a user for de/encryption'
     )
   }
 
@@ -356,7 +356,7 @@ export class IccCalendarItemXApi extends IccCalendarItemApi {
             )
           )
           .then((eks: { extractedKeys: Array<string>; hcpartyId: string }) =>
-            this.crypto.AES.importKey("raw", hex2ua(eks.extractedKeys[0].replace(/-/g, "")))
+            this.crypto.AES.importKey('raw', hex2ua(eks.extractedKeys[0].replace(/-/g, '')))
           )
           .then((key: CryptoKey) =>
             utils.crypt(
@@ -391,7 +391,7 @@ export class IccCalendarItemXApi extends IccCalendarItemApi {
                 if (!sfks || !sfks.length) {
                   return Promise.resolve(calendarItem)
                 }
-                return this.crypto.AES.importKey("raw", hex2ua(sfks[0].replace(/-/g, ""))).then(
+                return this.crypto.AES.importKey('raw', hex2ua(sfks[0].replace(/-/g, ''))).then(
                   (key) =>
                     utils.decrypt(calendarItem, (ec) =>
                       this.crypto.AES.decrypt(key, ec).then((dec) => {
@@ -400,9 +400,9 @@ export class IccCalendarItemXApi extends IccCalendarItemApi {
                           return JSON.parse(jsonContent)
                         } catch (e) {
                           console.log(
-                            "Cannot parse calendar item",
+                            'Cannot parse calendar item',
                             calendarItem.id,
-                            jsonContent || "Invalid content"
+                            jsonContent || 'Invalid content'
                           )
                           return {}
                         }

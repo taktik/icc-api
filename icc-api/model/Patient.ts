@@ -9,22 +9,22 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Address } from "./Address"
-import { CodeStub } from "./CodeStub"
-import { Delegation } from "./Delegation"
-import { EmploymentInfo } from "./EmploymentInfo"
-import { FinancialInstitutionInformation } from "./FinancialInstitutionInformation"
-import { Insurability } from "./Insurability"
-import { MedicalHouseContract } from "./MedicalHouseContract"
-import { Partnership } from "./Partnership"
-import { PatientHealthCareParty } from "./PatientHealthCareParty"
-import { PropertyStub } from "./PropertyStub"
-import { SchoolingInfo } from "./SchoolingInfo"
+import { Address } from './Address'
+import { CodeStub } from './CodeStub'
+import { Delegation } from './Delegation'
+import { EmploymentInfo } from './EmploymentInfo'
+import { FinancialInstitutionInformation } from './FinancialInstitutionInformation'
+import { Insurability } from './Insurability'
+import { MedicalHouseContract } from './MedicalHouseContract'
+import { Partnership } from './Partnership'
+import { PatientHealthCareParty } from './PatientHealthCareParty'
+import { PropertyStub } from './PropertyStub'
+import { SchoolingInfo } from './SchoolingInfo'
 
 /**
  * This entity is a root level object. It represents a patient It is serialized in JSON and saved in the underlying icure-patient CouchDB database.
  */
-import { b64_2ab } from "./ModelHelper"
+import { b64_2ab } from './ModelHelper'
 export class Patient {
   constructor(json: JSON | any) {
     Object.assign(this as Patient, json, json.picture ? { picture: b64_2ab(json.picture) } : {})
@@ -287,68 +287,68 @@ export class Patient {
   employementInfos?: Array<EmploymentInfo>
 }
 export namespace Patient {
-  export type GenderEnum = "M" | "F" | "I" | "C" | "Y" | "X" | "U"
+  export type GenderEnum = 'M' | 'F' | 'I' | 'C' | 'Y' | 'X' | 'U'
   export const GenderEnum = {
-    M: "M" as GenderEnum,
-    F: "F" as GenderEnum,
-    I: "I" as GenderEnum,
-    C: "C" as GenderEnum,
-    Y: "Y" as GenderEnum,
-    X: "X" as GenderEnum,
-    U: "U" as GenderEnum
+    M: 'M' as GenderEnum,
+    F: 'F' as GenderEnum,
+    I: 'I' as GenderEnum,
+    C: 'C' as GenderEnum,
+    Y: 'Y' as GenderEnum,
+    X: 'X' as GenderEnum,
+    U: 'U' as GenderEnum,
   }
-  export type BirthSexEnum = "M" | "F" | "I" | "C" | "Y" | "X" | "U"
+  export type BirthSexEnum = 'M' | 'F' | 'I' | 'C' | 'Y' | 'X' | 'U'
   export const BirthSexEnum = {
-    M: "M" as BirthSexEnum,
-    F: "F" as BirthSexEnum,
-    I: "I" as BirthSexEnum,
-    C: "C" as BirthSexEnum,
-    Y: "Y" as BirthSexEnum,
-    X: "X" as BirthSexEnum,
-    U: "U" as BirthSexEnum
+    M: 'M' as BirthSexEnum,
+    F: 'F' as BirthSexEnum,
+    I: 'I' as BirthSexEnum,
+    C: 'C' as BirthSexEnum,
+    Y: 'Y' as BirthSexEnum,
+    X: 'X' as BirthSexEnum,
+    U: 'U' as BirthSexEnum,
   }
   export type DeactivationReasonEnum =
-    | "deceased"
-    | "moved"
-    | "other_doctor"
-    | "retired"
-    | "no_contact"
-    | "unknown"
-    | "none"
+    | 'deceased'
+    | 'moved'
+    | 'other_doctor'
+    | 'retired'
+    | 'no_contact'
+    | 'unknown'
+    | 'none'
   export const DeactivationReasonEnum = {
-    Deceased: "deceased" as DeactivationReasonEnum,
-    Moved: "moved" as DeactivationReasonEnum,
-    OtherDoctor: "other_doctor" as DeactivationReasonEnum,
-    Retired: "retired" as DeactivationReasonEnum,
-    NoContact: "no_contact" as DeactivationReasonEnum,
-    Unknown: "unknown" as DeactivationReasonEnum,
-    None: "none" as DeactivationReasonEnum
+    Deceased: 'deceased' as DeactivationReasonEnum,
+    Moved: 'moved' as DeactivationReasonEnum,
+    OtherDoctor: 'other_doctor' as DeactivationReasonEnum,
+    Retired: 'retired' as DeactivationReasonEnum,
+    NoContact: 'no_contact' as DeactivationReasonEnum,
+    Unknown: 'unknown' as DeactivationReasonEnum,
+    None: 'none' as DeactivationReasonEnum,
   }
   export type PersonalStatusEnum =
-    | "single"
-    | "in_couple"
-    | "married"
-    | "separated"
-    | "divorced"
-    | "divorcing"
-    | "widowed"
-    | "widower"
-    | "complicated"
-    | "unknown"
-    | "contract"
-    | "other"
+    | 'single'
+    | 'in_couple'
+    | 'married'
+    | 'separated'
+    | 'divorced'
+    | 'divorcing'
+    | 'widowed'
+    | 'widower'
+    | 'complicated'
+    | 'unknown'
+    | 'contract'
+    | 'other'
   export const PersonalStatusEnum = {
-    Single: "single" as PersonalStatusEnum,
-    InCouple: "in_couple" as PersonalStatusEnum,
-    Married: "married" as PersonalStatusEnum,
-    Separated: "separated" as PersonalStatusEnum,
-    Divorced: "divorced" as PersonalStatusEnum,
-    Divorcing: "divorcing" as PersonalStatusEnum,
-    Widowed: "widowed" as PersonalStatusEnum,
-    Widower: "widower" as PersonalStatusEnum,
-    Complicated: "complicated" as PersonalStatusEnum,
-    Unknown: "unknown" as PersonalStatusEnum,
-    Contract: "contract" as PersonalStatusEnum,
-    Other: "other" as PersonalStatusEnum
+    Single: 'single' as PersonalStatusEnum,
+    InCouple: 'in_couple' as PersonalStatusEnum,
+    Married: 'married' as PersonalStatusEnum,
+    Separated: 'separated' as PersonalStatusEnum,
+    Divorced: 'divorced' as PersonalStatusEnum,
+    Divorcing: 'divorcing' as PersonalStatusEnum,
+    Widowed: 'widowed' as PersonalStatusEnum,
+    Widower: 'widower' as PersonalStatusEnum,
+    Complicated: 'complicated' as PersonalStatusEnum,
+    Unknown: 'unknown' as PersonalStatusEnum,
+    Contract: 'contract' as PersonalStatusEnum,
+    Other: 'other' as PersonalStatusEnum,
   }
 }

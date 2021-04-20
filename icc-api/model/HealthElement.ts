@@ -9,11 +9,11 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CareTeamMember } from "./CareTeamMember"
-import { CodeStub } from "./CodeStub"
-import { Delegation } from "./Delegation"
-import { Episode } from "./Episode"
-import { PlanOfAction } from "./PlanOfAction"
+import { CareTeamMember } from './CareTeamMember'
+import { CodeStub } from './CodeStub'
+import { Delegation } from './Delegation'
+import { Episode } from './Episode'
+import { PlanOfAction } from './PlanOfAction'
 
 /**
  * This entity is a root level object. It represents a healthcare element. It is serialized in JSON and saved in the underlying CouchDB database.
@@ -149,9 +149,9 @@ export class HealthElement {
   encryptedSelf?: string
 }
 export namespace HealthElement {
-  export type LateralityEnum = "left" | "right"
+  export type LateralityEnum = 'left' | 'right'
   export const LateralityEnum = {
-    Left: "left" as LateralityEnum,
-    Right: "right" as LateralityEnum
+    Left: 'left' as LateralityEnum,
+    Right: 'right' as LateralityEnum,
   }
 }

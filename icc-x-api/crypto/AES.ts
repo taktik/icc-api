@@ -1,14 +1,14 @@
-import { utils } from "./utils"
-import { debuglog } from "util"
-import { ua2hex } from "../utils/binary-utils"
+import { utils } from './utils'
+import { debuglog } from 'util'
+import { ua2hex } from '../utils/binary-utils'
 
 export class AESUtils {
   /********* AES Config **********/
   ivLength = 16
-  aesAlgorithmEncryptName = "AES-CBC"
+  aesAlgorithmEncryptName = 'AES-CBC'
 
   aesKeyGenParams = {
-    name: "AES-CBC",
+    name: 'AES-CBC',
     length: 256,
   }
   private crypto: Crypto
@@ -19,9 +19,9 @@ export class AESUtils {
   }
 
   constructor(
-    crypto: Crypto = typeof window !== "undefined"
+    crypto: Crypto = typeof window !== 'undefined'
       ? window.crypto
-      : typeof self !== "undefined"
+      : typeof self !== 'undefined'
       ? self.crypto
       : ({} as Crypto)
   ) {
@@ -29,7 +29,7 @@ export class AESUtils {
     this._debug = false
   }
 
-  encrypt(cryptoKey: CryptoKey, plainData: ArrayBuffer | Uint8Array, rawKey: string = "<NA>") {
+  encrypt(cryptoKey: CryptoKey, plainData: ArrayBuffer | Uint8Array, rawKey = '<NA>') {
     return new Promise((resolve: (value: ArrayBuffer) => any, reject: (reason: any) => any) => {
       if (plainData instanceof Uint8Array) {
         const buffer = plainData.buffer
@@ -53,7 +53,7 @@ export class AESUtils {
         .then(
           (cipherData) =>
             resolve(utils.appendBuffer(aesAlgorithmEncrypt.iv!.buffer! as ArrayBuffer, cipherData)),
-          (err) => reject("AES encryption failed: " + err)
+          (err) => reject('AES encryption failed: ' + err)
         )
     })
   }
@@ -65,10 +65,10 @@ export class AESUtils {
    * @param rawKey
    * @returns {Promise} will be ArrayBuffer
    */
-  decrypt(cryptoKey: CryptoKey, encryptedData: ArrayBuffer | Uint8Array, rawKey: string = "<NA>") {
+  decrypt(cryptoKey: CryptoKey, encryptedData: ArrayBuffer | Uint8Array, rawKey = '<NA>') {
     return new Promise((resolve: (value: ArrayBuffer) => any, reject: (reason: any) => any) => {
       if (!cryptoKey) {
-        return reject("No crypto key provided for decryption")
+        return reject('No crypto key provided for decryption')
       }
       if (encryptedData instanceof ArrayBuffer) {
         var encryptedDataUnit8 = new Uint8Array(encryptedData)
@@ -104,7 +104,7 @@ export class AESUtils {
           encryptedDataUnit8.subarray(this.ivLength, encryptedDataUnit8.length)
         )
         .then(resolve, (err) => {
-          reject("AES decryption failed: " + err)
+          reject('AES decryption failed: ' + err)
         })
     })
   }
@@ -120,7 +120,7 @@ export class AESUtils {
     return new Promise(
       (resolve: (value: CryptoKey | string) => any, reject: (reason: any) => any) => {
         const extractable = true
-        const keyUsages: KeyUsage[] = ["decrypt", "encrypt"]
+        const keyUsages: KeyUsage[] = ['decrypt', 'encrypt']
         if (toHex === undefined || !toHex) {
           return this.crypto.subtle
             .generateKey(this.aesKeyGenParams, extractable, keyUsages)
@@ -128,7 +128,7 @@ export class AESUtils {
         } else {
           return this.crypto.subtle
             .generateKey(this.aesKeyGenParams, extractable, keyUsages)
-            .then((k) => this.exportKey(k, "raw"), reject)
+            .then((k) => this.exportKey(k, 'raw'), reject)
             .then((raw) => resolve(ua2hex(raw)), reject)
         }
       }
@@ -170,8 +170,8 @@ export class AESUtils {
    */
   importKey(format: string, aesKey: JsonWebKey | ArrayBuffer | Uint8Array) {
     return new Promise((resolve: (value: CryptoKey) => any, reject: (reason: any) => any) => {
-      var extractable = true
-      var keyUsages: KeyUsage[] = ["decrypt", "encrypt"]
+      const extractable = true
+      const keyUsages: KeyUsage[] = ['decrypt', 'encrypt']
       return this.crypto.subtle
         .importKey(format, aesKey, this.aesKeyGenParams, extractable, keyUsages)
         .then(resolve, reject)

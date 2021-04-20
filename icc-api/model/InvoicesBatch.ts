@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { EfactInvoice } from "./EfactInvoice"
-import { InvoiceSender } from "./InvoiceSender"
+import { EfactInvoice } from './EfactInvoice'
+import { InvoiceSender } from './InvoiceSender'
 
 export class InvoicesBatch {
   constructor(json: JSON | any) {

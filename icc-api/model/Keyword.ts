@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStub } from "./CodeStub"
-import { KeywordSubword } from "./KeywordSubword"
+import { CodeStub } from './CodeStub'
+import { KeywordSubword } from './KeywordSubword'
 
 export class Keyword {
   constructor(json: JSON | any) {

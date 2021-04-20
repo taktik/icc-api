@@ -9,11 +9,11 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { AmpComponent } from "./AmpComponent"
-import { Ampp } from "./Ampp"
-import { Company } from "./Company"
-import { SamText } from "./SamText"
-import { VmpStub } from "./VmpStub"
+import { AmpComponent } from './AmpComponent'
+import { Ampp } from './Ampp'
+import { Company } from './Company'
+import { SamText } from './SamText'
+import { VmpStub } from './VmpStub'
 
 export class Amp {
   constructor(json: JSON | any) {
@@ -43,15 +43,15 @@ export class Amp {
   components?: Array<AmpComponent>
 }
 export namespace Amp {
-  export type StatusEnum = "AUTHORIZED" | "SUSPENDED" | "REVOKED"
+  export type StatusEnum = 'AUTHORIZED' | 'SUSPENDED' | 'REVOKED'
   export const StatusEnum = {
-    AUTHORIZED: "AUTHORIZED" as StatusEnum,
-    SUSPENDED: "SUSPENDED" as StatusEnum,
-    REVOKED: "REVOKED" as StatusEnum
+    AUTHORIZED: 'AUTHORIZED' as StatusEnum,
+    SUSPENDED: 'SUSPENDED' as StatusEnum,
+    REVOKED: 'REVOKED' as StatusEnum,
   }
-  export type MedicineTypeEnum = "ALLOPATHIC" | "HOMEOPATHIC"
+  export type MedicineTypeEnum = 'ALLOPATHIC' | 'HOMEOPATHIC'
   export const MedicineTypeEnum = {
-    ALLOPATHIC: "ALLOPATHIC" as MedicineTypeEnum,
-    HOMEOPATHIC: "HOMEOPATHIC" as MedicineTypeEnum
+    ALLOPATHIC: 'ALLOPATHIC' as MedicineTypeEnum,
+    HOMEOPATHIC: 'HOMEOPATHIC' as MedicineTypeEnum,
   }
 }

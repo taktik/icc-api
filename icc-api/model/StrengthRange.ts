@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { NumeratorRange } from "./NumeratorRange"
-import { Quantity } from "./Quantity"
+import { NumeratorRange } from './NumeratorRange'
+import { Quantity } from './Quantity'
 
 export class StrengthRange {
   constructor(json: JSON | any) {

@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { AgreementAppendix } from "./AgreementAppendix"
+import { AgreementAppendix } from './AgreementAppendix'
 
 export class ParagraphAgreement {
   constructor(json: JSON | any) {

@@ -1,14 +1,14 @@
-import * as bigInt from "big-integer"
+import * as bigInt from 'big-integer'
 
 const knownBases: { [key: string]: string } = {
-  base64: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/",
-  base62: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
-  base58: "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz", // Bitcoin base58
-  base36: "0123456789abcdefghijklmnopqrstuvwxyz",
-  base32: "0123456789abcdefghjkmnpqrstvwxyz", // Crockford's base32
-  base16: "0123456789abcdef",
-  base10: "0123456789",
-  base2: "01"
+  base64: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/',
+  base62: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+  base58: '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz', // Bitcoin base58
+  base36: '0123456789abcdefghijklmnopqrstuvwxyz',
+  base32: '0123456789abcdefghjkmnpqrstvwxyz', // Crockford's base32
+  base16: '0123456789abcdef',
+  base10: '0123456789',
+  base2: '01',
 }
 
 const caseSensitiveBases: { [key: string]: boolean } = {
@@ -18,19 +18,19 @@ const caseSensitiveBases: { [key: string]: boolean } = {
   base32: false,
   base16: false,
   base10: true,
-  base2: true
+  base2: true,
 }
 
 export class UuidEncoder {
   private encStr: string = knownBases.base36
-  private isCaseSensitive: boolean = false
-  private base: number = 36
+  private isCaseSensitive = false
+  private base = 36
   /**
    * @public
    * @param [baseEncodingStr] A string containing all usable letters for encoding
    * @constructor
    */
-  constructor(baseEncodingStr = "base36") {
+  constructor(baseEncodingStr = 'base36') {
     this.setBaseEncodingStr(baseEncodingStr)
   }
 
@@ -74,11 +74,11 @@ export class UuidEncoder {
    * @public
    */
   encode(uuid: string) {
-    const cleanUuid = uuid.replace(/-/g, "")
+    const cleanUuid = uuid.replace(/-/g, '')
     const { base, encStr } = this
 
     let iUuid = bigInt(cleanUuid, 16)
-    let str = ""
+    let str = ''
 
     do {
       str = encStr.substr(iUuid.mod(base).valueOf(), 1) + str
@@ -107,7 +107,7 @@ export class UuidEncoder {
       const encPos = encStr.indexOf(ch)
 
       if (encPos < 0) {
-        throw new Error("Invalid encoded data")
+        throw new Error('Invalid encoded data')
       }
 
       iUuid = iUuid.add(encPos)
@@ -117,7 +117,7 @@ export class UuidEncoder {
       }
     }
 
-    const uuid = iUuid.toString(16).padStart(32, "0")
+    const uuid = iUuid.toString(16).padStart(32, '0')
 
     return `${uuid.substr(0, 8)}-${uuid.substr(8, 4)}-${uuid.substr(12, 4)}-${uuid.substr(
       16,

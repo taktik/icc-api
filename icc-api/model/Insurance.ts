@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Address } from "./Address"
+import { Address } from './Address'
 
 export class Insurance {
   constructor(json: JSON | any) {

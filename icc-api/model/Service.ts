@@ -9,9 +9,9 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStub } from "./CodeStub"
-import { Content } from "./Content"
-import { Delegation } from "./Delegation"
+import { CodeStub } from './CodeStub'
+import { Content } from './Content'
+import { Delegation } from './Delegation'
 
 /**
  * This entity represents a Service. A Service is created in the course a contact. A contact contains a series of services (acts, observations, exchanges) performed on the patient. These services can be linked to healthcare elements

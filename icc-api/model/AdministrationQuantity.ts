@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStub } from "./CodeStub"
+import { CodeStub } from './CodeStub'
 
 export class AdministrationQuantity {
   constructor(json: JSON | any) {

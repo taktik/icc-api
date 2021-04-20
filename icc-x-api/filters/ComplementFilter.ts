@@ -1,4 +1,4 @@
-import { AbstractFilter } from "./filters"
+import { AbstractFilter } from './filters'
 
 export class ComplementFilter<T> {
   constructor(superSet: AbstractFilter<T>, subSet: AbstractFilter<T>) {
@@ -8,5 +8,5 @@ export class ComplementFilter<T> {
 
   superSet: AbstractFilter<T>
   subSet: AbstractFilter<T>
-  $type: string = "ComplementFilter"
+  $type = 'ComplementFilter'
 }

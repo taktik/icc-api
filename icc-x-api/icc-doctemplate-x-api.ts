@@ -1,10 +1,10 @@
-import { IccDoctemplateApi } from "../icc-api"
-import { IccCryptoXApi } from "./icc-crypto-x-api"
+import { IccDoctemplateApi } from '../icc-api'
+import { IccCryptoXApi } from './icc-crypto-x-api'
 
-import { extend } from "lodash"
-import * as models from "../icc-api/model/models"
-import { DocumentTemplate } from "../icc-api/model/models"
-import { string2ua } from "./utils/binary-utils"
+import { extend } from 'lodash'
+import * as models from '../icc-api/model/models'
+import { DocumentTemplate } from '../icc-api/model/models'
+import { string2ua } from './utils/binary-utils'
 
 // noinspection JSUnusedGlobalSymbols
 export class IccDoctemplateXApi extends IccDoctemplateApi {
@@ -16,11 +16,11 @@ export class IccDoctemplateXApi extends IccDoctemplateApi {
     headers: { [key: string]: string },
     crypto: IccCryptoXApi,
     fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    "undefined"
+    'undefined'
       ? window.fetch
-      : typeof self !== "undefined"
-        ? self.fetch
-        : fetch
+      : typeof self !== 'undefined'
+      ? self.fetch
+      : fetch
   ) {
     super(host, headers, fetchImpl)
     this.crypto = crypto
@@ -32,7 +32,7 @@ export class IccDoctemplateXApi extends IccDoctemplateApi {
       const documentTemplate: DocumentTemplate = extend(
         {
           id: this.crypto.randomUuid(),
-          _type: "org.taktik.icure.entities.DocumentTemplate",
+          _type: 'org.taktik.icure.entities.DocumentTemplate',
           owner: user.id,
           created: new Date().getTime(),
           modified: new Date().getTime(),
@@ -40,7 +40,7 @@ export class IccDoctemplateXApi extends IccDoctemplateApi {
           group: null,
           specialty: null,
           attachment: string2ua(template),
-          mainUti: "public.plain-text"
+          mainUti: 'public.plain-text',
         },
         c || {}
       )
@@ -60,8 +60,8 @@ export class IccDoctemplateXApi extends IccDoctemplateApi {
 
   // noinspection JSUnusedLocalSymbols
   findAllByOwnerId(ownerId: string): Promise<Array<models.DocumentTemplate>> {
-    return new Promise(function(resolve, reject) {
-      reject(console.log("findByHCPartyPatientSecretFKeys not implemented in document API!"))
+    return new Promise(function (resolve, reject) {
+      reject(console.log('findByHCPartyPatientSecretFKeys not implemented in document API!'))
     })
   }
 
@@ -69,9 +69,9 @@ export class IccDoctemplateXApi extends IccDoctemplateApi {
   getAttachmentUrl(documentId: string, attachmentId: string) {
     return (
       this.host +
-      "/doctemplate/{documentId}/attachment/{attachmentId}"
-        .replace("{documentId}", documentId)
-        .replace("{attachmentId}", attachmentId)
+      '/doctemplate/{documentId}/attachment/{attachmentId}'
+        .replace('{documentId}', documentId)
+        .replace('{attachmentId}', attachmentId)
     )
   }
 }

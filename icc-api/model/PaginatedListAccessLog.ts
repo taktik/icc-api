@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { AccessLog } from "./AccessLog"
-import { PaginatedDocumentKeyIdPairObject } from "./PaginatedDocumentKeyIdPairObject"
+import { AccessLog } from './AccessLog'
+import { PaginatedDocumentKeyIdPairObject } from './PaginatedDocumentKeyIdPairObject'
 
 export class PaginatedListAccessLog {
   constructor(json: JSON | any) {

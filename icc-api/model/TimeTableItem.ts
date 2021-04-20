@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { TimeTableHour } from "./TimeTableHour"
+import { TimeTableHour } from './TimeTableHour'
 
 export class TimeTableItem {
   constructor(json: JSON | any) {

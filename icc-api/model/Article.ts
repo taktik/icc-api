@@ -9,9 +9,9 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStub } from "./CodeStub"
-import { Content } from "./Content"
-import { Delegation } from "./Delegation"
+import { CodeStub } from './CodeStub'
+import { Content } from './Content'
+import { Delegation } from './Delegation'
 
 export class Article {
   constructor(json: JSON | any) {

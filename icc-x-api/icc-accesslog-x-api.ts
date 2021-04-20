@@ -1,25 +1,25 @@
-import { IccAccesslogApi } from "../icc-api"
-import { IccCryptoXApi } from "./icc-crypto-x-api"
+import { IccAccesslogApi } from '../icc-api'
+import { IccCryptoXApi } from './icc-crypto-x-api'
 
-import * as models from "../icc-api/model/models"
+import * as models from '../icc-api/model/models'
 
-import * as _ from "lodash"
-import { utils } from "./crypto/utils"
-import { AccessLog, PaginatedListAccessLog } from "../icc-api/model/models"
-import { hex2ua, ua2utf8, utf8_2ua } from "./utils/binary-utils"
+import * as _ from 'lodash'
+import { utils } from './crypto/utils'
+import { AccessLog, PaginatedListAccessLog } from '../icc-api/model/models'
+import { hex2ua, ua2utf8, utf8_2ua } from './utils/binary-utils'
 
 export class IccAccesslogXApi extends IccAccesslogApi {
   crypto: IccCryptoXApi
-  cryptedKeys = ["detail", "objectId"]
+  cryptedKeys = ['detail', 'objectId']
 
   constructor(
     host: string,
     headers: { [key: string]: string },
     crypto: IccCryptoXApi,
     fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    "undefined"
+    'undefined'
       ? window.fetch
-      : typeof self !== "undefined"
+      : typeof self !== 'undefined'
       ? self.fetch
       : fetch
   ) {
@@ -32,7 +32,7 @@ export class IccAccesslogXApi extends IccAccesslogApi {
     const accessslog = _.assign(
       {
         id: this.crypto.randomUuid(),
-        _type: "org.taktik.icure.entities.AccessLog",
+        _type: 'org.taktik.icure.entities.AccessLog',
         created: new Date().getTime(),
         modified: new Date().getTime(),
         date: +new Date(),
@@ -41,7 +41,7 @@ export class IccAccesslogXApi extends IccAccesslogApi {
         codes: [],
         tags: [],
         user: user.id,
-        accessType: "USER_ACCESS",
+        accessType: 'USER_ACCESS',
       },
       h || {}
     )
@@ -120,7 +120,7 @@ export class IccAccesslogXApi extends IccAccesslogApi {
         secretForeignKeys.extractedKeys.length > 0
           ? this.findByHCPartyPatientSecretFKeys(
               secretForeignKeys.hcpartyId!,
-              secretForeignKeys.extractedKeys.join(",")
+              secretForeignKeys.extractedKeys.join(',')
             )
           : Promise.resolve([])
       )
@@ -154,7 +154,7 @@ export class IccAccesslogXApi extends IccAccesslogApi {
                   //console.log("Cannot decrypt contact", ctc.id)
                   return Promise.resolve(accessLog)
                 }
-                return this.crypto.AES.importKey("raw", hex2ua(sfks[0].replace(/-/g, ""))).then(
+                return this.crypto.AES.importKey('raw', hex2ua(sfks[0].replace(/-/g, ''))).then(
                   (key) =>
                     utils.decrypt(accessLog, (ec) =>
                       this.crypto.AES.decrypt(key, ec).then((dec) => {
@@ -163,9 +163,9 @@ export class IccAccesslogXApi extends IccAccesslogApi {
                           return JSON.parse(jsonContent)
                         } catch (e) {
                           console.log(
-                            "Cannot parse access log",
+                            'Cannot parse access log',
                             accessLog.id,
-                            jsonContent || "Invalid content"
+                            jsonContent || 'Invalid content'
                           )
                           return {}
                         }
@@ -223,7 +223,7 @@ export class IccAccesslogXApi extends IccAccesslogApi {
             )
           )
           .then((eks: { extractedKeys: Array<string>; hcpartyId: string }) =>
-            this.crypto.AES.importKey("raw", hex2ua(eks.extractedKeys[0].replace(/-/g, "")))
+            this.crypto.AES.importKey('raw', hex2ua(eks.extractedKeys[0].replace(/-/g, '')))
           )
           .then((key: CryptoKey) =>
             utils.crypt(
@@ -239,7 +239,7 @@ export class IccAccesslogXApi extends IccAccesslogApi {
 
   createAccessLog(body?: models.AccessLog): never {
     throw new Error(
-      "Cannot call a method that returns access logs without providing a user for de/encryption"
+      'Cannot call a method that returns access logs without providing a user for de/encryption'
     )
   }
 
@@ -259,7 +259,7 @@ export class IccAccesslogXApi extends IccAccesslogApi {
 
   getAccessLog(accessLogId: string): never {
     throw new Error(
-      "Cannot call a method that returns access logs without providing a user for de/encryption"
+      'Cannot call a method that returns access logs without providing a user for de/encryption'
     )
   }
 
@@ -278,7 +278,7 @@ export class IccAccesslogXApi extends IccAccesslogApi {
     limit?: number
   ): never {
     throw new Error(
-      "Cannot call a method that returns access logs without providing a user for de/encryption"
+      'Cannot call a method that returns access logs without providing a user for de/encryption'
     )
   }
 
@@ -302,7 +302,7 @@ export class IccAccesslogXApi extends IccAccesslogApi {
 
   modifyAccessLog(body?: models.AccessLog): never {
     throw new Error(
-      "Cannot call a method that returns access logs without providing a user for de/encryption"
+      'Cannot call a method that returns access logs without providing a user for de/encryption'
     )
   }
 
@@ -330,7 +330,7 @@ export class IccAccesslogXApi extends IccAccesslogApi {
     descending?: boolean
   ): never {
     throw new Error(
-      "Cannot call a method that returns access logs without providing a user for de/encryption"
+      'Cannot call a method that returns access logs without providing a user for de/encryption'
     )
   }
 

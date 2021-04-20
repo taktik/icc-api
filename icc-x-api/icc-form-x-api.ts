@@ -1,10 +1,10 @@
-import { IccFormApi } from "../icc-api"
-import { IccCryptoXApi } from "./icc-crypto-x-api"
+import { IccFormApi } from '../icc-api'
+import { IccCryptoXApi } from './icc-crypto-x-api'
 
-import * as _ from "lodash"
-import * as models from "../icc-api/model/models"
+import * as _ from 'lodash'
+import * as models from '../icc-api/model/models'
 
-import { a2b, hex2ua, string2ua, ua2string } from "./utils/binary-utils"
+import { a2b, hex2ua, string2ua, ua2string } from './utils/binary-utils'
 
 // noinspection JSUnusedGlobalSymbols
 export class IccFormXApi extends IccFormApi {
@@ -15,11 +15,11 @@ export class IccFormXApi extends IccFormApi {
     headers: { [key: string]: string },
     crypto: IccCryptoXApi,
     fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    "undefined"
+    'undefined'
       ? window.fetch
-      : typeof self !== "undefined"
-        ? self.fetch
-        : fetch
+      : typeof self !== 'undefined'
+      ? self.fetch
+      : fetch
   ) {
     super(host, headers, fetchImpl)
     this.crypto = crypto
@@ -30,13 +30,13 @@ export class IccFormXApi extends IccFormApi {
     const form = _.extend(
       {
         id: this.crypto.randomUuid(),
-        _type: "org.taktik.icure.entities.Form",
+        _type: 'org.taktik.icure.entities.Form',
         created: new Date().getTime(),
         modified: new Date().getTime(),
         responsible: user.healthcarePartyId || user.patientId,
         author: user.id,
         codes: [],
-        tags: []
+        tags: [],
       },
       c || {}
     )
@@ -52,7 +52,7 @@ export class IccFormXApi extends IccFormApi {
     const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto
       .extractDelegationsSFKs(patient, hcpId!)
-      .then(secretForeignKeys =>
+      .then((secretForeignKeys) =>
         Promise.all([
           this.crypto.initObjectDelegations(
             form,
@@ -60,17 +60,17 @@ export class IccFormXApi extends IccFormApi {
             hcpId!,
             secretForeignKeys.extractedKeys[0]
           ),
-          this.crypto.initEncryptionKeys(form, hcpId!)
+          this.crypto.initEncryptionKeys(form, hcpId!),
         ])
       )
-      .then(initData => {
+      .then((initData) => {
         const dels = initData[0]
         const eks = initData[1]
         _.extend(form, {
           delegations: dels.delegations,
           cryptedForeignKeys: dels.cryptedForeignKeys,
           secretForeignKeys: dels.secretForeignKeys,
-          encryptionKeys: eks.encryptionKeys
+          encryptionKeys: eks.encryptionKeys,
         })
 
         let promise = Promise.resolve(form)
@@ -78,8 +78,8 @@ export class IccFormXApi extends IccFormApi {
           ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
           : []
         ).forEach(
-          delegateId =>
-            (promise = promise.then(form =>
+          (delegateId) =>
+            (promise = promise.then((form) =>
               this.crypto
                 .addDelegationsAndEncryptionKeys(
                   patient,
@@ -89,7 +89,7 @@ export class IccFormXApi extends IccFormApi {
                   dels.secretId,
                   eks.secretId
                 )
-                .catch(e => {
+                .catch((e) => {
                   console.log(e)
                   return form
                 })
@@ -101,23 +101,23 @@ export class IccFormXApi extends IccFormApi {
 
   initEncryptionKeys(user: models.User, form: models.Form) {
     const hcpId = user.healthcarePartyId || user.patientId
-    return this.crypto.initEncryptionKeys(form, hcpId!).then(eks => {
+    return this.crypto.initEncryptionKeys(form, hcpId!).then((eks) => {
       let promise = Promise.resolve(
         _.extend(form, {
-          encryptionKeys: eks.encryptionKeys
+          encryptionKeys: eks.encryptionKeys,
         })
       )
       ;(user.autoDelegations
         ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
         : []
       ).forEach(
-        delegateId =>
-          (promise = promise.then(contact =>
+        (delegateId) =>
+          (promise = promise.then((contact) =>
             this.crypto
               .appendEncryptionKeys(contact, hcpId!, delegateId, eks.secretId)
-              .then(extraEks => {
+              .then((extraEks) => {
                 return _.extend(contact, {
-                  encryptionKeys: extraEks.encryptionKeys
+                  encryptionKeys: extraEks.encryptionKeys,
                 })
               })
           ))
@@ -145,21 +145,21 @@ export class IccFormXApi extends IccFormApi {
   findBy(hcpartyId: string, patient: models.Patient) {
     return this.crypto
       .extractDelegationsSFKs(patient, hcpartyId)
-      .then(secretForeignKeys =>
+      .then((secretForeignKeys) =>
         this.findFormsByHCPartyPatientForeignKeys(
           secretForeignKeys.hcpartyId!,
-          secretForeignKeys.extractedKeys.join(",")
+          secretForeignKeys.extractedKeys.join(',')
         )
       )
-      .then(forms => this.decrypt(hcpartyId, forms))
-      .then(function(decryptedForms) {
+      .then((forms) => this.decrypt(hcpartyId, forms))
+      .then(function (decryptedForms) {
         return decryptedForms
       })
   }
 
   decrypt(hcpartyId: string, forms: Array<models.Form>) {
     return Promise.all(
-      forms.map(form =>
+      forms.map((form) =>
         this.crypto
           .extractKeysFromDelegationsForHcpHierarchy(
             hcpartyId,
@@ -168,14 +168,14 @@ export class IccFormXApi extends IccFormApi {
           )
           .then(({ extractedKeys: sfks }) => {
             if (form.encryptedSelf) {
-              return this.crypto.AES.importKey("raw", hex2ua(sfks[0].replace(/-/g, "")))
+              return this.crypto.AES.importKey('raw', hex2ua(sfks[0].replace(/-/g, '')))
                 .then(
-                  key =>
+                  (key) =>
                     new Promise((resolve: (value: any) => any) => {
                       this.crypto.AES.decrypt(key, string2ua(a2b(form.encryptedSelf!))).then(
                         resolve,
                         () => {
-                          console.log("Cannot decrypt form", form.id)
+                          console.log('Cannot decrypt form', form.id)
                           resolve(null)
                         }
                       )
@@ -191,11 +191,11 @@ export class IccFormXApi extends IccFormApi {
               return Promise.resolve(form)
             }
           })
-          .catch(function(e) {
+          .catch(function (e) {
             console.log(e)
           })
       )
-    ).catch(function(e) {
+    ).catch(function (e) {
       console.log(e)
     })
   }

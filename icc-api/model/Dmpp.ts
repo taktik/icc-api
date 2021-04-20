@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Reimbursement } from "./Reimbursement"
+import { Reimbursement } from './Reimbursement'
 
 export class Dmpp {
   constructor(json: JSON | any) {
@@ -30,16 +30,16 @@ export class Dmpp {
   productId?: string
 }
 export namespace Dmpp {
-  export type DeliveryEnvironmentEnum = "P" | "A" | "H" | "R"
+  export type DeliveryEnvironmentEnum = 'P' | 'A' | 'H' | 'R'
   export const DeliveryEnvironmentEnum = {
-    P: "P" as DeliveryEnvironmentEnum,
-    A: "A" as DeliveryEnvironmentEnum,
-    H: "H" as DeliveryEnvironmentEnum,
-    R: "R" as DeliveryEnvironmentEnum
+    P: 'P' as DeliveryEnvironmentEnum,
+    A: 'A' as DeliveryEnvironmentEnum,
+    H: 'H' as DeliveryEnvironmentEnum,
+    R: 'R' as DeliveryEnvironmentEnum,
   }
-  export type CodeTypeEnum = "CNK" | "PSEUDO"
+  export type CodeTypeEnum = 'CNK' | 'PSEUDO'
   export const CodeTypeEnum = {
-    CNK: "CNK" as CodeTypeEnum,
-    PSEUDO: "PSEUDO" as CodeTypeEnum
+    CNK: 'CNK' as CodeTypeEnum,
+    PSEUDO: 'PSEUDO' as CodeTypeEnum,
   }
 }

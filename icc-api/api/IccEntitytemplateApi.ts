@@ -9,9 +9,9 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { XHR } from "./XHR"
-import { DocIdentifier } from "../model/DocIdentifier"
-import { EntityTemplate } from "../model/EntityTemplate"
+import { XHR } from './XHR'
+import { DocIdentifier } from '../model/DocIdentifier'
+import { EntityTemplate } from '../model/EntityTemplate'
 
 export class IccEntitytemplateApi {
   host: string
@@ -24,7 +24,7 @@ export class IccEntitytemplateApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -45,14 +45,14 @@ export class IccEntitytemplateApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/entitytemplate` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/entitytemplate` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new EntityTemplate(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new EntityTemplate(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -61,17 +61,17 @@ export class IccEntitytemplateApi {
    * @param entityTemplateIds
    */
   deleteEntityTemplate(entityTemplateIds: string): Promise<Array<DocIdentifier>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/entitytemplate/${encodeURIComponent(String(entityTemplateIds))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new DocIdentifier(it)))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -86,19 +86,19 @@ export class IccEntitytemplateApi {
     searchString?: string,
     includeEntities?: boolean
   ): Promise<Array<EntityTemplate>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/entitytemplate/findAll/${encodeURIComponent(String(type))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (searchString ? "&searchString=" + encodeURIComponent(String(searchString)) : "") +
-      (includeEntities ? "&includeEntities=" + encodeURIComponent(String(includeEntities)) : "")
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new EntityTemplate(it)))
-      .catch(err => this.handleError(err))
+      (searchString ? '&searchString=' + encodeURIComponent(String(searchString)) : '') +
+      (includeEntities ? '&includeEntities=' + encodeURIComponent(String(includeEntities)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new EntityTemplate(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -113,20 +113,20 @@ export class IccEntitytemplateApi {
     keyword: string,
     includeEntities?: boolean
   ): Promise<Array<EntityTemplate>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/entitytemplate/findAll/${encodeURIComponent(String(type))}/keyword/${encodeURIComponent(
         String(keyword)
       )}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (includeEntities ? "&includeEntities=" + encodeURIComponent(String(includeEntities)) : "")
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new EntityTemplate(it)))
-      .catch(err => this.handleError(err))
+      (includeEntities ? '&includeEntities=' + encodeURIComponent(String(includeEntities)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new EntityTemplate(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -143,21 +143,21 @@ export class IccEntitytemplateApi {
     searchString?: string,
     includeEntities?: boolean
   ): Promise<Array<EntityTemplate>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/entitytemplate/find/${encodeURIComponent(String(userId))}/${encodeURIComponent(
         String(type)
       )}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (searchString ? "&searchString=" + encodeURIComponent(String(searchString)) : "") +
-      (includeEntities ? "&includeEntities=" + encodeURIComponent(String(includeEntities)) : "")
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new EntityTemplate(it)))
-      .catch(err => this.handleError(err))
+      (searchString ? '&searchString=' + encodeURIComponent(String(searchString)) : '') +
+      (includeEntities ? '&includeEntities=' + encodeURIComponent(String(includeEntities)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new EntityTemplate(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -174,20 +174,20 @@ export class IccEntitytemplateApi {
     keyword: string,
     includeEntities?: boolean
   ): Promise<Array<EntityTemplate>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/entitytemplate/find/${encodeURIComponent(String(userId))}/${encodeURIComponent(
         String(type)
       )}/keyword/${encodeURIComponent(String(keyword))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (includeEntities ? "&includeEntities=" + encodeURIComponent(String(includeEntities)) : "")
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new EntityTemplate(it)))
-      .catch(err => this.handleError(err))
+      (includeEntities ? '&includeEntities=' + encodeURIComponent(String(includeEntities)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new EntityTemplate(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -196,17 +196,17 @@ export class IccEntitytemplateApi {
    * @param entityTemplateId EntityTemplate id
    */
   getEntityTemplate(entityTemplateId: string): Promise<EntityTemplate> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/entitytemplate/${encodeURIComponent(String(entityTemplateId))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new EntityTemplate(doc.body as JSON))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new EntityTemplate(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -215,17 +215,17 @@ export class IccEntitytemplateApi {
    * @param entityTemplateIds
    */
   getEntityTemplates(entityTemplateIds: string): Promise<Array<EntityTemplate>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/entitytemplate/byIds/${encodeURIComponent(String(entityTemplateIds))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new EntityTemplate(it)))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new EntityTemplate(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -237,13 +237,13 @@ export class IccEntitytemplateApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/entitytemplate` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/entitytemplate` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new EntityTemplate(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new EntityTemplate(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 }

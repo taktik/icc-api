@@ -9,9 +9,9 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { XHR } from "./XHR"
-import { Contact } from "../model/Contact"
-import { ResultInfo } from "../model/ResultInfo"
+import { XHR } from './XHR'
+import { Contact } from '../model/Contact'
+import { ResultInfo } from '../model/ResultInfo'
 
 export class IccBeresultimportApi {
   host: string
@@ -24,7 +24,7 @@ export class IccBeresultimportApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -43,18 +43,18 @@ export class IccBeresultimportApi {
    * @param enckeys
    */
   canHandle(id: string, enckeys: string): Promise<boolean> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/be_result_import/canhandle/${encodeURIComponent(String(id))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (enckeys ? "&enckeys=" + encodeURIComponent(String(enckeys)) : "")
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => JSON.parse(JSON.stringify(doc.body)))
-      .catch(err => this.handleError(err))
+      (enckeys ? '&enckeys=' + encodeURIComponent(String(enckeys)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => JSON.parse(JSON.stringify(doc.body)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -79,24 +79,24 @@ export class IccBeresultimportApi {
     enckeys: string,
     ctc: Contact
   ): Promise<Contact> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/be_result_import/import/${encodeURIComponent(String(documentId))}/${encodeURIComponent(
         String(hcpId)
       )}/${encodeURIComponent(String(language))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (protocolIds ? "&protocolIds=" + encodeURIComponent(String(protocolIds)) : "") +
-      (formIds ? "&formIds=" + encodeURIComponent(String(formIds)) : "") +
-      (planOfActionId ? "&planOfActionId=" + encodeURIComponent(String(planOfActionId)) : "") +
-      (enckeys ? "&enckeys=" + encodeURIComponent(String(enckeys)) : "") +
-      (ctc ? "&ctc=" + encodeURIComponent(String(ctc)) : "")
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Contact(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      (protocolIds ? '&protocolIds=' + encodeURIComponent(String(protocolIds)) : '') +
+      (formIds ? '&formIds=' + encodeURIComponent(String(formIds)) : '') +
+      (planOfActionId ? '&planOfActionId=' + encodeURIComponent(String(planOfActionId)) : '') +
+      (enckeys ? '&enckeys=' + encodeURIComponent(String(enckeys)) : '') +
+      (ctc ? '&ctc=' + encodeURIComponent(String(ctc)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Contact(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -113,19 +113,19 @@ export class IccBeresultimportApi {
     enckeys: string,
     full?: boolean
   ): Promise<Array<ResultInfo>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/be_result_import/infos/${encodeURIComponent(String(id))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (language ? "&language=" + encodeURIComponent(String(language)) : "") +
-      (enckeys ? "&enckeys=" + encodeURIComponent(String(enckeys)) : "") +
-      (full ? "&full=" + encodeURIComponent(String(full)) : "")
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new ResultInfo(it)))
-      .catch(err => this.handleError(err))
+      (language ? '&language=' + encodeURIComponent(String(language)) : '') +
+      (enckeys ? '&enckeys=' + encodeURIComponent(String(enckeys)) : '') +
+      (full ? '&full=' + encodeURIComponent(String(full)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new ResultInfo(it)))
+      .catch((err) => this.handleError(err))
   }
 }

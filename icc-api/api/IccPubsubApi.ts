@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { XHR } from "./XHR"
+import { XHR } from './XHR'
 
 export class IccPubsubApi {
   host: string
@@ -22,7 +22,7 @@ export class IccPubsubApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -47,15 +47,15 @@ export class IccPubsubApi {
     const _url =
       this.host +
       `/pubsub/auth/${encodeURIComponent(String(bucket))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/octet-stream"))
-    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => JSON.parse(JSON.stringify(doc.body)))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/octet-stream'))
+    return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
+      .then((doc) => JSON.parse(JSON.stringify(doc.body)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -69,14 +69,14 @@ export class IccPubsubApi {
     _body = body
 
     const _url =
-      this.host + `/pubsub/pub/${encodeURIComponent(String(key))}` + "?ts=" + new Date().getTime()
+      this.host + `/pubsub/pub/${encodeURIComponent(String(key))}` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/octet-stream"))
-    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => JSON.parse(JSON.stringify(doc.body)))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/octet-stream'))
+    return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
+      .then((doc) => JSON.parse(JSON.stringify(doc.body)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -85,17 +85,17 @@ export class IccPubsubApi {
    * @param bucket
    */
   recoverAuth(bucket: string): Promise<ArrayBuffer> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/pubsub/auth/recover/${encodeURIComponent(String(bucket))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => doc.body)
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => doc.body)
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -104,13 +104,13 @@ export class IccPubsubApi {
    * @param key
    */
   sub(key: string): Promise<ArrayBuffer> {
-    let _body = null
+    const _body = null
 
     const _url =
-      this.host + `/pubsub/sub/${encodeURIComponent(String(key))}` + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => doc.body)
-      .catch(err => this.handleError(err))
+      this.host + `/pubsub/sub/${encodeURIComponent(String(key))}` + '?ts=' + new Date().getTime()
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => doc.body)
+      .catch((err) => this.handleError(err))
   }
 }

@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { WebSessionMaxIdleTimeUnits } from "./WebSessionMaxIdleTimeUnits"
+import { WebSessionMaxIdleTimeUnits } from './WebSessionMaxIdleTimeUnits'
 
 export class WebSessionMaxIdleTime {
   constructor(json: JSON | any) {

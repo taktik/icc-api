@@ -9,9 +9,9 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { XHR } from "./XHR"
-import { MapOfIds } from "../model/MapOfIds"
-import { MessageWithBatch } from "../model/MessageWithBatch"
+import { XHR } from './XHR'
+import { MapOfIds } from '../model/MapOfIds'
+import { MessageWithBatch } from '../model/MessageWithBatch'
 
 export class IccBeefactApi {
   host: string
@@ -24,7 +24,7 @@ export class IccBeefactApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -58,14 +58,14 @@ export class IccBeefactApi {
       `/be_efact/${encodeURIComponent(String(insuranceId))}/${encodeURIComponent(
         String(newMessageId)
       )}/${encodeURIComponent(String(numericalRef))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new MessageWithBatch(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new MessageWithBatch(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 }

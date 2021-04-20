@@ -27,14 +27,14 @@ export class TypedValueObject {
   encryptedSelf?: string
 }
 export namespace TypedValueObject {
-  export type TypeEnum = "BOOLEAN" | "INTEGER" | "DOUBLE" | "STRING" | "DATE" | "CLOB" | "JSON"
+  export type TypeEnum = 'BOOLEAN' | 'INTEGER' | 'DOUBLE' | 'STRING' | 'DATE' | 'CLOB' | 'JSON'
   export const TypeEnum = {
-    BOOLEAN: "BOOLEAN" as TypeEnum,
-    INTEGER: "INTEGER" as TypeEnum,
-    DOUBLE: "DOUBLE" as TypeEnum,
-    STRING: "STRING" as TypeEnum,
-    DATE: "DATE" as TypeEnum,
-    CLOB: "CLOB" as TypeEnum,
-    JSON: "JSON" as TypeEnum
+    BOOLEAN: 'BOOLEAN' as TypeEnum,
+    INTEGER: 'INTEGER' as TypeEnum,
+    DOUBLE: 'DOUBLE' as TypeEnum,
+    STRING: 'STRING' as TypeEnum,
+    DATE: 'DATE' as TypeEnum,
+    CLOB: 'CLOB' as TypeEnum,
+    JSON: 'JSON' as TypeEnum,
   }
 }

@@ -21,10 +21,10 @@ export class DatabaseSynchronization {
   localTarget?: DatabaseSynchronization.LocalTargetEnum
 }
 export namespace DatabaseSynchronization {
-  export type LocalTargetEnum = "base" | "healthdata" | "patient"
+  export type LocalTargetEnum = 'base' | 'healthdata' | 'patient'
   export const LocalTargetEnum = {
-    Base: "base" as LocalTargetEnum,
-    Healthdata: "healthdata" as LocalTargetEnum,
-    Patient: "patient" as LocalTargetEnum
+    Base: 'base' as LocalTargetEnum,
+    Healthdata: 'healthdata' as LocalTargetEnum,
+    Patient: 'patient' as LocalTargetEnum,
   }
 }

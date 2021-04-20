@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { StrengthRange } from "./StrengthRange"
-import { SubstanceStub } from "./SubstanceStub"
+import { StrengthRange } from './StrengthRange'
+import { SubstanceStub } from './SubstanceStub'
 
 export class VirtualIngredient {
   constructor(json: JSON | any) {
@@ -25,9 +25,9 @@ export class VirtualIngredient {
   substance?: SubstanceStub
 }
 export namespace VirtualIngredient {
-  export type TypeEnum = "ACTIVE_SUBSTANCE" | "EXCIPIENT"
+  export type TypeEnum = 'ACTIVE_SUBSTANCE' | 'EXCIPIENT'
   export const TypeEnum = {
-    ACTIVESUBSTANCE: "ACTIVE_SUBSTANCE" as TypeEnum,
-    EXCIPIENT: "EXCIPIENT" as TypeEnum
+    ACTIVESUBSTANCE: 'ACTIVE_SUBSTANCE' as TypeEnum,
+    EXCIPIENT: 'EXCIPIENT' as TypeEnum,
   }
 }

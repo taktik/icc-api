@@ -1,8 +1,8 @@
 /*
  * Copyright (c) 2020. Taktik SA, All rights reserved.
  */
-import { AbstractFilterPatient } from "../../icc-api/model/AbstractFilterPatient"
-import { Patient } from "../../icc-api/model/Patient"
+import { AbstractFilterPatient } from '../../icc-api/model/AbstractFilterPatient'
+import { Patient } from '../../icc-api/model/Patient'
 import GenderEnum = Patient.GenderEnum
 
 export class PatientByHcPartyGenderEducationProfession extends AbstractFilterPatient {
@@ -12,8 +12,8 @@ export class PatientByHcPartyGenderEducationProfession extends AbstractFilterPat
 
   healthcarePartyId?: string
   gender?: GenderEnum
-  education?: String
-  profession?: String
+  education?: string
+  profession?: string
 
-  $type: string = "PatientByHcPartyGenderEducationProfession"
+  $type = 'PatientByHcPartyGenderEducationProfession'
 }

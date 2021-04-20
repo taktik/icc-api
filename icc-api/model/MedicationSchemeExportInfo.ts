@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { HealthcareParty } from "./HealthcareParty"
-import { Service } from "./Service"
+import { HealthcareParty } from './HealthcareParty'
+import { Service } from './Service'
 
 export class MedicationSchemeExportInfo {
   constructor(json: JSON | any) {

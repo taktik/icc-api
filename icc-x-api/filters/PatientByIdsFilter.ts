@@ -4,7 +4,7 @@
 /*
  * Copyright (c) 2020. Taktik SA, All rights reserved.
  */
-import { AbstractFilterPatient } from "../../icc-api/model/AbstractFilterPatient"
+import { AbstractFilterPatient } from '../../icc-api/model/AbstractFilterPatient'
 
 export class PatientByIdsFilter extends AbstractFilterPatient {
   constructor(json: JSON | any) {
@@ -14,5 +14,5 @@ export class PatientByIdsFilter extends AbstractFilterPatient {
   healthcarePartyId?: string
   ids?: string[]
 
-  $type: string = "PatientByIdsFilter"
+  $type = 'PatientByIdsFilter'
 }

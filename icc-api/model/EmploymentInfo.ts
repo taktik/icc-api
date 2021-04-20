@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStub } from "./CodeStub"
-import { Employer } from "./Employer"
+import { CodeStub } from './CodeStub'
+import { Employer } from './Employer'
 
 export class EmploymentInfo {
   constructor(json: JSON | any) {

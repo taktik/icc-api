@@ -9,10 +9,10 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStub } from "./CodeStub"
-import { Delegation } from "./Delegation"
-import { Service } from "./Service"
-import { SubContact } from "./SubContact"
+import { CodeStub } from './CodeStub'
+import { Delegation } from './Delegation'
+import { Service } from './Service'
+import { SubContact } from './SubContact'
 
 /**
  * This entity is a root level object. It represents a contact. It is serialized in JSON and saved in the underlying icure-contact CouchDB database.

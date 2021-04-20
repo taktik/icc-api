@@ -9,14 +9,14 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStub } from "./CodeStub"
-import { Duration } from "./Duration"
-import { Medicinalproduct } from "./Medicinalproduct"
-import { ParagraphAgreement } from "./ParagraphAgreement"
-import { RegimenItem } from "./RegimenItem"
-import { Renewal } from "./Renewal"
-import { Substanceproduct } from "./Substanceproduct"
-import { Suspension } from "./Suspension"
+import { CodeStub } from './CodeStub'
+import { Duration } from './Duration'
+import { Medicinalproduct } from './Medicinalproduct'
+import { ParagraphAgreement } from './ParagraphAgreement'
+import { RegimenItem } from './RegimenItem'
+import { Renewal } from './Renewal'
+import { Substanceproduct } from './Substanceproduct'
+import { Suspension } from './Suspension'
 
 /**
  * The details of prescribed or suggested medication

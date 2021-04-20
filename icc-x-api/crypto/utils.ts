@@ -1,7 +1,7 @@
-import * as base64js from "base64-js"
-import * as moment from "moment"
-import { Moment } from "moment"
-import * as _ from "lodash"
+import * as base64js from 'base64-js'
+import * as moment from 'moment'
+import { Moment } from 'moment'
+import * as _ from 'lodash'
 import {
   a2b,
   b2a,
@@ -12,9 +12,9 @@ import {
   ua2hex,
   ua2string,
   b64Url2ua,
-  b64_2ua
-} from "../utils/binary-utils"
-import { ASN1, Stream } from "../utils/asn1"
+  b64_2ua,
+} from '../utils/binary-utils'
+import { ASN1, Stream } from '../utils/asn1'
 
 export class UtilsClass {
   constructor() {}
@@ -24,7 +24,7 @@ export class UtilsClass {
     key: string,
     proc: () => PromiseLike<T>
   ): PromiseLike<T> {
-    let inFlight = concurrencyMap[key]
+    const inFlight = concurrencyMap[key]
     if (!inFlight) {
       return (concurrencyMap[key] = (async () => {
         try {
@@ -61,7 +61,7 @@ export class UtilsClass {
       const oidStart = oidRaw.header + oidRaw.stream.pos
       const oid = oidRaw.stream.parseOID(oidStart, oidStart + oidRaw.length, 32)
 
-      if (oid === "1.2.840.113549.1.1.1") {
+      if (oid === '1.2.840.113549.1.1.1') {
         modulusRaw = pubkeyAsn1.sub[1].sub[0].sub[0]
         exponentRaw = pubkeyAsn1.sub[1].sub[0].sub[1]
       }
@@ -77,7 +77,7 @@ export class UtilsClass {
     }
 
     if (!modulusRaw || !exponentRaw) {
-      throw new Error("Invalid spki format")
+      throw new Error('Invalid spki format')
     }
 
     const modulusStart = modulusRaw.header + modulusRaw.stream.pos + 1
@@ -90,36 +90,36 @@ export class UtilsClass {
     const exponent = hex2ua(exponentHex)
 
     return {
-      kty: "RSA",
-      alg: "RSA-OAEP",
+      kty: 'RSA',
+      alg: 'RSA-OAEP',
       ext: true,
       n: ua2b64Url(this.minimalRep(modulus)),
-      e: ua2b64Url(this.minimalRep(exponent))
+      e: ua2b64Url(this.minimalRep(exponent)),
     }
   }
 
   pkcs8ToJwk(buff: Uint8Array | ArrayBuffer) {
     let buf = new Uint8Array(buff)
-    var hex = ua2hex(buf)
-    if (!hex.startsWith("3082") || !hex.substr(8).startsWith("0201000282010100")) {
+    let hex = ua2hex(buf)
+    if (!hex.startsWith('3082') || !hex.substr(8).startsWith('0201000282010100')) {
       hex = hex.substr(52)
       buf = hex2ua(hex)
     }
-    var key: any = {}
-    var offset = buf[1] & 0x80 ? buf[1] - 0x80 + 5 : 7
+    const key: any = {}
+    let offset = buf[1] & 0x80 ? buf[1] - 0x80 + 5 : 7
 
     function read() {
-      var s = buf[offset + 1]
+      let s = buf[offset + 1]
 
       if (s & 0x80) {
-        var n = s - 0x80
+        const n = s - 0x80
         s = n === 2 ? 256 * buf[offset + 2] + buf[offset + 3] : buf[offset + 2]
         offset += n
       }
 
       offset += 2
 
-      var b = buf.slice(offset, offset + s)
+      const b = buf.slice(offset, offset + s)
       offset += s
       return b
     }
@@ -134,7 +134,7 @@ export class UtilsClass {
     key.coefficient = read()
 
     return {
-      kty: "RSA",
+      kty: 'RSA',
       n: ua2b64Url(this.minimalRep(key.modulus)),
       e: ua2b64Url(this.minimalRep(key.publicExponent)),
       d: ua2b64Url(this.minimalRep(key.privateExponent)),
@@ -142,12 +142,12 @@ export class UtilsClass {
       q: ua2b64Url(this.minimalRep(key.prime2)),
       dp: ua2b64Url(this.minimalRep(key.exponent1)),
       dq: ua2b64Url(this.minimalRep(key.exponent2)),
-      qi: ua2b64Url(this.minimalRep(key.coefficient))
+      qi: ua2b64Url(this.minimalRep(key.coefficient)),
     }
   }
 
   minimalRep(b: Uint8Array) {
-    var i = 0
+    let i = 0
     while (b[i] === 0) {
       i++
     }
@@ -180,7 +180,7 @@ export class UtilsClass {
    * @returns {ArrayBuffer}
    */
   appendBuffer(buffer1: ArrayBuffer, buffer2: ArrayBuffer): ArrayBuffer {
-    var tmp = new Uint8Array(buffer1.byteLength + buffer2.byteLength)
+    const tmp = new Uint8Array(buffer1.byteLength + buffer2.byteLength)
     tmp.set(new Uint8Array(buffer1), 0)
     tmp.set(new Uint8Array(buffer2), buffer1.byteLength)
     return tmp.buffer as ArrayBuffer
@@ -212,9 +212,9 @@ export class UtilsClass {
       return null
     }
     if (epochOrLongCalendar >= 18000101 && epochOrLongCalendar < 25400000) {
-      return moment("" + epochOrLongCalendar, "YYYYMMDD")
+      return moment('' + epochOrLongCalendar, 'YYYYMMDD')
     } else if (epochOrLongCalendar >= 18000101000000) {
-      return moment("" + epochOrLongCalendar, "YYYYMMDDHHmmss")
+      return moment('' + epochOrLongCalendar, 'YYYYMMDDHHmmss')
     } else {
       return moment(epochOrLongCalendar)
     }
@@ -232,22 +232,27 @@ export class UtilsClass {
     cryptor: (obj: { [key: string]: string }) => Promise<ArrayBuffer>,
     keys: Array<string>
   ) {
-    const subObj = _.pick(obj, keys.filter(k => !k.includes("*")))
+    const subObj = _.pick(
+      obj,
+      keys.filter((k) => !k.includes('*'))
+    )
     obj.encryptedSelf = b2a(ua2string(await cryptor(subObj)))
-    Object.keys(subObj).forEach(k => delete obj[k])
+    Object.keys(subObj).forEach((k) => delete obj[k])
 
-    await keys.filter(k => k.includes("*")).reduce(async (prev: Promise<void>, k: any) => {
-      await prev
-      const k1 = k.split(".*.")[0]
-      const k2 = k.substr(k1.length + 3)
+    await keys
+      .filter((k) => k.includes('*'))
+      .reduce(async (prev: Promise<void>, k: any) => {
+        await prev
+        const k1 = k.split('.*.')[0]
+        const k2 = k.substr(k1.length + 3)
 
-      const mapped = await Promise.all(
-        (_.get(obj, k1) || []).map((so: any) =>
-          this.crypt(so, cryptor, k2.startsWith("[") ? JSON.parse(k2) : [k2])
+        const mapped = await Promise.all(
+          (_.get(obj, k1) || []).map((so: any) =>
+            this.crypt(so, cryptor, k2.startsWith('[') ? JSON.parse(k2) : [k2])
+          )
         )
-      )
-      _.set(obj, k1, mapped)
-    }, Promise.resolve())
+        _.set(obj, k1, mapped)
+      }, Promise.resolve())
 
     return obj
   }
@@ -263,7 +268,7 @@ export class UtilsClass {
       await prev
       if (Array.isArray(obj[k])) {
         await (obj[k] as Array<any>)
-          .filter(o => typeof o === "object" && o !== null)
+          .filter((o) => typeof o === 'object' && o !== null)
           .reduce(async (prev: Promise<void>, so: any) => {
             await prev
             await this.decrypt(so, decryptor)

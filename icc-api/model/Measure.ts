@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStub } from "./CodeStub"
+import { CodeStub } from './CodeStub'
 
 /**
  * Values of measurements recorded. Fields included would be the value, permissible range (min. and max.), severity, unit of measurement, etc

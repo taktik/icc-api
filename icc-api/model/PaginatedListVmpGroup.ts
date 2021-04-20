@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { PaginatedDocumentKeyIdPairObject } from "./PaginatedDocumentKeyIdPairObject"
-import { VmpGroup } from "./VmpGroup"
+import { PaginatedDocumentKeyIdPairObject } from './PaginatedDocumentKeyIdPairObject'
+import { VmpGroup } from './VmpGroup'
 
 export class PaginatedListVmpGroup {
   constructor(json: JSON | any) {

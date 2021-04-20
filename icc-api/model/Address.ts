@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Telecom } from "./Telecom"
+import { Telecom } from './Telecom'
 
 /**
  * This entity represents an Address
@@ -70,28 +70,28 @@ export class Address {
 }
 export namespace Address {
   export type AddressTypeEnum =
-    | "home"
-    | "work"
-    | "vacation"
-    | "hospital"
-    | "clinic"
-    | "hq"
-    | "other"
-    | "temporary"
-    | "postal"
-    | "diplomatic"
-    | "reference"
+    | 'home'
+    | 'work'
+    | 'vacation'
+    | 'hospital'
+    | 'clinic'
+    | 'hq'
+    | 'other'
+    | 'temporary'
+    | 'postal'
+    | 'diplomatic'
+    | 'reference'
   export const AddressTypeEnum = {
-    Home: "home" as AddressTypeEnum,
-    Work: "work" as AddressTypeEnum,
-    Vacation: "vacation" as AddressTypeEnum,
-    Hospital: "hospital" as AddressTypeEnum,
-    Clinic: "clinic" as AddressTypeEnum,
-    Hq: "hq" as AddressTypeEnum,
-    Other: "other" as AddressTypeEnum,
-    Temporary: "temporary" as AddressTypeEnum,
-    Postal: "postal" as AddressTypeEnum,
-    Diplomatic: "diplomatic" as AddressTypeEnum,
-    Reference: "reference" as AddressTypeEnum
+    Home: 'home' as AddressTypeEnum,
+    Work: 'work' as AddressTypeEnum,
+    Vacation: 'vacation' as AddressTypeEnum,
+    Hospital: 'hospital' as AddressTypeEnum,
+    Clinic: 'clinic' as AddressTypeEnum,
+    Hq: 'hq' as AddressTypeEnum,
+    Other: 'other' as AddressTypeEnum,
+    Temporary: 'temporary' as AddressTypeEnum,
+    Postal: 'postal' as AddressTypeEnum,
+    Diplomatic: 'diplomatic' as AddressTypeEnum,
+    Reference: 'reference' as AddressTypeEnum,
   }
 }

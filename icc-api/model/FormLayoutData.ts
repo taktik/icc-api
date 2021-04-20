@@ -9,14 +9,14 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Content } from "./Content"
-import { Editor } from "./Editor"
-import { FormDataOption } from "./FormDataOption"
-import { FormPlanning } from "./FormPlanning"
-import { Formula } from "./Formula"
-import { GuiCode } from "./GuiCode"
-import { GuiCodeType } from "./GuiCodeType"
-import { Suggest } from "./Suggest"
+import { Content } from './Content'
+import { Editor } from './Editor'
+import { FormDataOption } from './FormDataOption'
+import { FormPlanning } from './FormPlanning'
+import { Formula } from './Formula'
+import { GuiCode } from './GuiCode'
+import { GuiCodeType } from './GuiCodeType'
+import { Suggest } from './Suggest'
 
 export class FormLayoutData {
   constructor(json: JSON | any) {

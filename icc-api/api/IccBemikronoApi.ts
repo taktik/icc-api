@@ -9,14 +9,14 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { XHR } from "./XHR"
-import { Appointment } from "../model/Appointment"
-import { AppointmentImport } from "../model/AppointmentImport"
-import { EmailOrSmsMessage } from "../model/EmailOrSmsMessage"
-import { MikronoAppointmentTypeRest } from "../model/MikronoAppointmentTypeRest"
-import { MikronoCredentials } from "../model/MikronoCredentials"
-import { Unit } from "../model/Unit"
-import { User } from "../model/User"
+import { XHR } from './XHR'
+import { Appointment } from '../model/Appointment'
+import { AppointmentImport } from '../model/AppointmentImport'
+import { EmailOrSmsMessage } from '../model/EmailOrSmsMessage'
+import { MikronoAppointmentTypeRest } from '../model/MikronoAppointmentTypeRest'
+import { MikronoCredentials } from '../model/MikronoCredentials'
+import { Unit } from '../model/Unit'
+import { User } from '../model/User'
 
 export class IccBemikronoApi {
   host: string
@@ -29,7 +29,7 @@ export class IccBemikronoApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -47,17 +47,17 @@ export class IccBemikronoApi {
    * @param calendarDate
    */
   appointmentsByDate(calendarDate: number): Promise<Array<Appointment>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/be_mikrono/appointments/byDate/${encodeURIComponent(String(calendarDate))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new Appointment(it)))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new Appointment(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -72,19 +72,19 @@ export class IccBemikronoApi {
     from?: number,
     to?: number
   ): Promise<Array<Appointment>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/be_mikrono/appointments/byPatient/${encodeURIComponent(String(patientId))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (from ? "&from=" + encodeURIComponent(String(from)) : "") +
-      (to ? "&to=" + encodeURIComponent(String(to)) : "")
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new Appointment(it)))
-      .catch(err => this.handleError(err))
+      (from ? '&from=' + encodeURIComponent(String(from)) : '') +
+      (to ? '&to=' + encodeURIComponent(String(to)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new Appointment(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -97,14 +97,14 @@ export class IccBemikronoApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/be_mikrono/appointmentTypes` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/be_mikrono/appointmentTypes` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new MikronoAppointmentTypeRest(it)))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new MikronoAppointmentTypeRest(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -116,14 +116,14 @@ export class IccBemikronoApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/be_mikrono/appointments` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/be_mikrono/appointments` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => JSON.parse(JSON.stringify(it))))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -132,20 +132,20 @@ export class IccBemikronoApi {
    * @param appointmentId
    * @param action
    */
-  notify(appointmentId: string, action: string): Promise<any | Boolean> {
-    let _body = null
+  notify(appointmentId: string, action: string): Promise<any | boolean> {
+    const _body = null
 
     const _url =
       this.host +
       `/be_mikrono/notify/${encodeURIComponent(String(appointmentId))}/${encodeURIComponent(
         String(action)
       )}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => true)
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => true)
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -161,15 +161,15 @@ export class IccBemikronoApi {
     const _url =
       this.host +
       `/be_mikrono/user/${encodeURIComponent(String(userId))}/register` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new User(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new User(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -181,14 +181,14 @@ export class IccBemikronoApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/be_mikrono/sendMessage` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/be_mikrono/sendMessage` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Unit(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Unit(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -204,14 +204,14 @@ export class IccBemikronoApi {
     const _url =
       this.host +
       `/be_mikrono/user/${encodeURIComponent(String(userId))}/credentials` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new User(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new User(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 }

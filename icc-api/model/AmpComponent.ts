@@ -9,10 +9,10 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Ingredient } from "./Ingredient"
-import { PharmaceuticalFormStub } from "./PharmaceuticalFormStub"
-import { RouteOfAdministration } from "./RouteOfAdministration"
-import { SamText } from "./SamText"
+import { Ingredient } from './Ingredient'
+import { PharmaceuticalFormStub } from './PharmaceuticalFormStub'
+import { RouteOfAdministration } from './RouteOfAdministration'
+import { SamText } from './SamText'
 
 export class AmpComponent {
   constructor(json: JSON | any) {
@@ -36,16 +36,16 @@ export class AmpComponent {
   note?: SamText
 }
 export namespace AmpComponent {
-  export type CrushableEnum = "Y" | "N" | "X"
+  export type CrushableEnum = 'Y' | 'N' | 'X'
   export const CrushableEnum = {
-    Y: "Y" as CrushableEnum,
-    N: "N" as CrushableEnum,
-    X: "X" as CrushableEnum
+    Y: 'Y' as CrushableEnum,
+    N: 'N' as CrushableEnum,
+    X: 'X' as CrushableEnum,
   }
-  export type ContainsAlcoholEnum = "Y" | "N" | "X"
+  export type ContainsAlcoholEnum = 'Y' | 'N' | 'X'
   export const ContainsAlcoholEnum = {
-    Y: "Y" as ContainsAlcoholEnum,
-    N: "N" as ContainsAlcoholEnum,
-    X: "X" as ContainsAlcoholEnum
+    Y: 'Y' as ContainsAlcoholEnum,
+    N: 'N' as ContainsAlcoholEnum,
+    X: 'X' as ContainsAlcoholEnum,
   }
 }

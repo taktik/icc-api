@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { AbstractFilterHealthElement } from "./AbstractFilterHealthElement"
-import { Predicate } from "./Predicate"
+import { AbstractFilterHealthElement } from './AbstractFilterHealthElement'
+import { Predicate } from './Predicate'
 
 export class FilterChainHealthElement {
   constructor(json: JSON | any) {

@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { HealthcareParty } from "./HealthcareParty"
+import { HealthcareParty } from './HealthcareParty'
 
 export class DiaryNoteExportInfo {
   constructor(json: JSON | any) {

@@ -4,5 +4,5 @@ export class ConstantFilter<T> {
   }
 
   constant?: T[]
-  $type: string = "ConstantFilter"
+  $type = 'ConstantFilter'
 }

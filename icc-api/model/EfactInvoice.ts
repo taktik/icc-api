@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { InvoiceItem } from "./InvoiceItem"
-import { Patient } from "./Patient"
+import { InvoiceItem } from './InvoiceItem'
+import { Patient } from './Patient'
 
 export class EfactInvoice {
   constructor(json: JSON | any) {
@@ -33,16 +33,16 @@ export class EfactInvoice {
 }
 export namespace EfactInvoice {
   export type ReasonEnum =
-    | "Chimiotherapy"
-    | "ProfessionalDisease"
-    | "WorkAccident"
-    | "Accident"
-    | "Other"
+    | 'Chimiotherapy'
+    | 'ProfessionalDisease'
+    | 'WorkAccident'
+    | 'Accident'
+    | 'Other'
   export const ReasonEnum = {
-    Chimiotherapy: "Chimiotherapy" as ReasonEnum,
-    ProfessionalDisease: "ProfessionalDisease" as ReasonEnum,
-    WorkAccident: "WorkAccident" as ReasonEnum,
-    Accident: "Accident" as ReasonEnum,
-    Other: "Other" as ReasonEnum
+    Chimiotherapy: 'Chimiotherapy' as ReasonEnum,
+    ProfessionalDisease: 'ProfessionalDisease' as ReasonEnum,
+    WorkAccident: 'WorkAccident' as ReasonEnum,
+    Accident: 'Accident' as ReasonEnum,
+    Other: 'Other' as ReasonEnum,
   }
 }

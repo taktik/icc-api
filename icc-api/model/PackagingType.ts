@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { SamText } from "./SamText"
+import { SamText } from './SamText'
 
 export class PackagingType {
   constructor(json: JSON | any) {

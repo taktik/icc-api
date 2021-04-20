@@ -9,11 +9,11 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStub } from "./CodeStub"
-import { Delegation } from "./Delegation"
-import { IdentityDocumentReader } from "./IdentityDocumentReader"
-import { InvoicingCode } from "./InvoicingCode"
-import { Payment } from "./Payment"
+import { CodeStub } from './CodeStub'
+import { Delegation } from './Delegation'
+import { IdentityDocumentReader } from './IdentityDocumentReader'
+import { InvoicingCode } from './InvoicingCode'
+import { Payment } from './Payment'
 
 /**
  * This entity is a root level object. It represents an Invoice. It is serialized in JSON and saved in the underlying iCure CouchDB database.
@@ -165,51 +165,51 @@ export class Invoice {
 }
 export namespace Invoice {
   export type InvoiceTypeEnum =
-    | "patient"
-    | "mutualfund"
-    | "payingagency"
-    | "insurance"
-    | "efact"
-    | "other"
+    | 'patient'
+    | 'mutualfund'
+    | 'payingagency'
+    | 'insurance'
+    | 'efact'
+    | 'other'
   export const InvoiceTypeEnum = {
-    Patient: "patient" as InvoiceTypeEnum,
-    Mutualfund: "mutualfund" as InvoiceTypeEnum,
-    Payingagency: "payingagency" as InvoiceTypeEnum,
-    Insurance: "insurance" as InvoiceTypeEnum,
-    Efact: "efact" as InvoiceTypeEnum,
-    Other: "other" as InvoiceTypeEnum
+    Patient: 'patient' as InvoiceTypeEnum,
+    Mutualfund: 'mutualfund' as InvoiceTypeEnum,
+    Payingagency: 'payingagency' as InvoiceTypeEnum,
+    Insurance: 'insurance' as InvoiceTypeEnum,
+    Efact: 'efact' as InvoiceTypeEnum,
+    Other: 'other' as InvoiceTypeEnum,
   }
-  export type SentMediumTypeEnum = "cdrom" | "eattest" | "efact" | "email" | "mediprima" | "paper"
+  export type SentMediumTypeEnum = 'cdrom' | 'eattest' | 'efact' | 'email' | 'mediprima' | 'paper'
   export const SentMediumTypeEnum = {
-    Cdrom: "cdrom" as SentMediumTypeEnum,
-    Eattest: "eattest" as SentMediumTypeEnum,
-    Efact: "efact" as SentMediumTypeEnum,
-    Email: "email" as SentMediumTypeEnum,
-    Mediprima: "mediprima" as SentMediumTypeEnum,
-    Paper: "paper" as SentMediumTypeEnum
+    Cdrom: 'cdrom' as SentMediumTypeEnum,
+    Eattest: 'eattest' as SentMediumTypeEnum,
+    Efact: 'efact' as SentMediumTypeEnum,
+    Email: 'email' as SentMediumTypeEnum,
+    Mediprima: 'mediprima' as SentMediumTypeEnum,
+    Paper: 'paper' as SentMediumTypeEnum,
   }
-  export type InterventionTypeEnum = "total" | "userfees"
+  export type InterventionTypeEnum = 'total' | 'userfees'
   export const InterventionTypeEnum = {
-    Total: "total" as InterventionTypeEnum,
-    Userfees: "userfees" as InterventionTypeEnum
+    Total: 'total' as InterventionTypeEnum,
+    Userfees: 'userfees' as InterventionTypeEnum,
   }
   export type PaymentTypeEnum =
-    | "cash"
-    | "wired"
-    | "insurance"
-    | "creditcard"
-    | "debitcard"
-    | "paypal"
-    | "bitcoin"
-    | "other"
+    | 'cash'
+    | 'wired'
+    | 'insurance'
+    | 'creditcard'
+    | 'debitcard'
+    | 'paypal'
+    | 'bitcoin'
+    | 'other'
   export const PaymentTypeEnum = {
-    Cash: "cash" as PaymentTypeEnum,
-    Wired: "wired" as PaymentTypeEnum,
-    Insurance: "insurance" as PaymentTypeEnum,
-    Creditcard: "creditcard" as PaymentTypeEnum,
-    Debitcard: "debitcard" as PaymentTypeEnum,
-    Paypal: "paypal" as PaymentTypeEnum,
-    Bitcoin: "bitcoin" as PaymentTypeEnum,
-    Other: "other" as PaymentTypeEnum
+    Cash: 'cash' as PaymentTypeEnum,
+    Wired: 'wired' as PaymentTypeEnum,
+    Insurance: 'insurance' as PaymentTypeEnum,
+    Creditcard: 'creditcard' as PaymentTypeEnum,
+    Debitcard: 'debitcard' as PaymentTypeEnum,
+    Paypal: 'paypal' as PaymentTypeEnum,
+    Bitcoin: 'bitcoin' as PaymentTypeEnum,
+    Other: 'other' as PaymentTypeEnum,
   }
 }

@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Permission } from "./Permission"
-import { PropertyStub } from "./PropertyStub"
+import { Permission } from './Permission'
+import { PropertyStub } from './PropertyStub'
 
 /**
  * This entity is a root level object. It represents an user that can log in to the iCure platform. It is serialized in JSON and saved in the underlying icure-base CouchDB database.
@@ -107,16 +107,16 @@ export class User {
   applicationTokens?: { [key: string]: string }
 }
 export namespace User {
-  export type TypeEnum = "database" | "ldap" | "token"
+  export type TypeEnum = 'database' | 'ldap' | 'token'
   export const TypeEnum = {
-    Database: "database" as TypeEnum,
-    Ldap: "ldap" as TypeEnum,
-    Token: "token" as TypeEnum
+    Database: 'database' as TypeEnum,
+    Ldap: 'ldap' as TypeEnum,
+    Token: 'token' as TypeEnum,
   }
-  export type StatusEnum = "ACTIVE" | "DISABLED" | "REGISTERING"
+  export type StatusEnum = 'ACTIVE' | 'DISABLED' | 'REGISTERING'
   export const StatusEnum = {
-    ACTIVE: "ACTIVE" as StatusEnum,
-    DISABLED: "DISABLED" as StatusEnum,
-    REGISTERING: "REGISTERING" as StatusEnum
+    ACTIVE: 'ACTIVE' as StatusEnum,
+    DISABLED: 'DISABLED' as StatusEnum,
+    REGISTERING: 'REGISTERING' as StatusEnum,
   }
 }

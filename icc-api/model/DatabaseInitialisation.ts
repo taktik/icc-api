@@ -9,9 +9,9 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { HealthcareParty } from "./HealthcareParty"
-import { Replication } from "./Replication"
-import { User } from "./User"
+import { HealthcareParty } from './HealthcareParty'
+import { Replication } from './Replication'
+import { User } from './User'
 
 /**
  * initialisationData is an object that contains the initial replications (target must be an internalTarget of value base, healthdata or patient) and the users and healthcare parties to be created

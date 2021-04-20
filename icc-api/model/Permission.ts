@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { PermissionItem } from "./PermissionItem"
+import { PermissionItem } from './PermissionItem'
 
 /**
  * If permission to modify patient data is granted or revoked

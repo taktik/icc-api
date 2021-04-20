@@ -3,24 +3,24 @@ const textEncoder = TextEncoder ? new TextEncoder() : null
 
 export function b2a(a: string): string {
   if (Buffer) {
-    const buf = Buffer.from(a, "latin1")
-    return buf.toString("base64")
+    const buf = Buffer.from(a, 'latin1')
+    return buf.toString('base64')
   }
-  if (typeof btoa !== "undefined") {
+  if (typeof btoa !== 'undefined') {
     return btoa(a)
   }
-  throw new Error("Unsupported operation b2a")
+  throw new Error('Unsupported operation b2a')
 }
 
 export function a2b(s: string): string {
   if (Buffer) {
-    const buf = new Buffer(s, "base64")
-    return buf.toString("latin1")
+    const buf = new Buffer(s, 'base64')
+    return buf.toString('latin1')
   }
-  if (typeof atob !== "undefined") {
+  if (typeof atob !== 'undefined') {
     return atob(s)
   }
-  throw new Error("Unsupported operation a2b")
+  throw new Error('Unsupported operation a2b')
 }
 
 export function utf8_2ua(str: string): Uint8Array {
@@ -30,8 +30,8 @@ export function utf8_2ua(str: string): Uint8Array {
 
   const utf8 = new Uint8Array(4 * str.length)
   let j = 0
-  for (var i = 0; i < str.length; i++) {
-    var charcode = str.charCodeAt(i)
+  for (let i = 0; i < str.length; i++) {
+    let charcode = str.charCodeAt(i)
     if (charcode < 0x80) {
       utf8.set([charcode], j++)
     } else if (charcode < 0x800) {
@@ -54,7 +54,7 @@ export function utf8_2ua(str: string): Uint8Array {
           0xf0 | (charcode >> 18),
           0x80 | ((charcode >> 12) & 0x3f),
           0x80 | ((charcode >> 6) & 0x3f),
-          0x80 | (charcode & 0x3f)
+          0x80 | (charcode & 0x3f),
         ],
         j
       )
@@ -72,17 +72,17 @@ export function utf8_2ua(str: string): Uint8Array {
 export function ua2utf8(_ua: Uint8Array | ArrayBuffer): string {
   if (textDecoder) {
     // if _ua is undefined, imitate the JS implementation below which returns an empty string
-    return _ua ? textDecoder.decode(_ua) : ""
+    return _ua ? textDecoder.decode(_ua) : ''
   }
 
-  var out, i, len, c, u
-  var char2, char3, char4
+  let out, i, len, c, u
+  let char2, char3, char4
 
   // avoid applying the Uint8Array constructor: on ArrayBuffer it creates a
   // view but on Uint8Array it creates a copy
   const array = ArrayBuffer.isView(_ua) ? _ua : new Uint8Array(_ua)
 
-  out = ""
+  out = ''
   len = array.length || array.byteLength
   i = 0
   while (i < len) {
@@ -135,7 +135,7 @@ export function ua2utf8(_ua: Uint8Array | ArrayBuffer): string {
 export function hex2ua(s: string): Uint8Array {
   const ua = new Uint8Array(s.length / 2)
   s = s.toLowerCase()
-  for (var i = 0; i < s.length; i += 2) {
+  for (let i = 0; i < s.length; i += 2) {
     ua[i / 2] =
       (s.charCodeAt(i) < 58 ? s.charCodeAt(i) - 48 : s.charCodeAt(i) - 87) * 16 +
       (s.charCodeAt(i + 1) < 58 ? s.charCodeAt(i + 1) - 48 : s.charCodeAt(i + 1) - 87)
@@ -150,11 +150,11 @@ export function hex2ua(s: string): Uint8Array {
  * @returns {String} Hex String
  */
 export function ua2hex(_ua: Uint8Array | ArrayBuffer): string {
-  let s = ""
+  let s = ''
   const ua = new Uint8Array(_ua)
-  for (var i = 0; i < ua.length; i++) {
-    var hhb = (ua[i] & 0xf0) >> 4
-    var lhb = ua[i] & 0x0f
+  for (let i = 0; i < ua.length; i++) {
+    const hhb = (ua[i] & 0xf0) >> 4
+    const lhb = ua[i] & 0x0f
     s += String.fromCharCode(hhb > 9 ? hhb + 87 : hhb + 48)
     s += String.fromCharCode(lhb > 9 ? lhb + 87 : lhb + 48)
   }
@@ -164,7 +164,7 @@ export function ua2hex(_ua: Uint8Array | ArrayBuffer): string {
 
 export function string2ua(s: string): Uint8Array {
   const ua = new Uint8Array(s.length)
-  for (var i = 0; i < s.length; i++) {
+  for (let i = 0; i < s.length; i++) {
     ua[i] = s.charCodeAt(i) & 0xff
   }
   return ua
@@ -194,18 +194,18 @@ export function ua2b64(_ua: Uint8Array | ArrayBuffer): string {
 }
 
 export function b64_2uas(s: string): Array<Uint8Array> {
-  var sliceSize = 1024
-  var byteCharacters = a2b(s)
-  var bytesLength = byteCharacters.length
-  var slicesCount = Math.ceil(bytesLength / sliceSize)
-  var byteArrays = new Array(slicesCount)
+  const sliceSize = 1024
+  const byteCharacters = a2b(s)
+  const bytesLength = byteCharacters.length
+  const slicesCount = Math.ceil(bytesLength / sliceSize)
+  const byteArrays = new Array(slicesCount)
 
-  for (var sliceIndex = 0; sliceIndex < slicesCount; ++sliceIndex) {
-    var begin = sliceIndex * sliceSize
-    var end = Math.min(begin + sliceSize, bytesLength)
+  for (let sliceIndex = 0; sliceIndex < slicesCount; ++sliceIndex) {
+    const begin = sliceIndex * sliceSize
+    const end = Math.min(begin + sliceSize, bytesLength)
 
-    var bytes = new Array(end - begin)
-    for (var offset = begin, i = 0; offset < end; ++i, ++offset) {
+    const bytes = new Array(end - begin)
+    for (let offset = begin, i = 0; offset < end; ++i, ++offset) {
       bytes[i] = byteCharacters[offset].charCodeAt(0)
     }
     byteArrays[sliceIndex] = new Uint8Array(bytes)
@@ -220,11 +220,11 @@ export function b64_2uas(s: string): Array<Uint8Array> {
  * @returns {string}
  */
 export function ua2string(_ua: Uint8Array | ArrayBuffer): string {
-  var str = ""
-  var ab = new Uint8Array(_ua)
-  var abLen = ab.length
-  var CHUNK_SIZE = Math.pow(2, 8)
-  var offset, len, subab
+  let str = ''
+  const ab = new Uint8Array(_ua)
+  const abLen = ab.length
+  const CHUNK_SIZE = Math.pow(2, 8)
+  let offset, len, subab
   for (offset = 0; offset < abLen; offset += CHUNK_SIZE) {
     len = Math.min(CHUNK_SIZE, abLen - offset)
     subab = ab.subarray(offset, offset + len)
@@ -234,18 +234,13 @@ export function ua2string(_ua: Uint8Array | ArrayBuffer): string {
 }
 
 export function ua2b64Url(ua: Uint8Array | ArrayBuffer): string {
-  return ua2b64(ua)
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=/g, "")
+  return ua2b64(ua).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
 }
 
 export function b64Url2ua(ua: string): ArrayBuffer {
   return b64_2ua(
-    ua
-      .replace(/-/g, "+")
-      .replace(/_/g, "/")
-      .replace(/=/g, "") + (ua.length % 4 === 3 ? "=" : ua.length % 4 === 2 ? "==" : "")
+    ua.replace(/-/g, '+').replace(/_/g, '/').replace(/=/g, '') +
+      (ua.length % 4 === 3 ? '=' : ua.length % 4 === 2 ? '==' : '')
   )
 }
 

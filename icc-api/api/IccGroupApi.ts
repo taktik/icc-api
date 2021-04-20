@@ -9,10 +9,10 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { XHR } from "./XHR"
-import { DatabaseInitialisation } from "../model/DatabaseInitialisation"
-import { Group } from "../model/Group"
-import { Unit } from "../model/Unit"
+import { XHR } from './XHR'
+import { DatabaseInitialisation } from '../model/DatabaseInitialisation'
+import { Group } from '../model/Group'
+import { Unit } from '../model/Unit'
 
 export class IccGroupApi {
   host: string
@@ -25,7 +25,7 @@ export class IccGroupApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -63,20 +63,20 @@ export class IccGroupApi {
     const _url =
       this.host +
       `/group/${encodeURIComponent(String(id))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (name ? "&name=" + encodeURIComponent(String(name)) : "") +
-      (server ? "&server=" + encodeURIComponent(String(server)) : "") +
-      (q ? "&q=" + encodeURIComponent(String(q)) : "") +
-      (n ? "&n=" + encodeURIComponent(String(n)) : "")
+      (name ? '&name=' + encodeURIComponent(String(name)) : '') +
+      (server ? '&server=' + encodeURIComponent(String(server)) : '') +
+      (q ? '&q=' + encodeURIComponent(String(q)) : '') +
+      (n ? '&n=' + encodeURIComponent(String(n)) : '')
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    password && (headers = headers.concat(new XHR.Header("password", password)))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Group(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    password && (headers = headers.concat(new XHR.Header('password', password)))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Group(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -86,18 +86,18 @@ export class IccGroupApi {
    * @param warmup Warmup the design doc
    */
   initDesignDocs(id: string, warmup?: boolean): Promise<Unit> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/group/${encodeURIComponent(String(id))}/dd` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (warmup ? "&warmup=" + encodeURIComponent(String(warmup)) : "")
-    let headers = this.headers
-    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Unit(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      (warmup ? '&warmup=' + encodeURIComponent(String(warmup)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Unit(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -105,13 +105,13 @@ export class IccGroupApi {
    * @summary List groups
    */
   listGroups(): Promise<Array<Group>> {
-    let _body = null
+    const _body = null
 
-    const _url = this.host + `/group` + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new Group(it)))
-      .catch(err => this.handleError(err))
+    const _url = this.host + `/group` + '?ts=' + new Date().getTime()
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new Group(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -121,17 +121,17 @@ export class IccGroupApi {
    * @param name The new name for the group
    */
   modifyGroupName(id: string, name: string): Promise<Group> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/group/${encodeURIComponent(String(id))}/name/${encodeURIComponent(String(name))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Group(doc.body as JSON))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Group(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -141,17 +141,17 @@ export class IccGroupApi {
    * @param password The new password for the group (can only contain digits, letters, - and _)
    */
   setGroupPassword(id: string, password: string): Promise<Group> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/group/${encodeURIComponent(String(id))}/password` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
     let headers = this.headers
-    password && (headers = headers.concat(new XHR.Header("password", password)))
-    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Group(doc.body as JSON))
-      .catch(err => this.handleError(err))
+    password && (headers = headers.concat(new XHR.Header('password', password)))
+    return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Group(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 }

@@ -1,4 +1,4 @@
-import { AbstractFilter } from "./filters"
+import { AbstractFilter } from './filters'
 
 export class IntersectionFilter<T> {
   constructor(filters: AbstractFilter<T>[]) {
@@ -6,5 +6,5 @@ export class IntersectionFilter<T> {
   }
 
   filters: AbstractFilter<T>[]
-  $type: string = "IntersectionFilter"
+  $type = 'IntersectionFilter'
 }

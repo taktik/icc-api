@@ -32,10 +32,10 @@ export class FrontEndMigration {
   processCount?: number
 }
 export namespace FrontEndMigration {
-  export type StatusEnum = "STARTED" | "ERROR" | "SUCCESS"
+  export type StatusEnum = 'STARTED' | 'ERROR' | 'SUCCESS'
   export const StatusEnum = {
-    STARTED: "STARTED" as StatusEnum,
-    ERROR: "ERROR" as StatusEnum,
-    SUCCESS: "SUCCESS" as StatusEnum
+    STARTED: 'STARTED' as StatusEnum,
+    ERROR: 'ERROR' as StatusEnum,
+    SUCCESS: 'SUCCESS' as StatusEnum,
   }
 }

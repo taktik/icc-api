@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStub } from "./CodeStub"
-import { Right } from "./Right"
+import { CodeStub } from './CodeStub'
+import { Right } from './Right'
 
 export class Agenda {
   constructor(json: JSON | any) {

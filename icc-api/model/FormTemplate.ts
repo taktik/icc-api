@@ -9,9 +9,9 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStub } from "./CodeStub"
-import { DocumentGroup } from "./DocumentGroup"
-import { FormLayout } from "./FormLayout"
+import { CodeStub } from './CodeStub'
+import { DocumentGroup } from './DocumentGroup'
+import { FormLayout } from './FormLayout'
 
 export class FormTemplate {
   constructor(json: JSON | any) {

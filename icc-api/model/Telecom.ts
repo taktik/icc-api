@@ -31,32 +31,32 @@ export class Telecom {
 }
 export namespace Telecom {
   export type TelecomTypeEnum =
-    | "mobile"
-    | "phone"
-    | "email"
-    | "fax"
-    | "skype"
-    | "im"
-    | "medibridge"
-    | "ehealthbox"
-    | "apicrypt"
-    | "web"
-    | "print"
-    | "disk"
-    | "other"
+    | 'mobile'
+    | 'phone'
+    | 'email'
+    | 'fax'
+    | 'skype'
+    | 'im'
+    | 'medibridge'
+    | 'ehealthbox'
+    | 'apicrypt'
+    | 'web'
+    | 'print'
+    | 'disk'
+    | 'other'
   export const TelecomTypeEnum = {
-    Mobile: "mobile" as TelecomTypeEnum,
-    Phone: "phone" as TelecomTypeEnum,
-    Email: "email" as TelecomTypeEnum,
-    Fax: "fax" as TelecomTypeEnum,
-    Skype: "skype" as TelecomTypeEnum,
-    Im: "im" as TelecomTypeEnum,
-    Medibridge: "medibridge" as TelecomTypeEnum,
-    Ehealthbox: "ehealthbox" as TelecomTypeEnum,
-    Apicrypt: "apicrypt" as TelecomTypeEnum,
-    Web: "web" as TelecomTypeEnum,
-    Print: "print" as TelecomTypeEnum,
-    Disk: "disk" as TelecomTypeEnum,
-    Other: "other" as TelecomTypeEnum
+    Mobile: 'mobile' as TelecomTypeEnum,
+    Phone: 'phone' as TelecomTypeEnum,
+    Email: 'email' as TelecomTypeEnum,
+    Fax: 'fax' as TelecomTypeEnum,
+    Skype: 'skype' as TelecomTypeEnum,
+    Im: 'im' as TelecomTypeEnum,
+    Medibridge: 'medibridge' as TelecomTypeEnum,
+    Ehealthbox: 'ehealthbox' as TelecomTypeEnum,
+    Apicrypt: 'apicrypt' as TelecomTypeEnum,
+    Web: 'web' as TelecomTypeEnum,
+    Print: 'print' as TelecomTypeEnum,
+    Disk: 'disk' as TelecomTypeEnum,
+    Other: 'other' as TelecomTypeEnum,
   }
 }

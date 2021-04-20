@@ -1,11 +1,11 @@
-import { IccHelementApi } from "../icc-api"
-import { IccCryptoXApi } from "./icc-crypto-x-api"
+import { IccHelementApi } from '../icc-api'
+import { IccCryptoXApi } from './icc-crypto-x-api'
 
-import * as models from "../icc-api/model/models"
+import * as models from '../icc-api/model/models'
 
-import * as _ from "lodash"
-import * as moment from "moment"
-import { a2b, hex2ua, string2ua, ua2utf8 } from "./utils/binary-utils"
+import * as _ from 'lodash'
+import * as moment from 'moment'
+import { a2b, hex2ua, string2ua, ua2utf8 } from './utils/binary-utils'
 
 export class IccHelementXApi extends IccHelementApi {
   crypto: IccCryptoXApi
@@ -15,22 +15,22 @@ export class IccHelementXApi extends IccHelementApi {
     headers: { [key: string]: string },
     crypto: IccCryptoXApi,
     fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    "undefined"
+    'undefined'
       ? window.fetch
-      : typeof self !== "undefined"
-        ? self.fetch
-        : fetch
+      : typeof self !== 'undefined'
+      ? self.fetch
+      : fetch
   ) {
     super(host, headers, fetchImpl)
     this.crypto = crypto
   }
 
-  newInstance(user: models.User, patient: models.Patient, h: any, confidential: boolean = false) {
+  newInstance(user: models.User, patient: models.Patient, h: any, confidential = false) {
     const hcpId = user.healthcarePartyId || user.patientId
     const helement = _.assign(
       {
         id: this.crypto.randomUuid(),
-        _type: "org.taktik.icure.entities.HealthElement",
+        _type: 'org.taktik.icure.entities.HealthElement',
         created: new Date().getTime(),
         modified: new Date().getTime(),
         responsible: hcpId,
@@ -38,29 +38,27 @@ export class IccHelementXApi extends IccHelementApi {
         codes: [],
         tags: [],
         healthElementId: this.crypto.randomUuid(),
-        openingDate: parseInt(moment().format("YYYYMMDDHHmmss"))
+        openingDate: parseInt(moment().format('YYYYMMDDHHmmss')),
       },
       h || {}
     )
 
     return this.crypto
-      .extractPreferredSfk(patient, hcpId!!, confidential)
-      .then(key => {
+      .extractPreferredSfk(patient, hcpId!, confidential)
+      .then((key) => {
         if (!key) {
           console.error(
-            `SFK cannot be found for HealthElement ${
-              helement.id
-            }. The health element will not be reachable from the patient side`
+            `SFK cannot be found for HealthElement ${helement.id}. The health element will not be reachable from the patient side`
           )
         }
 
         return this.crypto.initObjectDelegations(helement, patient, hcpId!, key)
       })
-      .then(initData => {
+      .then((initData) => {
         _.extend(helement, {
           delegations: initData.delegations,
           cryptedForeignKeys: initData.cryptedForeignKeys,
-          secretForeignKeys: initData.secretForeignKeys
+          secretForeignKeys: initData.secretForeignKeys,
         })
 
         let promise = Promise.resolve(helement)
@@ -68,8 +66,8 @@ export class IccHelementXApi extends IccHelementApi {
           ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
           : []
         ).forEach(
-          delegateId =>
-            (promise = promise.then(helement =>
+          (delegateId) =>
+            (promise = promise.then((helement) =>
               this.crypto
                 .extendedDelegationsAndCryptedForeignKeys(
                   helement,
@@ -78,13 +76,13 @@ export class IccHelementXApi extends IccHelementApi {
                   delegateId,
                   initData.secretId
                 )
-                .then(extraData =>
+                .then((extraData) =>
                   _.extend(helement, {
                     delegations: extraData.delegations,
-                    cryptedForeignKeys: extraData.cryptedForeignKeys
+                    cryptedForeignKeys: extraData.cryptedForeignKeys,
                   })
                 )
-                .catch(e => {
+                .catch((e) => {
                   console.log(e)
                   return helement
                 })
@@ -112,34 +110,30 @@ export class IccHelementXApi extends IccHelementApi {
    * @param keepObsoleteVersions
    */
 
-  findBy(hcpartyId: string, patient: models.Patient, keepObsoleteVersions: boolean = false) {
+  findBy(hcpartyId: string, patient: models.Patient, keepObsoleteVersions = false) {
     return this.crypto
       .extractSFKsHierarchyFromDelegations(patient, hcpartyId)
-      .then(
-        secretForeignKeys =>
-          secretForeignKeys && secretForeignKeys.length > 0
-            ? Promise.all(
-                secretForeignKeys
-                  .reduce(
-                    (acc, level) => {
-                      return acc.concat([
-                        {
-                          hcpartyId: level.hcpartyId,
-                          extractedKeys: level.extractedKeys.filter(
-                            key =>
-                              !acc.some(previousLevel => previousLevel.extractedKeys.includes(key))
-                          )
-                        }
-                      ])
+      .then((secretForeignKeys) =>
+        secretForeignKeys && secretForeignKeys.length > 0
+          ? Promise.all(
+              secretForeignKeys
+                .reduce((acc, level) => {
+                  return acc.concat([
+                    {
+                      hcpartyId: level.hcpartyId,
+                      extractedKeys: level.extractedKeys.filter(
+                        (key) =>
+                          !acc.some((previousLevel) => previousLevel.extractedKeys.includes(key))
+                      ),
                     },
-                    [] as Array<{ hcpartyId: string; extractedKeys: Array<string> }>
-                  )
-                  .filter(l => l.extractedKeys.length > 0)
-                  .map(({ hcpartyId, extractedKeys }) =>
-                    this.findByHCPartyPatientSecretFKeys(hcpartyId, extractedKeys.join(","))
-                  )
-              ).then(results => _.uniqBy(_.flatMap(results), x => x.id))
-            : Promise.resolve([])
+                  ])
+                }, [] as Array<{ hcpartyId: string; extractedKeys: Array<string> }>)
+                .filter((l) => l.extractedKeys.length > 0)
+                .map(({ hcpartyId, extractedKeys }) =>
+                  this.findByHCPartyPatientSecretFKeys(hcpartyId, extractedKeys.join(','))
+                )
+            ).then((results) => _.uniqBy(_.flatMap(results), (x) => x.id))
+          : Promise.resolve([])
       )
       .then((decryptedHelements: Array<models.HealthElement>) => {
         const byIds: { [key: string]: models.HealthElement } = {}
@@ -147,7 +141,7 @@ export class IccHelementXApi extends IccHelementApi {
         if (keepObsoleteVersions) {
           return decryptedHelements
         } else {
-          decryptedHelements.forEach(he => {
+          decryptedHelements.forEach((he) => {
             if (he.healthElementId) {
               const phe = byIds[he.healthElementId]
               if (!phe || !phe.modified || (he.modified && phe.modified < he.modified)) {
@@ -166,7 +160,7 @@ export class IccHelementXApi extends IccHelementApi {
   ): Promise<Array<models.Contact> | any> {
     return super
       .findHealthElementsByHCPartyPatientForeignKeys(hcPartyId, secretFKeys)
-      .then(helements => this.decrypt(hcPartyId, helements))
+      .then((helements) => this.decrypt(hcPartyId, helements))
   }
 
   decrypt(
@@ -174,7 +168,7 @@ export class IccHelementXApi extends IccHelementApi {
     hes: Array<models.HealthElement>
   ): Promise<Array<models.HealthElement>> {
     return Promise.all(
-      hes.map(he =>
+      hes.map((he) =>
         this.crypto
           .extractKeysFromDelegationsForHcpHierarchy(
             hcpartyId,
@@ -183,30 +177,30 @@ export class IccHelementXApi extends IccHelementApi {
           )
           .then(({ extractedKeys: sfks }) => {
             if (!sfks || !sfks.length) {
-              console.log("Cannot decrypt helement", he.id)
+              console.log('Cannot decrypt helement', he.id)
               return Promise.resolve(he)
             }
             if (he.encryptedSelf) {
-              return this.crypto.AES.importKey("raw", hex2ua(sfks[0].replace(/-/g, ""))).then(
-                key =>
+              return this.crypto.AES.importKey('raw', hex2ua(sfks[0].replace(/-/g, ''))).then(
+                (key) =>
                   new Promise((resolve: (value: any) => any) =>
                     this.crypto.AES.decrypt(key, string2ua(a2b(he.encryptedSelf!))).then(
-                      dec => {
+                      (dec) => {
                         let jsonContent
                         try {
                           jsonContent = dec && ua2utf8(dec)
                           jsonContent && _.assign(he, JSON.parse(jsonContent))
                         } catch (e) {
                           console.log(
-                            "Cannot parse he",
+                            'Cannot parse he',
                             he.id,
-                            jsonContent || "<- Invalid encoding"
+                            jsonContent || '<- Invalid encoding'
                           )
                         }
                         resolve(he)
                       },
                       () => {
-                        console.log("Cannot decrypt contact", he.id)
+                        console.log('Cannot decrypt contact', he.id)
                         resolve(he)
                       }
                     )
@@ -237,20 +231,20 @@ export class IccHelementXApi extends IccHelementApi {
       modified: heSvc.modified,
       created: heSvc.created,
       codes: heSvc.codes,
-      tags: heSvc.tags
-    }).then(he => {
+      tags: heSvc.tags,
+    }).then((he) => {
       return this.createHealthElement(he)
     })
   }
 
   // noinspection JSUnusedGlobalSymbols, JSMethodCanBeStatic
   stringToCode(code: string) {
-    const c = code.split("|")
+    const c = code.split('|')
     return new models.Code({
       type: c[0],
       code: c[1],
       version: c[2],
-      id: code
+      id: code,
     })
   }
 }

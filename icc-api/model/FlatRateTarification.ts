@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Valorisation } from "./Valorisation"
+import { Valorisation } from './Valorisation'
 
 export class FlatRateTarification {
   constructor(json: JSON | any) {
@@ -26,11 +26,11 @@ export class FlatRateTarification {
   encryptedSelf?: string
 }
 export namespace FlatRateTarification {
-  export type FlatRateTypeEnum = "physician" | "physiotherapist" | "nurse" | "ptd"
+  export type FlatRateTypeEnum = 'physician' | 'physiotherapist' | 'nurse' | 'ptd'
   export const FlatRateTypeEnum = {
-    Physician: "physician" as FlatRateTypeEnum,
-    Physiotherapist: "physiotherapist" as FlatRateTypeEnum,
-    Nurse: "nurse" as FlatRateTypeEnum,
-    Ptd: "ptd" as FlatRateTypeEnum
+    Physician: 'physician' as FlatRateTypeEnum,
+    Physiotherapist: 'physiotherapist' as FlatRateTypeEnum,
+    Nurse: 'nurse' as FlatRateTypeEnum,
+    Ptd: 'ptd' as FlatRateTypeEnum,
   }
 }

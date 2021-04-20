@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2020. Taktik SA, All rights reserved.
  */
-import { AbstractFilterPatient } from "../../icc-api/model/AbstractFilterPatient"
+import { AbstractFilterPatient } from '../../icc-api/model/AbstractFilterPatient'
 
 export class PatientByHcPartyDateOfBirthBetweenFilter extends AbstractFilterPatient {
   constructor(json: JSON | any) {
@@ -12,5 +12,5 @@ export class PatientByHcPartyDateOfBirthBetweenFilter extends AbstractFilterPati
   minDateOfBirth?: number
   maxDateOfBirth?: number
 
-  $type: string = "PatientByHcPartyDateOfBirthBetweenFilter"
+  $type = 'PatientByHcPartyDateOfBirthBetweenFilter'
 }

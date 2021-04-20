@@ -9,10 +9,10 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { XHR } from "./XHR"
-import { DocIdentifier } from "../model/DocIdentifier"
-import { Insurance } from "../model/Insurance"
-import { ListOfIds } from "../model/ListOfIds"
+import { XHR } from './XHR'
+import { DocIdentifier } from '../model/DocIdentifier'
+import { Insurance } from '../model/Insurance'
+import { ListOfIds } from '../model/ListOfIds'
 
 export class IccInsuranceApi {
   host: string
@@ -25,7 +25,7 @@ export class IccInsuranceApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -46,14 +46,14 @@ export class IccInsuranceApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/insurance` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/insurance` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Insurance(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Insurance(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -62,17 +62,17 @@ export class IccInsuranceApi {
    * @param insuranceId
    */
   deleteInsurance(insuranceId: string): Promise<DocIdentifier> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/insurance/${encodeURIComponent(String(insuranceId))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
-      .then(doc => new DocIdentifier(doc.body as JSON))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new DocIdentifier(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -81,17 +81,17 @@ export class IccInsuranceApi {
    * @param insuranceId
    */
   getInsurance(insuranceId: string): Promise<Insurance> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/insurance/${encodeURIComponent(String(insuranceId))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Insurance(doc.body as JSON))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Insurance(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -103,14 +103,14 @@ export class IccInsuranceApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/insurance/byIds` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/insurance/byIds` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new Insurance(it)))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new Insurance(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -119,17 +119,17 @@ export class IccInsuranceApi {
    * @param insuranceCode
    */
   listInsurancesByCode(insuranceCode: string): Promise<Array<Insurance>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/insurance/byCode/${encodeURIComponent(String(insuranceCode))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new Insurance(it)))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new Insurance(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -138,17 +138,17 @@ export class IccInsuranceApi {
    * @param insuranceName
    */
   listInsurancesByName(insuranceName: string): Promise<Array<Insurance>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/insurance/byName/${encodeURIComponent(String(insuranceName))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new Insurance(it)))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new Insurance(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -160,13 +160,13 @@ export class IccInsuranceApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/insurance` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/insurance` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Insurance(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Insurance(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 }

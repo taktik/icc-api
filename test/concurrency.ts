@@ -1,11 +1,11 @@
-import { utils } from "../icc-x-api"
-import { expect } from "chai"
-import "mocha"
+import { utils } from '../icc-x-api'
+import { expect } from 'chai'
+import 'mocha'
 
-const delay = (ms: number) => new Promise(res => setTimeout(res, ms))
+const delay = (ms: number) => new Promise((res) => setTimeout(res, ms))
 
-describe("Concurrency test", () => {
-  it("should return ordered sequence", async () => {
+describe('Concurrency test', () => {
+  it('should return ordered sequence', async () => {
     const cm = {}
     const seq1: number[] = []
     const seq2: number[] = []
@@ -19,7 +19,7 @@ describe("Concurrency test", () => {
     )
     const res = await Promise.all(
       [500, 400, 300, 200, 100].map((x, idx) =>
-        utils.notConcurrent(cm, "123", async () => {
+        utils.notConcurrent(cm, '123', async () => {
           await delay(x)
           seq2.push(idx)
           return idx

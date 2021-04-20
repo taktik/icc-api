@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { SamText } from "./SamText"
-import { StandardSubstance } from "./StandardSubstance"
+import { SamText } from './SamText'
+import { StandardSubstance } from './StandardSubstance'
 
 export class Substance {
   constructor(json: JSON | any) {

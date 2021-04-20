@@ -52,38 +52,38 @@ export class MedicalHouseContract {
 }
 export namespace MedicalHouseContract {
   export type ChangeTypeEnum =
-    | "inscriptionStart"
-    | "inscriptionEnd"
-    | "suspension"
-    | "coverageChange"
+    | 'inscriptionStart'
+    | 'inscriptionEnd'
+    | 'suspension'
+    | 'coverageChange'
   export const ChangeTypeEnum = {
-    InscriptionStart: "inscriptionStart" as ChangeTypeEnum,
-    InscriptionEnd: "inscriptionEnd" as ChangeTypeEnum,
-    Suspension: "suspension" as ChangeTypeEnum,
-    CoverageChange: "coverageChange" as ChangeTypeEnum
+    InscriptionStart: 'inscriptionStart' as ChangeTypeEnum,
+    InscriptionEnd: 'inscriptionEnd' as ChangeTypeEnum,
+    Suspension: 'suspension' as ChangeTypeEnum,
+    CoverageChange: 'coverageChange' as ChangeTypeEnum,
   }
   export type SuspensionReasonEnum =
-    | "notInsured"
-    | "noReasonGiven"
-    | "isHospitalized"
-    | "outsideOfCountry"
-    | "changeOfMutuality"
+    | 'notInsured'
+    | 'noReasonGiven'
+    | 'isHospitalized'
+    | 'outsideOfCountry'
+    | 'changeOfMutuality'
   export const SuspensionReasonEnum = {
-    NotInsured: "notInsured" as SuspensionReasonEnum,
-    NoReasonGiven: "noReasonGiven" as SuspensionReasonEnum,
-    IsHospitalized: "isHospitalized" as SuspensionReasonEnum,
-    OutsideOfCountry: "outsideOfCountry" as SuspensionReasonEnum,
-    ChangeOfMutuality: "changeOfMutuality" as SuspensionReasonEnum
+    NotInsured: 'notInsured' as SuspensionReasonEnum,
+    NoReasonGiven: 'noReasonGiven' as SuspensionReasonEnum,
+    IsHospitalized: 'isHospitalized' as SuspensionReasonEnum,
+    OutsideOfCountry: 'outsideOfCountry' as SuspensionReasonEnum,
+    ChangeOfMutuality: 'changeOfMutuality' as SuspensionReasonEnum,
   }
   export type SignatureTypeEnum =
-    | "holderEid"
-    | "holderPaper"
-    | "legalrepresentativeEid"
-    | "legalrepresentativePaper"
+    | 'holderEid'
+    | 'holderPaper'
+    | 'legalrepresentativeEid'
+    | 'legalrepresentativePaper'
   export const SignatureTypeEnum = {
-    HolderEid: "holderEid" as SignatureTypeEnum,
-    HolderPaper: "holderPaper" as SignatureTypeEnum,
-    LegalrepresentativeEid: "legalrepresentativeEid" as SignatureTypeEnum,
-    LegalrepresentativePaper: "legalrepresentativePaper" as SignatureTypeEnum
+    HolderEid: 'holderEid' as SignatureTypeEnum,
+    HolderPaper: 'holderPaper' as SignatureTypeEnum,
+    LegalrepresentativeEid: 'legalrepresentativeEid' as SignatureTypeEnum,
+    LegalrepresentativePaper: 'legalrepresentativePaper' as SignatureTypeEnum,
   }
 }

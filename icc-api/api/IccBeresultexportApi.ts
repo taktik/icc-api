@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { XHR } from "./XHR"
+import { XHR } from './XHR'
 
 export class IccBeresultexportApi {
   host: string
@@ -22,7 +22,7 @@ export class IccBeresultexportApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -62,15 +62,15 @@ export class IccBeresultexportApi {
       )}/${encodeURIComponent(String(patId))}/${encodeURIComponent(
         String(date)
       )}/${encodeURIComponent(String(ref))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/octet-stream"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => doc.body)
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/octet-stream'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => doc.body)
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -103,16 +103,16 @@ export class IccBeresultexportApi {
       )}/${encodeURIComponent(String(patId))}/${encodeURIComponent(
         String(date)
       )}/${encodeURIComponent(String(ref))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (mimeType ? "&mimeType=" + encodeURIComponent(String(mimeType)) : "")
+      (mimeType ? '&mimeType=' + encodeURIComponent(String(mimeType)) : '')
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/octet-stream"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => doc.body)
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/octet-stream'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => doc.body)
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -143,14 +143,14 @@ export class IccBeresultexportApi {
       )}/${encodeURIComponent(String(patId))}/${encodeURIComponent(
         String(date)
       )}/${encodeURIComponent(String(ref))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/octet-stream"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => doc.body)
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/octet-stream'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => doc.body)
+      .catch((err) => this.handleError(err))
   }
 }

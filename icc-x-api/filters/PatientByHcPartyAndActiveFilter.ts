@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2020. Taktik SA, All rights reserved.
  */
-import { AbstractFilterPatient } from "../../icc-api/model/AbstractFilterPatient"
+import { AbstractFilterPatient } from '../../icc-api/model/AbstractFilterPatient'
 
 export class PatientByHcPartyAndActiveFilter extends AbstractFilterPatient {
   constructor(json: JSON | any) {
@@ -9,7 +9,7 @@ export class PatientByHcPartyAndActiveFilter extends AbstractFilterPatient {
   }
 
   healthcarePartyId?: string
-  active: boolean = false
+  active = false
 
-  $type: string = "PatientByHcPartyAndActiveFilter"
+  $type = 'PatientByHcPartyAndActiveFilter'
 }

@@ -9,10 +9,10 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStub } from "./CodeStub"
-import { DocumentGroup } from "./DocumentGroup"
+import { CodeStub } from './CodeStub'
+import { DocumentGroup } from './DocumentGroup'
 
-import { b64_2ab } from "./ModelHelper"
+import { b64_2ab } from './ModelHelper'
 export class DocumentTemplate {
   constructor(json: JSON | any) {
     Object.assign(
@@ -74,8 +74,8 @@ export class DocumentTemplate {
   specialty?: CodeStub
 }
 export namespace DocumentTemplate {
-  export type VersionEnum = "V1_0_0"
+  export type VersionEnum = 'V1_0_0'
   export const VersionEnum = {
-    _0: "V1_0_0" as VersionEnum
+    _0: 'V1_0_0' as VersionEnum,
   }
 }

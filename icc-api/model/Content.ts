@@ -9,11 +9,11 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Measure } from "./Measure"
-import { Medication } from "./Medication"
-import { Service } from "./Service"
+import { Measure } from './Measure'
+import { Medication } from './Medication'
+import { Service } from './Service'
 
-import { b64_2ab } from "./ModelHelper"
+import { b64_2ab } from './ModelHelper'
 export class Content {
   constructor(json: JSON | any) {
     Object.assign(

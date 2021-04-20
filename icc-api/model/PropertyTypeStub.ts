@@ -19,14 +19,14 @@ export class PropertyTypeStub {
   type?: PropertyTypeStub.TypeEnum
 }
 export namespace PropertyTypeStub {
-  export type TypeEnum = "BOOLEAN" | "INTEGER" | "DOUBLE" | "STRING" | "DATE" | "CLOB" | "JSON"
+  export type TypeEnum = 'BOOLEAN' | 'INTEGER' | 'DOUBLE' | 'STRING' | 'DATE' | 'CLOB' | 'JSON'
   export const TypeEnum = {
-    BOOLEAN: "BOOLEAN" as TypeEnum,
-    INTEGER: "INTEGER" as TypeEnum,
-    DOUBLE: "DOUBLE" as TypeEnum,
-    STRING: "STRING" as TypeEnum,
-    DATE: "DATE" as TypeEnum,
-    CLOB: "CLOB" as TypeEnum,
-    JSON: "JSON" as TypeEnum
+    BOOLEAN: 'BOOLEAN' as TypeEnum,
+    INTEGER: 'INTEGER' as TypeEnum,
+    DOUBLE: 'DOUBLE' as TypeEnum,
+    STRING: 'STRING' as TypeEnum,
+    DATE: 'DATE' as TypeEnum,
+    CLOB: 'CLOB' as TypeEnum,
+    JSON: 'JSON' as TypeEnum,
   }
 }

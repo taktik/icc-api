@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStub } from "./CodeStub"
-import { Service } from "./Service"
+import { CodeStub } from './CodeStub'
+import { Service } from './Service'
 
 export class ResultInfo {
   constructor(json: JSON | any) {

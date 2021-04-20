@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { SamText } from "./SamText"
+import { SamText } from './SamText'
 
 export class Pricing {
   constructor(json: JSON | any) {

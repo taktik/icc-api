@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CodeStub } from "./CodeStub"
+import { CodeStub } from './CodeStub'
 
 /**
  * List of care team members assigned for the healthcare element.
@@ -29,10 +29,10 @@ export class CareTeamMember {
   encryptedSelf?: string
 }
 export namespace CareTeamMember {
-  export type CareTeamMemberTypeEnum = "physician" | "specialist" | "other"
+  export type CareTeamMemberTypeEnum = 'physician' | 'specialist' | 'other'
   export const CareTeamMemberTypeEnum = {
-    Physician: "physician" as CareTeamMemberTypeEnum,
-    Specialist: "specialist" as CareTeamMemberTypeEnum,
-    Other: "other" as CareTeamMemberTypeEnum
+    Physician: 'physician' as CareTeamMemberTypeEnum,
+    Specialist: 'specialist' as CareTeamMemberTypeEnum,
+    Other: 'other' as CareTeamMemberTypeEnum,
   }
 }

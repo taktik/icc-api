@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Data } from "./Data"
+import { Data } from './Data'
 
 export class Editor {
   constructor(json: JSON | any) {
@@ -27,11 +27,11 @@ export class Editor {
   key?: string
 }
 export namespace Editor {
-  export type LabelPositionEnum = "Up" | "Down" | "Left" | "Right"
+  export type LabelPositionEnum = 'Up' | 'Down' | 'Left' | 'Right'
   export const LabelPositionEnum = {
-    Up: "Up" as LabelPositionEnum,
-    Down: "Down" as LabelPositionEnum,
-    Left: "Left" as LabelPositionEnum,
-    Right: "Right" as LabelPositionEnum
+    Up: 'Up' as LabelPositionEnum,
+    Down: 'Down' as LabelPositionEnum,
+    Left: 'Left' as LabelPositionEnum,
+    Right: 'Right' as LabelPositionEnum,
   }
 }

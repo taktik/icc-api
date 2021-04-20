@@ -9,10 +9,10 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { XHR } from "./XHR"
-import { Code } from "../model/Code"
-import { FilterChainCode } from "../model/FilterChainCode"
-import { PaginatedListCode } from "../model/PaginatedListCode"
+import { XHR } from './XHR'
+import { Code } from '../model/Code'
+import { FilterChainCode } from '../model/FilterChainCode'
+import { PaginatedListCode } from '../model/PaginatedListCode'
 
 export class IccCodeApi {
   host: string
@@ -25,7 +25,7 @@ export class IccCodeApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -46,14 +46,14 @@ export class IccCodeApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/code` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/code` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Code(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Code(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -82,21 +82,21 @@ export class IccCodeApi {
     const _url =
       this.host +
       `/code/filter` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
-      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
-      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "") +
-      (skip ? "&skip=" + encodeURIComponent(String(skip)) : "") +
-      (sort ? "&sort=" + encodeURIComponent(String(sort)) : "") +
-      (desc ? "&desc=" + encodeURIComponent(String(desc)) : "")
+      (startKey ? '&startKey=' + encodeURIComponent(String(startKey)) : '') +
+      (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
+      (limit ? '&limit=' + encodeURIComponent(String(limit)) : '') +
+      (skip ? '&skip=' + encodeURIComponent(String(skip)) : '') +
+      (sort ? '&sort=' + encodeURIComponent(String(sort)) : '') +
+      (desc ? '&desc=' + encodeURIComponent(String(desc)) : '')
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListCode(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new PaginatedListCode(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -106,19 +106,19 @@ export class IccCodeApi {
    * @param type Code type
    */
   findCodeTypes(region?: string, type?: string): Promise<Array<string>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/code/codetype/byRegionType` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (region ? "&region=" + encodeURIComponent(String(region)) : "") +
-      (type ? "&type=" + encodeURIComponent(String(type)) : "")
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
-      .catch(err => this.handleError(err))
+      (region ? '&region=' + encodeURIComponent(String(region)) : '') +
+      (type ? '&type=' + encodeURIComponent(String(type)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => JSON.parse(JSON.stringify(it))))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -130,21 +130,21 @@ export class IccCodeApi {
    * @param version Code version
    */
   findCodes(region?: string, type?: string, code?: string, version?: string): Promise<Array<Code>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/code/byRegionTypeCode` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (region ? "&region=" + encodeURIComponent(String(region)) : "") +
-      (type ? "&type=" + encodeURIComponent(String(type)) : "") +
-      (code ? "&code=" + encodeURIComponent(String(code)) : "") +
-      (version ? "&version=" + encodeURIComponent(String(version)) : "")
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new Code(it)))
-      .catch(err => this.handleError(err))
+      (region ? '&region=' + encodeURIComponent(String(region)) : '') +
+      (type ? '&type=' + encodeURIComponent(String(type)) : '') +
+      (code ? '&code=' + encodeURIComponent(String(code)) : '') +
+      (version ? '&version=' + encodeURIComponent(String(version)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new Code(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -167,24 +167,24 @@ export class IccCodeApi {
     startDocumentId?: string,
     limit?: number
   ): Promise<PaginatedListCode> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/code` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (region ? "&region=" + encodeURIComponent(String(region)) : "") +
-      (type ? "&type=" + encodeURIComponent(String(type)) : "") +
-      (code ? "&code=" + encodeURIComponent(String(code)) : "") +
-      (version ? "&version=" + encodeURIComponent(String(version)) : "") +
-      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
-      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
-      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListCode(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      (region ? '&region=' + encodeURIComponent(String(region)) : '') +
+      (type ? '&type=' + encodeURIComponent(String(type)) : '') +
+      (code ? '&code=' + encodeURIComponent(String(code)) : '') +
+      (version ? '&version=' + encodeURIComponent(String(version)) : '') +
+      (startKey ? '&startKey=' + encodeURIComponent(String(startKey)) : '') +
+      (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
+      (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new PaginatedListCode(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -207,24 +207,24 @@ export class IccCodeApi {
     startDocumentId?: string,
     limit?: number
   ): Promise<PaginatedListCode> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/code/byLabel` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (region ? "&region=" + encodeURIComponent(String(region)) : "") +
-      (types ? "&types=" + encodeURIComponent(String(types)) : "") +
-      (language ? "&language=" + encodeURIComponent(String(language)) : "") +
-      (label ? "&label=" + encodeURIComponent(String(label)) : "") +
-      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
-      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
-      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListCode(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      (region ? '&region=' + encodeURIComponent(String(region)) : '') +
+      (types ? '&types=' + encodeURIComponent(String(types)) : '') +
+      (language ? '&language=' + encodeURIComponent(String(language)) : '') +
+      (label ? '&label=' + encodeURIComponent(String(label)) : '') +
+      (startKey ? '&startKey=' + encodeURIComponent(String(startKey)) : '') +
+      (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
+      (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new PaginatedListCode(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -243,21 +243,21 @@ export class IccCodeApi {
     startDocumentId?: string,
     limit?: number
   ): Promise<PaginatedListCode> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/code/link/${encodeURIComponent(String(linkType))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (linkedId ? "&linkedId=" + encodeURIComponent(String(linkedId)) : "") +
-      (startKey ? "&startKey=" + encodeURIComponent(String(startKey)) : "") +
-      (startDocumentId ? "&startDocumentId=" + encodeURIComponent(String(startDocumentId)) : "") +
-      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListCode(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      (linkedId ? '&linkedId=' + encodeURIComponent(String(linkedId)) : '') +
+      (startKey ? '&startKey=' + encodeURIComponent(String(startKey)) : '') +
+      (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
+      (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new PaginatedListCode(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -267,19 +267,19 @@ export class IccCodeApi {
    * @param type Code type
    */
   findTagTypes(region?: string, type?: string): Promise<Array<string>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/code/tagtype/byRegionType` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (region ? "&region=" + encodeURIComponent(String(region)) : "") +
-      (type ? "&type=" + encodeURIComponent(String(type)) : "")
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
-      .catch(err => this.handleError(err))
+      (region ? '&region=' + encodeURIComponent(String(region)) : '') +
+      (type ? '&type=' + encodeURIComponent(String(type)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => JSON.parse(JSON.stringify(it))))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -288,14 +288,14 @@ export class IccCodeApi {
    * @param codeId Code id
    */
   getCode(codeId: string): Promise<Code> {
-    let _body = null
+    const _body = null
 
     const _url =
-      this.host + `/code/${encodeURIComponent(String(codeId))}` + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Code(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      this.host + `/code/${encodeURIComponent(String(codeId))}` + '?ts=' + new Date().getTime()
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Code(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -306,19 +306,19 @@ export class IccCodeApi {
    * @param version Code version
    */
   getCodeWithParts(type: string, code: string, version: string): Promise<Code> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/code/${encodeURIComponent(String(type))}/${encodeURIComponent(
         String(code)
       )}/${encodeURIComponent(String(version))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Code(doc.body as JSON))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Code(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -327,17 +327,17 @@ export class IccCodeApi {
    * @param codeIds
    */
   getCodes(codeIds: string): Promise<Array<Code>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/code/byIds/${encodeURIComponent(String(codeIds))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new Code(it)))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new Code(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -349,13 +349,13 @@ export class IccCodeApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/code` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/code` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Code(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Code(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 }

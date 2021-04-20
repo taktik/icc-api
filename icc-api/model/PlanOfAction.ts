@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CareTeamMembership } from "./CareTeamMembership"
-import { CodeStub } from "./CodeStub"
+import { CareTeamMembership } from './CareTeamMembership'
+import { CodeStub } from './CodeStub'
 
 /**
  * List of healthcare approaches.

@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { DatabaseSynchronization } from "./DatabaseSynchronization"
+import { DatabaseSynchronization } from './DatabaseSynchronization'
 
 export class Replication {
   constructor(json: JSON | any) {

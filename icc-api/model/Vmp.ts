@@ -9,12 +9,12 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { CommentedClassification } from "./CommentedClassification"
-import { SamText } from "./SamText"
-import { VmpComponent } from "./VmpComponent"
-import { VmpGroupStub } from "./VmpGroupStub"
-import { Vtm } from "./Vtm"
-import { Wada } from "./Wada"
+import { CommentedClassification } from './CommentedClassification'
+import { SamText } from './SamText'
+import { VmpComponent } from './VmpComponent'
+import { VmpGroupStub } from './VmpGroupStub'
+import { Vtm } from './Vtm'
+import { Wada } from './Wada'
 
 export class Vmp {
   constructor(json: JSON | any) {

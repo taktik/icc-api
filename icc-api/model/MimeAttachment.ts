@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 
-import { b64_2ab } from "./ModelHelper"
+import { b64_2ab } from './ModelHelper'
 export class MimeAttachment {
   constructor(json: JSON | any) {
     Object.assign(this as MimeAttachment, json, json.data ? { data: b64_2ab(json.data) } : {})

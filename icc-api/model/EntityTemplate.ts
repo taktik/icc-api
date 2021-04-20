@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Attachment } from "./Attachment"
-import { RevisionInfo } from "./RevisionInfo"
+import { Attachment } from './Attachment'
+import { RevisionInfo } from './RevisionInfo'
 
 export class EntityTemplate {
   constructor(json: JSON | any) {

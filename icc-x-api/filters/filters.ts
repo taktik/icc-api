@@ -1,36 +1,36 @@
-import { ConstantFilter } from "./ConstantFilter"
-import { Patient } from "../../icc-api/model/Patient"
-import { AbstractFilterPatient } from "../../icc-api/model/AbstractFilterPatient"
-import { AbstractFilterContact } from "../../icc-api/model/AbstractFilterContact"
-import { AbstractFilterService } from "../../icc-api/model/AbstractFilterService"
-import { Service } from "../../icc-api/model/Service"
-import { Contact } from "../../icc-api/model/Contact"
-import { IntersectionFilter } from "./IntersectionFilter"
-import { UnionFilter } from "./UnionFilter"
-import { ComplementFilter } from "./ComplementFilter"
-import { PatientByHcPartyAndActiveFilter } from "./PatientByHcPartyAndActiveFilter"
-import { PatientByHcPartyAndExternalIdFilter } from "./PatientByHcPartyAndExternalIdFilter"
-import { PatientByHcPartyAndSsinsFilter } from "./PatientByHcPartyAndSsinsFilter"
-import { PatientByHcPartyDateOfBirthBetweenFilter } from "./PatientByHcPartyDateOfBirthBetweenFilter"
-import { PatientByHcPartyDateOfBirthFilter } from "./PatientByHcPartyDateOfBirthFilter"
+import { ConstantFilter } from './ConstantFilter'
+import { Patient } from '../../icc-api/model/Patient'
+import { AbstractFilterPatient } from '../../icc-api/model/AbstractFilterPatient'
+import { AbstractFilterContact } from '../../icc-api/model/AbstractFilterContact'
+import { AbstractFilterService } from '../../icc-api/model/AbstractFilterService'
+import { Service } from '../../icc-api/model/Service'
+import { Contact } from '../../icc-api/model/Contact'
+import { IntersectionFilter } from './IntersectionFilter'
+import { UnionFilter } from './UnionFilter'
+import { ComplementFilter } from './ComplementFilter'
+import { PatientByHcPartyAndActiveFilter } from './PatientByHcPartyAndActiveFilter'
+import { PatientByHcPartyAndExternalIdFilter } from './PatientByHcPartyAndExternalIdFilter'
+import { PatientByHcPartyAndSsinsFilter } from './PatientByHcPartyAndSsinsFilter'
+import { PatientByHcPartyDateOfBirthBetweenFilter } from './PatientByHcPartyDateOfBirthBetweenFilter'
+import { PatientByHcPartyDateOfBirthFilter } from './PatientByHcPartyDateOfBirthFilter'
 
-import { format, add } from "date-fns"
-import { PatientByHcPartyFilter } from "./PatientByHcPartyFilter"
+import { format, add } from 'date-fns'
+import { PatientByHcPartyFilter } from './PatientByHcPartyFilter'
 import GenderEnum = Patient.GenderEnum
-import { PatientByHcPartyGenderEducationProfession } from "./PatientByHcPartyGenderEducationProfession"
-import { PatientByIdsFilter } from "./PatientByIdsFilter"
-import { PatientByHcPartyNameContainsFuzzyFilter } from "./PatientByHcPartyNameContainsFuzzyFilter"
+import { PatientByHcPartyGenderEducationProfession } from './PatientByHcPartyGenderEducationProfession'
+import { PatientByIdsFilter } from './PatientByIdsFilter'
+import { PatientByHcPartyNameContainsFuzzyFilter } from './PatientByHcPartyNameContainsFuzzyFilter'
 
-export * from "./PatientByHcPartyAndActiveFilter"
-export * from "./PatientByHcPartyAndExternalIdFilter"
-export * from "./PatientByHcPartyAndSsinsFilter"
-export * from "./PatientByHcPartyDateOfBirthBetweenFilter"
-export * from "./PatientByHcPartyDateOfBirthFilter"
-export * from "./PatientByHcPartyFilter"
-export * from "./PatientByHcPartyGenderEducationProfession"
-export * from "./PatientByHcPartyNameContainsFuzzyFilter"
-export * from "./PatientByHcPartyNameFilter"
-export * from "./PatientByIdsFilter"
+export * from './PatientByHcPartyAndActiveFilter'
+export * from './PatientByHcPartyAndExternalIdFilter'
+export * from './PatientByHcPartyAndSsinsFilter'
+export * from './PatientByHcPartyDateOfBirthBetweenFilter'
+export * from './PatientByHcPartyDateOfBirthFilter'
+export * from './PatientByHcPartyFilter'
+export * from './PatientByHcPartyGenderEducationProfession'
+export * from './PatientByHcPartyNameContainsFuzzyFilter'
+export * from './PatientByHcPartyNameFilter'
+export * from './PatientByIdsFilter'
 
 export class Filter {
   public static patient() {
@@ -310,21 +310,21 @@ class PatientFilterBuilder extends FilterBuilder<Patient> {
   olderThan(age: number): PatientFilterBuilder {
     return this.withDateOfBirthBetween(
       10000101,
-      parseInt(format(add(new Date(), { years: -age }), "yyyyMMdd"))
+      parseInt(format(add(new Date(), { years: -age }), 'yyyyMMdd'))
     )
   }
 
   youngerThan(age: number): PatientFilterBuilder {
     return this.withDateOfBirthBetween(
-      parseInt(format(add(new Date(), { years: -age }), "yyyyMMdd")),
+      parseInt(format(add(new Date(), { years: -age }), 'yyyyMMdd')),
       99991231
     )
   }
 
   byGenderEducationProfession(
     gender?: GenderEnum,
-    education?: String,
-    profession?: String
+    education?: string,
+    profession?: string
   ): PatientFilterBuilder {
     return this.composer(
       this,

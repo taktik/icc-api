@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { FormColumn } from "./FormColumn"
+import { FormColumn } from './FormColumn'
 
 export class FormSection {
   constructor(json: JSON | any) {

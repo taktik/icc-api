@@ -40,12 +40,12 @@ export namespace XHR {
 
   function b2a(a: string): string {
     if (Buffer) {
-      return Buffer.from(a).toString("base64")
+      return Buffer.from(a).toString('base64')
     }
-    if (typeof btoa !== "undefined") {
+    if (typeof btoa !== 'undefined') {
       return btoa(a)
     }
-    throw new Error("Unsupported operation b2a")
+    throw new Error('Unsupported operation b2a')
   }
 
   function fetchWithTimeout(
@@ -53,24 +53,24 @@ export namespace XHR {
     init: RequestInit,
     timeout = 10000,
     fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    "undefined"
+    'undefined'
       ? window.fetch
-      : typeof self !== "undefined"
-        ? self.fetch
-        : fetch
+      : typeof self !== 'undefined'
+      ? self.fetch
+      : fetch
   ): Promise<Response> {
     return new Promise((resolve, reject) => {
       // Set timeout timer
-      let timer = setTimeout(
-        () => reject({ message: "Request timed out", status: "Request timed out" }),
+      const timer = setTimeout(
+        () => reject({ message: 'Request timed out', status: 'Request timed out' }),
         timeout
       )
       fetchImpl(url, init)
-        .then(response => {
+        .then((response) => {
           clearTimeout(timer)
           resolve(response)
         })
-        .catch(err => {
+        .catch((err) => {
           clearTimeout(timer)
           reject(err)
         })
@@ -81,59 +81,61 @@ export namespace XHR {
     method: string,
     url: string,
     headers: Array<Header> | null,
-    data: string | any = "",
+    data: string | any = '',
     fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    "undefined"
+    'undefined'
       ? window.fetch
-      : typeof self !== "undefined"
-        ? self.fetch
-        : fetch,
-    contentTypeOverride?: "application/json" | "text/plain" | "application/octet-stream"
+      : typeof self !== 'undefined'
+      ? self.fetch
+      : fetch,
+    contentTypeOverride?: 'application/json' | 'text/plain' | 'application/octet-stream'
   ): Promise<Data> {
     const contentType =
       headers &&
-      headers.find(it => (it.header ? it.header.toLowerCase() === "content-type" : false))
+      headers.find((it) => (it.header ? it.header.toLowerCase() === 'content-type' : false))
     const clientTimeout =
       headers &&
-      headers.find(it => (it.header ? it.header.toUpperCase() === "X-CLIENT-SIDE-TIMEOUT" : false))
+      headers.find((it) =>
+        it.header ? it.header.toUpperCase() === 'X-CLIENT-SIDE-TIMEOUT' : false
+      )
     const timeout = clientTimeout ? Number(clientTimeout.data) : 600000
     return fetchWithTimeout(
       url,
       Object.assign(
         {
           method: method,
-          credentials: "include" as RequestCredentials,
+          credentials: 'include' as RequestCredentials,
           headers:
             (headers &&
               headers
                 .filter(
-                  h =>
-                    (h.header.toLowerCase() !== "content-type" ||
-                      h.data !== "multipart/form-data") &&
-                    h.header.toUpperCase() !== "X-CLIENT-SIDE-TIMEOUT"
+                  (h) =>
+                    (h.header.toLowerCase() !== 'content-type' ||
+                      h.data !== 'multipart/form-data') &&
+                    h.header.toUpperCase() !== 'X-CLIENT-SIDE-TIMEOUT'
                 )
                 .reduce((acc: { [key: string]: string }, h) => {
                   acc[h.header] = h.data
                   return acc
                 }, {})) ||
-            {}
+            {},
         },
-        method === "POST" || method === "PUT"
+        method === 'POST' || method === 'PUT'
           ? {
               body:
-                !contentType || contentType.data === "application/json"
+                !contentType || contentType.data === 'application/json'
                   ? JSON.stringify(data, (k, v) => {
                       return v instanceof ArrayBuffer || v instanceof Uint8Array
-                        ? b2a(new Uint8Array(v).reduce((d, b) => d + String.fromCharCode(b), ""))
+                        ? b2a(new Uint8Array(v).reduce((d, b) => d + String.fromCharCode(b), ''))
                         : v
                     })
-                  : data
+                  : data,
             }
           : {}
       ),
       timeout,
       fetchImpl
-    ).then(async function(response) {
+    ).then(async function (response) {
       if (response.status >= 400) {
         const error: {
           error: string
@@ -142,13 +144,13 @@ export namespace XHR {
         } = await response.json()
         throw new XHRError(url, error.message, error.status, error.error, response.headers)
       }
-      const ct = contentTypeOverride || response.headers.get("content-type") || "text/plain"
-      return (ct.startsWith("application/json")
+      const ct = contentTypeOverride || response.headers.get('content-type') || 'text/plain'
+      return (ct.startsWith('application/json')
         ? response.json()
-        : ct.startsWith("application/xml") || ct.startsWith("text/")
-          ? response.text()
-          : response.arrayBuffer()
-      ).then(d => new Data(response.status, ct, d))
+        : ct.startsWith('application/xml') || ct.startsWith('text/')
+        ? response.text()
+        : response.arrayBuffer()
+      ).then((d) => new Data(response.status, ct, d))
     })
   }
 }

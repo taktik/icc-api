@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { PropertyTypeStub } from "./PropertyTypeStub"
-import { TypedValueObject } from "./TypedValueObject"
+import { PropertyTypeStub } from './PropertyTypeStub'
+import { TypedValueObject } from './TypedValueObject'
 
 /**
  * Extra properties for the user. Those properties are typed (see class Property)

@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { AbstractFilterCode } from "./AbstractFilterCode"
-import { Predicate } from "./Predicate"
+import { AbstractFilterCode } from './AbstractFilterCode'
+import { Predicate } from './Predicate'
 
 export class FilterChainCode {
   constructor(json: JSON | any) {

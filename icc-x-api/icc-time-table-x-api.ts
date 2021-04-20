@@ -1,10 +1,10 @@
-import * as i18n from "./rsrc/contact.i18n"
+import * as i18n from './rsrc/contact.i18n'
 
-import * as _ from "lodash"
-import { IccTimeTableApi } from "../icc-api"
-import { User } from "../icc-api/model/User"
-import { TimeTable } from "../icc-api/model/TimeTable"
-import { IccCryptoXApi } from "./icc-crypto-x-api"
+import * as _ from 'lodash'
+import { IccTimeTableApi } from '../icc-api'
+import { User } from '../icc-api/model/User'
+import { TimeTable } from '../icc-api/model/TimeTable'
+import { IccCryptoXApi } from './icc-crypto-x-api'
 
 export class IccTimeTableXApi extends IccTimeTableApi {
   i18n: any = i18n
@@ -15,11 +15,11 @@ export class IccTimeTableXApi extends IccTimeTableApi {
     headers: { [key: string]: string },
     crypto: IccCryptoXApi,
     fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    "undefined"
+    'undefined'
       ? window.fetch
-      : typeof self !== "undefined"
-        ? self.fetch
-        : fetch
+      : typeof self !== 'undefined'
+      ? self.fetch
+      : fetch
   ) {
     super(host, headers, fetchImpl)
     this.crypto = crypto
@@ -29,20 +29,20 @@ export class IccTimeTableXApi extends IccTimeTableApi {
     const timeTable = _.extend(
       {
         id: this.crypto.randomUuid(),
-        _type: "org.taktik.icure.entities.TimeTable",
+        _type: 'org.taktik.icure.entities.TimeTable',
         created: new Date().getTime(),
         modified: new Date().getTime(),
         responsible: user.healthcarePartyId || user.patientId,
         author: user.id,
         codes: [],
-        tags: []
+        tags: [],
       },
       tt || {}
     )
 
     return this.crypto
       .initObjectDelegations(timeTable, null, (user.healthcarePartyId || user.patientId)!, null)
-      .then(initData => {
+      .then((initData) => {
         _.extend(timeTable, { delegations: initData.delegations })
 
         let promise = Promise.resolve(timeTable)
@@ -50,9 +50,9 @@ export class IccTimeTableXApi extends IccTimeTableApi {
           ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
           : []
         ).forEach(
-          delegateId =>
+          (delegateId) =>
             (promise = promise
-              .then(patient =>
+              .then((patient) =>
                 this.crypto.extendedDelegationsAndCryptedForeignKeys(
                   patient,
                   null,
@@ -61,7 +61,7 @@ export class IccTimeTableXApi extends IccTimeTableApi {
                   initData.secretId
                 )
               )
-              .then(extraData => _.extend(timeTable, { delegations: extraData.delegations })))
+              .then((extraData) => _.extend(timeTable, { delegations: extraData.delegations })))
         )
         return promise
       })

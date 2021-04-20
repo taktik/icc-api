@@ -9,13 +9,13 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { XHR } from "./XHR"
-import { Delegation } from "../model/Delegation"
-import { DocIdentifier } from "../model/DocIdentifier"
-import { Form } from "../model/Form"
-import { FormTemplate } from "../model/FormTemplate"
-import { IcureStub } from "../model/IcureStub"
-import { ListOfIds } from "../model/ListOfIds"
+import { XHR } from './XHR'
+import { Delegation } from '../model/Delegation'
+import { DocIdentifier } from '../model/DocIdentifier'
+import { Form } from '../model/Form'
+import { FormTemplate } from '../model/FormTemplate'
+import { IcureStub } from '../model/IcureStub'
+import { ListOfIds } from '../model/ListOfIds'
 
 export class IccFormApi {
   host: string
@@ -28,7 +28,7 @@ export class IccFormApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -49,14 +49,14 @@ export class IccFormApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/form` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/form` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Form(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Form(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -68,14 +68,14 @@ export class IccFormApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/form/template` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/form/template` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new FormTemplate(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new FormTemplate(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -84,17 +84,17 @@ export class IccFormApi {
    * @param formTemplateId
    */
   deleteFormTemplate(formTemplateId: string): Promise<DocIdentifier> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/form/template/${encodeURIComponent(String(formTemplateId))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
-      .then(doc => new DocIdentifier(doc.body as JSON))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new DocIdentifier(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -103,14 +103,14 @@ export class IccFormApi {
    * @param formIds
    */
   deleteForms(formIds: string): Promise<Array<DocIdentifier>> {
-    let _body = null
+    const _body = null
 
     const _url =
-      this.host + `/form/${encodeURIComponent(String(formIds))}` + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new DocIdentifier(it)))
-      .catch(err => this.handleError(err))
+      this.host + `/form/${encodeURIComponent(String(formIds))}` + '?ts=' + new Date().getTime()
+    const headers = this.headers
+    return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -119,18 +119,18 @@ export class IccFormApi {
    * @param loadLayout
    */
   findFormTemplates(loadLayout?: boolean): Promise<Array<FormTemplate>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/form/template` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (loadLayout ? "&loadLayout=" + encodeURIComponent(String(loadLayout)) : "")
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new FormTemplate(it)))
-      .catch(err => this.handleError(err))
+      (loadLayout ? '&loadLayout=' + encodeURIComponent(String(loadLayout)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new FormTemplate(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -143,18 +143,18 @@ export class IccFormApi {
     specialityCode: string,
     loadLayout?: boolean
   ): Promise<Array<FormTemplate>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/form/template/bySpecialty/${encodeURIComponent(String(specialityCode))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (loadLayout ? "&loadLayout=" + encodeURIComponent(String(loadLayout)) : "")
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new FormTemplate(it)))
-      .catch(err => this.handleError(err))
+      (loadLayout ? '&loadLayout=' + encodeURIComponent(String(loadLayout)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new FormTemplate(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -173,22 +173,22 @@ export class IccFormApi {
     planOfActionId?: string,
     formTemplateId?: string
   ): Promise<Array<Form>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/form/byHcPartySecretForeignKeys` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + encodeURIComponent(String(hcPartyId)) : "") +
-      (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "") +
-      (healthElementId ? "&healthElementId=" + encodeURIComponent(String(healthElementId)) : "") +
-      (planOfActionId ? "&planOfActionId=" + encodeURIComponent(String(planOfActionId)) : "") +
-      (formTemplateId ? "&formTemplateId=" + encodeURIComponent(String(formTemplateId)) : "")
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new Form(it)))
-      .catch(err => this.handleError(err))
+      (hcPartyId ? '&hcPartyId=' + encodeURIComponent(String(hcPartyId)) : '') +
+      (secretFKeys ? '&secretFKeys=' + encodeURIComponent(String(secretFKeys)) : '') +
+      (healthElementId ? '&healthElementId=' + encodeURIComponent(String(healthElementId)) : '') +
+      (planOfActionId ? '&planOfActionId=' + encodeURIComponent(String(planOfActionId)) : '') +
+      (formTemplateId ? '&formTemplateId=' + encodeURIComponent(String(formTemplateId)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new Form(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -201,19 +201,19 @@ export class IccFormApi {
     hcPartyId: string,
     secretFKeys: string
   ): Promise<Array<IcureStub>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/form/byHcPartySecretForeignKeys/delegations` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + encodeURIComponent(String(hcPartyId)) : "") +
-      (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "")
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new IcureStub(it)))
-      .catch(err => this.handleError(err))
+      (hcPartyId ? '&hcPartyId=' + encodeURIComponent(String(hcPartyId)) : '') +
+      (secretFKeys ? '&secretFKeys=' + encodeURIComponent(String(secretFKeys)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new IcureStub(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -223,19 +223,19 @@ export class IccFormApi {
    * @param hcPartyId
    */
   getChildrenForms(formId: string, hcPartyId: string): Promise<Array<Form>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/form/childrenOf/${encodeURIComponent(String(formId))}/${encodeURIComponent(
         String(hcPartyId)
       )}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new Form(it)))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new Form(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -244,14 +244,14 @@ export class IccFormApi {
    * @param formId
    */
   getForm(formId: string): Promise<Form> {
-    let _body = null
+    const _body = null
 
     const _url =
-      this.host + `/form/${encodeURIComponent(String(formId))}` + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Form(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      this.host + `/form/${encodeURIComponent(String(formId))}` + '?ts=' + new Date().getTime()
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Form(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -260,17 +260,17 @@ export class IccFormApi {
    * @param formUuid
    */
   getFormByExternalUuid(formUuid: string): Promise<Form> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/form/formUuid/${encodeURIComponent(String(formUuid))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Form(doc.body as JSON))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Form(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -279,14 +279,14 @@ export class IccFormApi {
    * @param lid
    */
   getFormBylid(lid: string): Promise<Form> {
-    let _body = null
+    const _body = null
 
     const _url =
-      this.host + `/form/lid/${encodeURIComponent(String(lid))}` + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Form(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      this.host + `/form/lid/${encodeURIComponent(String(lid))}` + '?ts=' + new Date().getTime()
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Form(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -295,17 +295,17 @@ export class IccFormApi {
    * @param formTemplateId
    */
   getFormTemplate(formTemplateId: string): Promise<FormTemplate> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/form/template/${encodeURIComponent(String(formTemplateId))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new FormTemplate(doc.body as JSON))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new FormTemplate(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -318,19 +318,19 @@ export class IccFormApi {
     formTemplateGuid: string,
     specialityCode: string
   ): Promise<Array<FormTemplate>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/form/template/${encodeURIComponent(String(specialityCode))}/guid/${encodeURIComponent(
         String(formTemplateGuid)
       )}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new FormTemplate(it)))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new FormTemplate(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -342,14 +342,14 @@ export class IccFormApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/form/byIds` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/form/byIds` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new Form(it)))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new Form(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -358,17 +358,17 @@ export class IccFormApi {
    * @param formUuid
    */
   getFormsByExternalUuid(formUuid: string): Promise<Array<Form>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/form/all/formUuid/${encodeURIComponent(String(formUuid))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new Form(it)))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new Form(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -377,14 +377,14 @@ export class IccFormApi {
    * @param lid
    */
   getFormsBylid(lid: string): Promise<Array<Form>> {
-    let _body = null
+    const _body = null
 
     const _url =
-      this.host + `/form/all/lid/${encodeURIComponent(String(lid))}` + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new Form(it)))
-      .catch(err => this.handleError(err))
+      this.host + `/form/all/lid/${encodeURIComponent(String(lid))}` + '?ts=' + new Date().getTime()
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new Form(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -396,14 +396,14 @@ export class IccFormApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/form` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/form` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Form(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Form(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -415,14 +415,14 @@ export class IccFormApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/form/batch` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/form/batch` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new Form(it)))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new Form(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -438,15 +438,15 @@ export class IccFormApi {
     const _url =
       this.host +
       `/form/delegate/${encodeURIComponent(String(formId))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Form(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Form(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -458,14 +458,14 @@ export class IccFormApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/form/delegations` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/form/delegations` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new IcureStub(it)))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new IcureStub(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -474,20 +474,20 @@ export class IccFormApi {
    * @param formTemplateId
    */
   setTemplateAttachmentMulti(formTemplateId: string): Promise<string> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/form/template/${encodeURIComponent(String(formTemplateId))}/attachment/multipart` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "multipart/form-data"))
-    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => JSON.parse(JSON.stringify(doc.body)))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'multipart/form-data'))
+    return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
+      .then((doc) => JSON.parse(JSON.stringify(doc.body)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -503,14 +503,14 @@ export class IccFormApi {
     const _url =
       this.host +
       `/form/template/${encodeURIComponent(String(formTemplateId))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new FormTemplate(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new FormTemplate(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 }

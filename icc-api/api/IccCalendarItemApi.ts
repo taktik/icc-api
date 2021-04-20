@@ -9,11 +9,11 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { XHR } from "./XHR"
-import { CalendarItem } from "../model/CalendarItem"
-import { DocIdentifier } from "../model/DocIdentifier"
-import { IcureStub } from "../model/IcureStub"
-import { ListOfIds } from "../model/ListOfIds"
+import { XHR } from './XHR'
+import { CalendarItem } from '../model/CalendarItem'
+import { DocIdentifier } from '../model/DocIdentifier'
+import { IcureStub } from '../model/IcureStub'
+import { ListOfIds } from '../model/ListOfIds'
 
 export class IccCalendarItemApi {
   host: string
@@ -26,7 +26,7 @@ export class IccCalendarItemApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -47,14 +47,14 @@ export class IccCalendarItemApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/calendarItem` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/calendarItem` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new CalendarItem(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new CalendarItem(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -63,17 +63,17 @@ export class IccCalendarItemApi {
    * @param calendarItemIds
    */
   deleteCalendarItem(calendarItemIds: string): Promise<Array<DocIdentifier>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/calendarItem/${encodeURIComponent(String(calendarItemIds))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new DocIdentifier(it)))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -86,19 +86,19 @@ export class IccCalendarItemApi {
     hcPartyId: string,
     secretFKeys: string
   ): Promise<Array<CalendarItem>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/calendarItem/byHcPartySecretForeignKeys` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (hcPartyId ? "&hcPartyId=" + encodeURIComponent(String(hcPartyId)) : "") +
-      (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "")
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new CalendarItem(it)))
-      .catch(err => this.handleError(err))
+      (hcPartyId ? '&hcPartyId=' + encodeURIComponent(String(hcPartyId)) : '') +
+      (secretFKeys ? '&secretFKeys=' + encodeURIComponent(String(secretFKeys)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new CalendarItem(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -107,17 +107,17 @@ export class IccCalendarItemApi {
    * @param calendarItemId
    */
   getCalendarItem(calendarItemId: string): Promise<CalendarItem> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/calendarItem/${encodeURIComponent(String(calendarItemId))}` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new CalendarItem(doc.body as JSON))
-      .catch(err => this.handleError(err))
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new CalendarItem(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -125,13 +125,13 @@ export class IccCalendarItemApi {
    * @summary Gets all calendarItems
    */
   getCalendarItems(): Promise<Array<CalendarItem>> {
-    let _body = null
+    const _body = null
 
-    const _url = this.host + `/calendarItem` + "?ts=" + new Date().getTime()
-    let headers = this.headers
-    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new CalendarItem(it)))
-      .catch(err => this.handleError(err))
+    const _url = this.host + `/calendarItem` + '?ts=' + new Date().getTime()
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new CalendarItem(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -146,20 +146,20 @@ export class IccCalendarItemApi {
     endDate: number,
     hcPartyId: string
   ): Promise<Array<CalendarItem>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/calendarItem/byPeriodAndHcPartyId` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (startDate ? "&startDate=" + encodeURIComponent(String(startDate)) : "") +
-      (endDate ? "&endDate=" + encodeURIComponent(String(endDate)) : "") +
-      (hcPartyId ? "&hcPartyId=" + encodeURIComponent(String(hcPartyId)) : "")
-    let headers = this.headers
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new CalendarItem(it)))
-      .catch(err => this.handleError(err))
+      (startDate ? '&startDate=' + encodeURIComponent(String(startDate)) : '') +
+      (endDate ? '&endDate=' + encodeURIComponent(String(endDate)) : '') +
+      (hcPartyId ? '&hcPartyId=' + encodeURIComponent(String(hcPartyId)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new CalendarItem(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -171,14 +171,14 @@ export class IccCalendarItemApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/calendarItem/byIds` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/calendarItem/byIds` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new CalendarItem(it)))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new CalendarItem(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -193,20 +193,20 @@ export class IccCalendarItemApi {
     endDate: number,
     agendaId: string
   ): Promise<Array<CalendarItem>> {
-    let _body = null
+    const _body = null
 
     const _url =
       this.host +
       `/calendarItem/byPeriodAndAgendaId` +
-      "?ts=" +
+      '?ts=' +
       new Date().getTime() +
-      (startDate ? "&startDate=" + encodeURIComponent(String(startDate)) : "") +
-      (endDate ? "&endDate=" + encodeURIComponent(String(endDate)) : "") +
-      (agendaId ? "&agendaId=" + encodeURIComponent(String(agendaId)) : "")
-    let headers = this.headers
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new CalendarItem(it)))
-      .catch(err => this.handleError(err))
+      (startDate ? '&startDate=' + encodeURIComponent(String(startDate)) : '') +
+      (endDate ? '&endDate=' + encodeURIComponent(String(endDate)) : '') +
+      (agendaId ? '&agendaId=' + encodeURIComponent(String(agendaId)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new CalendarItem(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -218,14 +218,14 @@ export class IccCalendarItemApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/calendarItem` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/calendarItem` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new CalendarItem(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new CalendarItem(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -237,13 +237,13 @@ export class IccCalendarItemApi {
     let _body = null
     _body = body
 
-    const _url = this.host + `/calendarItem/delegations` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/calendarItem/delegations` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
-      .concat(new XHR.Header("Content-Type", "application/json"))
-    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new CalendarItem(it)))
-      .catch(err => this.handleError(err))
+      .filter((h) => h.header !== 'Content-Type')
+      .concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new CalendarItem(it)))
+      .catch((err) => this.handleError(err))
   }
 }

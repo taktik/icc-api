@@ -9,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { SamText } from "./SamText"
-import { VmpGroupStub } from "./VmpGroupStub"
+import { SamText } from './SamText'
+import { VmpGroupStub } from './VmpGroupStub'
 
 export class VmpStub {
   constructor(json: JSON | any) {

@@ -9,9 +9,9 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { Copayment } from "./Copayment"
-import { Pricing } from "./Pricing"
-import { ReimbursementCriterion } from "./ReimbursementCriterion"
+import { Copayment } from './Copayment'
+import { Pricing } from './Pricing'
+import { ReimbursementCriterion } from './ReimbursementCriterion'
 
 export class Reimbursement {
   constructor(json: JSON | any) {
@@ -37,21 +37,21 @@ export class Reimbursement {
   copayments?: Array<Copayment>
 }
 export namespace Reimbursement {
-  export type DeliveryEnvironmentEnum = "P" | "A" | "H" | "R"
+  export type DeliveryEnvironmentEnum = 'P' | 'A' | 'H' | 'R'
   export const DeliveryEnvironmentEnum = {
-    P: "P" as DeliveryEnvironmentEnum,
-    A: "A" as DeliveryEnvironmentEnum,
-    H: "H" as DeliveryEnvironmentEnum,
-    R: "R" as DeliveryEnvironmentEnum
+    P: 'P' as DeliveryEnvironmentEnum,
+    A: 'A' as DeliveryEnvironmentEnum,
+    H: 'H' as DeliveryEnvironmentEnum,
+    R: 'R' as DeliveryEnvironmentEnum,
   }
-  export type CodeTypeEnum = "CNK" | "PSEUDO"
+  export type CodeTypeEnum = 'CNK' | 'PSEUDO'
   export const CodeTypeEnum = {
-    CNK: "CNK" as CodeTypeEnum,
-    PSEUDO: "PSEUDO" as CodeTypeEnum
+    CNK: 'CNK' as CodeTypeEnum,
+    PSEUDO: 'PSEUDO' as CodeTypeEnum,
   }
-  export type MultipleEnum = "M" | "V"
+  export type MultipleEnum = 'M' | 'V'
   export const MultipleEnum = {
-    M: "M" as MultipleEnum,
-    V: "V" as MultipleEnum
+    M: 'M' as MultipleEnum,
+    V: 'V' as MultipleEnum,
   }
 }

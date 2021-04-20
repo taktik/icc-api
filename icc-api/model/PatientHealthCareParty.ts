@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { ReferralPeriod } from "./ReferralPeriod"
+import { ReferralPeriod } from './ReferralPeriod'
 
 /**
  * One or several periods of care by an hcp for this patient
@@ -43,22 +43,22 @@ export class PatientHealthCareParty {
 }
 export namespace PatientHealthCareParty {
   export type TypeEnum =
-    | "doctor"
-    | "referral"
-    | "medicalhouse"
-    | "retirementhome"
-    | "hospital"
-    | "other"
-    | "referringphysician"
-    | "referralHospital"
+    | 'doctor'
+    | 'referral'
+    | 'medicalhouse'
+    | 'retirementhome'
+    | 'hospital'
+    | 'other'
+    | 'referringphysician'
+    | 'referralHospital'
   export const TypeEnum = {
-    Doctor: "doctor" as TypeEnum,
-    Referral: "referral" as TypeEnum,
-    Medicalhouse: "medicalhouse" as TypeEnum,
-    Retirementhome: "retirementhome" as TypeEnum,
-    Hospital: "hospital" as TypeEnum,
-    Other: "other" as TypeEnum,
-    Referringphysician: "referringphysician" as TypeEnum,
-    ReferralHospital: "referralHospital" as TypeEnum
+    Doctor: 'doctor' as TypeEnum,
+    Referral: 'referral' as TypeEnum,
+    Medicalhouse: 'medicalhouse' as TypeEnum,
+    Retirementhome: 'retirementhome' as TypeEnum,
+    Hospital: 'hospital' as TypeEnum,
+    Other: 'other' as TypeEnum,
+    Referringphysician: 'referringphysician' as TypeEnum,
+    ReferralHospital: 'referralHospital' as TypeEnum,
   }
 }

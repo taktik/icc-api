@@ -1,10 +1,10 @@
-import { IccEntityrefApi, IccInsuranceApi, IccMessageApi } from "../icc-api"
-import { IccCryptoXApi } from "./icc-crypto-x-api"
-import { IccDocumentXApi } from "./icc-document-x-api"
-import { IccInvoiceXApi } from "./icc-invoice-x-api"
+import { IccEntityrefApi, IccInsuranceApi, IccMessageApi } from '../icc-api'
+import { IccCryptoXApi } from './icc-crypto-x-api'
+import { IccDocumentXApi } from './icc-document-x-api'
+import { IccInvoiceXApi } from './icc-invoice-x-api'
 
-import * as _ from "lodash"
-import * as moment from "moment"
+import * as _ from 'lodash'
+import * as moment from 'moment'
 
 import {
   AbstractFilterPatient,
@@ -20,11 +20,11 @@ import {
   PatientHealthCareParty,
   Receipt,
   ReferralPeriod,
-  User
-} from "../icc-api/model/models"
+  User,
+} from '../icc-api/model/models'
 
-import { IccReceiptXApi } from "./icc-receipt-x-api"
-import { IccPatientXApi } from "./icc-patient-x-api"
+import { IccReceiptXApi } from './icc-receipt-x-api'
+import { IccPatientXApi } from './icc-patient-x-api'
 
 export class IccMessageXApi extends IccMessageApi {
   private crypto: IccCryptoXApi
@@ -46,11 +46,11 @@ export class IccMessageXApi extends IccMessageApi {
     receiptXApi: IccReceiptXApi,
     patientApi: IccPatientXApi,
     fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    "undefined"
+    'undefined'
       ? window.fetch
-      : typeof self !== "undefined"
-        ? self.fetch
-        : fetch
+      : typeof self !== 'undefined'
+      ? self.fetch
+      : fetch
   ) {
     super(host, headers, fetchImpl)
     this.crypto = crypto
@@ -71,13 +71,13 @@ export class IccMessageXApi extends IccMessageApi {
     const message = _.extend(
       {
         id: this.crypto.randomUuid(),
-        _type: "org.taktik.icure.entities.Message",
+        _type: 'org.taktik.icure.entities.Message',
         created: new Date().getTime(),
         modified: new Date().getTime(),
         responsible: user.healthcarePartyId,
         author: user.id,
         codes: [],
-        tags: []
+        tags: [],
       },
       m || {}
     )
@@ -85,7 +85,7 @@ export class IccMessageXApi extends IccMessageApi {
     const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto
       .extractDelegationsSFKs(patient, hcpId)
-      .then(secretForeignKeys =>
+      .then((secretForeignKeys) =>
         this.crypto.initObjectDelegations(
           message,
           patient,
@@ -93,11 +93,11 @@ export class IccMessageXApi extends IccMessageApi {
           secretForeignKeys.extractedKeys[0]
         )
       )
-      .then(initData => {
+      .then((initData) => {
         _.extend(message, {
           delegations: initData.delegations,
           cryptedForeignKeys: initData.cryptedForeignKeys,
-          secretForeignKeys: initData.secretForeignKeys
+          secretForeignKeys: initData.secretForeignKeys,
         })
 
         let promise = Promise.resolve(message)
@@ -105,8 +105,8 @@ export class IccMessageXApi extends IccMessageApi {
           ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
           : []
         ).forEach(
-          delegateId =>
-            (promise = promise.then(helement =>
+          (delegateId) =>
+            (promise = promise.then((helement) =>
               this.crypto
                 .extendedDelegationsAndCryptedForeignKeys(
                   helement,
@@ -115,13 +115,13 @@ export class IccMessageXApi extends IccMessageApi {
                   delegateId,
                   initData.secretId
                 )
-                .then(extraData =>
+                .then((extraData) =>
                   _.extend(helement, {
                     delegations: extraData.delegations,
-                    cryptedForeignKeys: extraData.cryptedForeignKeys
+                    cryptedForeignKeys: extraData.cryptedForeignKeys,
                   })
                 )
-                .catch(e => {
+                .catch((e) => {
                   console.log(e)
                   return helement
                 })
