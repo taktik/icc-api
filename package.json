@@ -68,6 +68,11 @@
     "type": "git",
     "url": "git+https://github.com/taktik/icc-api.git"
   },
+  "prettier": {
+    "semi": false,
+    "printWidth": 150,
+    "singleQuote": true
+  },
   "author": "Taktik sa - B12 Consulting",
   "license": "MIT",
   "bugs": {

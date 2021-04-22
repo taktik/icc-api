@@ -20,6 +20,18 @@ describe('Composition', () => {
     expect((filter as any).filters[0].$type).to.equal('UnionFilter')
   })
 
+  it('precedence of operators can be managed for and/or', () => {
+    const builder = Filter.patient()
+      .forHcp('me')
+      .olderThan(65)
+      .or((it) => it.youngerThan(18).and().searchByName('dup'))
+    const filter = builder.build()
+
+    expect((filter as any).$type).to.equal('UnionFilter')
+    expect((filter as any).filters[0].$type).to.equal('PatientByHcPartyDateOfBirthBetweenFilter')
+    expect((filter as any).filters[1].$type).to.equal('IntersectionFilter')
+  })
+
   it('and should work with and', () => {
     const builder = Filter.patient().youngerThan(65).and().olderThan(18).and().searchByName('dup')
     const filter = builder.build()

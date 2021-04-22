@@ -101,23 +101,25 @@ abstract class FilterBuilder<T> {
     return this.filterProvider ? this.clone(leftHandRightHandFiltersCombiner(this.build(), rightHandFilterBuilder.build())) : this
   }
 
-  and(filterBuilderFactory?: () => FilterBuilder<T>): FilterBuilder<T> {
+  and(filterBuilderFactory?: (it: FilterBuilder<T>) => FilterBuilder<T>): FilterBuilder<T> {
     const combiner = (leftHandFilter: AbstractFilter<T>, rightHandFilter: AbstractFilter<T>) => () =>
       new IntersectionFilter<T>([leftHandFilter, rightHandFilter]) as AbstractFilter<T>
 
     return filterBuilderFactory ? this.makeEagerLeftRightFilterBuilder(filterBuilderFactory, combiner) : this.makeLazyLeftRightFilterBuilder(combiner)
   }
 
-  or(): FilterBuilder<T> {
-    return this.makeLazyLeftRightFilterBuilder((leftHandFilter, rightHandFilter) => () =>
+  or(filterBuilderFactory?: (it: FilterBuilder<T>) => FilterBuilder<T>): FilterBuilder<T> {
+    const combiner = (leftHandFilter: AbstractFilter<T>, rightHandFilter: AbstractFilter<T>) => () =>
       new UnionFilter<T>([leftHandFilter, rightHandFilter]) as AbstractFilter<T>
-    )
+
+    return filterBuilderFactory ? this.makeEagerLeftRightFilterBuilder(filterBuilderFactory, combiner) : this.makeLazyLeftRightFilterBuilder(combiner)
   }
 
-  minus(): FilterBuilder<T> {
-    return this.makeLazyLeftRightFilterBuilder((leftHandFilter, rightHandFilter) => () =>
+  minus(filterBuilderFactory?: (it: FilterBuilder<T>) => FilterBuilder<T>): FilterBuilder<T> {
+    const combiner = (leftHandFilter: AbstractFilter<T>, rightHandFilter: AbstractFilter<T>) => () =>
       new ComplementFilter<T>(leftHandFilter, rightHandFilter) as AbstractFilter<T>
-    )
+
+    return filterBuilderFactory ? this.makeEagerLeftRightFilterBuilder(filterBuilderFactory, combiner) : this.makeLazyLeftRightFilterBuilder(combiner)
   }
 }
 
@@ -144,16 +146,16 @@ class PatientFilterBuilder extends FilterBuilder<Patient> {
     return new PatientFilterBuilder(() => new ConstantFilter<Patient>(elements) as AbstractFilter<Patient>)
   }
 
-  and(): PatientFilterBuilder {
-    return super.and() as PatientFilterBuilder
+  and(filterBuilderFactory?: (it: PatientFilterBuilder) => PatientFilterBuilder): PatientFilterBuilder {
+    return super.and(filterBuilderFactory as any) as PatientFilterBuilder
   }
 
-  or(): PatientFilterBuilder {
-    return super.or() as PatientFilterBuilder
+  or(filterBuilderFactory?: (it: PatientFilterBuilder) => PatientFilterBuilder): PatientFilterBuilder {
+    return super.or(filterBuilderFactory as any) as PatientFilterBuilder
   }
 
-  minus(): PatientFilterBuilder {
-    return super.minus() as PatientFilterBuilder
+  minus(filterBuilderFactory?: (it: PatientFilterBuilder) => PatientFilterBuilder): PatientFilterBuilder {
+    return super.minus(filterBuilderFactory as any) as PatientFilterBuilder
   }
 
   forHcp(hcpId: string): PatientFilterBuilder {
