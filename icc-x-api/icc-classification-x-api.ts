@@ -13,8 +13,7 @@ export class IccClassificationXApi extends IccClassificationApi {
     host: string,
     headers: { [key: string]: string },
     crypto: IccCryptoXApi,
-    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    'undefined'
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !== 'undefined'
       ? window.fetch
       : typeof self !== 'undefined'
       ? self.fetch
@@ -52,14 +51,7 @@ export class IccClassificationXApi extends IccClassificationApi {
     const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto
       .extractDelegationsSFKs(patient, hcpId!)
-      .then((secretForeignKeys) =>
-        this.crypto.initObjectDelegations(
-          classification,
-          patient,
-          hcpId!,
-          secretForeignKeys.extractedKeys[0]
-        )
-      )
+      .then((secretForeignKeys) => this.crypto.initObjectDelegations(classification, patient, hcpId!, secretForeignKeys.extractedKeys[0]))
       .then((initData) => {
         _.extend(classification, {
           delegations: initData.delegations,
@@ -68,20 +60,11 @@ export class IccClassificationXApi extends IccClassificationApi {
         })
 
         let promise = Promise.resolve(classification)
-        ;(user.autoDelegations
-          ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
-          : []
-        ).forEach(
+        ;(user.autoDelegations ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || []) : []).forEach(
           (delegateId) =>
             (promise = promise.then((classification) =>
               this.crypto
-                .extendedDelegationsAndCryptedForeignKeys(
-                  classification,
-                  patient,
-                  hcpId!,
-                  delegateId,
-                  initData.secretId
-                )
+                .extendedDelegationsAndCryptedForeignKeys(classification, patient, hcpId!, delegateId, initData.secretId)
                 .then((extraData) =>
                   _.extend(classification, {
                     delegations: extraData.delegations,
@@ -103,10 +86,7 @@ export class IccClassificationXApi extends IccClassificationApi {
     return this.crypto
       .extractDelegationsSFKs(patient, hcpartyId)
       .then((secretForeignKeys) =>
-        this.findClassificationsByHCPartyPatientForeignKeys(
-          secretForeignKeys.hcpartyId!,
-          secretForeignKeys.extractedKeys.join(',')
-        )
+        this.findClassificationsByHCPartyPatientForeignKeys(secretForeignKeys.hcpartyId!, secretForeignKeys.extractedKeys.join(','))
       )
   }
 }

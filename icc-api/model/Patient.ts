@@ -307,14 +307,7 @@ export namespace Patient {
     X: 'X' as BirthSexEnum,
     U: 'U' as BirthSexEnum,
   }
-  export type DeactivationReasonEnum =
-    | 'deceased'
-    | 'moved'
-    | 'other_doctor'
-    | 'retired'
-    | 'no_contact'
-    | 'unknown'
-    | 'none'
+  export type DeactivationReasonEnum = 'deceased' | 'moved' | 'other_doctor' | 'retired' | 'no_contact' | 'unknown' | 'none'
   export const DeactivationReasonEnum = {
     Deceased: 'deceased' as DeactivationReasonEnum,
     Moved: 'moved' as DeactivationReasonEnum,

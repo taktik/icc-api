@@ -17,11 +17,7 @@ export class IccMedexApi {
   headers: Array<XHR.Header>
   fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
-  constructor(
-    host: string,
-    headers: any,
-    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
-  ) {
+  constructor(host: string, headers: any, fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>) {
     this.host = host
     this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
@@ -46,9 +42,7 @@ export class IccMedexApi {
 
     const _url = this.host + `/medex/generate` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => JSON.parse(JSON.stringify(doc.body)))
       .catch((err) => this.handleError(err))

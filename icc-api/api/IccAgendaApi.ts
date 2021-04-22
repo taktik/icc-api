@@ -18,11 +18,7 @@ export class IccAgendaApi {
   headers: Array<XHR.Header>
   fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
-  constructor(
-    host: string,
-    headers: any,
-    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
-  ) {
+  constructor(host: string, headers: any, fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>) {
     this.host = host
     this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
@@ -47,9 +43,7 @@ export class IccAgendaApi {
 
     const _url = this.host + `/agenda` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Agenda(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -63,8 +57,7 @@ export class IccAgendaApi {
   deleteAgenda(agendaIds: string): Promise<Array<DocIdentifier>> {
     const _body = null
 
-    const _url =
-      this.host + `/agenda/${encodeURIComponent(String(agendaIds))}` + '?ts=' + new Date().getTime()
+    const _url = this.host + `/agenda/${encodeURIComponent(String(agendaIds))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
@@ -79,8 +72,7 @@ export class IccAgendaApi {
   getAgenda(agendaId: string): Promise<Agenda> {
     const _body = null
 
-    const _url =
-      this.host + `/agenda/${encodeURIComponent(String(agendaId))}` + '?ts=' + new Date().getTime()
+    const _url = this.host + `/agenda/${encodeURIComponent(String(agendaId))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Agenda(doc.body as JSON))
@@ -109,12 +101,7 @@ export class IccAgendaApi {
   getAgendasForUser(userId: string): Promise<Agenda> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/agenda/byUser` +
-      '?ts=' +
-      new Date().getTime() +
-      (userId ? '&userId=' + encodeURIComponent(String(userId)) : '')
+    const _url = this.host + `/agenda/byUser` + '?ts=' + new Date().getTime() + (userId ? '&userId=' + encodeURIComponent(String(userId)) : '')
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Agenda(doc.body as JSON))
@@ -130,11 +117,7 @@ export class IccAgendaApi {
     const _body = null
 
     const _url =
-      this.host +
-      `/agenda/readableForUser` +
-      '?ts=' +
-      new Date().getTime() +
-      (userId ? '&userId=' + encodeURIComponent(String(userId)) : '')
+      this.host + `/agenda/readableForUser` + '?ts=' + new Date().getTime() + (userId ? '&userId=' + encodeURIComponent(String(userId)) : '')
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Agenda(it)))
@@ -152,9 +135,7 @@ export class IccAgendaApi {
 
     const _url = this.host + `/agenda` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Agenda(doc.body as JSON))
       .catch((err) => this.handleError(err))

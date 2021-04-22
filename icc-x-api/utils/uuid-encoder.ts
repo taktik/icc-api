@@ -51,9 +51,7 @@ export class UuidEncoder {
    * @returns {string}
    */
   static resolveEncodingStr(baseEncodingStr: string) {
-    return Object.prototype.hasOwnProperty.call(knownBases, baseEncodingStr)
-      ? knownBases[baseEncodingStr]
-      : baseEncodingStr
+    return Object.prototype.hasOwnProperty.call(knownBases, baseEncodingStr) ? knownBases[baseEncodingStr] : baseEncodingStr
   }
 
   /**
@@ -62,9 +60,7 @@ export class UuidEncoder {
    * @returns {boolean}
    */
   static isCaseSensitiveBase(baseEncodingStr: string) {
-    return Object.prototype.hasOwnProperty.call(caseSensitiveBases, baseEncodingStr)
-      ? caseSensitiveBases[baseEncodingStr]
-      : true
+    return Object.prototype.hasOwnProperty.call(caseSensitiveBases, baseEncodingStr) ? caseSensitiveBases[baseEncodingStr] : true
   }
 
   /**
@@ -119,9 +115,6 @@ export class UuidEncoder {
 
     const uuid = iUuid.toString(16).padStart(32, '0')
 
-    return `${uuid.substr(0, 8)}-${uuid.substr(8, 4)}-${uuid.substr(12, 4)}-${uuid.substr(
-      16,
-      4
-    )}-${uuid.substr(20)}`
+    return `${uuid.substr(0, 8)}-${uuid.substr(8, 4)}-${uuid.substr(12, 4)}-${uuid.substr(16, 4)}-${uuid.substr(20)}`
   }
 }

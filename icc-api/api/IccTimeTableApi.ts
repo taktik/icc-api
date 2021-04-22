@@ -18,11 +18,7 @@ export class IccTimeTableApi {
   headers: Array<XHR.Header>
   fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
-  constructor(
-    host: string,
-    headers: any,
-    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
-  ) {
+  constructor(host: string, headers: any, fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>) {
     this.host = host
     this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
@@ -47,9 +43,7 @@ export class IccTimeTableApi {
 
     const _url = this.host + `/timeTable` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new TimeTable(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -63,11 +57,7 @@ export class IccTimeTableApi {
   deleteTimeTable(timeTableIds: string): Promise<Array<DocIdentifier>> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/timeTable/${encodeURIComponent(String(timeTableIds))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/timeTable/${encodeURIComponent(String(timeTableIds))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
@@ -82,11 +72,7 @@ export class IccTimeTableApi {
   getTimeTable(timeTableId: string): Promise<TimeTable> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/timeTable/${encodeURIComponent(String(timeTableId))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/timeTable/${encodeURIComponent(String(timeTableId))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new TimeTable(doc.body as JSON))
@@ -102,11 +88,7 @@ export class IccTimeTableApi {
     const _body = null
 
     const _url =
-      this.host +
-      `/timeTable/byAgendaId` +
-      '?ts=' +
-      new Date().getTime() +
-      (agendaId ? '&agendaId=' + encodeURIComponent(String(agendaId)) : '')
+      this.host + `/timeTable/byAgendaId` + '?ts=' + new Date().getTime() + (agendaId ? '&agendaId=' + encodeURIComponent(String(agendaId)) : '')
     const headers = this.headers
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new TimeTable(it)))
@@ -120,11 +102,7 @@ export class IccTimeTableApi {
    * @param endDate
    * @param agendaId
    */
-  getTimeTablesByPeriodAndAgendaId(
-    startDate: number,
-    endDate: number,
-    agendaId: string
-  ): Promise<Array<TimeTable>> {
+  getTimeTablesByPeriodAndAgendaId(startDate: number, endDate: number, agendaId: string): Promise<Array<TimeTable>> {
     const _body = null
 
     const _url =
@@ -152,9 +130,7 @@ export class IccTimeTableApi {
 
     const _url = this.host + `/timeTable` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new TimeTable(doc.body as JSON))
       .catch((err) => this.handleError(err))

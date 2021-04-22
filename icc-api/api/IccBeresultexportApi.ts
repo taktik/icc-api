@@ -16,11 +16,7 @@ export class IccBeresultexportApi {
   headers: Array<XHR.Header>
   fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
-  constructor(
-    host: string,
-    headers: any,
-    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
-  ) {
+  constructor(host: string, headers: any, fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>) {
     this.host = host
     this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
@@ -44,30 +40,19 @@ export class IccBeresultexportApi {
    * @param date
    * @param ref
    */
-  exportHealthOne(
-    fromHcpId: string,
-    toHcpId: string,
-    patId: string,
-    date: number,
-    ref: string,
-    body?: ArrayBuffer
-  ): Promise<ArrayBuffer> {
+  exportHealthOne(fromHcpId: string, toHcpId: string, patId: string, date: number, ref: string, body?: ArrayBuffer): Promise<ArrayBuffer> {
     let _body = null
     _body = body
 
     const _url =
       this.host +
-      `/be_result_export/hl1/${encodeURIComponent(String(fromHcpId))}/${encodeURIComponent(
-        String(toHcpId)
-      )}/${encodeURIComponent(String(patId))}/${encodeURIComponent(
-        String(date)
-      )}/${encodeURIComponent(String(ref))}` +
+      `/be_result_export/hl1/${encodeURIComponent(String(fromHcpId))}/${encodeURIComponent(String(toHcpId))}/${encodeURIComponent(
+        String(patId)
+      )}/${encodeURIComponent(String(date))}/${encodeURIComponent(String(ref))}` +
       '?ts=' +
       new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/octet-stream'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/octet-stream'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => doc.body)
       .catch((err) => this.handleError(err))
@@ -98,18 +83,14 @@ export class IccBeresultexportApi {
 
     const _url =
       this.host +
-      `/be_result_export/kmehrreport/${encodeURIComponent(String(fromHcpId))}/${encodeURIComponent(
-        String(toHcpId)
-      )}/${encodeURIComponent(String(patId))}/${encodeURIComponent(
-        String(date)
-      )}/${encodeURIComponent(String(ref))}` +
+      `/be_result_export/kmehrreport/${encodeURIComponent(String(fromHcpId))}/${encodeURIComponent(String(toHcpId))}/${encodeURIComponent(
+        String(patId)
+      )}/${encodeURIComponent(String(date))}/${encodeURIComponent(String(ref))}` +
       '?ts=' +
       new Date().getTime() +
       (mimeType ? '&mimeType=' + encodeURIComponent(String(mimeType)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/octet-stream'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/octet-stream'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => doc.body)
       .catch((err) => this.handleError(err))
@@ -125,30 +106,19 @@ export class IccBeresultexportApi {
    * @param date
    * @param ref
    */
-  exportMedidoc(
-    fromHcpId: string,
-    toHcpId: string,
-    patId: string,
-    date: number,
-    ref: string,
-    body?: ArrayBuffer
-  ): Promise<ArrayBuffer> {
+  exportMedidoc(fromHcpId: string, toHcpId: string, patId: string, date: number, ref: string, body?: ArrayBuffer): Promise<ArrayBuffer> {
     let _body = null
     _body = body
 
     const _url =
       this.host +
-      `/be_result_export/medidoc/${encodeURIComponent(String(fromHcpId))}/${encodeURIComponent(
-        String(toHcpId)
-      )}/${encodeURIComponent(String(patId))}/${encodeURIComponent(
-        String(date)
-      )}/${encodeURIComponent(String(ref))}` +
+      `/be_result_export/medidoc/${encodeURIComponent(String(fromHcpId))}/${encodeURIComponent(String(toHcpId))}/${encodeURIComponent(
+        String(patId)
+      )}/${encodeURIComponent(String(date))}/${encodeURIComponent(String(ref))}` +
       '?ts=' +
       new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/octet-stream'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/octet-stream'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => doc.body)
       .catch((err) => this.handleError(err))

@@ -18,11 +18,7 @@ export class IccArticleApi {
   headers: Array<XHR.Header>
   fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
-  constructor(
-    host: string,
-    headers: any,
-    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
-  ) {
+  constructor(host: string, headers: any, fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>) {
     this.host = host
     this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
@@ -47,9 +43,7 @@ export class IccArticleApi {
 
     const _url = this.host + `/article` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Article(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -63,11 +57,7 @@ export class IccArticleApi {
   deleteArticle(articleIds: string): Promise<Array<DocIdentifier>> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/article/${encodeURIComponent(String(articleIds))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/article/${encodeURIComponent(String(articleIds))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
@@ -82,11 +72,7 @@ export class IccArticleApi {
   getArticle(articleId: string): Promise<Article> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/article/${encodeURIComponent(String(articleId))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/article/${encodeURIComponent(String(articleId))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Article(doc.body as JSON))
@@ -118,9 +104,7 @@ export class IccArticleApi {
 
     const _url = this.host + `/article` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Article(doc.body as JSON))
       .catch((err) => this.handleError(err))

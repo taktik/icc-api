@@ -19,13 +19,7 @@ export class Formula {
   lifecycle?: Formula.LifecycleEnum
 }
 export namespace Formula {
-  export type LifecycleEnum =
-    | 'OnCreate'
-    | 'OnLoad'
-    | 'OnChange'
-    | 'OnSave'
-    | 'OnDestroy'
-    | 'OnLoadPropertiesEditor'
+  export type LifecycleEnum = 'OnCreate' | 'OnLoad' | 'OnChange' | 'OnSave' | 'OnDestroy' | 'OnLoadPropertiesEditor'
   export const LifecycleEnum = {
     OnCreate: 'OnCreate' as LifecycleEnum,
     OnLoad: 'OnLoad' as LifecycleEnum,

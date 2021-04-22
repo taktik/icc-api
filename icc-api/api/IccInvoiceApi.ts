@@ -25,11 +25,7 @@ export class IccInvoiceApi {
   headers: Array<XHR.Header>
   fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
-  constructor(
-    host: string,
-    headers: any,
-    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
-  ) {
+  constructor(host: string, headers: any, fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>) {
     this.host = host
     this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
@@ -70,9 +66,9 @@ export class IccInvoiceApi {
 
     const _url =
       this.host +
-      `/invoice/byauthor/${encodeURIComponent(String(userId))}/append/${encodeURIComponent(
-        String(type)
-      )}/${encodeURIComponent(String(sentMediumType))}` +
+      `/invoice/byauthor/${encodeURIComponent(String(userId))}/append/${encodeURIComponent(String(type))}/${encodeURIComponent(
+        String(sentMediumType)
+      )}` +
       '?ts=' +
       new Date().getTime() +
       (secretFKeys ? '&secretFKeys=' + encodeURIComponent(String(secretFKeys)) : '') +
@@ -80,9 +76,7 @@ export class IccInvoiceApi {
       (invoiceId ? '&invoiceId=' + encodeURIComponent(String(invoiceId)) : '') +
       (gracePeriod ? '&gracePeriod=' + encodeURIComponent(String(gracePeriod)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Invoice(it)))
       .catch((err) => this.handleError(err))
@@ -99,9 +93,7 @@ export class IccInvoiceApi {
 
     const _url = this.host + `/invoice` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Invoice(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -115,11 +107,7 @@ export class IccInvoiceApi {
   deleteInvoice(invoiceId: string): Promise<DocIdentifier> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/invoice/${encodeURIComponent(String(invoiceId))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/invoice/${encodeURIComponent(String(invoiceId))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => new DocIdentifier(doc.body as JSON))
@@ -137,9 +125,7 @@ export class IccInvoiceApi {
 
     const _url = this.host + `/invoice/filter` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Invoice(it)))
       .catch((err) => this.handleError(err))
@@ -187,10 +173,7 @@ export class IccInvoiceApi {
    * @param hcPartyId
    * @param secretFKeys
    */
-  findInvoicesByHCPartyPatientForeignKeys(
-    hcPartyId: string,
-    secretFKeys: string
-  ): Promise<Array<Invoice>> {
+  findInvoicesByHCPartyPatientForeignKeys(hcPartyId: string, secretFKeys: string): Promise<Array<Invoice>> {
     const _body = null
 
     const _url =
@@ -212,10 +195,7 @@ export class IccInvoiceApi {
    * @param hcPartyId
    * @param secretFKeys
    */
-  findInvoicesDelegationsStubsByHCPartyPatientForeignKeys(
-    hcPartyId: string,
-    secretFKeys: string
-  ): Promise<Array<IcureStub>> {
+  findInvoicesDelegationsStubsByHCPartyPatientForeignKeys(hcPartyId: string, secretFKeys: string): Promise<Array<IcureStub>> {
     const _body = null
 
     const _url =
@@ -239,11 +219,7 @@ export class IccInvoiceApi {
   getInvoice(invoiceId: string): Promise<Invoice> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/invoice/${encodeURIComponent(String(invoiceId))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/invoice/${encodeURIComponent(String(invoiceId))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Invoice(doc.body as JSON))
@@ -261,9 +237,7 @@ export class IccInvoiceApi {
 
     const _url = this.host + `/invoice/byIds` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Invoice(it)))
       .catch((err) => this.handleError(err))
@@ -277,11 +251,7 @@ export class IccInvoiceApi {
   getTarificationsCodesOccurences(minOccurences: number): Promise<Array<LabelledOccurence>> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/invoice/codes/${encodeURIComponent(String(minOccurences))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/invoice/codes/${encodeURIComponent(String(minOccurences))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new LabelledOccurence(it)))
@@ -296,12 +266,7 @@ export class IccInvoiceApi {
    * @param from
    * @param to
    */
-  listAllHcpsByStatus(
-    status: string,
-    from?: number,
-    to?: number,
-    body?: ListOfIds
-  ): Promise<Array<Invoice>> {
+  listAllHcpsByStatus(status: string, from?: number, to?: number, body?: ListOfIds): Promise<Array<Invoice>> {
     let _body = null
     _body = body
 
@@ -313,9 +278,7 @@ export class IccInvoiceApi {
       (from ? '&from=' + encodeURIComponent(String(from)) : '') +
       (to ? '&to=' + encodeURIComponent(String(to)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Invoice(it)))
       .catch((err) => this.handleError(err))
@@ -332,9 +295,7 @@ export class IccInvoiceApi {
 
     const _url = this.host + `/invoice/byCtcts` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Invoice(it)))
       .catch((err) => this.handleError(err))
@@ -351,9 +312,7 @@ export class IccInvoiceApi {
 
     const _url =
       this.host +
-      `/invoice/byHcPartyGroupId/${encodeURIComponent(String(hcPartyId))}/${encodeURIComponent(
-        String(groupId)
-      )}` +
+      `/invoice/byHcPartyGroupId/${encodeURIComponent(String(hcPartyId))}/${encodeURIComponent(String(groupId))}` +
       '?ts=' +
       new Date().getTime()
     const headers = this.headers
@@ -386,9 +345,7 @@ export class IccInvoiceApi {
       this.host +
       `/invoice/byHcParty/${encodeURIComponent(String(hcPartyId))}/mediumType/${encodeURIComponent(
         String(sentMediumType)
-      )}/invoiceType/${encodeURIComponent(String(invoiceType))}/sent/${encodeURIComponent(
-        String(sent)
-      )}` +
+      )}/invoiceType/${encodeURIComponent(String(invoiceType))}/sent/${encodeURIComponent(String(sent))}` +
       '?ts=' +
       new Date().getTime() +
       (from ? '&from=' + encodeURIComponent(String(from)) : '') +
@@ -408,13 +365,7 @@ export class IccInvoiceApi {
    * @param from
    * @param to
    */
-  listByHcpartySendingModeStatusDate(
-    hcPartyId: string,
-    sendingMode?: string,
-    status?: string,
-    from?: number,
-    to?: number
-  ): Promise<Array<Invoice>> {
+  listByHcpartySendingModeStatusDate(hcPartyId: string, sendingMode?: string, status?: string, from?: number, to?: number): Promise<Array<Invoice>> {
     const _body = null
 
     const _url =
@@ -440,11 +391,7 @@ export class IccInvoiceApi {
   listByIds(invoiceIds: string): Promise<Array<Invoice>> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/invoice/byIds/${encodeURIComponent(String(invoiceIds))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/invoice/byIds/${encodeURIComponent(String(invoiceIds))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Invoice(it)))
@@ -459,11 +406,7 @@ export class IccInvoiceApi {
   listByRecipientsIds(recipientIds: string): Promise<Array<Invoice>> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/invoice/to/${encodeURIComponent(String(recipientIds))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/invoice/to/${encodeURIComponent(String(recipientIds))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Invoice(it)))
@@ -478,11 +421,7 @@ export class IccInvoiceApi {
   listByServiceIds(serviceIds: string): Promise<Array<Invoice>> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/invoice/byServiceIds/${encodeURIComponent(String(serviceIds))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/invoice/byServiceIds/${encodeURIComponent(String(serviceIds))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Invoice(it)))
@@ -498,11 +437,7 @@ export class IccInvoiceApi {
     const _body = null
 
     const _url =
-      this.host +
-      `/invoice/toInsurances` +
-      '?ts=' +
-      new Date().getTime() +
-      (userIds ? '&userIds=' + encodeURIComponent(String(userIds)) : '')
+      this.host + `/invoice/toInsurances` + '?ts=' + new Date().getTime() + (userIds ? '&userIds=' + encodeURIComponent(String(userIds)) : '')
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Invoice(it)))
@@ -518,11 +453,7 @@ export class IccInvoiceApi {
     const _body = null
 
     const _url =
-      this.host +
-      `/invoice/toInsurances/unsent` +
-      '?ts=' +
-      new Date().getTime() +
-      (userIds ? '&userIds=' + encodeURIComponent(String(userIds)) : '')
+      this.host + `/invoice/toInsurances/unsent` + '?ts=' + new Date().getTime() + (userIds ? '&userIds=' + encodeURIComponent(String(userIds)) : '')
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Invoice(it)))
@@ -538,11 +469,7 @@ export class IccInvoiceApi {
     const _body = null
 
     const _url =
-      this.host +
-      `/invoice/toPatients` +
-      '?ts=' +
-      new Date().getTime() +
-      (hcPartyId ? '&hcPartyId=' + encodeURIComponent(String(hcPartyId)) : '')
+      this.host + `/invoice/toPatients` + '?ts=' + new Date().getTime() + (hcPartyId ? '&hcPartyId=' + encodeURIComponent(String(hcPartyId)) : '')
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Invoice(it)))
@@ -579,15 +506,9 @@ export class IccInvoiceApi {
     let _body = null
     _body = body
 
-    const _url =
-      this.host +
-      `/invoice/mergeTo/${encodeURIComponent(String(invoiceId))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/invoice/mergeTo/${encodeURIComponent(String(invoiceId))}` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Invoice(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -604,9 +525,7 @@ export class IccInvoiceApi {
 
     const _url = this.host + `/invoice` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Invoice(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -622,15 +541,9 @@ export class IccInvoiceApi {
     let _body = null
     _body = body
 
-    const _url =
-      this.host +
-      `/invoice/${encodeURIComponent(String(invoiceId))}/delegate` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/invoice/${encodeURIComponent(String(invoiceId))}/delegate` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Invoice(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -647,9 +560,7 @@ export class IccInvoiceApi {
 
     const _url = this.host + `/invoice/reassign` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Invoice(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -663,27 +574,18 @@ export class IccInvoiceApi {
    * @param serviceId
    * @param secretFKeys
    */
-  removeCodes(
-    userId: string,
-    serviceId: string,
-    secretFKeys: string,
-    body?: Array<string>
-  ): Promise<Array<Invoice>> {
+  removeCodes(userId: string, serviceId: string, secretFKeys: string, body?: Array<string>): Promise<Array<Invoice>> {
     let _body = null
     _body = body
 
     const _url =
       this.host +
-      `/invoice/byauthor/${encodeURIComponent(String(userId))}/service/${encodeURIComponent(
-        String(serviceId)
-      )}` +
+      `/invoice/byauthor/${encodeURIComponent(String(userId))}/service/${encodeURIComponent(String(serviceId))}` +
       '?ts=' +
       new Date().getTime() +
       (secretFKeys ? '&secretFKeys=' + encodeURIComponent(String(secretFKeys)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Invoice(it)))
       .catch((err) => this.handleError(err))
@@ -700,9 +602,7 @@ export class IccInvoiceApi {
 
     const _url = this.host + `/invoice/delegations` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new IcureStub(it)))
       .catch((err) => this.handleError(err))

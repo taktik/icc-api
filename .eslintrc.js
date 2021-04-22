@@ -26,5 +26,6 @@ module.exports = {
   extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
   rules: {
     '@typescript-eslint/no-explicit-any': 'off',
+    'max-len': ['error', 250, 2],
   },
 }

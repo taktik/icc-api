@@ -18,11 +18,7 @@ export class IccAuthApi {
   headers: Array<XHR.Header>
   fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
-  constructor(
-    host: string,
-    headers: any,
-    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
-  ) {
+  constructor(host: string, headers: any, fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>) {
     this.host = host
     this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
@@ -47,9 +43,7 @@ export class IccAuthApi {
 
     const _url = this.host + `/auth/login` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new AuthenticationResponse(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -92,11 +86,7 @@ export class IccAuthApi {
   token(method: string, path: string): Promise<string> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/auth/token/${encodeURIComponent(String(method))}/${encodeURIComponent(String(path))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/auth/token/${encodeURIComponent(String(method))}/${encodeURIComponent(String(path))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => JSON.parse(JSON.stringify(doc.body)))

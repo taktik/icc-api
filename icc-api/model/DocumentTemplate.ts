@@ -15,11 +15,7 @@ import { DocumentGroup } from './DocumentGroup'
 import { b64_2ab } from './ModelHelper'
 export class DocumentTemplate {
   constructor(json: JSON | any) {
-    Object.assign(
-      this as DocumentTemplate,
-      json,
-      json.attachment ? { attachment: b64_2ab(json.attachment) } : {}
-    )
+    Object.assign(this as DocumentTemplate, json, json.attachment ? { attachment: b64_2ab(json.attachment) } : {})
   }
 
   id?: string

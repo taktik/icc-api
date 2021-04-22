@@ -67,12 +67,7 @@ export namespace InvoiceItem {
     SecondPrestationOfDay: 'SecondPrestationOfDay' as DerogationMaxNumberEnum,
     ThirdAndNextPrestationOfDay: 'ThirdAndNextPrestationOfDay' as DerogationMaxNumberEnum,
   }
-  export type PrescriberNormEnum =
-    | 'None'
-    | 'OnePrescriber'
-    | 'SelfPrescriber'
-    | 'AddedCode'
-    | 'ManyPrescribers'
+  export type PrescriberNormEnum = 'None' | 'OnePrescriber' | 'SelfPrescriber' | 'AddedCode' | 'ManyPrescribers'
   export const PrescriberNormEnum = {
     None: 'None' as PrescriberNormEnum,
     OnePrescriber: 'OnePrescriber' as PrescriberNormEnum,

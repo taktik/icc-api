@@ -10,8 +10,7 @@ export class IccHcpartyXApi extends IccHcpartyApi {
   constructor(
     host: string,
     headers: { [key: string]: string },
-    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    'undefined'
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !== 'undefined'
       ? window.fetch
       : typeof self !== 'undefined'
       ? self.fetch
@@ -34,10 +33,7 @@ export class IccHcpartyXApi extends IccHcpartyApi {
     return null
   }
 
-  putHcPartyInCache(
-    key: string,
-    value: Promise<HealthcareParty> | null = null
-  ): Promise<HealthcareParty> {
+  putHcPartyInCache(key: string, value: Promise<HealthcareParty> | null = null): Promise<HealthcareParty> {
     const hcp =
       value ||
       super.getHealthcareParty(key).catch((e) => {
@@ -55,25 +51,17 @@ export class IccHcpartyXApi extends IccHcpartyApi {
       delete this.hcPartyCache[body.id]
     }
 
-    return super
-      .modifyHealthcareParty(body)
-      .then((hcp) => this.putHcPartyInCache(hcp.id!, Promise.resolve(hcp)))
+    return super.modifyHealthcareParty(body).then((hcp) => this.putHcPartyInCache(hcp.id!, Promise.resolve(hcp)))
   }
 
-  getHealthcareParty(
-    healthcarePartyId: string,
-    bypassCache = false
-  ): Promise<HealthcareParty | any> {
+  getHealthcareParty(healthcarePartyId: string, bypassCache = false): Promise<HealthcareParty | any> {
     const fromCache = bypassCache ? undefined : this.getHcPartyFromCache(healthcarePartyId)
     return fromCache || this.putHcPartyInCache(healthcarePartyId)
   }
 
   getHealthcareParties(healthcarePartyIds: string): Promise<Array<HealthcareParty> | any> {
     const ids = healthcarePartyIds.split(',').filter((x) => !!x)
-    const cached: Array<[string, Promise<HealthcareParty> | null]> = ids.map((id) => [
-      id,
-      this.getHcPartyFromCache(id),
-    ])
+    const cached: Array<[string, Promise<HealthcareParty> | null]> = ids.map((id) => [id, this.getHcPartyFromCache(id)])
     const toFetch = cached.filter((x) => !x[1]).map((x) => x[0])
 
     if (!toFetch.length) {
@@ -94,21 +82,14 @@ export class IccHcpartyXApi extends IccHcpartyApi {
   }
 
   getCurrentHealthcareParty(): Promise<HealthcareParty | any> {
-    return super
-      .getCurrentHealthcareParty()
-      .then((hcp) => this.putHcPartyInCache(hcp.id!, Promise.resolve(hcp)))
+    return super.getCurrentHealthcareParty().then((hcp) => this.putHcPartyInCache(hcp.id!, Promise.resolve(hcp)))
   }
 
-  getHcPartyKeysForDelegate(
-    healthcarePartyId: string,
-    bypassCache = false
-  ): Promise<{ [key: string]: string }> {
+  getHcPartyKeysForDelegate(healthcarePartyId: string, bypassCache = false): Promise<{ [key: string]: string }> {
     const cached = bypassCache ? null : this.hcPartyKeysCache[healthcarePartyId]
     return cached
       ? Promise.resolve(cached)
-      : super
-          .getHcPartyKeysForDelegate(healthcarePartyId)
-          .then((r) => (this.hcPartyKeysCache[healthcarePartyId] = r))
+      : super.getHcPartyKeysForDelegate(healthcarePartyId).then((r) => (this.hcPartyKeysCache[healthcarePartyId] = r))
   }
 
   isValidCbe(cbe: string) {

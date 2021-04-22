@@ -18,11 +18,7 @@ export class IccBeefactApi {
   headers: Array<XHR.Header>
   fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
-  constructor(
-    host: string,
-    headers: any,
-    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
-  ) {
+  constructor(host: string, headers: any, fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>) {
     this.host = host
     this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
@@ -44,26 +40,17 @@ export class IccBeefactApi {
    * @param newMessageId
    * @param numericalRef
    */
-  createBatchAndMessage(
-    insuranceId: string,
-    newMessageId: string,
-    numericalRef: number,
-    body?: MapOfIds
-  ): Promise<MessageWithBatch> {
+  createBatchAndMessage(insuranceId: string, newMessageId: string, numericalRef: number, body?: MapOfIds): Promise<MessageWithBatch> {
     let _body = null
     _body = body
 
     const _url =
       this.host +
-      `/be_efact/${encodeURIComponent(String(insuranceId))}/${encodeURIComponent(
-        String(newMessageId)
-      )}/${encodeURIComponent(String(numericalRef))}` +
+      `/be_efact/${encodeURIComponent(String(insuranceId))}/${encodeURIComponent(String(newMessageId))}/${encodeURIComponent(String(numericalRef))}` +
       '?ts=' +
       new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new MessageWithBatch(doc.body as JSON))
       .catch((err) => this.handleError(err))

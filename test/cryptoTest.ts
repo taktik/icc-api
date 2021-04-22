@@ -77,16 +77,8 @@ describe('Init confidential delegation in patient', () => {
       const pat = await api.patientApi.newInstance(user, { firstName: 'John', lastName: 'Doe' })
       const modifiedPatient = await api.patientApi.initConfidentialDelegation(pat, user)
 
-      const confidentialDelegationKey = await api.cryptoApi.extractPreferredSfk(
-        pat,
-        user.healthcarePartyId!,
-        true
-      )
-      const nonConfidentialDelegationKey = await api.cryptoApi.extractPreferredSfk(
-        pat,
-        user.healthcarePartyId!,
-        false
-      )
+      const confidentialDelegationKey = await api.cryptoApi.extractPreferredSfk(pat, user.healthcarePartyId!, true)
+      const nonConfidentialDelegationKey = await api.cryptoApi.extractPreferredSfk(pat, user.healthcarePartyId!, false)
 
       expect(confidentialDelegationKey === nonConfidentialDelegationKey).to.equal(false)
     } catch (e) {
@@ -98,12 +90,10 @@ describe('Init confidential delegation in patient', () => {
 async function initKeys(api: any, user: User) {
   let id = user.healthcarePartyId
   while (id) {
-    await api.cryptoApi
-      .loadKeyPairsAsTextInBrowserLocalStorage(id, api.cryptoApi.hex2ua(privateKeys[id]))
-      .catch((error: any) => {
-        console.error('Error: in loadKeyPairsAsTextInBrowserLocalStorage')
-        console.error(error)
-      })
+    await api.cryptoApi.loadKeyPairsAsTextInBrowserLocalStorage(id, api.cryptoApi.hex2ua(privateKeys[id])).catch((error: any) => {
+      console.error('Error: in loadKeyPairsAsTextInBrowserLocalStorage')
+      console.error(error)
+    })
 
     id = (await api.healthcarePartyApi.getHealthcareParty(id)).parentId
   }
@@ -139,10 +129,7 @@ describe('Test that contact information can be decrypted', () => {
       const user = await api.userApi.getCurrentUser()
       await initKeys(api, user)
 
-      const pat = await api.patientApi.createPatientWithUser(
-        user,
-        await api.patientApi.newInstance(user, { firstName: 'John', lastName: 'Doe' })
-      )
+      const pat = await api.patientApi.createPatientWithUser(user, await api.patientApi.newInstance(user, { firstName: 'John', lastName: 'Doe' }))
       const ctc = await api.contactApi.createContactWithUser(
         user,
         await api.contactApi.newInstance(user, pat, {
@@ -155,10 +142,7 @@ describe('Test that contact information can be decrypted', () => {
               id: api.cryptoApi.randomUuid(),
               content: {
                 fr: {
-                  compoundValue: [
-                    { content: { fr: { stringValue: 'Salut' } } },
-                    { content: { fr: { stringValue: 'à toi' } } },
-                  ],
+                  compoundValue: [{ content: { fr: { stringValue: 'Salut' } } }, { content: { fr: { stringValue: 'à toi' } } }],
                 },
               },
             },
@@ -167,12 +151,8 @@ describe('Test that contact information can be decrypted', () => {
       )
       const check = await api.contactApi.getContactWithUser(user, ctc.id)
 
-      expect(check.services[0].content.fr.stringValue).to.equal(
-        ctc.services[0].content.fr.stringValue
-      )
-      expect(check.services[0].content.nl.stringValue).to.equal(
-        ctc.services[0].content.nl.stringValue
-      )
+      expect(check.services[0].content.fr.stringValue).to.equal(ctc.services[0].content.fr.stringValue)
+      expect(check.services[0].content.nl.stringValue).to.equal(ctc.services[0].content.nl.stringValue)
       expect(check.services[0].encryptedSelf).to.not.be.null
 
       expect(check.services[1].content.fr.compoundValue[0].content.fr.stringValue).to.equal(
@@ -202,22 +182,11 @@ describe('test that confidential helement information cannot be retrieved at MH 
       const modifiedPatient = (await api.patientApi.initConfidentialDelegation(pat, user))!
 
       await api.healthcareElementApi.createHealthElement(
-        await api.healthcareElementApi.newInstance(
-          user,
-          modifiedPatient,
-          { descr: 'Confidential info' },
-          true
-        )
+        await api.healthcareElementApi.newInstance(user, modifiedPatient, { descr: 'Confidential info' }, true)
       )
 
-      const retrievedHesAsUser = await api.healthcareElementApi.findBy(
-        user.healthcarePartyId!,
-        modifiedPatient
-      )
-      const retrievedHesAsMh = await mhapi.healthcareElementApi.findBy(
-        mhUser.healthcarePartyId!,
-        modifiedPatient
-      )
+      const retrievedHesAsUser = await api.healthcareElementApi.findBy(user.healthcarePartyId!, modifiedPatient)
+      const retrievedHesAsMh = await mhapi.healthcareElementApi.findBy(mhUser.healthcarePartyId!, modifiedPatient)
 
       expect(retrievedHesAsUser.length).to.equal(1, 'User should see its confidential data')
       expect(retrievedHesAsMh.length).to.equal(0, 'MH should not see confidential data')
@@ -260,14 +229,8 @@ describe('test that confidential contact information cannot be retrieved at MH l
         )
       )
 
-      const retrievedCtcsAsUser = await api.contactApi.findBy(
-        user.healthcarePartyId!,
-        modifiedPatient
-      )
-      const retrievedCtcsAsMh = await mhapi.contactApi.findBy(
-        mhUser.healthcarePartyId!,
-        modifiedPatient
-      )
+      const retrievedCtcsAsUser = await api.contactApi.findBy(user.healthcarePartyId!, modifiedPatient)
+      const retrievedCtcsAsMh = await mhapi.contactApi.findBy(mhUser.healthcarePartyId!, modifiedPatient)
 
       expect(retrievedCtcsAsUser.length).to.equal(2, 'User should see its confidential data')
       expect(retrievedCtcsAsMh.length).to.equal(1, 'MH should not see confidential data')

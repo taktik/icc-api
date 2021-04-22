@@ -15,8 +15,7 @@ export class IccDoctemplateXApi extends IccDoctemplateApi {
     host: string,
     headers: { [key: string]: string },
     crypto: IccCryptoXApi,
-    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    'undefined'
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !== 'undefined'
       ? window.fetch
       : typeof self !== 'undefined'
       ? self.fetch
@@ -68,10 +67,7 @@ export class IccDoctemplateXApi extends IccDoctemplateApi {
   // noinspection JSUnusedGlobalSymbols
   getAttachmentUrl(documentId: string, attachmentId: string) {
     return (
-      this.host +
-      '/doctemplate/{documentId}/attachment/{attachmentId}'
-        .replace('{documentId}', documentId)
-        .replace('{attachmentId}', attachmentId)
+      this.host + '/doctemplate/{documentId}/attachment/{attachmentId}'.replace('{documentId}', documentId).replace('{attachmentId}', attachmentId)
     )
   }
 }

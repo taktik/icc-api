@@ -26,11 +26,7 @@ export class IccBekmehrApi {
   headers: Array<XHR.Header>
   fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
-  constructor(
-    host: string,
-    headers: any,
-    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
-  ) {
+  constructor(host: string, headers: any, fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>) {
     this.host = host
     this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
@@ -72,9 +68,7 @@ export class IccBekmehrApi {
       (patientId ? '&patientId=' + encodeURIComponent(String(patientId)) : '') +
       (language ? '&language=' + encodeURIComponent(String(language)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new CheckSMFPatientResult(it)))
       .catch((err) => this.handleError(err))
@@ -111,26 +105,18 @@ export class IccBekmehrApi {
 
     const _url =
       this.host +
-      `/be_kmehr/contactreport/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(
-        String(id)
-      )}` +
+      `/be_kmehr/contactreport/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(String(id))}` +
       '?ts=' +
       new Date().getTime() +
       (date ? '&date=' + encodeURIComponent(String(date)) : '') +
       (language ? '&language=' + encodeURIComponent(String(language)) : '') +
       (recipientNihii ? '&recipientNihii=' + encodeURIComponent(String(recipientNihii)) : '') +
       (recipientSsin ? '&recipientSsin=' + encodeURIComponent(String(recipientSsin)) : '') +
-      (recipientFirstName
-        ? '&recipientFirstName=' + encodeURIComponent(String(recipientFirstName))
-        : '') +
-      (recipientLastName
-        ? '&recipientLastName=' + encodeURIComponent(String(recipientLastName))
-        : '') +
+      (recipientFirstName ? '&recipientFirstName=' + encodeURIComponent(String(recipientFirstName)) : '') +
+      (recipientLastName ? '&recipientLastName=' + encodeURIComponent(String(recipientLastName)) : '') +
       (mimeType ? '&mimeType=' + encodeURIComponent(String(mimeType)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/octet-stream'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/octet-stream'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => doc.body)
       .catch((err) => this.handleError(err))
@@ -143,11 +129,7 @@ export class IccBekmehrApi {
    * @param patientId
    * @param language
    */
-  generateDiaryNote(
-    patientId: string,
-    language: string,
-    body?: DiaryNoteExportInfo
-  ): Promise<ArrayBuffer> {
+  generateDiaryNote(patientId: string, language: string, body?: DiaryNoteExportInfo): Promise<ArrayBuffer> {
     let _body = null
     _body = body
 
@@ -158,9 +140,7 @@ export class IccBekmehrApi {
       new Date().getTime() +
       (language ? '&language=' + encodeURIComponent(String(language)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => doc.body)
       .catch((err) => this.handleError(err))
@@ -197,26 +177,18 @@ export class IccBekmehrApi {
 
     const _url =
       this.host +
-      `/be_kmehr/labresult/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(
-        String(id)
-      )}` +
+      `/be_kmehr/labresult/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(String(id))}` +
       '?ts=' +
       new Date().getTime() +
       (date ? '&date=' + encodeURIComponent(String(date)) : '') +
       (language ? '&language=' + encodeURIComponent(String(language)) : '') +
       (recipientNihii ? '&recipientNihii=' + encodeURIComponent(String(recipientNihii)) : '') +
       (recipientSsin ? '&recipientSsin=' + encodeURIComponent(String(recipientSsin)) : '') +
-      (recipientFirstName
-        ? '&recipientFirstName=' + encodeURIComponent(String(recipientFirstName))
-        : '') +
-      (recipientLastName
-        ? '&recipientLastName=' + encodeURIComponent(String(recipientLastName))
-        : '') +
+      (recipientFirstName ? '&recipientFirstName=' + encodeURIComponent(String(recipientFirstName)) : '') +
+      (recipientLastName ? '&recipientLastName=' + encodeURIComponent(String(recipientLastName)) : '') +
       (mimeType ? '&mimeType=' + encodeURIComponent(String(mimeType)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/octet-stream'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/octet-stream'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => doc.body)
       .catch((err) => this.handleError(err))
@@ -250,9 +222,7 @@ export class IccBekmehrApi {
       (recipientSafe ? '&recipientSafe=' + encodeURIComponent(String(recipientSafe)) : '') +
       (version ? '&version=' + encodeURIComponent(String(version)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => doc.body)
       .catch((err) => this.handleError(err))
@@ -289,26 +259,18 @@ export class IccBekmehrApi {
 
     const _url =
       this.host +
-      `/be_kmehr/note/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(
-        String(id)
-      )}` +
+      `/be_kmehr/note/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(String(id))}` +
       '?ts=' +
       new Date().getTime() +
       (date ? '&date=' + encodeURIComponent(String(date)) : '') +
       (language ? '&language=' + encodeURIComponent(String(language)) : '') +
       (recipientNihii ? '&recipientNihii=' + encodeURIComponent(String(recipientNihii)) : '') +
       (recipientSsin ? '&recipientSsin=' + encodeURIComponent(String(recipientSsin)) : '') +
-      (recipientFirstName
-        ? '&recipientFirstName=' + encodeURIComponent(String(recipientFirstName))
-        : '') +
-      (recipientLastName
-        ? '&recipientLastName=' + encodeURIComponent(String(recipientLastName))
-        : '') +
+      (recipientFirstName ? '&recipientFirstName=' + encodeURIComponent(String(recipientFirstName)) : '') +
+      (recipientLastName ? '&recipientLastName=' + encodeURIComponent(String(recipientLastName)) : '') +
       (mimeType ? '&mimeType=' + encodeURIComponent(String(mimeType)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/octet-stream'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/octet-stream'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => doc.body)
       .catch((err) => this.handleError(err))
@@ -345,26 +307,18 @@ export class IccBekmehrApi {
 
     const _url =
       this.host +
-      `/be_kmehr/prescription/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(
-        String(id)
-      )}` +
+      `/be_kmehr/prescription/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(String(id))}` +
       '?ts=' +
       new Date().getTime() +
       (date ? '&date=' + encodeURIComponent(String(date)) : '') +
       (language ? '&language=' + encodeURIComponent(String(language)) : '') +
       (recipientNihii ? '&recipientNihii=' + encodeURIComponent(String(recipientNihii)) : '') +
       (recipientSsin ? '&recipientSsin=' + encodeURIComponent(String(recipientSsin)) : '') +
-      (recipientFirstName
-        ? '&recipientFirstName=' + encodeURIComponent(String(recipientFirstName))
-        : '') +
-      (recipientLastName
-        ? '&recipientLastName=' + encodeURIComponent(String(recipientLastName))
-        : '') +
+      (recipientFirstName ? '&recipientFirstName=' + encodeURIComponent(String(recipientFirstName)) : '') +
+      (recipientLastName ? '&recipientLastName=' + encodeURIComponent(String(recipientLastName)) : '') +
       (mimeType ? '&mimeType=' + encodeURIComponent(String(mimeType)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/octet-stream'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/octet-stream'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => doc.body)
       .catch((err) => this.handleError(err))
@@ -401,26 +355,18 @@ export class IccBekmehrApi {
 
     const _url =
       this.host +
-      `/be_kmehr/report/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(
-        String(id)
-      )}` +
+      `/be_kmehr/report/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(String(id))}` +
       '?ts=' +
       new Date().getTime() +
       (date ? '&date=' + encodeURIComponent(String(date)) : '') +
       (language ? '&language=' + encodeURIComponent(String(language)) : '') +
       (recipientNihii ? '&recipientNihii=' + encodeURIComponent(String(recipientNihii)) : '') +
       (recipientSsin ? '&recipientSsin=' + encodeURIComponent(String(recipientSsin)) : '') +
-      (recipientFirstName
-        ? '&recipientFirstName=' + encodeURIComponent(String(recipientFirstName))
-        : '') +
-      (recipientLastName
-        ? '&recipientLastName=' + encodeURIComponent(String(recipientLastName))
-        : '') +
+      (recipientFirstName ? '&recipientFirstName=' + encodeURIComponent(String(recipientFirstName)) : '') +
+      (recipientLastName ? '&recipientLastName=' + encodeURIComponent(String(recipientLastName)) : '') +
       (mimeType ? '&mimeType=' + encodeURIComponent(String(mimeType)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/octet-stream'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/octet-stream'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => doc.body)
       .catch((err) => this.handleError(err))
@@ -457,26 +403,18 @@ export class IccBekmehrApi {
 
     const _url =
       this.host +
-      `/be_kmehr/request/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(
-        String(id)
-      )}` +
+      `/be_kmehr/request/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(String(id))}` +
       '?ts=' +
       new Date().getTime() +
       (date ? '&date=' + encodeURIComponent(String(date)) : '') +
       (language ? '&language=' + encodeURIComponent(String(language)) : '') +
       (recipientNihii ? '&recipientNihii=' + encodeURIComponent(String(recipientNihii)) : '') +
       (recipientSsin ? '&recipientSsin=' + encodeURIComponent(String(recipientSsin)) : '') +
-      (recipientFirstName
-        ? '&recipientFirstName=' + encodeURIComponent(String(recipientFirstName))
-        : '') +
-      (recipientLastName
-        ? '&recipientLastName=' + encodeURIComponent(String(recipientLastName))
-        : '') +
+      (recipientFirstName ? '&recipientFirstName=' + encodeURIComponent(String(recipientFirstName)) : '') +
+      (recipientLastName ? '&recipientLastName=' + encodeURIComponent(String(recipientLastName)) : '') +
       (mimeType ? '&mimeType=' + encodeURIComponent(String(mimeType)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/octet-stream'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/octet-stream'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => doc.body)
       .catch((err) => this.handleError(err))
@@ -513,26 +451,18 @@ export class IccBekmehrApi {
 
     const _url =
       this.host +
-      `/be_kmehr/result/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(
-        String(id)
-      )}` +
+      `/be_kmehr/result/${encodeURIComponent(String(patientId))}/export/${encodeURIComponent(String(id))}` +
       '?ts=' +
       new Date().getTime() +
       (date ? '&date=' + encodeURIComponent(String(date)) : '') +
       (language ? '&language=' + encodeURIComponent(String(language)) : '') +
       (recipientNihii ? '&recipientNihii=' + encodeURIComponent(String(recipientNihii)) : '') +
       (recipientSsin ? '&recipientSsin=' + encodeURIComponent(String(recipientSsin)) : '') +
-      (recipientFirstName
-        ? '&recipientFirstName=' + encodeURIComponent(String(recipientFirstName))
-        : '') +
-      (recipientLastName
-        ? '&recipientLastName=' + encodeURIComponent(String(recipientLastName))
-        : '') +
+      (recipientFirstName ? '&recipientFirstName=' + encodeURIComponent(String(recipientFirstName)) : '') +
+      (recipientLastName ? '&recipientLastName=' + encodeURIComponent(String(recipientLastName)) : '') +
       (mimeType ? '&mimeType=' + encodeURIComponent(String(mimeType)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/octet-stream'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/octet-stream'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => doc.body)
       .catch((err) => this.handleError(err))
@@ -545,11 +475,7 @@ export class IccBekmehrApi {
    * @param patientId
    * @param language
    */
-  generateSmfExport(
-    patientId: string,
-    language: string,
-    body?: SoftwareMedicalFileExport
-  ): Promise<ArrayBuffer> {
+  generateSmfExport(patientId: string, language: string, body?: SoftwareMedicalFileExport): Promise<ArrayBuffer> {
     let _body = null
     _body = body
 
@@ -560,9 +486,7 @@ export class IccBekmehrApi {
       new Date().getTime() +
       (language ? '&language=' + encodeURIComponent(String(language)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => doc.body)
       .catch((err) => this.handleError(err))
@@ -575,11 +499,7 @@ export class IccBekmehrApi {
    * @param patientId
    * @param language
    */
-  generateSumehr(
-    patientId: string,
-    language: string,
-    body?: SumehrExportInfo
-  ): Promise<ArrayBuffer> {
+  generateSumehr(patientId: string, language: string, body?: SumehrExportInfo): Promise<ArrayBuffer> {
     let _body = null
     _body = body
 
@@ -590,9 +510,7 @@ export class IccBekmehrApi {
       new Date().getTime() +
       (language ? '&language=' + encodeURIComponent(String(language)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => doc.body)
       .catch((err) => this.handleError(err))
@@ -605,11 +523,7 @@ export class IccBekmehrApi {
    * @param patientId
    * @param language
    */
-  generateSumehrV2(
-    patientId: string,
-    language: string,
-    body?: SumehrExportInfo
-  ): Promise<ArrayBuffer> {
+  generateSumehrV2(patientId: string, language: string, body?: SumehrExportInfo): Promise<ArrayBuffer> {
     let _body = null
     _body = body
 
@@ -620,9 +534,7 @@ export class IccBekmehrApi {
       new Date().getTime() +
       (language ? '&language=' + encodeURIComponent(String(language)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => doc.body)
       .catch((err) => this.handleError(err))
@@ -638,15 +550,9 @@ export class IccBekmehrApi {
     let _body = null
     _body = body
 
-    const _url =
-      this.host +
-      `/be_kmehr/sumehr/${encodeURIComponent(String(patientId))}/content` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/be_kmehr/sumehr/${encodeURIComponent(String(patientId))}/content` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new SumehrContent(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -662,15 +568,9 @@ export class IccBekmehrApi {
     let _body = null
     _body = body
 
-    const _url =
-      this.host +
-      `/be_kmehr/sumehr/${encodeURIComponent(String(patientId))}/md5` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/be_kmehr/sumehr/${encodeURIComponent(String(patientId))}/md5` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Content(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -686,15 +586,9 @@ export class IccBekmehrApi {
     let _body = null
     _body = body
 
-    const _url =
-      this.host +
-      `/be_kmehr/sumehrv2/${encodeURIComponent(String(patientId))}/content` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/be_kmehr/sumehrv2/${encodeURIComponent(String(patientId))}/content` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new SumehrContent(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -710,15 +604,9 @@ export class IccBekmehrApi {
     let _body = null
     _body = body
 
-    const _url =
-      this.host +
-      `/be_kmehr/sumehrv2/${encodeURIComponent(String(patientId))}/md5` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/be_kmehr/sumehrv2/${encodeURIComponent(String(patientId))}/md5` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Content(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -755,9 +643,7 @@ export class IccBekmehrApi {
       (patientId ? '&patientId=' + encodeURIComponent(String(patientId)) : '') +
       (language ? '&language=' + encodeURIComponent(String(language)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new ImportResult(it)))
       .catch((err) => this.handleError(err))
@@ -794,9 +680,7 @@ export class IccBekmehrApi {
       (language ? '&language=' + encodeURIComponent(String(language)) : '') +
       (dryRun ? '&dryRun=' + encodeURIComponent(String(dryRun)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new ImportResult(it)))
       .catch((err) => this.handleError(err))
@@ -833,9 +717,7 @@ export class IccBekmehrApi {
       (patientId ? '&patientId=' + encodeURIComponent(String(patientId)) : '') +
       (language ? '&language=' + encodeURIComponent(String(language)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new ImportResult(it)))
       .catch((err) => this.handleError(err))
@@ -875,9 +757,7 @@ export class IccBekmehrApi {
       (patientId ? '&patientId=' + encodeURIComponent(String(patientId)) : '') +
       (language ? '&language=' + encodeURIComponent(String(language)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new ImportResult(it)))
       .catch((err) => this.handleError(err))
@@ -893,15 +773,9 @@ export class IccBekmehrApi {
     let _body = null
     _body = body
 
-    const _url =
-      this.host +
-      `/be_kmehr/sumehrv2/${encodeURIComponent(String(patientId))}/valid` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/be_kmehr/sumehrv2/${encodeURIComponent(String(patientId))}/valid` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new SumehrValidity(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -917,15 +791,9 @@ export class IccBekmehrApi {
     let _body = null
     _body = body
 
-    const _url =
-      this.host +
-      `/be_kmehr/sumehr/${encodeURIComponent(String(patientId))}/valid` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/be_kmehr/sumehr/${encodeURIComponent(String(patientId))}/valid` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new SumehrValidity(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -938,11 +806,7 @@ export class IccBekmehrApi {
    * @param patientId
    * @param language
    */
-  validateSumehr(
-    patientId: string,
-    language: string,
-    body?: SumehrExportInfo
-  ): Promise<ArrayBuffer> {
+  validateSumehr(patientId: string, language: string, body?: SumehrExportInfo): Promise<ArrayBuffer> {
     let _body = null
     _body = body
 
@@ -953,9 +817,7 @@ export class IccBekmehrApi {
       new Date().getTime() +
       (language ? '&language=' + encodeURIComponent(String(language)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => doc.body)
       .catch((err) => this.handleError(err))
@@ -968,11 +830,7 @@ export class IccBekmehrApi {
    * @param patientId
    * @param language
    */
-  validateSumehrV2(
-    patientId: string,
-    language: string,
-    body?: SumehrExportInfo
-  ): Promise<ArrayBuffer> {
+  validateSumehrV2(patientId: string, language: string, body?: SumehrExportInfo): Promise<ArrayBuffer> {
     let _body = null
     _body = body
 
@@ -983,9 +841,7 @@ export class IccBekmehrApi {
       new Date().getTime() +
       (language ? '&language=' + encodeURIComponent(String(language)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => doc.body)
       .catch((err) => this.handleError(err))

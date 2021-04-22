@@ -1,8 +1,4 @@
-export type PaginatorFunction<X> = (
-  key: any,
-  docId: string | null,
-  limit: number | undefined
-) => Promise<PaginatorResponse<X>>
+export type PaginatorFunction<X> = (key: any, docId: string | null, limit: number | undefined) => Promise<PaginatorResponse<X>>
 
 export type PaginatorExecutor<X> = (
   latestPaginatorFunctionResult: PaginatorResponse<X>,
@@ -37,18 +33,11 @@ export function sleep(ms: number): Promise<any> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-export function retry<P>(
-  fn: () => Promise<P>,
-  retryCount = 3,
-  sleepTime = 1000,
-  exponentialFactor = 1
-): Promise<P> {
+export function retry<P>(fn: () => Promise<P>, retryCount = 3, sleepTime = 1000, exponentialFactor = 1): Promise<P> {
   let retry = 0
   const doFn: () => Promise<P> = () => {
     return fn().catch((e) =>
-      retry++ < retryCount
-        ? (sleepTime && sleep((sleepTime *= exponentialFactor)).then(() => doFn())) || doFn()
-        : Promise.reject(e)
+      retry++ < retryCount ? (sleepTime && sleep((sleepTime *= exponentialFactor)).then(() => doFn())) || doFn() : Promise.reject(e)
     )
   }
   return doFn()
@@ -61,11 +50,7 @@ export async function getRowsUsingPagination<X>(
   endIdx?: number,
   cache?: Array<RowsChunk<X>>
 ): Promise<Array<X>> {
-  const executePaginator: PaginatorExecutor<X> = async (
-    latestResult: PaginatorResponse<X>,
-    acc: Array<X>,
-    limit: number | undefined
-  ) => {
+  const executePaginator: PaginatorExecutor<X> = async (latestResult: PaginatorResponse<X>, acc: Array<X>, limit: number | undefined) => {
     const newResult = await paginator(
       latestResult.nextKey || null,
       latestResult.nextDocId || null,
@@ -195,11 +180,7 @@ export async function getRowsUsingPagination<X>(
       })
     } else {
       const lastRow = rows.length ? rows[rows.length - 1] : undefined
-      if (
-        lastRow &&
-        lastRow.rows &&
-        (lastRow as RowsChunk<X>).startIdx + lastRow.rows.length < endIdx
-      ) {
+      if (lastRow && lastRow.rows && (lastRow as RowsChunk<X>).startIdx + lastRow.rows.length < endIdx) {
         rows.push({
           missing: [(lastRow as RowsChunk<X>).startIdx + lastRow.rows.length, endIdx],
           lastKey: lastKey,
@@ -226,10 +207,7 @@ export async function getRowsUsingPagination<X>(
             missing.missing[1] - missing.lastEndIdx
           )
 
-          missing.rows = rows.slice(
-            missing.missing[0] - missing.lastEndIdx,
-            missing.missing[1] - missing.lastEndIdx
-          )
+          missing.rows = rows.slice(missing.missing[0] - missing.lastEndIdx, missing.missing[1] - missing.lastEndIdx)
           cache[missing.lastEndIdx] = {
             rows,
             startIdx: missing.missing[0],

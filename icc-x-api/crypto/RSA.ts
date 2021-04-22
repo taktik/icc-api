@@ -15,13 +15,7 @@ export class RSAUtils {
   rsaKeyPairs: any = {}
   private crypto: Crypto
 
-  constructor(
-    crypto: Crypto = typeof window !== 'undefined'
-      ? window.crypto
-      : typeof self !== 'undefined'
-      ? self.crypto
-      : ({} as Crypto)
-  ) {
+  constructor(crypto: Crypto = typeof window !== 'undefined' ? window.crypto : typeof self !== 'undefined' ? self.crypto : ({} as Crypto)) {
     this.crypto = crypto
   }
 
@@ -36,9 +30,7 @@ export class RSAUtils {
     const keyUsages: KeyUsage[] = ['decrypt', 'encrypt']
 
     return new Promise((resolve: (value: CryptoKey | CryptoKeyPair) => any, reject) => {
-      this.crypto.subtle
-        .generateKey(this.rsaHashedParams, extractable, keyUsages)
-        .then(resolve, reject)
+      this.crypto.subtle.generateKey(this.rsaHashedParams, extractable, keyUsages).then(resolve, reject)
     })
   }
 
@@ -53,11 +45,7 @@ export class RSAUtils {
    * @param pubKeyFormat will be 'spki' or 'jwk'
    * @returns {Promise} will the AES Key
    */
-  exportKeys(
-    keyPair: { publicKey: CryptoKey; privateKey: CryptoKey },
-    privKeyFormat: string,
-    pubKeyFormat: string
-  ) {
+  exportKeys(keyPair: { publicKey: CryptoKey; privateKey: CryptoKey }, privKeyFormat: string, pubKeyFormat: string) {
     const pubPromise = this.crypto.subtle.exportKey(pubKeyFormat, keyPair.publicKey)
     const privPromise = this.crypto.subtle.exportKey(privKeyFormat, keyPair.privateKey)
 
@@ -96,9 +84,7 @@ export class RSAUtils {
    */
   encrypt(publicKey: CryptoKey, plainData: Uint8Array) {
     return new Promise((resolve: (value: ArrayBuffer) => any, reject) => {
-      this.crypto.subtle
-        .encrypt(this.rsaParams, publicKey, plainData.buffer ? plainData.buffer : plainData)
-        .then(resolve, reject) //Node prefers arrayBuffer
+      this.crypto.subtle.encrypt(this.rsaParams, publicKey, plainData.buffer ? plainData.buffer : plainData).then(resolve, reject) //Node prefers arrayBuffer
     })
   }
 
@@ -123,9 +109,7 @@ export class RSAUtils {
   importKey(format: string, keydata: JsonWebKey | ArrayBuffer, keyUsages: KeyUsage[]) {
     const extractable = true
     return new Promise((resolve: (value: CryptoKey) => any, reject) => {
-      this.crypto.subtle
-        .importKey(format, keydata, this.rsaHashedParams, extractable, keyUsages)
-        .then(resolve, reject)
+      this.crypto.subtle.importKey(format, keydata, this.rsaHashedParams, extractable, keyUsages).then(resolve, reject)
     })
   }
 
@@ -138,9 +122,7 @@ export class RSAUtils {
   importPrivateKey(format: string, keydata: JsonWebKey | ArrayBuffer) {
     const extractable = true
     return new Promise((resolve: (value: CryptoKey) => any, reject) => {
-      this.crypto.subtle
-        .importKey(format, keydata, this.rsaHashedParams, extractable, ['decrypt'])
-        .then(resolve, reject)
+      this.crypto.subtle.importKey(format, keydata, this.rsaHashedParams, extractable, ['decrypt']).then(resolve, reject)
     })
   }
 
@@ -159,20 +141,8 @@ export class RSAUtils {
     publicKeyData: JsonWebKey | ArrayBuffer
   ) {
     const extractable = true
-    const privPromise = this.crypto.subtle.importKey(
-      privateKeyFormat,
-      privateKeydata,
-      this.rsaHashedParams,
-      extractable,
-      ['decrypt']
-    )
-    const pubPromise = this.crypto.subtle.importKey(
-      publicKeyFormat,
-      publicKeyData,
-      this.rsaHashedParams,
-      extractable,
-      ['encrypt']
-    )
+    const privPromise = this.crypto.subtle.importKey(privateKeyFormat, privateKeydata, this.rsaHashedParams, extractable, ['decrypt'])
+    const pubPromise = this.crypto.subtle.importKey(publicKeyFormat, publicKeyData, this.rsaHashedParams, extractable, ['encrypt'])
 
     return Promise.all([pubPromise, privPromise]).then(function (results) {
       return {
@@ -218,35 +188,30 @@ export class RSAUtils {
    * @returns {Promise} -> {CryptoKey} - imported RSA
    */
   loadKeyPairImported(id: string) {
-    return new Promise(
-      (resolve: (value: { publicKey: CryptoKey; privateKey: CryptoKey }) => any, reject) => {
-        try {
-          const jwkKey = localStorage.getItem(this.rsaLocalStoreIdPrefix + id) as string
-          if (jwkKey) {
-            const jwkKeyPair = JSON.parse(jwkKey)
-            if (jwkKeyPair.publicKey && jwkKeyPair.privateKey) {
-              this.importKeyPair('jwk', jwkKeyPair.privateKey, 'jwk', jwkKeyPair.publicKey).then(
-                resolve,
-                (err) => {
-                  console.log('Error in RSA.importKeyPair: ' + err)
-                  reject(err)
-                }
-              )
-            } else {
-              const message = 'Error in RSA.importKeyPair: Invalid key'
-              console.log(message)
-              reject(Error(message))
-            }
+    return new Promise((resolve: (value: { publicKey: CryptoKey; privateKey: CryptoKey }) => any, reject) => {
+      try {
+        const jwkKey = localStorage.getItem(this.rsaLocalStoreIdPrefix + id) as string
+        if (jwkKey) {
+          const jwkKeyPair = JSON.parse(jwkKey)
+          if (jwkKeyPair.publicKey && jwkKeyPair.privateKey) {
+            this.importKeyPair('jwk', jwkKeyPair.privateKey, 'jwk', jwkKeyPair.publicKey).then(resolve, (err) => {
+              console.log('Error in RSA.importKeyPair: ' + err)
+              reject(err)
+            })
           } else {
-            const message = 'Error in RSA.importKeyPair: Missing key'
+            const message = 'Error in RSA.importKeyPair: Invalid key'
             console.log(message)
             reject(Error(message))
           }
-        } catch (err) {
-          reject(err)
+        } else {
+          const message = 'Error in RSA.importKeyPair: Missing key'
+          console.log(message)
+          reject(Error(message))
         }
+      } catch (err) {
+        reject(err)
       }
-    )
+    })
   }
 }
 

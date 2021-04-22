@@ -26,11 +26,7 @@ export class IccPatientApi {
   headers: Array<XHR.Header>
   fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
-  constructor(
-    host: string,
-    headers: any,
-    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
-  ) {
+  constructor(host: string, headers: any, fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>) {
     this.host = host
     this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
@@ -55,9 +51,7 @@ export class IccPatientApi {
 
     const _url = this.host + `/patient/bulk` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new IdWithRev(it)))
       .catch((err) => this.handleError(err))
@@ -74,9 +68,7 @@ export class IccPatientApi {
 
     const _url = this.host + `/patient/bulk` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new IdWithRev(it)))
       .catch((err) => this.handleError(err))
@@ -90,11 +82,7 @@ export class IccPatientApi {
   countOfPatients(hcPartyId: string): Promise<Content> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/patient/hcParty/${encodeURIComponent(String(hcPartyId))}/count` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/patient/hcParty/${encodeURIComponent(String(hcPartyId))}/count` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Content(doc.body as JSON))
@@ -112,9 +100,7 @@ export class IccPatientApi {
 
     const _url = this.host + `/patient` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Patient(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -128,11 +114,7 @@ export class IccPatientApi {
   deletePatient(patientIds: string): Promise<Array<DocIdentifier>> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/patient/${encodeURIComponent(String(patientIds))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/patient/${encodeURIComponent(String(patientIds))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
@@ -174,9 +156,7 @@ export class IccPatientApi {
       (sort ? '&sort=' + encodeURIComponent(String(sort)) : '') +
       (desc ? '&desc=' + encodeURIComponent(String(desc)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListPatient(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -226,11 +206,7 @@ export class IccPatientApi {
   findByExternalId(externalId: string): Promise<Patient> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/patient/byExternalId/${encodeURIComponent(String(externalId))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/patient/byExternalId/${encodeURIComponent(String(externalId))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Patient(doc.body as JSON))
@@ -262,9 +238,7 @@ export class IccPatientApi {
       `/patient/byNameBirthSsinAuto` +
       '?ts=' +
       new Date().getTime() +
-      (healthcarePartyId
-        ? '&healthcarePartyId=' + encodeURIComponent(String(healthcarePartyId))
-        : '') +
+      (healthcarePartyId ? '&healthcarePartyId=' + encodeURIComponent(String(healthcarePartyId)) : '') +
       (filterValue ? '&filterValue=' + encodeURIComponent(String(filterValue)) : '') +
       (startKey ? '&startKey=' + encodeURIComponent(String(startKey)) : '') +
       (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
@@ -283,11 +257,7 @@ export class IccPatientApi {
    * @param lastName The last name
    * @param dateOfBirth The date of birth
    */
-  fuzzySearch(
-    firstName?: string,
-    lastName?: string,
-    dateOfBirth?: number
-  ): Promise<Array<Patient>> {
+  fuzzySearch(firstName?: string, lastName?: string, dateOfBirth?: number): Promise<Array<Patient>> {
     const _body = null
 
     const _url =
@@ -312,11 +282,7 @@ export class IccPatientApi {
   getPatient(patientId: string): Promise<Patient> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/patient/${encodeURIComponent(String(patientId))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/patient/${encodeURIComponent(String(patientId))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Patient(doc.body as JSON))
@@ -331,11 +297,7 @@ export class IccPatientApi {
   getPatientHcPartyKeysForDelegate(patientId: string): Promise<string> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/patient/${encodeURIComponent(String(patientId))}/keys` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/patient/${encodeURIComponent(String(patientId))}/keys` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => JSON.parse(JSON.stringify(doc.body)))
@@ -353,9 +315,7 @@ export class IccPatientApi {
 
     const _url = this.host + `/patient/byIds` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Patient(it)))
       .catch((err) => this.handleError(err))
@@ -370,13 +330,7 @@ export class IccPatientApi {
    * @param startDocumentId A patient document ID
    * @param limit Number of rows
    */
-  listDeletedPatients(
-    startDate?: number,
-    endDate?: number,
-    desc?: boolean,
-    startDocumentId?: string,
-    limit?: number
-  ): Promise<PaginatedListPatient> {
+  listDeletedPatients(startDate?: number, endDate?: number, desc?: boolean, startDocumentId?: string, limit?: number): Promise<PaginatedListPatient> {
     const _body = null
 
     const _url =
@@ -425,11 +379,7 @@ export class IccPatientApi {
   listOfMergesAfter(date: number): Promise<Array<Patient>> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/patient/merges/${encodeURIComponent(String(date))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/patient/merges/${encodeURIComponent(String(date))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Patient(it)))
@@ -444,12 +394,7 @@ export class IccPatientApi {
    * @param startDocumentId A patient document ID
    * @param limit Number of rows
    */
-  listOfPatientsModifiedAfter(
-    date: number,
-    startKey?: number,
-    startDocumentId?: string,
-    limit?: number
-  ): Promise<PaginatedListPatient> {
+  listOfPatientsModifiedAfter(date: number, startKey?: number, startDocumentId?: string, limit?: number): Promise<PaginatedListPatient> {
     const _body = null
 
     const _url =
@@ -547,12 +492,7 @@ export class IccPatientApi {
    * @param startDocumentId A patient document ID
    * @param limit Page size
    */
-  listPatientsIds(
-    hcPartyId: string,
-    startKey?: string,
-    startDocumentId?: string,
-    limit?: number
-  ): Promise<PaginatedListString> {
+  listPatientsIds(hcPartyId: string, startKey?: string, startDocumentId?: string, limit?: number): Promise<PaginatedListString> {
     const _body = null
 
     const _url =
@@ -617,9 +557,7 @@ export class IccPatientApi {
 
     const _url = this.host + `/patient/match` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => JSON.parse(JSON.stringify(it))))
       .catch((err) => this.handleError(err))
@@ -635,12 +573,7 @@ export class IccPatientApi {
     const _body = null
 
     const _url =
-      this.host +
-      `/patient/mergeInto/${encodeURIComponent(String(toId))}/from/${encodeURIComponent(
-        String(fromIds)
-      )}` +
-      '?ts=' +
-      new Date().getTime()
+      this.host + `/patient/mergeInto/${encodeURIComponent(String(toId))}/from/${encodeURIComponent(String(fromIds))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Patient(doc.body as JSON))
@@ -658,9 +591,7 @@ export class IccPatientApi {
 
     const _url = this.host + `/patient` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Patient(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -674,19 +605,12 @@ export class IccPatientApi {
    * @param start Optional value for start of referral
    * @param end Optional value for end of referral
    */
-  modifyPatientReferral(
-    patientId: string,
-    referralId: string,
-    start?: number,
-    end?: number
-  ): Promise<Patient> {
+  modifyPatientReferral(patientId: string, referralId: string, start?: number, end?: number): Promise<Patient> {
     const _body = null
 
     const _url =
       this.host +
-      `/patient/${encodeURIComponent(String(patientId))}/referral/${encodeURIComponent(
-        String(referralId)
-      )}` +
+      `/patient/${encodeURIComponent(String(patientId))}/referral/${encodeURIComponent(String(referralId))}` +
       '?ts=' +
       new Date().getTime() +
       (start ? '&start=' + encodeURIComponent(String(start)) : '') +
@@ -707,15 +631,9 @@ export class IccPatientApi {
     let _body = null
     _body = body
 
-    const _url =
-      this.host +
-      `/patient/${encodeURIComponent(String(patientId))}/delegate` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/patient/${encodeURIComponent(String(patientId))}/delegate` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Patient(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -729,11 +647,7 @@ export class IccPatientApi {
   undeletePatient(patientIds: string): Promise<Array<DocIdentifier>> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/patient/undelete/${encodeURIComponent(String(patientIds))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/patient/undelete/${encodeURIComponent(String(patientIds))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))

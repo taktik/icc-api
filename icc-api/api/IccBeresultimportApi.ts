@@ -18,11 +18,7 @@ export class IccBeresultimportApi {
   headers: Array<XHR.Header>
   fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
-  constructor(
-    host: string,
-    headers: any,
-    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
-  ) {
+  constructor(host: string, headers: any, fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>) {
     this.host = host
     this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
@@ -83,9 +79,9 @@ export class IccBeresultimportApi {
 
     const _url =
       this.host +
-      `/be_result_import/import/${encodeURIComponent(String(documentId))}/${encodeURIComponent(
-        String(hcpId)
-      )}/${encodeURIComponent(String(language))}` +
+      `/be_result_import/import/${encodeURIComponent(String(documentId))}/${encodeURIComponent(String(hcpId))}/${encodeURIComponent(
+        String(language)
+      )}` +
       '?ts=' +
       new Date().getTime() +
       (protocolIds ? '&protocolIds=' + encodeURIComponent(String(protocolIds)) : '') +
@@ -107,12 +103,7 @@ export class IccBeresultimportApi {
    * @param enckeys
    * @param full
    */
-  getInfos(
-    id: string,
-    language: string,
-    enckeys: string,
-    full?: boolean
-  ): Promise<Array<ResultInfo>> {
+  getInfos(id: string, language: string, enckeys: string, full?: boolean): Promise<Array<ResultInfo>> {
     const _body = null
 
     const _url =

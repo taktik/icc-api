@@ -23,11 +23,7 @@ export class IccUserApi {
   headers: Array<XHR.Header>
   fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
-  constructor(
-    host: string,
-    headers: any,
-    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
-  ) {
+  constructor(host: string, headers: any, fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>) {
     this.host = host
     this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
@@ -49,11 +45,7 @@ export class IccUserApi {
   assignHealthcareParty(healthcarePartyId: string): Promise<User> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/user/current/hcparty/${encodeURIComponent(String(healthcarePartyId))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/user/current/hcparty/${encodeURIComponent(String(healthcarePartyId))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new User(doc.body as JSON))
@@ -86,9 +78,7 @@ export class IccUserApi {
 
     const _url = this.host + `/user` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new User(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -104,15 +94,9 @@ export class IccUserApi {
     let _body = null
     _body = body
 
-    const _url =
-      this.host +
-      `/user/inGroup/${encodeURIComponent(String(groupId))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/user/inGroup/${encodeURIComponent(String(groupId))}` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new User(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -126,8 +110,7 @@ export class IccUserApi {
   deleteUser(userId: string): Promise<DocIdentifier> {
     const _body = null
 
-    const _url =
-      this.host + `/user/${encodeURIComponent(String(userId))}` + '?ts=' + new Date().getTime()
+    const _url = this.host + `/user/${encodeURIComponent(String(userId))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => new DocIdentifier(doc.body as JSON))
@@ -144,10 +127,7 @@ export class IccUserApi {
     const _body = null
 
     const _url =
-      this.host +
-      `/user/inGroup/${encodeURIComponent(String(groupId))}/${encodeURIComponent(String(userId))}` +
-      '?ts=' +
-      new Date().getTime()
+      this.host + `/user/inGroup/${encodeURIComponent(String(groupId))}/${encodeURIComponent(String(userId))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Unit(doc.body as JSON))
@@ -177,11 +157,7 @@ export class IccUserApi {
   findByHcpartyId(id: string): Promise<Array<string>> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/user/byHealthcarePartyId/${encodeURIComponent(String(id))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/user/byHealthcarePartyId/${encodeURIComponent(String(id))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => JSON.parse(JSON.stringify(it))))
@@ -198,15 +174,9 @@ export class IccUserApi {
     let _body = null
     _body = body
 
-    const _url =
-      this.host +
-      `/user/forgottenPassword/${encodeURIComponent(String(email))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/user/forgottenPassword/${encodeURIComponent(String(email))}` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => JSON.parse(JSON.stringify(doc.body)))
       .catch((err) => this.handleError(err))
@@ -262,8 +232,7 @@ export class IccUserApi {
   getUser(userId: string): Promise<User> {
     const _body = null
 
-    const _url =
-      this.host + `/user/${encodeURIComponent(String(userId))}` + '?ts=' + new Date().getTime()
+    const _url = this.host + `/user/${encodeURIComponent(String(userId))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new User(doc.body as JSON))
@@ -278,11 +247,7 @@ export class IccUserApi {
   getUserByEmail(email: string): Promise<User> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/user/byEmail/${encodeURIComponent(String(email))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/user/byEmail/${encodeURIComponent(String(email))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new User(doc.body as JSON))
@@ -296,11 +261,7 @@ export class IccUserApi {
    * @param startDocumentId An user document ID
    * @param limit Number of rows
    */
-  listUsers(
-    startKey?: string,
-    startDocumentId?: string,
-    limit?: number
-  ): Promise<PaginatedListUser> {
+  listUsers(startKey?: string, startDocumentId?: string, limit?: number): Promise<PaginatedListUser> {
     const _body = null
 
     const _url =
@@ -325,12 +286,7 @@ export class IccUserApi {
    * @param startDocumentId An user document ID
    * @param limit Number of rows
    */
-  listUsersInGroup(
-    groupId: string,
-    startKey?: string,
-    startDocumentId?: string,
-    limit?: number
-  ): Promise<PaginatedListUser> {
+  listUsersInGroup(groupId: string, startKey?: string, startDocumentId?: string, limit?: number): Promise<PaginatedListUser> {
     const _body = null
 
     const _url =
@@ -357,15 +313,9 @@ export class IccUserApi {
     let _body = null
     _body = body
 
-    const _url =
-      this.host +
-      `/user/${encodeURIComponent(String(userId))}/properties` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/user/${encodeURIComponent(String(userId))}/properties` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new User(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -382,9 +332,7 @@ export class IccUserApi {
 
     const _url = this.host + `/user` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new User(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -400,15 +348,9 @@ export class IccUserApi {
     let _body = null
     _body = body
 
-    const _url =
-      this.host +
-      `/user/inGroup/${encodeURIComponent(String(groupId))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/user/inGroup/${encodeURIComponent(String(groupId))}` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new User(doc.body as JSON))
       .catch((err) => this.handleError(err))

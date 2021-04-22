@@ -18,11 +18,7 @@ export class IccReceiptApi {
   headers: Array<XHR.Header>
   fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
-  constructor(
-    host: string,
-    headers: any,
-    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
-  ) {
+  constructor(host: string, headers: any, fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>) {
     this.host = host
     this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
@@ -47,9 +43,7 @@ export class IccReceiptApi {
 
     const _url = this.host + `/receipt` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Receipt(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -63,11 +57,7 @@ export class IccReceiptApi {
   deleteReceipt(receiptIds: string): Promise<Array<DocIdentifier>> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/receipt/${encodeURIComponent(String(receiptIds))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/receipt/${encodeURIComponent(String(receiptIds))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
@@ -82,11 +72,7 @@ export class IccReceiptApi {
   getReceipt(receiptId: string): Promise<Receipt> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/receipt/${encodeURIComponent(String(receiptId))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/receipt/${encodeURIComponent(String(receiptId))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Receipt(doc.body as JSON))
@@ -100,18 +86,12 @@ export class IccReceiptApi {
    * @param attachmentId
    * @param enckeys
    */
-  getReceiptAttachment(
-    receiptId: string,
-    attachmentId: string,
-    enckeys: string
-  ): Promise<ArrayBuffer> {
+  getReceiptAttachment(receiptId: string, attachmentId: string, enckeys: string): Promise<ArrayBuffer> {
     const _body = null
 
     const _url =
       this.host +
-      `/receipt/${encodeURIComponent(String(receiptId))}/attachment/${encodeURIComponent(
-        String(attachmentId)
-      )}` +
+      `/receipt/${encodeURIComponent(String(receiptId))}/attachment/${encodeURIComponent(String(attachmentId))}` +
       '?ts=' +
       new Date().getTime() +
       (enckeys ? '&enckeys=' + encodeURIComponent(String(enckeys)) : '')
@@ -129,11 +109,7 @@ export class IccReceiptApi {
   listByReference(ref: string): Promise<Array<Receipt>> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/receipt/byref/${encodeURIComponent(String(ref))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/receipt/byref/${encodeURIComponent(String(ref))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Receipt(it)))
@@ -151,9 +127,7 @@ export class IccReceiptApi {
 
     const _url = this.host + `/receipt` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Receipt(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -167,27 +141,18 @@ export class IccReceiptApi {
    * @param blobType
    * @param enckeys
    */
-  setReceiptAttachment(
-    receiptId: string,
-    blobType: string,
-    enckeys?: string,
-    body?: ArrayBuffer
-  ): Promise<Receipt> {
+  setReceiptAttachment(receiptId: string, blobType: string, enckeys?: string, body?: ArrayBuffer): Promise<Receipt> {
     let _body = null
     _body = body
 
     const _url =
       this.host +
-      `/receipt/${encodeURIComponent(String(receiptId))}/attachment/${encodeURIComponent(
-        String(blobType)
-      )}` +
+      `/receipt/${encodeURIComponent(String(receiptId))}/attachment/${encodeURIComponent(String(blobType))}` +
       '?ts=' +
       new Date().getTime() +
       (enckeys ? '&enckeys=' + encodeURIComponent(String(enckeys)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/octet-stream'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/octet-stream'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Receipt(doc.body as JSON))
       .catch((err) => this.handleError(err))

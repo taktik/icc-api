@@ -14,8 +14,7 @@ export class IccTimeTableXApi extends IccTimeTableApi {
     host: string,
     headers: { [key: string]: string },
     crypto: IccCryptoXApi,
-    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    'undefined'
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !== 'undefined'
       ? window.fetch
       : typeof self !== 'undefined'
       ? self.fetch
@@ -40,30 +39,25 @@ export class IccTimeTableXApi extends IccTimeTableApi {
       tt || {}
     )
 
-    return this.crypto
-      .initObjectDelegations(timeTable, null, (user.healthcarePartyId || user.patientId)!, null)
-      .then((initData) => {
-        _.extend(timeTable, { delegations: initData.delegations })
+    return this.crypto.initObjectDelegations(timeTable, null, (user.healthcarePartyId || user.patientId)!, null).then((initData) => {
+      _.extend(timeTable, { delegations: initData.delegations })
 
-        let promise = Promise.resolve(timeTable)
-        ;(user.autoDelegations
-          ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
-          : []
-        ).forEach(
-          (delegateId) =>
-            (promise = promise
-              .then((patient) =>
-                this.crypto.extendedDelegationsAndCryptedForeignKeys(
-                  patient,
-                  null,
-                  (user.healthcarePartyId || user.patientId)!,
-                  delegateId,
-                  initData.secretId
-                )
+      let promise = Promise.resolve(timeTable)
+      ;(user.autoDelegations ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || []) : []).forEach(
+        (delegateId) =>
+          (promise = promise
+            .then((patient) =>
+              this.crypto.extendedDelegationsAndCryptedForeignKeys(
+                patient,
+                null,
+                (user.healthcarePartyId || user.patientId)!,
+                delegateId,
+                initData.secretId
               )
-              .then((extraData) => _.extend(timeTable, { delegations: extraData.delegations })))
-        )
-        return promise
-      })
+            )
+            .then((extraData) => _.extend(timeTable, { delegations: extraData.delegations })))
+      )
+      return promise
+    })
   }
 }

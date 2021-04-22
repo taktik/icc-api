@@ -18,11 +18,7 @@ export class IccKeywordApi {
   headers: Array<XHR.Header>
   fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
-  constructor(
-    host: string,
-    headers: any,
-    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
-  ) {
+  constructor(host: string, headers: any, fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>) {
     this.host = host
     this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
@@ -47,9 +43,7 @@ export class IccKeywordApi {
 
     const _url = this.host + `/keyword` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Keyword(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -63,11 +57,7 @@ export class IccKeywordApi {
   deleteKeywords(keywordIds: string): Promise<Array<DocIdentifier>> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/keyword/${encodeURIComponent(String(keywordIds))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/keyword/${encodeURIComponent(String(keywordIds))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
@@ -82,11 +72,7 @@ export class IccKeywordApi {
   getKeyword(keywordId: string): Promise<Keyword> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/keyword/${encodeURIComponent(String(keywordId))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/keyword/${encodeURIComponent(String(keywordId))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Keyword(doc.body as JSON))
@@ -115,11 +101,7 @@ export class IccKeywordApi {
   getKeywordsByUser(userId: string): Promise<Array<Keyword>> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/keyword/byUser/${encodeURIComponent(String(userId))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/keyword/byUser/${encodeURIComponent(String(userId))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Keyword(it)))
@@ -137,9 +119,7 @@ export class IccKeywordApi {
 
     const _url = this.host + `/keyword` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Keyword(doc.body as JSON))
       .catch((err) => this.handleError(err))

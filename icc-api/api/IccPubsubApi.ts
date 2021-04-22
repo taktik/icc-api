@@ -16,11 +16,7 @@ export class IccPubsubApi {
   headers: Array<XHR.Header>
   fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
-  constructor(
-    host: string,
-    headers: any,
-    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
-  ) {
+  constructor(host: string, headers: any, fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>) {
     this.host = host
     this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
@@ -44,15 +40,9 @@ export class IccPubsubApi {
     let _body = null
     _body = body
 
-    const _url =
-      this.host +
-      `/pubsub/auth/${encodeURIComponent(String(bucket))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/pubsub/auth/${encodeURIComponent(String(bucket))}` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/octet-stream'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/octet-stream'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => JSON.parse(JSON.stringify(doc.body)))
       .catch((err) => this.handleError(err))
@@ -68,12 +58,9 @@ export class IccPubsubApi {
     let _body = null
     _body = body
 
-    const _url =
-      this.host + `/pubsub/pub/${encodeURIComponent(String(key))}` + '?ts=' + new Date().getTime()
+    const _url = this.host + `/pubsub/pub/${encodeURIComponent(String(key))}` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/octet-stream'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/octet-stream'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => JSON.parse(JSON.stringify(doc.body)))
       .catch((err) => this.handleError(err))
@@ -87,11 +74,7 @@ export class IccPubsubApi {
   recoverAuth(bucket: string): Promise<ArrayBuffer> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/pubsub/auth/recover/${encodeURIComponent(String(bucket))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/pubsub/auth/recover/${encodeURIComponent(String(bucket))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => doc.body)
@@ -106,8 +89,7 @@ export class IccPubsubApi {
   sub(key: string): Promise<ArrayBuffer> {
     const _body = null
 
-    const _url =
-      this.host + `/pubsub/sub/${encodeURIComponent(String(key))}` + '?ts=' + new Date().getTime()
+    const _url = this.host + `/pubsub/sub/${encodeURIComponent(String(key))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => doc.body)

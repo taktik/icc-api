@@ -10,8 +10,7 @@ export class IccReceiptXApi extends IccReceiptApi {
     host: string,
     headers: { [key: string]: string },
     crypto: IccCryptoXApi,
-    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    'undefined'
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !== 'undefined'
       ? window.fetch
       : typeof self !== 'undefined'
       ? self.fetch
@@ -41,17 +40,9 @@ export class IccReceiptXApi extends IccReceiptApi {
     return this.initDelegationsAndEncryptionKeys(user, receipt)
   }
 
-  private initDelegationsAndEncryptionKeys(
-    user: models.User,
-    receipt: models.Receipt
-  ): Promise<models.Receipt> {
+  private initDelegationsAndEncryptionKeys(user: models.User, receipt: models.Receipt): Promise<models.Receipt> {
     return Promise.all([
-      this.crypto.initObjectDelegations(
-        receipt,
-        null,
-        (user.healthcarePartyId || user.patientId)!,
-        null
-      ),
+      this.crypto.initObjectDelegations(receipt, null, (user.healthcarePartyId || user.patientId)!, null),
       this.crypto.initEncryptionKeys(receipt, (user.healthcarePartyId || user.patientId)!),
     ]).then((initData) => {
       const dels = initData[0]
@@ -64,21 +55,11 @@ export class IccReceiptXApi extends IccReceiptApi {
       })
 
       let promise = Promise.resolve(receipt)
-      ;(user.autoDelegations
-        ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
-        : []
-      ).forEach(
+      ;(user.autoDelegations ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || []) : []).forEach(
         (delegateId) =>
           (promise = promise.then((receipt) =>
             this.crypto
-              .addDelegationsAndEncryptionKeys(
-                null,
-                receipt,
-                (user.healthcarePartyId || user.patientId)!,
-                delegateId,
-                dels.secretId,
-                eks.secretId
-              )
+              .addDelegationsAndEncryptionKeys(null, receipt, (user.healthcarePartyId || user.patientId)!, delegateId, dels.secretId, eks.secretId)
               .catch((e) => {
                 console.log(e)
                 return receipt
@@ -90,45 +71,27 @@ export class IccReceiptXApi extends IccReceiptApi {
   }
 
   initEncryptionKeys(user: models.User, rcpt: models.Receipt) {
-    return this.crypto
-      .initEncryptionKeys(rcpt, (user.healthcarePartyId || user.patientId)!)
-      .then((eks) => {
-        let promise = Promise.resolve(
-          _.extend(rcpt, {
-            encryptionKeys: eks.encryptionKeys,
-          })
-        )
-        ;(user.autoDelegations
-          ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
-          : []
-        ).forEach(
-          (delegateId) =>
-            (promise = promise.then((receipt) =>
-              this.crypto
-                .appendEncryptionKeys(
-                  receipt,
-                  (user.healthcarePartyId || user.patientId)!,
-                  delegateId,
-                  eks.secretId
-                )
-                .then((extraEks) => {
-                  return _.extend(receipt, {
-                    encryptionKeys: extraEks.encryptionKeys,
-                  })
-                })
-            ))
-        )
-        return promise
-      })
+    return this.crypto.initEncryptionKeys(rcpt, (user.healthcarePartyId || user.patientId)!).then((eks) => {
+      let promise = Promise.resolve(
+        _.extend(rcpt, {
+          encryptionKeys: eks.encryptionKeys,
+        })
+      )
+      ;(user.autoDelegations ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || []) : []).forEach(
+        (delegateId) =>
+          (promise = promise.then((receipt) =>
+            this.crypto.appendEncryptionKeys(receipt, (user.healthcarePartyId || user.patientId)!, delegateId, eks.secretId).then((extraEks) => {
+              return _.extend(receipt, {
+                encryptionKeys: extraEks.encryptionKeys,
+              })
+            })
+          ))
+      )
+      return promise
+    })
   }
 
-  logReceipt(
-    user: models.User,
-    docId: string,
-    refs: Array<string>,
-    blobType: string,
-    blob: ArrayBuffer
-  ) {
+  logReceipt(user: models.User, docId: string, refs: Array<string>, blobType: string, blob: ArrayBuffer) {
     return this.newInstance(user, { documentId: docId, references: refs })
       .then((rcpt) => this.createReceipt(rcpt))
       .then((rcpt) => this.setReceiptAttachment(rcpt.id!, blobType, '', <any>blob))

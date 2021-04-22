@@ -20,11 +20,7 @@ export class IccCalendarItemApi {
   headers: Array<XHR.Header>
   fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
-  constructor(
-    host: string,
-    headers: any,
-    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
-  ) {
+  constructor(host: string, headers: any, fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>) {
     this.host = host
     this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
@@ -49,9 +45,7 @@ export class IccCalendarItemApi {
 
     const _url = this.host + `/calendarItem` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new CalendarItem(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -65,11 +59,7 @@ export class IccCalendarItemApi {
   deleteCalendarItem(calendarItemIds: string): Promise<Array<DocIdentifier>> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/calendarItem/${encodeURIComponent(String(calendarItemIds))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/calendarItem/${encodeURIComponent(String(calendarItemIds))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
@@ -82,10 +72,7 @@ export class IccCalendarItemApi {
    * @param hcPartyId
    * @param secretFKeys
    */
-  findCalendarItemsByHCPartyPatientForeignKeys(
-    hcPartyId: string,
-    secretFKeys: string
-  ): Promise<Array<CalendarItem>> {
+  findCalendarItemsByHCPartyPatientForeignKeys(hcPartyId: string, secretFKeys: string): Promise<Array<CalendarItem>> {
     const _body = null
 
     const _url =
@@ -109,11 +96,7 @@ export class IccCalendarItemApi {
   getCalendarItem(calendarItemId: string): Promise<CalendarItem> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/calendarItem/${encodeURIComponent(String(calendarItemId))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/calendarItem/${encodeURIComponent(String(calendarItemId))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new CalendarItem(doc.body as JSON))
@@ -141,11 +124,7 @@ export class IccCalendarItemApi {
    * @param endDate
    * @param hcPartyId
    */
-  getCalendarItemsByPeriodAndHcPartyId(
-    startDate: number,
-    endDate: number,
-    hcPartyId: string
-  ): Promise<Array<CalendarItem>> {
+  getCalendarItemsByPeriodAndHcPartyId(startDate: number, endDate: number, hcPartyId: string): Promise<Array<CalendarItem>> {
     const _body = null
 
     const _url =
@@ -173,9 +152,7 @@ export class IccCalendarItemApi {
 
     const _url = this.host + `/calendarItem/byIds` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new CalendarItem(it)))
       .catch((err) => this.handleError(err))
@@ -188,11 +165,7 @@ export class IccCalendarItemApi {
    * @param endDate
    * @param agendaId
    */
-  getCalendarsByPeriodAndAgendaId(
-    startDate: number,
-    endDate: number,
-    agendaId: string
-  ): Promise<Array<CalendarItem>> {
+  getCalendarsByPeriodAndAgendaId(startDate: number, endDate: number, agendaId: string): Promise<Array<CalendarItem>> {
     const _body = null
 
     const _url =
@@ -220,9 +193,7 @@ export class IccCalendarItemApi {
 
     const _url = this.host + `/calendarItem` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new CalendarItem(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -239,9 +210,7 @@ export class IccCalendarItemApi {
 
     const _url = this.host + `/calendarItem/delegations` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new CalendarItem(it)))
       .catch((err) => this.handleError(err))

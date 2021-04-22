@@ -18,13 +18,7 @@ export class AESUtils {
     this._debug = value
   }
 
-  constructor(
-    crypto: Crypto = typeof window !== 'undefined'
-      ? window.crypto
-      : typeof self !== 'undefined'
-      ? self.crypto
-      : ({} as Crypto)
-  ) {
+  constructor(crypto: Crypto = typeof window !== 'undefined' ? window.crypto : typeof self !== 'undefined' ? self.crypto : ({} as Crypto)) {
     this.crypto = crypto
     this._debug = false
   }
@@ -33,9 +27,7 @@ export class AESUtils {
     return new Promise((resolve: (value: ArrayBuffer) => any, reject: (reason: any) => any) => {
       if (plainData instanceof Uint8Array) {
         const buffer = plainData.buffer
-        plainData = (buffer.byteLength > plainData.byteLength
-          ? buffer.slice(0, plainData.byteLength)
-          : buffer) as ArrayBuffer
+        plainData = (buffer.byteLength > plainData.byteLength ? buffer.slice(0, plainData.byteLength) : buffer) as ArrayBuffer
       }
       const aesAlgorithmEncrypt = {
         name: this.aesAlgorithmEncryptName,
@@ -51,8 +43,7 @@ export class AESUtils {
           plainData
         )
         .then(
-          (cipherData) =>
-            resolve(utils.appendBuffer(aesAlgorithmEncrypt.iv!.buffer! as ArrayBuffer, cipherData)),
+          (cipherData) => resolve(utils.appendBuffer(aesAlgorithmEncrypt.iv!.buffer! as ArrayBuffer, cipherData)),
           (err) => reject('AES encryption failed: ' + err)
         )
     })
@@ -98,11 +89,7 @@ export class AESUtils {
       }
       this._debug && console.log(`decrypt with ${rawKey}`)
       this.crypto.subtle
-        .decrypt(
-          aesAlgorithmEncrypt,
-          cryptoKey,
-          encryptedDataUnit8.subarray(this.ivLength, encryptedDataUnit8.length)
-        )
+        .decrypt(aesAlgorithmEncrypt, cryptoKey, encryptedDataUnit8.subarray(this.ivLength, encryptedDataUnit8.length))
         .then(resolve, (err) => {
           reject('AES decryption failed: ' + err)
         })
@@ -117,22 +104,18 @@ export class AESUtils {
    * @returns {Promise} either Hex string or CryptoKey
    */
   generateCryptoKey(toHex: boolean) {
-    return new Promise(
-      (resolve: (value: CryptoKey | string) => any, reject: (reason: any) => any) => {
-        const extractable = true
-        const keyUsages: KeyUsage[] = ['decrypt', 'encrypt']
-        if (toHex === undefined || !toHex) {
-          return this.crypto.subtle
-            .generateKey(this.aesKeyGenParams, extractable, keyUsages)
-            .then(resolve, reject)
-        } else {
-          return this.crypto.subtle
-            .generateKey(this.aesKeyGenParams, extractable, keyUsages)
-            .then((k) => this.exportKey(k, 'raw'), reject)
-            .then((raw) => resolve(ua2hex(raw)), reject)
-        }
+    return new Promise((resolve: (value: CryptoKey | string) => any, reject: (reason: any) => any) => {
+      const extractable = true
+      const keyUsages: KeyUsage[] = ['decrypt', 'encrypt']
+      if (toHex === undefined || !toHex) {
+        return this.crypto.subtle.generateKey(this.aesKeyGenParams, extractable, keyUsages).then(resolve, reject)
+      } else {
+        return this.crypto.subtle
+          .generateKey(this.aesKeyGenParams, extractable, keyUsages)
+          .then((k) => this.exportKey(k, 'raw'), reject)
+          .then((raw) => resolve(ua2hex(raw)), reject)
       }
-    )
+    })
   }
 
   // noinspection JSMethodCanBeStatic
@@ -149,11 +132,9 @@ export class AESUtils {
    * @returns {Promise} will the AES Key
    */
   exportKey(cryptoKey: CryptoKey, format: string) {
-    return new Promise(
-      (resolve: (value: ArrayBuffer | JsonWebKey) => any, reject: (reason: any) => any) => {
-        return this.crypto.subtle.exportKey(format, cryptoKey).then(resolve, reject)
-      }
-    )
+    return new Promise((resolve: (value: ArrayBuffer | JsonWebKey) => any, reject: (reason: any) => any) => {
+      return this.crypto.subtle.exportKey(format, cryptoKey).then(resolve, reject)
+    })
   }
 
   /**
@@ -172,9 +153,7 @@ export class AESUtils {
     return new Promise((resolve: (value: CryptoKey) => any, reject: (reason: any) => any) => {
       const extractable = true
       const keyUsages: KeyUsage[] = ['decrypt', 'encrypt']
-      return this.crypto.subtle
-        .importKey(format, aesKey, this.aesKeyGenParams, extractable, keyUsages)
-        .then(resolve, reject)
+      return this.crypto.subtle.importKey(format, aesKey, this.aesKeyGenParams, extractable, keyUsages).then(resolve, reject)
     })
   }
 }

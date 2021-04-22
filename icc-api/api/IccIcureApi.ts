@@ -19,11 +19,7 @@ export class IccIcureApi {
   headers: Array<XHR.Header>
   fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
-  constructor(
-    host: string,
-    headers: any,
-    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
-  ) {
+  constructor(host: string, headers: any, fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>) {
     this.host = host
     this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
@@ -129,12 +125,7 @@ export class IccIcureApi {
   resolveDocumentsConflicts(ids?: string): Promise<Unit> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/icure/conflicts/document` +
-      '?ts=' +
-      new Date().getTime() +
-      (ids ? '&ids=' + encodeURIComponent(String(ids)) : '')
+    const _url = this.host + `/icure/conflicts/document` + '?ts=' + new Date().getTime() + (ids ? '&ids=' + encodeURIComponent(String(ids)) : '')
     const headers = this.headers
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Unit(doc.body as JSON))

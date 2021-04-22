@@ -7,8 +7,7 @@ export class IccUserXApi extends IccUserApi {
   constructor(
     host: string,
     headers: { [key: string]: string },
-    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    'undefined'
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !== 'undefined'
       ? window.fetch
       : typeof self !== 'undefined'
       ? self.fetch

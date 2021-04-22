@@ -19,11 +19,7 @@ export class IccCodeApi {
   headers: Array<XHR.Header>
   fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
-  constructor(
-    host: string,
-    headers: any,
-    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
-  ) {
+  constructor(host: string, headers: any, fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>) {
     this.host = host
     this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
@@ -48,9 +44,7 @@ export class IccCodeApi {
 
     const _url = this.host + `/code` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Code(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -91,9 +85,7 @@ export class IccCodeApi {
       (sort ? '&sort=' + encodeURIComponent(String(sort)) : '') +
       (desc ? '&desc=' + encodeURIComponent(String(desc)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListCode(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -290,8 +282,7 @@ export class IccCodeApi {
   getCode(codeId: string): Promise<Code> {
     const _body = null
 
-    const _url =
-      this.host + `/code/${encodeURIComponent(String(codeId))}` + '?ts=' + new Date().getTime()
+    const _url = this.host + `/code/${encodeURIComponent(String(codeId))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Code(doc.body as JSON))
@@ -310,9 +301,7 @@ export class IccCodeApi {
 
     const _url =
       this.host +
-      `/code/${encodeURIComponent(String(type))}/${encodeURIComponent(
-        String(code)
-      )}/${encodeURIComponent(String(version))}` +
+      `/code/${encodeURIComponent(String(type))}/${encodeURIComponent(String(code))}/${encodeURIComponent(String(version))}` +
       '?ts=' +
       new Date().getTime()
     const headers = this.headers
@@ -329,11 +318,7 @@ export class IccCodeApi {
   getCodes(codeIds: string): Promise<Array<Code>> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/code/byIds/${encodeURIComponent(String(codeIds))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/code/byIds/${encodeURIComponent(String(codeIds))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Code(it)))
@@ -351,9 +336,7 @@ export class IccCodeApi {
 
     const _url = this.host + `/code` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Code(doc.body as JSON))
       .catch((err) => this.handleError(err))

@@ -2,28 +2,13 @@ import * as base64js from 'base64-js'
 import * as moment from 'moment'
 import { Moment } from 'moment'
 import * as _ from 'lodash'
-import {
-  a2b,
-  b2a,
-  ua2b64Url,
-  hex2ua,
-  string2ua,
-  ua2b64,
-  ua2hex,
-  ua2string,
-  b64Url2ua,
-  b64_2ua,
-} from '../utils/binary-utils'
+import { a2b, b2a, ua2b64Url, hex2ua, string2ua, ua2b64, ua2hex, ua2string, b64Url2ua, b64_2ua } from '../utils/binary-utils'
 import { ASN1, Stream } from '../utils/asn1'
 
 export class UtilsClass {
   constructor() {}
 
-  notConcurrent<T>(
-    concurrencyMap: { [key: string]: PromiseLike<T> },
-    key: string,
-    proc: () => PromiseLike<T>
-  ): PromiseLike<T> {
+  notConcurrent<T>(concurrencyMap: { [key: string]: PromiseLike<T> }, key: string, proc: () => PromiseLike<T>): PromiseLike<T> {
     const inFlight = concurrencyMap[key]
     if (!inFlight) {
       return (concurrencyMap[key] = (async () => {
@@ -52,11 +37,7 @@ export class UtilsClass {
     let modulusRaw: ASN1 | undefined = undefined
     let exponentRaw: ASN1 | undefined = undefined
 
-    if (
-      pubkeyAsn1.tag.tagNumber === 16 &&
-      pubkeyAsn1.sub[0].tag.tagNumber === 16 &&
-      pubkeyAsn1.sub[0].sub[0].tag.tagNumber === 6
-    ) {
+    if (pubkeyAsn1.tag.tagNumber === 16 && pubkeyAsn1.sub[0].tag.tagNumber === 16 && pubkeyAsn1.sub[0].sub[0].tag.tagNumber === 6) {
       const oidRaw = pubkeyAsn1.sub[0].sub[0]
       const oidStart = oidRaw.header + oidRaw.stream.pos
       const oid = oidRaw.stream.parseOID(oidStart, oidStart + oidRaw.length, 32)
@@ -66,11 +47,7 @@ export class UtilsClass {
         exponentRaw = pubkeyAsn1.sub[1].sub[0].sub[1]
       }
     } else {
-      if (
-        pubkeyAsn1.tag.tagNumber === 16 &&
-        pubkeyAsn1.sub[0].tag.tagNumber === 2 &&
-        pubkeyAsn1.sub[1].tag.tagNumber === 2
-      ) {
+      if (pubkeyAsn1.tag.tagNumber === 16 && pubkeyAsn1.sub[0].tag.tagNumber === 2 && pubkeyAsn1.sub[1].tag.tagNumber === 2) {
         modulusRaw = pubkeyAsn1.sub[0]
         exponentRaw = pubkeyAsn1.sub[1]
       }
@@ -188,23 +165,11 @@ export class UtilsClass {
 
   //Convenience methods for dates management
   after(d1: number, d2: number): boolean {
-    return (
-      d1 === null ||
-      d2 === null ||
-      d1 === undefined ||
-      d2 === undefined ||
-      this.moment(d1)!.isAfter(this.moment(d2)!)
-    )
+    return d1 === null || d2 === null || d1 === undefined || d2 === undefined || this.moment(d1)!.isAfter(this.moment(d2)!)
   }
 
   before(d1: number, d2: number): boolean {
-    return (
-      d1 === null ||
-      d2 === null ||
-      d1 === undefined ||
-      d2 === undefined ||
-      this.moment(d1)!.isBefore(this.moment(d2)!)
-    )
+    return d1 === null || d2 === null || d1 === undefined || d2 === undefined || this.moment(d1)!.isBefore(this.moment(d2)!)
   }
 
   moment(epochOrLongCalendar: number): Moment | null {
@@ -227,11 +192,7 @@ export class UtilsClass {
    * @param cryptor the cryptor function (returns a promise)
    * @param keys the keys to be crypted: ex for a Patient ['note', 'addresses.*.["street", "houseNumber", "telecoms.*.telecomNumber"]']
    */
-  async crypt(
-    obj: any,
-    cryptor: (obj: { [key: string]: string }) => Promise<ArrayBuffer>,
-    keys: Array<string>
-  ) {
+  async crypt(obj: any, cryptor: (obj: { [key: string]: string }) => Promise<ArrayBuffer>, keys: Array<string>) {
     const subObj = _.pick(
       obj,
       keys.filter((k) => !k.includes('*'))
@@ -246,11 +207,7 @@ export class UtilsClass {
         const k1 = k.split('.*.')[0]
         const k2 = k.substr(k1.length + 3)
 
-        const mapped = await Promise.all(
-          (_.get(obj, k1) || []).map((so: any) =>
-            this.crypt(so, cryptor, k2.startsWith('[') ? JSON.parse(k2) : [k2])
-          )
-        )
+        const mapped = await Promise.all((_.get(obj, k1) || []).map((so: any) => this.crypt(so, cryptor, k2.startsWith('[') ? JSON.parse(k2) : [k2])))
         _.set(obj, k1, mapped)
       }, Promise.resolve())
 

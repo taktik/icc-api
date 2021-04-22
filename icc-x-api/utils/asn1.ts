@@ -83,8 +83,7 @@ export class Stream {
 
   get(pos?: number) {
     if (pos === undefined) pos = this.pos++
-    if (pos >= this.enc.byteLength)
-      throw 'Requesting byte offset ' + pos + ' on a stream of length ' + this.enc.length
+    if (pos >= this.enc.byteLength) throw 'Requesting byte offset ' + pos + ' on a stream of length ' + this.enc.length
     return this.enc[pos]
   }
 
@@ -130,12 +129,8 @@ export class Stream {
     for (let i = start; i < end; ) {
       const c = this.get(i++)
       if (c < 128) s += String.fromCharCode(c)
-      else if (c > 191 && c < 224)
-        s += String.fromCharCode(((c & 0x1f) << 6) | (this.get(i++) & 0x3f))
-      else
-        s += String.fromCharCode(
-          ((c & 0x0f) << 12) | ((this.get(i++) & 0x3f) << 6) | (this.get(i++) & 0x3f)
-        )
+      else if (c > 191 && c < 224) s += String.fromCharCode(((c & 0x1f) << 6) | (this.get(i++) & 0x3f))
+      else s += String.fromCharCode(((c & 0x0f) << 12) | ((this.get(i++) & 0x3f) << 6) | (this.get(i++) & 0x3f))
     }
     return s
   }
@@ -386,13 +381,9 @@ export class ASN1 {
       case 0x02: // INTEGER
         return this.stream.parseInteger(content, content + len)
       case 0x03: // BIT_STRING
-        return this.sub
-          ? '(' + this.sub.length + ' elem)'
-          : this.stream.parseBitString(content, content + len, maxLength)
+        return this.sub ? '(' + this.sub.length + ' elem)' : this.stream.parseBitString(content, content + len, maxLength)
       case 0x04: // OCTET_STRING
-        return this.sub
-          ? '(' + this.sub.length + ' elem)'
-          : this.stream.parseOctetString(content, content + len, maxLength)
+        return this.sub ? '(' + this.sub.length + ' elem)' : this.stream.parseOctetString(content, content + len, maxLength)
       //case 0x05: // NULL
       case 0x06: // OBJECT_IDENTIFIER
         return this.stream.parseOID(content, content + len, maxLength)
@@ -445,12 +436,7 @@ export class ASN1 {
     if (this.length >= 0) s += '+'
     s += this.length
     if (this.tag.tagConstructed) s += ' (constructed)'
-    else if (
-      this.tag.isUniversal() &&
-      (this.tag.tagNumber == 0x03 || this.tag.tagNumber == 0x04) &&
-      this.sub !== null
-    )
-      s += ' (encapsulates)'
+    else if (this.tag.isUniversal() && (this.tag.tagNumber == 0x03 || this.tag.tagNumber == 0x04) && this.sub !== null) s += ' (encapsulates)'
     s += '\n'
     if (this.sub !== null) {
       indent += '  '
@@ -503,8 +489,7 @@ export class ASN1 {
         // definite length
         const end = start + len
         while (stream.pos < end) sub[sub.length] = ASN1.decode(stream)
-        if (stream.pos != end)
-          throw 'Content size is not correct for container starting at offset ' + start
+        if (stream.pos != end) throw 'Content size is not correct for container starting at offset ' + start
       } else {
         // undefined length
         try {
@@ -525,12 +510,10 @@ export class ASN1 {
     } else if (tag.isUniversal() && (tag.tagNumber == 0x03 || tag.tagNumber == 0x04)) {
       // sometimes BitString and OctetString are used to encapsulate ASN.1
       try {
-        if (tag.tagNumber == 0x03)
-          if (stream.get() != 0) throw 'BIT STRINGs with unused bits cannot encapsulate.'
+        if (tag.tagNumber == 0x03) if (stream.get() != 0) throw 'BIT STRINGs with unused bits cannot encapsulate.'
         getSub()
         if (sub) {
-          for (let i = 0; i < (sub as ASN1[]).length; ++i)
-            if ((sub as ASN1[])[i].tag.isEOC()) throw 'EOC is not supposed to be actual content.'
+          for (let i = 0; i < (sub as ASN1[]).length; ++i) if ((sub as ASN1[])[i].tag.isEOC()) throw 'EOC is not supposed to be actual content.'
         }
       } catch (e) {
         // but silently ignore when they don't
@@ -538,8 +521,7 @@ export class ASN1 {
       }
     }
     if (sub === null) {
-      if (len === null)
-        throw "We can't skip over an invalid tag with undefined length at offset " + start
+      if (len === null) throw "We can't skip over an invalid tag with undefined length at offset " + start
       stream.pos = start + Math.abs(len)
     }
     return new ASN1(streamStart, header, len!, tag, sub ? (sub! as ASN1[]) : undefined)

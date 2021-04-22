@@ -58,7 +58,7 @@
     "genloc": "java -classpath swagger-codegen-generators.jar io.swagger.codegen.v3.cli.SwaggerCodegen generate -i http://127.0.0.1:16043/v3/api-docs -l typescript --additional-properties classPrefix=icc skipPathPrefix=/rest/v1 -o ./icc-api/",
     "gendev": "java -classpath swagger-codegen-generators.jar io.swagger.codegen.v3.cli.SwaggerCodegen generate -i https://kraken.icure.dev/v3/api-docs -l typescript --additional-properties classPrefix=icc skipPathPrefix=/rest/v1 -o ./icc-api/",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "eslint": "eslint src/*",
+    "eslint": "eslint icc-api/* icc-x-api/*",
     "build": "tsc",
     "prepare": "rimraf dist && npm run build && jq '{name:.name, version:.version, description:.description, main:.main, types:.types, dependencies:.dependencies, author:.author, license:.license, bugs:.bugs, homepage:.homepage}' < package.json > dist/package.json",
     "publish": "npm run prepare && cd dist && npm publish && cd ..",
@@ -67,11 +67,6 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/taktik/icc-api.git"
-  },
-  "prettier": {
-    "semi": false,
-    "printWidth": 100,
-    "singleQuote": true
   },
   "author": "Taktik sa - B12 Consulting",
   "license": "MIT",

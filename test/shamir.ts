@@ -40,9 +40,7 @@ describe('Shamir combine', () => {
 
     for (let i = 0; i < 4; i++) {
       for (let j = i + 1; j < 5; j++) {
-        expect(
-          new ShamirClass(crypto).combine(shares.filter((x, idx) => idx !== i && idx !== j))
-        ).to.equal(data)
+        expect(new ShamirClass(crypto).combine(shares.filter((x, idx) => idx !== i && idx !== j))).to.equal(data)
       }
     }
   })
@@ -60,9 +58,7 @@ describe('Shamir combine', () => {
 
     for (let i = 0; i < 4; i++) {
       for (let j = i + 1; j < 5; j++) {
-        expect(
-          new ShamirClass(crypto).combine(shares.filter((x, idx) => idx === i && idx === j))
-        ).to.equal('')
+        expect(new ShamirClass(crypto).combine(shares.filter((x, idx) => idx === i && idx === j))).to.equal('')
       }
     }
   })

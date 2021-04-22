@@ -14,54 +14,15 @@ export class ShamirClass {
     // Primitive polynomials (in decimal form) for Galois Fields GF(2^n), for 2 <= n <= 30
     // The index of each term in the array corresponds to the n for that polynomial
     // i.e. to get the polynomial for n=16, use primitivePolynomials[16]
-    primitivePolynomials: [
-      null,
-      null,
-      1,
-      3,
-      3,
-      5,
-      3,
-      3,
-      29,
-      17,
-      9,
-      5,
-      83,
-      27,
-      43,
-      3,
-      45,
-      9,
-      39,
-      39,
-      9,
-      5,
-      3,
-      33,
-      27,
-      9,
-      71,
-      39,
-      9,
-      5,
-      83,
-    ],
+    primitivePolynomials: [null, null, 1, 3, 3, 5, 3, 3, 29, 17, 9, 5, 83, 27, 43, 3, 45, 9, 39, 39, 9, 5, 3, 33, 27, 9, 71, 39, 9, 5, 83],
     // warning for insecure PRNG
-    warning:
-      'WARNING:\nA secure random number generator was not found.\nUsing Math.random(), which is NOT cryptographically strong!',
+    warning: 'WARNING:\nA secure random number generator was not found.\nUsing Math.random(), which is NOT cryptographically strong!',
     logs: [] as Array<number>,
     exps: [] as Array<number>,
   }
   private crypto: Crypto
 
-  constructor(
-    crypto: Crypto = typeof window !== 'undefined'
-      ? window.crypto
-      : typeof self !== 'undefined'
-      ? self.crypto
-      : ({} as Crypto)
-  ) {
+  constructor(crypto: Crypto = typeof window !== 'undefined' ? window.crypto : typeof self !== 'undefined' ? self.crypto : ({} as Crypto)) {
     this.crypto = crypto
   }
 
@@ -161,11 +122,7 @@ export class ShamirClass {
     }
 
     if (numShares % 1 !== 0 || numShares < 2) {
-      throw new Error(
-        'Number of shares must be an integer between 2 and 2^bits-1 (' +
-          this.config.max +
-          '), inclusive.'
-      )
+      throw new Error('Number of shares must be an integer between 2 and 2^bits-1 (' + this.config.max + '), inclusive.')
     }
     if (numShares > this.config.max) {
       var neededBits = Math.ceil(Math.log(numShares + 1) / Math.LN2)
@@ -180,11 +137,7 @@ export class ShamirClass {
       )
     }
     if (threshold % 1 !== 0 || threshold < 2) {
-      throw new Error(
-        'Threshold number of shares must be an integer between 2 and 2^bits-1 (' +
-          this.config.max +
-          '), inclusive.'
-      )
+      throw new Error('Threshold number of shares must be an integer between 2 and 2^bits-1 (' + this.config.max + '), inclusive.')
     }
     if (threshold > this.config.max) {
       var neededBits = Math.ceil(Math.log(threshold + 1) / Math.LN2)
@@ -211,12 +164,7 @@ export class ShamirClass {
       }
     }
     const padding = this.config.max.toString(this.config.radix).length
-    return y.map(
-      (b, idx) =>
-        this.config.bits.toString(16).toUpperCase() +
-        this.padLeft(x[idx], padding) +
-        this.bin2hex(b)
-    )
+    return y.map((b, idx) => this.config.bits.toString(16).toUpperCase() + this.padLeft(x[idx], padding) + this.bin2hex(b))
   }
 
   // This is the basic polynomial generation and evaluation function
@@ -260,13 +208,7 @@ export class ShamirClass {
   processShare(share: string) {
     const bits = parseInt(share[0], 16)
     if (bits && (bits % 1 !== 0 || bits < this.config.minBits || bits > this.config.maxBits)) {
-      throw new Error(
-        'Number of bits must be an integer between ' +
-          this.config.minBits +
-          ' and ' +
-          this.config.maxBits +
-          ', inclusive.'
-      )
+      throw new Error('Number of bits must be an integer between ' + this.config.minBits + ' and ' + this.config.maxBits + ', inclusive.')
     }
 
     const max = Math.pow(2, bits) - 1
@@ -274,9 +216,7 @@ export class ShamirClass {
 
     const id = parseInt(share.substr(1, idLength), this.config.radix)
     if (id % 1 !== 0 || id < 1 || id > max) {
-      throw new Error(
-        'Share id must be an integer between 1 and ' + this.config.max + ', inclusive.'
-      )
+      throw new Error('Share id must be an integer between 1 and ' + this.config.max + ', inclusive.')
     }
     share = share.substr(idLength + 1)
     if (!share.length) {
@@ -343,17 +283,11 @@ export class ShamirClass {
     const max = Math.pow(2, share['bits']) - 1
 
     if (id % 1 !== 0 || id < 1 || id > max) {
-      throw new Error(
-        'Share id must be an integer between 1 and ' + this.config.max + ', inclusive.'
-      )
+      throw new Error('Share id must be an integer between 1 and ' + this.config.max + ', inclusive.')
     }
 
     const padding = max.toString(this.config.radix).length
-    return (
-      this.config.bits.toString(16).toUpperCase() +
-      this.padLeft(id.toString(this.config.radix), padding) +
-      this._combine(id, shares)
-    )
+    return this.config.bits.toString(16).toUpperCase() + this.padLeft(id.toString(this.config.radix), padding) + this._combine(id, shares)
   }
 
   // Evaluate the Lagrange interpolation polynomial at x = `at`
@@ -381,10 +315,7 @@ export class ShamirClass {
           break
         }
         product =
-          (product +
-            this.config.logs[at ^ x[j]] -
-            this.config.logs[x[i] ^ x[j]] +
-            this.config.max) /* to make sure it's not negative */ %
+          (product + this.config.logs[at ^ x[j]] - this.config.logs[x[i] ^ x[j]] + this.config.max) /* to make sure it's not negative */ %
           this.config.max
       }
 

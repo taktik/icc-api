@@ -38,10 +38,7 @@ export function utf8_2ua(str: string): Uint8Array {
       utf8.set([0xc0 | (charcode >> 6), 0x80 | (charcode & 0x3f)], j)
       j += 2
     } else if (charcode < 0xd800 || charcode >= 0xe000) {
-      utf8.set(
-        [0xe0 | (charcode >> 12), 0x80 | ((charcode >> 6) & 0x3f), 0x80 | (charcode & 0x3f)],
-        j
-      )
+      utf8.set([0xe0 | (charcode >> 12), 0x80 | ((charcode >> 6) & 0x3f), 0x80 | (charcode & 0x3f)], j)
       j += 3
     } else {
       i++
@@ -49,15 +46,7 @@ export function utf8_2ua(str: string): Uint8Array {
       // subtracting 0x10000 and splitting the
       // 20 bits of 0x0-0xFFFFF into two halves
       charcode = 0x10000 + (((charcode & 0x3ff) << 10) | (str.charCodeAt(i) & 0x3ff))
-      utf8.set(
-        [
-          0xf0 | (charcode >> 18),
-          0x80 | ((charcode >> 12) & 0x3f),
-          0x80 | ((charcode >> 6) & 0x3f),
-          0x80 | (charcode & 0x3f),
-        ],
-        j
-      )
+      utf8.set([0xf0 | (charcode >> 18), 0x80 | ((charcode >> 12) & 0x3f), 0x80 | ((charcode >> 6) & 0x3f), 0x80 | (charcode & 0x3f)], j)
       j += 4
     }
   }
@@ -109,20 +98,14 @@ export function ua2utf8(_ua: Uint8Array | ArrayBuffer): string {
         // 1110 xxxx  10xx xxxx  10xx xxxx
         char2 = array[i++]
         char3 = array[i++]
-        out += String.fromCharCode(
-          ((c & 0x0f) << 12) | ((char2 & 0x3f) << 6) | ((char3 & 0x3f) << 0)
-        )
+        out += String.fromCharCode(((c & 0x0f) << 12) | ((char2 & 0x3f) << 6) | ((char3 & 0x3f) << 0))
         break
       case 15:
         // 1111 xxxx  10xx xxxx  10xx xxxx  10xx xxxx
         char2 = array[i++]
         char3 = array[i++]
         char4 = array[i++]
-        u =
-          ((c & 0x07) << 18) |
-          ((char2 & 0x3f) << 12) |
-          ((char3 & 0x3f) << 6) |
-          (((char4 & 0x3f) << 0) - 0x10000)
+        u = ((c & 0x07) << 18) | ((char2 & 0x3f) << 12) | ((char3 & 0x3f) << 6) | (((char4 & 0x3f) << 0) - 0x10000)
         out += String.fromCharCode(0xd800 + (u >> 10))
         out += String.fromCharCode(0xdc00 + (u & 1023))
         break
@@ -176,9 +159,7 @@ export function string2ab(s: string): ArrayBuffer {
 
 export function ua2ab(ua: Uint8Array): ArrayBuffer {
   const buffer = ua.buffer
-  return (buffer.byteLength > ua.byteLength
-    ? buffer.slice(0, ua.byteLength)
-    : buffer) as ArrayBuffer
+  return (buffer.byteLength > ua.byteLength ? buffer.slice(0, ua.byteLength) : buffer) as ArrayBuffer
 }
 
 export function b64_2ab(s: string): ArrayBuffer {
@@ -238,10 +219,7 @@ export function ua2b64Url(ua: Uint8Array | ArrayBuffer): string {
 }
 
 export function b64Url2ua(ua: string): ArrayBuffer {
-  return b64_2ua(
-    ua.replace(/-/g, '+').replace(/_/g, '/').replace(/=/g, '') +
-      (ua.length % 4 === 3 ? '=' : ua.length % 4 === 2 ? '==' : '')
-  )
+  return b64_2ua(ua.replace(/-/g, '+').replace(/_/g, '/').replace(/=/g, '') + (ua.length % 4 === 3 ? '=' : ua.length % 4 === 2 ? '==' : ''))
 }
 
 export function hex2string(hexStr: string): string {

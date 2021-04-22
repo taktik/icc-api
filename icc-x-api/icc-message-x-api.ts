@@ -45,8 +45,7 @@ export class IccMessageXApi extends IccMessageApi {
     documentXApi: IccDocumentXApi,
     receiptXApi: IccReceiptXApi,
     patientApi: IccPatientXApi,
-    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    'undefined'
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !== 'undefined'
       ? window.fetch
       : typeof self !== 'undefined'
       ? self.fetch
@@ -85,14 +84,7 @@ export class IccMessageXApi extends IccMessageApi {
     const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto
       .extractDelegationsSFKs(patient, hcpId)
-      .then((secretForeignKeys) =>
-        this.crypto.initObjectDelegations(
-          message,
-          patient,
-          hcpId!,
-          secretForeignKeys.extractedKeys[0]
-        )
-      )
+      .then((secretForeignKeys) => this.crypto.initObjectDelegations(message, patient, hcpId!, secretForeignKeys.extractedKeys[0]))
       .then((initData) => {
         _.extend(message, {
           delegations: initData.delegations,
@@ -101,20 +93,11 @@ export class IccMessageXApi extends IccMessageApi {
         })
 
         let promise = Promise.resolve(message)
-        ;(user.autoDelegations
-          ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
-          : []
-        ).forEach(
+        ;(user.autoDelegations ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || []) : []).forEach(
           (delegateId) =>
             (promise = promise.then((helement) =>
               this.crypto
-                .extendedDelegationsAndCryptedForeignKeys(
-                  helement,
-                  patient,
-                  hcpId!,
-                  delegateId,
-                  initData.secretId
-                )
+                .extendedDelegationsAndCryptedForeignKeys(helement, patient, hcpId!, delegateId, initData.secretId)
                 .then((extraData) =>
                   _.extend(helement, {
                     delegations: extraData.delegations,

@@ -20,15 +20,7 @@ export class Payment {
   paid?: number
 }
 export namespace Payment {
-  export type PaymentTypeEnum =
-    | 'cash'
-    | 'wired'
-    | 'insurance'
-    | 'creditcard'
-    | 'debitcard'
-    | 'paypal'
-    | 'bitcoin'
-    | 'other'
+  export type PaymentTypeEnum = 'cash' | 'wired' | 'insurance' | 'creditcard' | 'debitcard' | 'paypal' | 'bitcoin' | 'other'
   export const PaymentTypeEnum = {
     Cash: 'cash' as PaymentTypeEnum,
     Wired: 'wired' as PaymentTypeEnum,

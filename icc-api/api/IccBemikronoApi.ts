@@ -23,11 +23,7 @@ export class IccBemikronoApi {
   headers: Array<XHR.Header>
   fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
-  constructor(
-    host: string,
-    headers: any,
-    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
-  ) {
+  constructor(host: string, headers: any, fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>) {
     this.host = host
     this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
@@ -49,11 +45,7 @@ export class IccBemikronoApi {
   appointmentsByDate(calendarDate: number): Promise<Array<Appointment>> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/be_mikrono/appointments/byDate/${encodeURIComponent(String(calendarDate))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/be_mikrono/appointments/byDate/${encodeURIComponent(String(calendarDate))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Appointment(it)))
@@ -67,11 +59,7 @@ export class IccBemikronoApi {
    * @param from
    * @param to
    */
-  appointmentsByPatient(
-    patientId: string,
-    from?: number,
-    to?: number
-  ): Promise<Array<Appointment>> {
+  appointmentsByPatient(patientId: string, from?: number, to?: number): Promise<Array<Appointment>> {
     const _body = null
 
     const _url =
@@ -91,17 +79,13 @@ export class IccBemikronoApi {
    *
    * @param body
    */
-  createAppointmentTypes(
-    body?: Array<MikronoAppointmentTypeRest>
-  ): Promise<Array<MikronoAppointmentTypeRest>> {
+  createAppointmentTypes(body?: Array<MikronoAppointmentTypeRest>): Promise<Array<MikronoAppointmentTypeRest>> {
     let _body = null
     _body = body
 
     const _url = this.host + `/be_mikrono/appointmentTypes` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new MikronoAppointmentTypeRest(it)))
       .catch((err) => this.handleError(err))
@@ -118,9 +102,7 @@ export class IccBemikronoApi {
 
     const _url = this.host + `/be_mikrono/appointments` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => JSON.parse(JSON.stringify(it))))
       .catch((err) => this.handleError(err))
@@ -137,9 +119,7 @@ export class IccBemikronoApi {
 
     const _url =
       this.host +
-      `/be_mikrono/notify/${encodeURIComponent(String(appointmentId))}/${encodeURIComponent(
-        String(action)
-      )}` +
+      `/be_mikrono/notify/${encodeURIComponent(String(appointmentId))}/${encodeURIComponent(String(action))}` +
       '?ts=' +
       new Date().getTime()
     const headers = this.headers
@@ -158,15 +138,9 @@ export class IccBemikronoApi {
     let _body = null
     _body = body
 
-    const _url =
-      this.host +
-      `/be_mikrono/user/${encodeURIComponent(String(userId))}/register` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/be_mikrono/user/${encodeURIComponent(String(userId))}/register` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new User(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -183,9 +157,7 @@ export class IccBemikronoApi {
 
     const _url = this.host + `/be_mikrono/sendMessage` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Unit(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -201,15 +173,9 @@ export class IccBemikronoApi {
     let _body = null
     _body = body
 
-    const _url =
-      this.host +
-      `/be_mikrono/user/${encodeURIComponent(String(userId))}/credentials` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/be_mikrono/user/${encodeURIComponent(String(userId))}/credentials` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new User(doc.body as JSON))
       .catch((err) => this.handleError(err))

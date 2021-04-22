@@ -164,13 +164,7 @@ export class Invoice {
   encryptedSelf?: string
 }
 export namespace Invoice {
-  export type InvoiceTypeEnum =
-    | 'patient'
-    | 'mutualfund'
-    | 'payingagency'
-    | 'insurance'
-    | 'efact'
-    | 'other'
+  export type InvoiceTypeEnum = 'patient' | 'mutualfund' | 'payingagency' | 'insurance' | 'efact' | 'other'
   export const InvoiceTypeEnum = {
     Patient: 'patient' as InvoiceTypeEnum,
     Mutualfund: 'mutualfund' as InvoiceTypeEnum,
@@ -193,15 +187,7 @@ export namespace Invoice {
     Total: 'total' as InterventionTypeEnum,
     Userfees: 'userfees' as InterventionTypeEnum,
   }
-  export type PaymentTypeEnum =
-    | 'cash'
-    | 'wired'
-    | 'insurance'
-    | 'creditcard'
-    | 'debitcard'
-    | 'paypal'
-    | 'bitcoin'
-    | 'other'
+  export type PaymentTypeEnum = 'cash' | 'wired' | 'insurance' | 'creditcard' | 'debitcard' | 'paypal' | 'bitcoin' | 'other'
   export const PaymentTypeEnum = {
     Cash: 'cash' as PaymentTypeEnum,
     Wired: 'wired' as PaymentTypeEnum,

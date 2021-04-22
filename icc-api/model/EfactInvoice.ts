@@ -32,12 +32,7 @@ export class EfactInvoice {
   relatedBatchYearMonth?: number
 }
 export namespace EfactInvoice {
-  export type ReasonEnum =
-    | 'Chimiotherapy'
-    | 'ProfessionalDisease'
-    | 'WorkAccident'
-    | 'Accident'
-    | 'Other'
+  export type ReasonEnum = 'Chimiotherapy' | 'ProfessionalDisease' | 'WorkAccident' | 'Accident' | 'Other'
   export const ReasonEnum = {
     Chimiotherapy: 'Chimiotherapy' as ReasonEnum,
     ProfessionalDisease: 'ProfessionalDisease' as ReasonEnum,

@@ -70,15 +70,7 @@ export class InvoicingCode {
   encryptedSelf?: string
 }
 export namespace InvoicingCode {
-  export type PaymentTypeEnum =
-    | 'cash'
-    | 'wired'
-    | 'insurance'
-    | 'creditcard'
-    | 'debitcard'
-    | 'paypal'
-    | 'bitcoin'
-    | 'other'
+  export type PaymentTypeEnum = 'cash' | 'wired' | 'insurance' | 'creditcard' | 'debitcard' | 'paypal' | 'bitcoin' | 'other'
   export const PaymentTypeEnum = {
     Cash: 'cash' as PaymentTypeEnum,
     Wired: 'wired' as PaymentTypeEnum,

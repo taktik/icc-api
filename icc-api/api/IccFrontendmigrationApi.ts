@@ -18,11 +18,7 @@ export class IccFrontendmigrationApi {
   headers: Array<XHR.Header>
   fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
-  constructor(
-    host: string,
-    headers: any,
-    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
-  ) {
+  constructor(host: string, headers: any, fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>) {
     this.host = host
     this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
@@ -47,9 +43,7 @@ export class IccFrontendmigrationApi {
 
     const _url = this.host + `/frontendmigration` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new FrontEndMigration(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -63,11 +57,7 @@ export class IccFrontendmigrationApi {
   deleteFrontEndMigration(frontEndMigrationId: string): Promise<DocIdentifier> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/frontendmigration/${encodeURIComponent(String(frontEndMigrationId))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/frontendmigration/${encodeURIComponent(String(frontEndMigrationId))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => new DocIdentifier(doc.body as JSON))
@@ -82,11 +72,7 @@ export class IccFrontendmigrationApi {
   getFrontEndMigration(frontEndMigrationId: string): Promise<FrontEndMigration> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/frontendmigration/${encodeURIComponent(String(frontEndMigrationId))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/frontendmigration/${encodeURIComponent(String(frontEndMigrationId))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new FrontEndMigration(doc.body as JSON))
@@ -101,11 +87,7 @@ export class IccFrontendmigrationApi {
   getFrontEndMigrationByName(frontEndMigrationName: string): Promise<Array<FrontEndMigration>> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/frontendmigration/byName/${encodeURIComponent(String(frontEndMigrationName))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/frontendmigration/byName/${encodeURIComponent(String(frontEndMigrationName))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new FrontEndMigration(it)))
@@ -137,9 +119,7 @@ export class IccFrontendmigrationApi {
 
     const _url = this.host + `/frontendmigration` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new FrontEndMigration(doc.body as JSON))
       .catch((err) => this.handleError(err))

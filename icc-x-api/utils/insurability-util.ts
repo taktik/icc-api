@@ -8,10 +8,7 @@ export function isBIM(ct1: number | string, ct2: number | string): boolean {
 
 export function patientIsBIM(patient: Patient) {
   // FIXME this doesn't check the date of the insurability. It is related to the idea of having only on insurability at a time.
-  return isBIM(
-    _.get(patient, 'insurabilities[0].parameters.tc1'),
-    _.get(patient, 'insurabilities[0].parameters.tc2')
-  )
+  return isBIM(_.get(patient, 'insurabilities[0].parameters.tc1'), _.get(patient, 'insurabilities[0].parameters.tc2'))
 }
 
 export function isPatientPaymentByIo(patient: Patient) {

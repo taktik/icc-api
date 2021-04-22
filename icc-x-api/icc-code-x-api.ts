@@ -15,8 +15,7 @@ export class IccCodeXApi extends IccCodeApi {
   constructor(
     host: string,
     headers: { [key: string]: string },
-    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    'undefined'
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !== 'undefined'
       ? window.fetch
       : typeof self !== 'undefined'
       ? self.fetch
@@ -69,12 +68,7 @@ export class IccCodeXApi extends IccCodeApi {
       _.sortBy(
         _.values(
           _.reduce(
-            _.fromPairs(
-              listOfCodes.map((code) => [
-                code,
-                _.toPairs(this.icpc2).find(([k]) => k === code.substr(0, 1).toUpperCase()),
-              ])
-            ),
+            _.fromPairs(listOfCodes.map((code) => [code, _.toPairs(this.icpc2).find(([k]) => k === code.substr(0, 1).toUpperCase())])),
             (acc: any, pairOfRangeAndIcdInfo, code) => {
               if (!pairOfRangeAndIcdInfo) {
                 return acc

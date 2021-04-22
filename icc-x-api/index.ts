@@ -1,10 +1,4 @@
-import {
-  IccAuthApi,
-  IccEntityrefApi,
-  IccGroupApi,
-  IccInsuranceApi,
-  IccPatientApi,
-} from '../icc-api'
+import { IccAuthApi, IccEntityrefApi, IccGroupApi, IccInsuranceApi, IccPatientApi } from '../icc-api'
 import { IccUserXApi } from './icc-user-x-api'
 import { IccCryptoXApi } from './icc-crypto-x-api'
 import { IccContactXApi } from './icc-contact-x-api'
@@ -44,9 +38,7 @@ export * from './utils'
 export const apiHeaders = function (username: string, password: string) {
   return {
     Authorization: `Basic ${
-      typeof btoa !== 'undefined'
-        ? btoa(`${username}:${password}`)
-        : Buffer.from(`${username}:${password}`).toString('base64')
+      typeof btoa !== 'undefined' ? btoa(`${username}:${password}`) : Buffer.from(`${username}:${password}`).toString('base64')
     }`,
   }
 }
@@ -55,13 +47,8 @@ export const Api = function (
   host: string,
   username: string,
   password: string,
-  crypto: Crypto = typeof window !== 'undefined'
-    ? window.crypto
-    : typeof self !== 'undefined'
-    ? self.crypto
-    : ({} as Crypto),
-  fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-  'undefined'
+  crypto: Crypto = typeof window !== 'undefined' ? window.crypto : typeof self !== 'undefined' ? self.crypto : ({} as Crypto),
+  fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !== 'undefined'
     ? window.fetch
     : typeof self !== 'undefined'
     ? self.fetch
@@ -72,13 +59,7 @@ export const Api = function (
   const entityReferenceApi = new IccEntityrefApi(host, headers, fetchImpl)
   const userApi = new IccUserXApi(host, headers, fetchImpl)
   const healthcarePartyApi = new IccHcpartyXApi(host, headers, fetchImpl)
-  const cryptoApi = new IccCryptoXApi(
-    host,
-    headers,
-    healthcarePartyApi,
-    new IccPatientApi(host, headers, fetchImpl),
-    crypto
-  )
+  const cryptoApi = new IccCryptoXApi(host, headers, healthcarePartyApi, new IccPatientApi(host, headers, fetchImpl), crypto)
   const accessLogApi = new IccAccesslogXApi(host, headers, cryptoApi, fetchImpl)
   const contactApi = new IccContactXApi(host, headers, cryptoApi, fetchImpl)
   const formApi = new IccFormXApi(host, headers, cryptoApi, fetchImpl)

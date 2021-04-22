@@ -14,8 +14,7 @@ export class IccHelementXApi extends IccHelementApi {
     host: string,
     headers: { [key: string]: string },
     crypto: IccCryptoXApi,
-    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    'undefined'
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !== 'undefined'
       ? window.fetch
       : typeof self !== 'undefined'
       ? self.fetch
@@ -47,9 +46,7 @@ export class IccHelementXApi extends IccHelementApi {
       .extractPreferredSfk(patient, hcpId!, confidential)
       .then((key) => {
         if (!key) {
-          console.error(
-            `SFK cannot be found for HealthElement ${helement.id}. The health element will not be reachable from the patient side`
-          )
+          console.error(`SFK cannot be found for HealthElement ${helement.id}. The health element will not be reachable from the patient side`)
         }
 
         return this.crypto.initObjectDelegations(helement, patient, hcpId!, key)
@@ -62,20 +59,11 @@ export class IccHelementXApi extends IccHelementApi {
         })
 
         let promise = Promise.resolve(helement)
-        ;(user.autoDelegations
-          ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
-          : []
-        ).forEach(
+        ;(user.autoDelegations ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || []) : []).forEach(
           (delegateId) =>
             (promise = promise.then((helement) =>
               this.crypto
-                .extendedDelegationsAndCryptedForeignKeys(
-                  helement,
-                  patient,
-                  hcpId!,
-                  delegateId,
-                  initData.secretId
-                )
+                .extendedDelegationsAndCryptedForeignKeys(helement, patient, hcpId!, delegateId, initData.secretId)
                 .then((extraData) =>
                   _.extend(helement, {
                     delegations: extraData.delegations,
@@ -121,17 +109,12 @@ export class IccHelementXApi extends IccHelementApi {
                   return acc.concat([
                     {
                       hcpartyId: level.hcpartyId,
-                      extractedKeys: level.extractedKeys.filter(
-                        (key) =>
-                          !acc.some((previousLevel) => previousLevel.extractedKeys.includes(key))
-                      ),
+                      extractedKeys: level.extractedKeys.filter((key) => !acc.some((previousLevel) => previousLevel.extractedKeys.includes(key))),
                     },
                   ])
                 }, [] as Array<{ hcpartyId: string; extractedKeys: Array<string> }>)
                 .filter((l) => l.extractedKeys.length > 0)
-                .map(({ hcpartyId, extractedKeys }) =>
-                  this.findByHCPartyPatientSecretFKeys(hcpartyId, extractedKeys.join(','))
-                )
+                .map(({ hcpartyId, extractedKeys }) => this.findByHCPartyPatientSecretFKeys(hcpartyId, extractedKeys.join(',')))
             ).then((results) => _.uniqBy(_.flatMap(results), (x) => x.id))
           : Promise.resolve([])
       )
@@ -154,27 +137,15 @@ export class IccHelementXApi extends IccHelementApi {
       })
   }
 
-  findByHCPartyPatientSecretFKeys(
-    hcPartyId: string,
-    secretFKeys: string
-  ): Promise<Array<models.Contact> | any> {
-    return super
-      .findHealthElementsByHCPartyPatientForeignKeys(hcPartyId, secretFKeys)
-      .then((helements) => this.decrypt(hcPartyId, helements))
+  findByHCPartyPatientSecretFKeys(hcPartyId: string, secretFKeys: string): Promise<Array<models.Contact> | any> {
+    return super.findHealthElementsByHCPartyPatientForeignKeys(hcPartyId, secretFKeys).then((helements) => this.decrypt(hcPartyId, helements))
   }
 
-  decrypt(
-    hcpartyId: string,
-    hes: Array<models.HealthElement>
-  ): Promise<Array<models.HealthElement>> {
+  decrypt(hcpartyId: string, hes: Array<models.HealthElement>): Promise<Array<models.HealthElement>> {
     return Promise.all(
       hes.map((he) =>
         this.crypto
-          .extractKeysFromDelegationsForHcpHierarchy(
-            hcpartyId,
-            he.id!,
-            _.size(he.encryptionKeys) ? he.encryptionKeys! : he.delegations!
-          )
+          .extractKeysFromDelegationsForHcpHierarchy(hcpartyId, he.id!, _.size(he.encryptionKeys) ? he.encryptionKeys! : he.delegations!)
           .then(({ extractedKeys: sfks }) => {
             if (!sfks || !sfks.length) {
               console.log('Cannot decrypt helement', he.id)
@@ -191,11 +162,7 @@ export class IccHelementXApi extends IccHelementApi {
                           jsonContent = dec && ua2utf8(dec)
                           jsonContent && _.assign(he, JSON.parse(jsonContent))
                         } catch (e) {
-                          console.log(
-                            'Cannot parse he',
-                            he.id,
-                            jsonContent || '<- Invalid encoding'
-                          )
+                          console.log('Cannot parse he', he.id, jsonContent || '<- Invalid encoding')
                         }
                         resolve(he)
                       },
@@ -215,12 +182,7 @@ export class IccHelementXApi extends IccHelementApi {
   }
 
   // noinspection JSUnusedGlobalSymbols
-  serviceToHealthElement(
-    user: models.User,
-    patient: models.Patient,
-    heSvc: models.Service,
-    descr: string
-  ) {
+  serviceToHealthElement(user: models.User, patient: models.Patient, heSvc: models.Service, descr: string) {
     return this.newInstance(user, patient, {
       idService: heSvc.id,
       author: heSvc.author,

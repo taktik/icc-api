@@ -42,15 +42,7 @@ export class PatientHealthCareParty {
   encryptedSelf?: string
 }
 export namespace PatientHealthCareParty {
-  export type TypeEnum =
-    | 'doctor'
-    | 'referral'
-    | 'medicalhouse'
-    | 'retirementhome'
-    | 'hospital'
-    | 'other'
-    | 'referringphysician'
-    | 'referralHospital'
+  export type TypeEnum = 'doctor' | 'referral' | 'medicalhouse' | 'retirementhome' | 'hospital' | 'other' | 'referringphysician' | 'referralHospital'
   export const TypeEnum = {
     Doctor: 'doctor' as TypeEnum,
     Referral: 'referral' as TypeEnum,

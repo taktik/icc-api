@@ -78,36 +78,20 @@ export const SPECIALITIES: Array<string> = [
  * Translation keys for specialities.
  * @see SPECIALITIES
  */
-export const SPECIALITIES_KEYS: { [spec: string]: string } = _.fromPairs(
-  SPECIALITIES.map((spec) => [spec, 'hcp-form.SPECIALITIES.' + spec])
-)
+export const SPECIALITIES_KEYS: { [spec: string]: string } = _.fromPairs(SPECIALITIES.map((spec) => [spec, 'hcp-form.SPECIALITIES.' + spec]))
 
 export function isDoctor(nihii: string): boolean {
-  return (
-    !!nihii &&
-    nihii.length === 11 &&
-    nihii.startsWith('1') &&
-    !nihii.endsWith('005') &&
-    !nihii.endsWith('006')
-  )
+  return !!nihii && nihii.length === 11 && nihii.startsWith('1') && !nihii.endsWith('005') && !nihii.endsWith('006')
 }
 
 export function isDoctorAssistant(nihii: string): boolean {
-  return (
-    !!nihii &&
-    nihii.length === 11 &&
-    nihii.startsWith('1') &&
-    nihii.endsWith('005') &&
-    nihii.endsWith('006')
-  )
+  return !!nihii && nihii.length === 11 && nihii.startsWith('1') && nihii.endsWith('005') && nihii.endsWith('006')
 }
 
 export function getPhoneNumber(hcp: HealthcareParty, maxLength: number | undefined): number | null {
   const phoneNumbers = (hcp.addresses || []).map((a) => {
     const t = (a.telecoms || []).find(
-      (t: Telecom) =>
-        t.telecomType === Telecom.TelecomTypeEnum.Phone.toString() ||
-        t.telecomType === Telecom.TelecomTypeEnum.Mobile.toString()
+      (t: Telecom) => t.telecomType === Telecom.TelecomTypeEnum.Phone.toString() || t.telecomType === Telecom.TelecomTypeEnum.Mobile.toString()
     )
     let res = t && t.telecomNumber
     if (res && maxLength) {

@@ -20,11 +20,7 @@ export class IccDocumentApi {
   headers: Array<XHR.Header>
   fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
-  constructor(
-    host: string,
-    headers: any,
-    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
-  ) {
+  constructor(host: string, headers: any, fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>) {
     this.host = host
     this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
@@ -49,9 +45,7 @@ export class IccDocumentApi {
 
     const _url = this.host + `/document` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Document(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -65,11 +59,7 @@ export class IccDocumentApi {
   deleteAttachment(documentId: string): Promise<Document> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/document/${encodeURIComponent(String(documentId))}/attachment` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/document/${encodeURIComponent(String(documentId))}/attachment` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Document(doc.body as JSON))
@@ -84,11 +74,7 @@ export class IccDocumentApi {
   deleteDocument(documentIds: string): Promise<Array<DocIdentifier>> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/document/${encodeURIComponent(String(documentIds))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/document/${encodeURIComponent(String(documentIds))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
@@ -102,11 +88,7 @@ export class IccDocumentApi {
    * @param hcPartyId
    * @param secretFKeys
    */
-  findByTypeHCPartyMessageSecretFKeys(
-    documentTypeCode: string,
-    hcPartyId: string,
-    secretFKeys: string
-  ): Promise<Array<Document>> {
+  findByTypeHCPartyMessageSecretFKeys(documentTypeCode: string, hcPartyId: string, secretFKeys: string): Promise<Array<Document>> {
     const _body = null
 
     const _url =
@@ -114,9 +96,7 @@ export class IccDocumentApi {
       `/document/byTypeHcPartySecretForeignKeys` +
       '?ts=' +
       new Date().getTime() +
-      (documentTypeCode
-        ? '&documentTypeCode=' + encodeURIComponent(String(documentTypeCode))
-        : '') +
+      (documentTypeCode ? '&documentTypeCode=' + encodeURIComponent(String(documentTypeCode)) : '') +
       (hcPartyId ? '&hcPartyId=' + encodeURIComponent(String(hcPartyId)) : '') +
       (secretFKeys ? '&secretFKeys=' + encodeURIComponent(String(secretFKeys)) : '')
     const headers = this.headers
@@ -131,10 +111,7 @@ export class IccDocumentApi {
    * @param hcPartyId
    * @param secretFKeys
    */
-  findDocumentsByHCPartyPatientForeignKeys(
-    hcPartyId: string,
-    secretFKeys: string
-  ): Promise<Array<Document>> {
+  findDocumentsByHCPartyPatientForeignKeys(hcPartyId: string, secretFKeys: string): Promise<Array<Document>> {
     const _body = null
 
     const _url =
@@ -158,12 +135,7 @@ export class IccDocumentApi {
   findWithoutDelegation(limit?: number): Promise<Array<Document>> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/document/woDelegation` +
-      '?ts=' +
-      new Date().getTime() +
-      (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
+    const _url = this.host + `/document/woDelegation` + '?ts=' + new Date().getTime() + (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Document(it)))
@@ -178,11 +150,7 @@ export class IccDocumentApi {
   getDocument(documentId: string): Promise<Document> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/document/${encodeURIComponent(String(documentId))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/document/${encodeURIComponent(String(documentId))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Document(doc.body as JSON))
@@ -197,19 +165,12 @@ export class IccDocumentApi {
    * @param enckeys
    * @param fileName
    */
-  getDocumentAttachment(
-    documentId: string,
-    attachmentId: string,
-    enckeys?: string,
-    fileName?: string
-  ): Promise<ArrayBuffer> {
+  getDocumentAttachment(documentId: string, attachmentId: string, enckeys?: string, fileName?: string): Promise<ArrayBuffer> {
     const _body = null
 
     const _url =
       this.host +
-      `/document/${encodeURIComponent(String(documentId))}/attachment/${encodeURIComponent(
-        String(attachmentId)
-      )}` +
+      `/document/${encodeURIComponent(String(documentId))}/attachment/${encodeURIComponent(String(attachmentId))}` +
       '?ts=' +
       new Date().getTime() +
       (enckeys ? '&enckeys=' + encodeURIComponent(String(enckeys)) : '') +
@@ -228,11 +189,7 @@ export class IccDocumentApi {
   getDocumentByExternalUuid(externalUuid: string): Promise<Document> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/document/externaluuid/${encodeURIComponent(String(externalUuid))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/document/externaluuid/${encodeURIComponent(String(externalUuid))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Document(doc.body as JSON))
@@ -250,9 +207,7 @@ export class IccDocumentApi {
 
     const _url = this.host + `/document/batch` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Document(it)))
       .catch((err) => this.handleError(err))
@@ -266,11 +221,7 @@ export class IccDocumentApi {
   getDocumentsByExternalUuid(externalUuid: string): Promise<Array<Document>> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/document/externaluuid/${encodeURIComponent(String(externalUuid))}/all` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/document/externaluuid/${encodeURIComponent(String(externalUuid))}/all` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Document(it)))
@@ -288,9 +239,7 @@ export class IccDocumentApi {
 
     const _url = this.host + `/document` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Document(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -307,9 +256,7 @@ export class IccDocumentApi {
 
     const _url = this.host + `/document/batch` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Document(it)))
       .catch((err) => this.handleError(err))
@@ -322,11 +269,7 @@ export class IccDocumentApi {
    * @param documentId
    * @param enckeys
    */
-  setDocumentAttachment(
-    documentId: string,
-    enckeys?: string,
-    body?: ArrayBuffer
-  ): Promise<Document> {
+  setDocumentAttachment(documentId: string, enckeys?: string, body?: ArrayBuffer): Promise<Document> {
     let _body = null
     _body = body
 
@@ -337,9 +280,7 @@ export class IccDocumentApi {
       new Date().getTime() +
       (enckeys ? '&enckeys=' + encodeURIComponent(String(enckeys)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/octet-stream'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/octet-stream'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Document(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -361,9 +302,7 @@ export class IccDocumentApi {
       new Date().getTime() +
       (enckeys ? '&enckeys=' + encodeURIComponent(String(enckeys)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'multipart/form-data'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'multipart/form-data'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Document(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -380,9 +319,7 @@ export class IccDocumentApi {
 
     const _url = this.host + `/document/delegations` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new IcureStub(it)))
       .catch((err) => this.handleError(err))
@@ -395,11 +332,7 @@ export class IccDocumentApi {
    * @param documentId
    * @param enckeys
    */
-  setSafeDocumentAttachment(
-    documentId: string,
-    enckeys?: string,
-    body?: ArrayBuffer
-  ): Promise<Document> {
+  setSafeDocumentAttachment(documentId: string, enckeys?: string, body?: ArrayBuffer): Promise<Document> {
     let _body = null
     _body = body
 
@@ -411,9 +344,7 @@ export class IccDocumentApi {
       (documentId ? '&documentId=' + encodeURIComponent(String(documentId)) : '') +
       (enckeys ? '&enckeys=' + encodeURIComponent(String(enckeys)) : '')
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/octet-stream'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/octet-stream'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Document(doc.body as JSON))
       .catch((err) => this.handleError(err))

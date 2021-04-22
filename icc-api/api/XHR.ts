@@ -52,8 +52,7 @@ export namespace XHR {
     url: string,
     init: RequestInit,
     timeout = 10000,
-    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    'undefined'
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !== 'undefined'
       ? window.fetch
       : typeof self !== 'undefined'
       ? self.fetch
@@ -61,10 +60,7 @@ export namespace XHR {
   ): Promise<Response> {
     return new Promise((resolve, reject) => {
       // Set timeout timer
-      const timer = setTimeout(
-        () => reject({ message: 'Request timed out', status: 'Request timed out' }),
-        timeout
-      )
+      const timer = setTimeout(() => reject({ message: 'Request timed out', status: 'Request timed out' }), timeout)
       fetchImpl(url, init)
         .then((response) => {
           clearTimeout(timer)
@@ -82,22 +78,15 @@ export namespace XHR {
     url: string,
     headers: Array<Header> | null,
     data: string | any = '',
-    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
-    'undefined'
+    fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !== 'undefined'
       ? window.fetch
       : typeof self !== 'undefined'
       ? self.fetch
       : fetch,
     contentTypeOverride?: 'application/json' | 'text/plain' | 'application/octet-stream'
   ): Promise<Data> {
-    const contentType =
-      headers &&
-      headers.find((it) => (it.header ? it.header.toLowerCase() === 'content-type' : false))
-    const clientTimeout =
-      headers &&
-      headers.find((it) =>
-        it.header ? it.header.toUpperCase() === 'X-CLIENT-SIDE-TIMEOUT' : false
-      )
+    const contentType = headers && headers.find((it) => (it.header ? it.header.toLowerCase() === 'content-type' : false))
+    const clientTimeout = headers && headers.find((it) => (it.header ? it.header.toUpperCase() === 'X-CLIENT-SIDE-TIMEOUT' : false))
     const timeout = clientTimeout ? Number(clientTimeout.data) : 600000
     return fetchWithTimeout(
       url,
@@ -110,8 +99,7 @@ export namespace XHR {
               headers
                 .filter(
                   (h) =>
-                    (h.header.toLowerCase() !== 'content-type' ||
-                      h.data !== 'multipart/form-data') &&
+                    (h.header.toLowerCase() !== 'content-type' || h.data !== 'multipart/form-data') &&
                     h.header.toUpperCase() !== 'X-CLIENT-SIDE-TIMEOUT'
                 )
                 .reduce((acc: { [key: string]: string }, h) => {

@@ -18,11 +18,7 @@ export class IccCalendarItemTypeApi {
   headers: Array<XHR.Header>
   fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
-  constructor(
-    host: string,
-    headers: any,
-    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
-  ) {
+  constructor(host: string, headers: any, fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>) {
     this.host = host
     this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
@@ -47,9 +43,7 @@ export class IccCalendarItemTypeApi {
 
     const _url = this.host + `/calendarItemType` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new CalendarItemType(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -63,11 +57,7 @@ export class IccCalendarItemTypeApi {
   deleteCalendarItemType(calendarItemTypeIds: string): Promise<Array<DocIdentifier>> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/calendarItemType/${encodeURIComponent(String(calendarItemTypeIds))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/calendarItemType/${encodeURIComponent(String(calendarItemTypeIds))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
@@ -82,11 +72,7 @@ export class IccCalendarItemTypeApi {
   getCalendarItemType(calendarItemTypeId: string): Promise<CalendarItemType> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/calendarItemType/${encodeURIComponent(String(calendarItemTypeId))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/calendarItemType/${encodeURIComponent(String(calendarItemTypeId))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new CalendarItemType(doc.body as JSON))
@@ -132,9 +118,7 @@ export class IccCalendarItemTypeApi {
 
     const _url = this.host + `/calendarItemType` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new CalendarItemType(doc.body as JSON))
       .catch((err) => this.handleError(err))

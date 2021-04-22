@@ -20,11 +20,7 @@ export class IccClassificationTemplateApi {
   headers: Array<XHR.Header>
   fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
-  constructor(
-    host: string,
-    headers: any,
-    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
-  ) {
+  constructor(host: string, headers: any, fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>) {
     this.host = host
     this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
@@ -49,9 +45,7 @@ export class IccClassificationTemplateApi {
 
     const _url = this.host + `/classificationTemplate` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new ClassificationTemplate(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -65,11 +59,7 @@ export class IccClassificationTemplateApi {
   deleteClassificationTemplates(classificationTemplateIds: string): Promise<Array<DocIdentifier>> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/classificationTemplate/${encodeURIComponent(String(classificationTemplateIds))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/classificationTemplate/${encodeURIComponent(String(classificationTemplateIds))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
@@ -82,10 +72,7 @@ export class IccClassificationTemplateApi {
    * @param hcPartyId
    * @param secretFKeys
    */
-  findClassificationTemplatesByHCPartyPatientForeignKeys(
-    hcPartyId: string,
-    secretFKeys: string
-  ): Promise<Array<ClassificationTemplate>> {
+  findClassificationTemplatesByHCPartyPatientForeignKeys(hcPartyId: string, secretFKeys: string): Promise<Array<ClassificationTemplate>> {
     const _body = null
 
     const _url =
@@ -109,11 +96,7 @@ export class IccClassificationTemplateApi {
   getClassificationTemplate(classificationTemplateId: string): Promise<ClassificationTemplate> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/classificationTemplate/${encodeURIComponent(String(classificationTemplateId))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/classificationTemplate/${encodeURIComponent(String(classificationTemplateId))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new ClassificationTemplate(doc.body as JSON))
@@ -128,11 +111,7 @@ export class IccClassificationTemplateApi {
   getClassificationTemplateByIds(ids: string): Promise<Array<ClassificationTemplate>> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/classificationTemplate/byIds/${encodeURIComponent(String(ids))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/classificationTemplate/byIds/${encodeURIComponent(String(ids))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new ClassificationTemplate(it)))
@@ -146,11 +125,7 @@ export class IccClassificationTemplateApi {
    * @param startDocumentId An classification template document ID
    * @param limit Number of rows
    */
-  listClassificationTemplates(
-    startKey?: string,
-    startDocumentId?: string,
-    limit?: number
-  ): Promise<PaginatedListClassificationTemplate> {
+  listClassificationTemplates(startKey?: string, startDocumentId?: string, limit?: number): Promise<PaginatedListClassificationTemplate> {
     const _body = null
 
     const _url =
@@ -178,9 +153,7 @@ export class IccClassificationTemplateApi {
 
     const _url = this.host + `/classificationTemplate` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new ClassificationTemplate(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -192,22 +165,14 @@ export class IccClassificationTemplateApi {
    * @param body
    * @param classificationTemplateId
    */
-  newClassificationTemplateDelegations(
-    classificationTemplateId: string,
-    body?: Array<Delegation>
-  ): Promise<ClassificationTemplate> {
+  newClassificationTemplateDelegations(classificationTemplateId: string, body?: Array<Delegation>): Promise<ClassificationTemplate> {
     let _body = null
     _body = body
 
     const _url =
-      this.host +
-      `/classificationTemplate/${encodeURIComponent(String(classificationTemplateId))}/delegate` +
-      '?ts=' +
-      new Date().getTime()
+      this.host + `/classificationTemplate/${encodeURIComponent(String(classificationTemplateId))}/delegate` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new ClassificationTemplate(doc.body as JSON))
       .catch((err) => this.handleError(err))

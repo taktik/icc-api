@@ -20,11 +20,7 @@ export class IccClassificationApi {
   headers: Array<XHR.Header>
   fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
 
-  constructor(
-    host: string,
-    headers: any,
-    fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
-  ) {
+  constructor(host: string, headers: any, fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>) {
     this.host = host
     this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
@@ -49,9 +45,7 @@ export class IccClassificationApi {
 
     const _url = this.host + `/classification` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Classification(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -65,11 +59,7 @@ export class IccClassificationApi {
   deleteClassifications(classificationIds: string): Promise<Array<DocIdentifier>> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/classification/${encodeURIComponent(String(classificationIds))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/classification/${encodeURIComponent(String(classificationIds))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
@@ -82,10 +72,7 @@ export class IccClassificationApi {
    * @param hcPartyId
    * @param secretFKeys
    */
-  findClassificationsByHCPartyPatientForeignKeys(
-    hcPartyId: string,
-    secretFKeys: string
-  ): Promise<Array<Classification>> {
+  findClassificationsByHCPartyPatientForeignKeys(hcPartyId: string, secretFKeys: string): Promise<Array<Classification>> {
     const _body = null
 
     const _url =
@@ -109,11 +96,7 @@ export class IccClassificationApi {
   getClassification(classificationId: string): Promise<Classification> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/classification/${encodeURIComponent(String(classificationId))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/classification/${encodeURIComponent(String(classificationId))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Classification(doc.body as JSON))
@@ -128,11 +111,7 @@ export class IccClassificationApi {
   getClassificationByHcPartyId(ids: string): Promise<Array<Classification>> {
     const _body = null
 
-    const _url =
-      this.host +
-      `/classification/byIds/${encodeURIComponent(String(ids))}` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/classification/byIds/${encodeURIComponent(String(ids))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Classification(it)))
@@ -150,9 +129,7 @@ export class IccClassificationApi {
 
     const _url = this.host + `/classification` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Classification(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -164,22 +141,13 @@ export class IccClassificationApi {
    * @param body
    * @param classificationId
    */
-  newClassificationDelegations(
-    classificationId: string,
-    body?: Array<Delegation>
-  ): Promise<Classification> {
+  newClassificationDelegations(classificationId: string, body?: Array<Delegation>): Promise<Classification> {
     let _body = null
     _body = body
 
-    const _url =
-      this.host +
-      `/classification/${encodeURIComponent(String(classificationId))}/delegate` +
-      '?ts=' +
-      new Date().getTime()
+    const _url = this.host + `/classification/${encodeURIComponent(String(classificationId))}/delegate` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Classification(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -196,9 +164,7 @@ export class IccClassificationApi {
 
     const _url = this.host + `/classification/delegations` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    headers = headers
-      .filter((h) => h.header !== 'Content-Type')
-      .concat(new XHR.Header('Content-Type', 'application/json'))
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new IcureStub(it)))
       .catch((err) => this.handleError(err))
