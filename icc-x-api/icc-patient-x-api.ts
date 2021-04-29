@@ -51,7 +51,7 @@ export class IccPatientXApi extends IccPatientApi {
     documentApi: IccDocumentXApi,
     hcpartyApi: IccHcpartyXApi,
     classificationApi: IccClassificationXApi,
-    calendarItemaApi: IccCalendarItemXApi,
+    calendarItemApi: IccCalendarItemXApi,
     encryptedKeys: Array<string> = ["note"],
     fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
     "undefined"
@@ -69,8 +69,7 @@ export class IccPatientXApi extends IccPatientApi {
     this.hcpartyApi = hcpartyApi
     this.documentApi = documentApi
     this.classificationApi = classificationApi
-    this.calendarItemApi = calendarItemaApi
-
+    this.calendarItemApi = calendarItemApi
     this.encryptedKeys = encryptedKeys
   }
 
