@@ -147,7 +147,9 @@ export class IccContactXApi extends iccContactApi {
         })
       )
       ;(user.autoDelegations
-        ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
+        ? (user.autoDelegations.all || [])
+            .concat(user.autoDelegations.medicalInformation || [])
+            .concat(user.autoDelegations.anonymousMedicalInformation || [])
         : []
       ).forEach(
         delegateId =>
