@@ -336,11 +336,16 @@ function toInvoiceItem(
   const invoiceItem = new InvoiceItem({})
   invoiceItem.codeNomenclature = Number(invoicingCode.tarificationId!!.split("|")[1])
   invoiceItem.dateCode = dateEncode(toMoment(invoicingCode.dateCode!!)!!.toDate())
-  if (invoiceItem.codeNomenclature === 109594) {// Prétrajet de soins diabète
-    invoiceItem.endDateCode = dateEncode(
-      toMoment(invoicingCode.dateCode!!)!!
-        .endOf("month")
-        .toDate());
+  // Only applies to flatrate invoicing
+  if(flatrateInvoice) {
+    invoiceItem.endDateCode =
+      invoiceItem.codeNomenclature === 109594 // Diabetes pre-care pathways
+        ? dateEncode(toMoment(invoicingCode.dateCode!!)!!.toDate())
+        : dateEncode(
+        toMoment(invoicingCode.dateCode!!)!!
+          .endOf("month")
+          .toDate()
+        )
   }
   invoiceItem.doctorIdentificationNumber = nihiiHealthcareProvider
   invoiceItem.doctorSupplement = Number(((invoicingCode.doctorSupplement || 0) * 100).toFixed(0))
