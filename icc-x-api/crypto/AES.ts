@@ -1,5 +1,4 @@
 import { utils } from './utils'
-import { debuglog } from 'util'
 import { ua2hex } from '../utils/binary-utils'
 
 export class AESUtils {
@@ -23,7 +22,7 @@ export class AESUtils {
     this._debug = false
   }
 
-  encrypt(cryptoKey: CryptoKey, plainData: ArrayBuffer | Uint8Array, rawKey = '<NA>') {
+  encrypt(cryptoKey: CryptoKey, plainData: ArrayBuffer | Uint8Array, rawKey = '<NA>'): Promise<ArrayBuffer> {
     return new Promise((resolve: (value: ArrayBuffer) => any, reject: (reason: any) => any) => {
       if (plainData instanceof Uint8Array) {
         const buffer = plainData.buffer
@@ -43,7 +42,7 @@ export class AESUtils {
           plainData
         )
         .then(
-          (cipherData) => resolve(utils.appendBuffer(aesAlgorithmEncrypt.iv!.buffer! as ArrayBuffer, cipherData)),
+          (cipherData) => resolve(utils.appendBuffer(aesAlgorithmEncrypt.iv.buffer as ArrayBuffer, cipherData)),
           (err) => reject('AES encryption failed: ' + err)
         )
     })
@@ -56,19 +55,15 @@ export class AESUtils {
    * @param rawKey
    * @returns {Promise} will be ArrayBuffer
    */
-  decrypt(cryptoKey: CryptoKey, encryptedData: ArrayBuffer | Uint8Array, rawKey = '<NA>') {
+  decrypt(cryptoKey: CryptoKey, encryptedData: ArrayBuffer | Uint8Array, rawKey = '<NA>'): Promise<ArrayBuffer> {
     return new Promise((resolve: (value: ArrayBuffer) => any, reject: (reason: any) => any) => {
       if (!cryptoKey) {
         return reject('No crypto key provided for decryption')
       }
-      if (encryptedData instanceof ArrayBuffer) {
-        var encryptedDataUnit8 = new Uint8Array(encryptedData)
-      } else {
-        var encryptedDataUnit8 = encryptedData
-      }
+      const encryptedDataUint8 = encryptedData instanceof ArrayBuffer ? new Uint8Array(encryptedData) : encryptedData
       const aesAlgorithmEncrypt = {
         name: this.aesAlgorithmEncryptName,
-        iv: encryptedDataUnit8.subarray(0, this.ivLength),
+        iv: encryptedDataUint8.subarray(0, this.ivLength),
 
         /*
          * IF THIS BIT OF CODE PRODUCES A DOMEXCEPTION CODE 0 ERROR, IT MIGHT BE RELATED TO THIS:
@@ -89,7 +84,7 @@ export class AESUtils {
       }
       this._debug && console.log(`decrypt with ${rawKey}`)
       this.crypto.subtle
-        .decrypt(aesAlgorithmEncrypt, cryptoKey, encryptedDataUnit8.subarray(this.ivLength, encryptedDataUnit8.length))
+        .decrypt(aesAlgorithmEncrypt, cryptoKey, encryptedDataUint8.subarray(this.ivLength, encryptedDataUint8.length))
         .then(resolve, (err) => {
           reject('AES decryption failed: ' + err)
         })
@@ -103,7 +98,9 @@ export class AESUtils {
    * @param toHex boolean, if true, it returns hex String
    * @returns {Promise} either Hex string or CryptoKey
    */
-  generateCryptoKey(toHex: boolean) {
+  generateCryptoKey(toHex: false): Promise<CryptoKey>
+  generateCryptoKey(toHex: true): Promise<string>
+  generateCryptoKey(toHex: boolean): Promise<string | CryptoKey> {
     return new Promise((resolve: (value: CryptoKey | string) => any, reject: (reason: any) => any) => {
       const extractable = true
       const keyUsages: KeyUsage[] = ['decrypt', 'encrypt']
@@ -119,7 +116,7 @@ export class AESUtils {
   }
 
   // noinspection JSMethodCanBeStatic
-  generateIV(ivByteLength: number) {
+  generateIV(ivByteLength: number): Uint8Array {
     return new Uint8Array(this.crypto.getRandomValues(new Uint8Array(ivByteLength)))
   }
 
@@ -131,7 +128,9 @@ export class AESUtils {
    * @param format will be 'raw' or 'jwk'
    * @returns {Promise} will the AES Key
    */
-  exportKey(cryptoKey: CryptoKey, format: string) {
+  exportKey(cryptoKey: CryptoKey, format: 'raw'): Promise<ArrayBuffer>
+  exportKey(cryptoKey: CryptoKey, format: 'jwk'): Promise<JsonWebKey>
+  exportKey(cryptoKey: CryptoKey, format: string): Promise<ArrayBuffer | JsonWebKey> {
     return new Promise((resolve: (value: ArrayBuffer | JsonWebKey) => any, reject: (reason: any) => any) => {
       return this.crypto.subtle.exportKey(format, cryptoKey).then(resolve, reject)
     })
@@ -149,7 +148,7 @@ export class AESUtils {
    * @param aesKey
    * @returns {*}
    */
-  importKey(format: string, aesKey: JsonWebKey | ArrayBuffer | Uint8Array) {
+  importKey(format: string, aesKey: JsonWebKey | ArrayBuffer | Uint8Array): Promise<CryptoKey> {
     return new Promise((resolve: (value: CryptoKey) => any, reject: (reason: any) => any) => {
       const extractable = true
       const keyUsages: KeyUsage[] = ['decrypt', 'encrypt']
