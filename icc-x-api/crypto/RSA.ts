@@ -1,7 +1,6 @@
 export class RSAUtils {
   /********* RSA Config **********/
   //TODO bigger modulus
-  //TODO check the randomness of the implementations. Normally RSA must have some notions of randomness. This might be done through WebCrypto source codes
   //TODO PSS for signing
   rsaParams: any = { name: 'RSA-OAEP' }
   // RSA params for 'import' and 'generate' function.
@@ -25,11 +24,11 @@ export class RSAUtils {
    * R
    * @returns {Promise} will be {publicKey: CryptoKey, privateKey: CryptoKey}
    */
-  generateKeyPair() {
+  generateKeyPair(): Promise<CryptoKeyPair> {
     const extractable = true
     const keyUsages: KeyUsage[] = ['decrypt', 'encrypt']
 
-    return new Promise((resolve: (value: CryptoKey | CryptoKeyPair) => any, reject) => {
+    return new Promise((resolve: (value: CryptoKeyPair) => any, reject) => {
       this.crypto.subtle.generateKey(this.rsaHashedParams, extractable, keyUsages).then(resolve, reject)
     })
   }
@@ -45,7 +44,21 @@ export class RSAUtils {
    * @param pubKeyFormat will be 'spki' or 'jwk'
    * @returns {Promise} will the AES Key
    */
-  exportKeys(keyPair: { publicKey: CryptoKey; privateKey: CryptoKey }, privKeyFormat: string, pubKeyFormat: string) {
+  exportKeys(
+    keyPair: { publicKey: CryptoKey; privateKey: CryptoKey },
+    privKeyFormat: 'jwk',
+    pubKeyFormat: 'jwk'
+  ): Promise<{ publicKey: JsonWebKey; privateKey: JsonWebKey }>
+  exportKeys(
+    keyPair: { publicKey: CryptoKey; privateKey: CryptoKey },
+    privKeyFormat: 'pkcs8',
+    pubKeyFormat: 'spki'
+  ): Promise<{ publicKey: ArrayBuffer; privateKey: ArrayBuffer }>
+  exportKeys(
+    keyPair: { publicKey: CryptoKey; privateKey: CryptoKey },
+    privKeyFormat: string,
+    pubKeyFormat: string
+  ): Promise<{ publicKey: JsonWebKey | ArrayBuffer; privateKey: JsonWebKey | ArrayBuffer }> {
     const pubPromise = this.crypto.subtle.exportKey(pubKeyFormat, keyPair.publicKey)
     const privPromise = this.crypto.subtle.exportKey(privKeyFormat, keyPair.privateKey)
 
