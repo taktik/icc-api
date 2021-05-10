@@ -74,7 +74,7 @@ export class IccBekmehrXApi extends iccBeKmehrApi {
             .then(res => (servicesPatcher ? servicesPatcher(res) : Promise.resolve(res)))
             .then(res => send("decryptResponse", msg.uuid, res))
         }
-      } else if ((msg.command = "progress")) {
+      } else if ((msg.command === "progress")) {
         if (progressCallback && msg.body && msg.body[0]) {
           progressCallback(msg.body[0].progress)
         }
