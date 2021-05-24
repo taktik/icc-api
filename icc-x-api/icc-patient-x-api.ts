@@ -460,8 +460,14 @@ export class IccPatientXApi extends iccPatientApi {
     limit?: number,
     sortDirection?: string
   ): Promise<models.PatientPaginatedList | any> {
-    return super
-      .listPatientsByHcParty(hcPartyId, sortField, startKey, startDocumentId, limit, sortDirection)
+    return super.listPatientsByHcParty(
+      hcPartyId,
+      sortField,
+      startKey,
+      startDocumentId,
+      limit,
+      sortDirection
+    )
   }
 
   listPatientsByHcPartyWithUser(
@@ -573,9 +579,9 @@ export class IccPatientXApi extends iccPatientApi {
       pats.map(p =>
         (p.encryptionKeys && Object.keys(p.encryptionKeys).some(k => !!p.encryptionKeys![k].length)
           ? Promise.resolve(p)
-          : this.initEncryptionKeys(user, p)
+          : (this.initEncryptionKeys(user, p) as Promise<any>)
         )
-          .then(p =>
+          .then((p: any) =>
             this.crypto.extractKeysFromDelegationsForHcpHierarchy(
               (user.healthcarePartyId || user.patientId)!,
               p.id!,
@@ -1097,9 +1103,9 @@ export class IccPatientXApi extends iccPatientApi {
                             ((allTags.includes("medicalInformation") ||
                               allTags.includes("anonymousMedicalInformation") ||
                               allTags.includes("all")) &&
-                              (ctcsStubs &&
-                                ctcsStubs.length &&
-                                !_.isEqual(oCtcsStubs, ctcsStubs)) &&
+                              ctcsStubs &&
+                              ctcsStubs.length &&
+                              !_.isEqual(oCtcsStubs, ctcsStubs) &&
                               this.contactApi
                                 .setContactsDelegations(ctcsStubs)
                                 .then(() => {
@@ -1116,7 +1122,9 @@ export class IccPatientXApi extends iccPatientApi {
                             ((allTags.includes("medicalInformation") ||
                               allTags.includes("anonymousMedicalInformation") ||
                               allTags.includes("all")) &&
-                              (hes && hes.length && !_.isEqual(oHes, hes)) &&
+                              hes &&
+                              hes.length &&
+                              !_.isEqual(oHes, hes) &&
                               this.helementApi
                                 .setHealthElementsDelegations(hes)
                                 .then(() => {
@@ -1131,7 +1139,9 @@ export class IccPatientXApi extends iccPatientApi {
                           //console.log("sfd")
                           return (
                             ((allTags.includes("medicalInformation") || allTags.includes("all")) &&
-                              (frms && frms.length && !_.isEqual(oFrms, frms)) &&
+                              frms &&
+                              frms.length &&
+                              !_.isEqual(oFrms, frms) &&
                               this.formApi
                                 .setFormsDelegations(frms)
                                 .then(() => {
@@ -1147,7 +1157,9 @@ export class IccPatientXApi extends iccPatientApi {
                           return (
                             ((allTags.includes("financialInformation") ||
                               allTags.includes("all")) &&
-                              (ivs && ivs.length && !_.isEqual(oIvs, ivs)) &&
+                              ivs &&
+                              ivs.length &&
+                              !_.isEqual(oIvs, ivs) &&
                               this.invoiceApi
                                 .setInvoicesDelegations(ivs)
                                 .then(() => {
@@ -1162,7 +1174,9 @@ export class IccPatientXApi extends iccPatientApi {
                           //console.log("sdd")
                           return (
                             ((allTags.includes("medicalInformation") || allTags.includes("all")) &&
-                              (docs && docs.length && !_.isEqual(oDocs, docs)) &&
+                              docs &&
+                              docs.length &&
+                              !_.isEqual(oDocs, docs) &&
                               this.documentApi
                                 .setDocumentsDelegations(docs)
                                 .then(() => {
@@ -1177,7 +1191,9 @@ export class IccPatientXApi extends iccPatientApi {
                           //console.log("scld")
                           return (
                             ((allTags.includes("medicalInformation") || allTags.includes("all")) &&
-                              (cls && cls.length && !_.isEqual(oCls, cls)) &&
+                              cls &&
+                              cls.length &&
+                              !_.isEqual(oCls, cls) &&
                               this.classificationApi
                                 .setClassificationsDelegations(cls)
                                 .then(() => {
@@ -1192,7 +1208,9 @@ export class IccPatientXApi extends iccPatientApi {
                           //console.log("scid")
                           return (
                             ((allTags.includes("medicalInformation") || allTags.includes("all")) &&
-                              (cis && cis.length && !_.isEqual(oCis, cis)) &&
+                              cis &&
+                              cis.length &&
+                              !_.isEqual(oCis, cis) &&
                               this.calendarItemApi
                                 .setCalendarItemsDelegations(cis)
                                 .then(() => {

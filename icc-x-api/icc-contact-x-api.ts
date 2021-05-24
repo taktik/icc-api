@@ -113,7 +113,10 @@ export class IccContactXApi extends iccContactApi {
                 })
             ))
         )
-        ;(user.autoDelegations && user.autoDelegations.anonymousMedicalInformation ? user.autoDelegations.anonymousMedicalInformation : []).forEach(
+        ;(user.autoDelegations && user.autoDelegations.anonymousMedicalInformation
+          ? user.autoDelegations.anonymousMedicalInformation
+          : []
+        ).forEach(
           delegateId =>
             (promise = promise.then(contact =>
               this.crypto
@@ -446,9 +449,9 @@ export class IccContactXApi extends iccContactApi {
             ? ctc
             : (ctc.encryptionKeys && Object.keys(ctc.encryptionKeys || {}).length
                 ? Promise.resolve(ctc)
-                : this.initEncryptionKeys(user, ctc)
+                : (this.initEncryptionKeys(user, ctc) as Promise<any>)
               )
-                .then(ctc =>
+                .then((ctc: any) =>
                   this.crypto.extractKeysFromDelegationsForHcpHierarchy(
                     hcpartyId,
                     ctc.id!,

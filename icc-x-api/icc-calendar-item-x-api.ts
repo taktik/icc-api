@@ -341,9 +341,9 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
       calendarItems.map(calendarItem =>
         (calendarItem.encryptionKeys && Object.keys(calendarItem.encryptionKeys).length
           ? Promise.resolve(calendarItem)
-          : this.initEncryptionKeys(user, calendarItem)
+          : (this.initEncryptionKeys(user, calendarItem) as Promise<any>)
         )
-          .then(calendarItem =>
+          .then((calendarItem: any) =>
             this.crypto.extractKeysFromDelegationsForHcpHierarchy(
               (user.healthcarePartyId || user.patientId)!,
               calendarItem.id!,
@@ -391,22 +391,24 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
                   utils.hex2ua(sfks[0].replace(/-/g, ""))
                 ).then(key =>
                   utils.decrypt(calendarItem, ec =>
-                    this.crypto.AES.decrypt(key, ec).then(dec => {
-                      const jsonContent = dec && utils.ua2utf8(dec)
-                      try {
-                        return JSON.parse(jsonContent)
-                      } catch (e) {
-                        console.log(
-                          "Cannot parse calendar item",
-                          calendarItem.id,
-                          jsonContent || "Invalid content"
-                        )
+                    this.crypto.AES.decrypt(key, ec)
+                      .then(dec => {
+                        const jsonContent = dec && utils.ua2utf8(dec)
+                        try {
+                          return JSON.parse(jsonContent)
+                        } catch (e) {
+                          console.log(
+                            "Cannot parse calendar item",
+                            calendarItem.id,
+                            jsonContent || "Invalid content"
+                          )
+                          return {}
+                        }
+                      })
+                      .catch(err => {
+                        console.log("Error during AES decryption", err)
                         return {}
-                      }
-                    }).catch(err => {
-                      console.log('Error during AES decryption', err);
-                      return {};
-                    })
+                      })
                   )
                 )
               })

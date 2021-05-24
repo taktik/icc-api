@@ -90,7 +90,7 @@ export function phoneNumberFormat(phoneNumber: string): string {
     // The number is not valid, so we leave the input string as-is.
     return phoneNumber
   }
-  return formatNumber(parsedPhoneNumber, "International")
+  return formatNumber(parsedPhoneNumber as any, "International")
 }
 
 /**
