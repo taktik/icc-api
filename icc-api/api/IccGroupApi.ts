@@ -12,8 +12,10 @@
 import { XHR } from './XHR'
 import { DatabaseInitialisation } from '../model/DatabaseInitialisation'
 import { Group } from '../model/Group'
+import { ListOfProperties } from '../model/ListOfProperties'
 import { RegistrationInformation } from '../model/RegistrationInformation'
 import { RegistrationSuccess } from '../model/RegistrationSuccess'
+import { ReplicationInfo } from '../model/ReplicationInfo'
 import { Unit } from '../model/Unit'
 
 export class IccGroupApi {
@@ -68,6 +70,36 @@ export class IccGroupApi {
   }
 
   /**
+   * List existing groups
+   * @summary List groups
+   * @param id The id of the group
+   */
+  getGroup(id: string): Promise<Group> {
+    const _body = null
+
+    const _url = this.host + `/group/${encodeURIComponent(String(id))}` + '?ts=' + new Date().getTime()
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Group(doc.body as JSON))
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
+   *
+   * @summary Get index info
+   * @param id The id of the group
+   */
+  getReplicationInfo1(id: string): Promise<ReplicationInfo> {
+    const _body = null
+
+    const _url = this.host + `/group/${encodeURIComponent(String(id))}/r` + '?ts=' + new Date().getTime()
+    const headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new ReplicationInfo(doc.body as JSON))
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
    * Init design docs for provided group
    * @summary Init design docs
    * @param id The id of the group
@@ -115,6 +147,24 @@ export class IccGroupApi {
 
     const _url = this.host + `/group/${encodeURIComponent(String(id))}/name/${encodeURIComponent(String(name))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
+    return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Group(doc.body as JSON))
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
+   * Update existing group name
+   * @summary Update group name
+   * @param body
+   * @param id The id of the group
+   */
+  modifyGroupProperties(id: string, body?: ListOfProperties): Promise<Group> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/group/${encodeURIComponent(String(id))}/properties` + '?ts=' + new Date().getTime()
+    let headers = this.headers
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Group(doc.body as JSON))
       .catch((err) => this.handleError(err))

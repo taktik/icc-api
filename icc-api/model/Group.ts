@@ -9,6 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { PropertyStub } from './PropertyStub'
 
 /**
  * This entity represents a group
@@ -46,5 +47,9 @@ export class Group {
    * Whether the group has a super admin permission, originally set to no access.
    */
   superAdmin?: boolean
+  /**
+   * Extra properties for the user. Those properties are typed (see class Property)
+   */
+  properties?: Array<PropertyStub>
   superGroup?: string
 }

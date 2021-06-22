@@ -49,6 +49,23 @@ export class IccPatientApi {
     let _body = null
     _body = body
 
+    const _url = this.host + `/patient/batch` + '?ts=' + new Date().getTime()
+    let headers = this.headers
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new IdWithRev(it)))
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
+   * Returns the id and _rev of created patients
+   * @summary Create patients in bulk
+   * @param body
+   */
+  bulkCreatePatients1(body?: Array<Patient>): Promise<Array<IdWithRev>> {
+    let _body = null
+    _body = body
+
     const _url = this.host + `/patient/bulk` + '?ts=' + new Date().getTime()
     let headers = this.headers
     headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
@@ -63,6 +80,23 @@ export class IccPatientApi {
    * @param body
    */
   bulkUpdatePatients(body?: Array<Patient>): Promise<Array<IdWithRev>> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/patient/batch` + '?ts=' + new Date().getTime()
+    let headers = this.headers
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new IdWithRev(it)))
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
+   * Returns the id and _rev of modified patients
+   * @summary Modify patients in bulk
+   * @param body
+   */
+  bulkUpdatePatients1(body?: Array<Patient>): Promise<Array<IdWithRev>> {
     let _body = null
     _body = body
 

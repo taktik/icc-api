@@ -61,7 +61,7 @@
     "eslint": "eslint --fix icc-api/* icc-x-api/*",
     "build": "tsc",
     "prepare": "rimraf dist && npm run build && jq '{name:.name, version:.version, description:.description, main:.main, types:.types, dependencies:.dependencies, author:.author, license:.license, bugs:.bugs, homepage:.homepage}' < package.json > dist/package.json",
-    "publish": "yarn run prepare && cd dist && yarn publish && cd ..",
+    "publish": "yarn run prepare && cd dist && yarn publish --no-git-tag-version && cd ..",
     "precommit": "pretty-quick --staged"
   },
   "repository": {

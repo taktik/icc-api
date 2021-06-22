@@ -13,7 +13,7 @@ import { PropertyTypeStub } from './PropertyTypeStub'
 import { TypedValueObject } from './TypedValueObject'
 
 /**
- * Extra properties for the user. Those properties are typed (see class Property)
+ * Extra properties
  */
 export class PropertyStub {
   constructor(json: JSON | any) {
