@@ -12,6 +12,8 @@
 import { XHR } from './XHR'
 import { DatabaseInitialisation } from '../model/DatabaseInitialisation'
 import { Group } from '../model/Group'
+import { RegistrationInformation } from '../model/RegistrationInformation'
+import { RegistrationSuccess } from '../model/RegistrationSuccess'
 import { Unit } from '../model/Unit'
 
 export class IccGroupApi {
@@ -69,9 +71,10 @@ export class IccGroupApi {
    * Init design docs for provided group
    * @summary Init design docs
    * @param id The id of the group
+   * @param clazz The id of the group
    * @param warmup Warmup the design doc
    */
-  initDesignDocs(id: string, warmup?: boolean): Promise<Unit> {
+  initDesignDocs(id: string, clazz?: string, warmup?: boolean): Promise<Unit> {
     const _body = null
 
     const _url =
@@ -79,6 +82,7 @@ export class IccGroupApi {
       `/group/${encodeURIComponent(String(id))}/dd` +
       '?ts=' +
       new Date().getTime() +
+      (clazz ? '&clazz=' + encodeURIComponent(String(clazz)) : '') +
       (warmup ? '&warmup=' + encodeURIComponent(String(warmup)) : '')
     const headers = this.headers
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
@@ -117,6 +121,23 @@ export class IccGroupApi {
   }
 
   /**
+   * Create a new group and associated dbs.  The created group will be manageable by the users that belong to the same group as the one that called createGroup. Several tasks can be executed during the group creation like DB replications towards the created DBs, users creation and healthcare parties creation
+   * @summary Create a group
+   * @param body
+   */
+  registerNewGroupAdministrator(body?: RegistrationInformation): Promise<RegistrationSuccess> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/group/register/trial` + '?ts=' + new Date().getTime()
+    let headers = this.headers
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new RegistrationSuccess(doc.body as JSON))
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
    * Update password for provided group
    * @summary Set group password
    * @param id The id of the group
@@ -130,6 +151,29 @@ export class IccGroupApi {
     password && (headers = headers.concat(new XHR.Header('password', password)))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Group(doc.body as JSON))
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
+   * Solve conflicts for group
+   * @summary Solve conflicts for group
+   * @param id The id of the group
+   * @param clazz The id of the group
+   * @param warmup Warmup the design doc
+   */
+  solveConflicts(id: string, clazz?: string, warmup?: boolean): Promise<Unit> {
+    const _body = null
+
+    const _url =
+      this.host +
+      `/group/${encodeURIComponent(String(id))}/conflicts` +
+      '?ts=' +
+      new Date().getTime() +
+      (clazz ? '&clazz=' + encodeURIComponent(String(clazz)) : '') +
+      (warmup ? '&warmup=' + encodeURIComponent(String(warmup)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Unit(doc.body as JSON))
       .catch((err) => this.handleError(err))
   }
 }

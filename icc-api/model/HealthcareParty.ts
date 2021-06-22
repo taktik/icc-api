@@ -13,6 +13,7 @@ import { Address } from './Address'
 import { CodeStub } from './CodeStub'
 import { FinancialInstitutionInformation } from './FinancialInstitutionInformation'
 import { FlatRateTarification } from './FlatRateTarification'
+import { HealthcarePartyHistoryStatus } from './HealthcarePartyHistoryStatus'
 
 /**
  * This entity is a root level object. It represents a healthcare party. It is serialized in JSON and saved in the underlying icure-healthcareParty CouchDB database.
@@ -119,6 +120,10 @@ export class HealthcareParty {
    * The healthcare party's status: 'trainee' or 'withconvention' or 'accredited'
    */
   statuses?: Array<HealthcareParty.StatusesEnum>
+  /**
+   * The healthcare party's status history
+   */
+  statusHistory?: Array<HealthcarePartyHistoryStatus>
   /**
    * Medical specialty of the healthcare party codified using FHIR or Kmehr codificaiton scheme
    */

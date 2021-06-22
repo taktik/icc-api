@@ -25,6 +25,7 @@ export class Measure {
   ref?: number
   severity?: number
   severityCode?: string
+  evolution?: number
   unit?: string
   unitCodes?: Array<CodeStub>
   comment?: string

@@ -203,7 +203,7 @@ export class IccPatientApi {
    * @summary Get Paginated List of Patients sorted by Access logs descending
    * @param externalId A external ID
    */
-  findByExternalId(externalId: string): Promise<Patient> {
+  findByExternalId1(externalId: string): Promise<Patient> {
     const _body = null
 
     const _url = this.host + `/patient/byExternalId/${encodeURIComponent(String(externalId))}` + '?ts=' + new Date().getTime()
