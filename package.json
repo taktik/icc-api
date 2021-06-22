@@ -1,6 +1,6 @@
 {
   "name": "@icure/api",
-  "version": "4.0.38",
+  "version": "4.0.39",
   "description": "Typescript version of iCure standalone API client",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -61,7 +61,7 @@
     "eslint": "eslint --fix icc-api/* icc-x-api/*",
     "build": "tsc",
     "prepare": "rimraf dist && npm run build && jq '{name:.name, version:.version, description:.description, main:.main, types:.types, dependencies:.dependencies, author:.author, license:.license, bugs:.bugs, homepage:.homepage}' < package.json > dist/package.json",
-    "publish": "npm run prepare && cd dist && npm publish && cd ..",
+    "publish": "yarn run prepare && cd dist && yarn publish && cd ..",
     "precommit": "pretty-quick --staged"
   },
   "repository": {
