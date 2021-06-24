@@ -3,10 +3,12 @@ import { iccAuthApi, iccBekmehrApi } from "../icc-api/iccApi"
 import { IccContactXApi } from "./icc-contact-x-api"
 import { IccHelementXApi } from "./icc-helement-x-api"
 import { utils } from "./crypto/utils"
+import { IccDocumentXApi } from "./icc-document-x-api"
 
 export class IccBekmehrXApi extends iccBekmehrApi {
   private readonly ctcApi: IccContactXApi
   private readonly helementApi: IccHelementXApi
+  private readonly documentApi: IccDocumentXApi
   private readonly wssHost: string
   private readonly authApi: iccAuthApi
 
@@ -16,17 +18,19 @@ export class IccBekmehrXApi extends iccBekmehrApi {
     authApi: iccAuthApi,
     ctcApi: IccContactXApi,
     helementApi: IccHelementXApi,
+    documentApi: IccDocumentXApi,
     fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !==
     "undefined"
       ? window.fetch
       : typeof self !== "undefined"
-        ? self.fetch
-        : fetch
+      ? self.fetch
+      : fetch
   ) {
     super(host, headers, fetchImpl)
     this.authApi = authApi
     this.ctcApi = ctcApi
     this.helementApi = helementApi
+    this.documentApi = documentApi
 
     this.wssHost = new URL(this.host, window.location.href).href
       .replace(/^http/, "ws")
@@ -52,15 +56,19 @@ export class IccBekmehrXApi extends iccBekmehrApi {
         if (msg.type === "ContactDto") {
           that.ctcApi
             .decrypt(healthcarePartyId, msg.body)
-            .then(res => send("decryptResponse", msg.uuid, res))
+            .then((res) => send("decryptResponse", msg.uuid, res))
         } else if (msg.type === "HealthElementDto") {
           that.helementApi
             .decrypt(healthcarePartyId, msg.body)
-            .then(res => send("decryptResponse", msg.uuid, res))
+            .then((res) => send("decryptResponse", msg.uuid, res))
+        } else if (msg.type === "DocumentDto") {
+          that.documentApi
+            .decrypt(healthcarePartyId, msg.body)
+            .then((res) => send("decryptResponse", msg.uuid, res))
         } else {
           that.ctcApi
             .decryptServices(healthcarePartyId, msg.body)
-            .then(res => send("decryptResponse", msg.uuid, res))
+            .then((res) => send("decryptResponse", msg.uuid, res))
         }
       } else if ((msg.command = "progress")) {
         if (progressCallback && msg.body && msg.body[0]) {
@@ -77,12 +85,12 @@ export class IccBekmehrXApi extends iccBekmehrApi {
         const blob: Blob = event.data
         var subBlob = blob.slice(0, 1)
         const br = new FileReader()
-        br.onload = function(e) {
+        br.onload = function (e) {
           const firstChar = e.target && new Uint8Array((e.target as any).result as ArrayBuffer)[0]
 
           if (firstChar === 0x7b) {
             const tr = new FileReader()
-            tr.onload = function(e) {
+            tr.onload = function (e) {
               const msg = e.target && JSON.parse((e.target as any).result as string)
               messageHandler(msg)
             }
@@ -104,22 +112,21 @@ export class IccBekmehrXApi extends iccBekmehrApi {
     body: models.SoftwareMedicalFileExportDto,
     progressCallback?: (progress: number) => void,
     sessionId?: string
-  ): Promise<Blob> {
-    return (!sessionId
-      ? this.authApi.token("GET", "/ws/be_kmehr/generateSmf")
-      : Promise.resolve("")
+  ): Promise<Blob | undefined> {
+    return (
+      !sessionId ? this.authApi.token("GET", "/ws/be_kmehr/generateSmf") : Promise.resolve("")
     ).then(
-      token =>
-        new Promise<Blob>((resolve, reject) => {
+      (token) =>
+        new Promise<Blob | undefined>((resolve, reject) => {
           const socket = new WebSocket(
             token.length
               ? `${this.wssHost}/be_kmehr/generateSmf;tokenid=${token}`
               : `${this.wssHost}/be_kmehr/generateSmf;sessionid=${sessionId}`
           )
-          socket.addEventListener("open", function() {
+          socket.addEventListener("open", function () {
             socket.send(
               JSON.stringify({
-                parameters: { patientId: patientId, language: language, info: body }
+                parameters: { patientId: patientId, language: language, info: body },
               })
             )
           })
@@ -139,22 +146,21 @@ export class IccBekmehrXApi extends iccBekmehrApi {
     language: string,
     body: models.SumehrExportInfoDto,
     sessionId?: string
-  ): Promise<Blob> {
-    return (!sessionId
-      ? this.authApi.token("GET", "/ws/be_kmehr/generateSumehr")
-      : Promise.resolve("")
+  ): Promise<Blob | undefined> {
+    return (
+      !sessionId ? this.authApi.token("GET", "/ws/be_kmehr/generateSumehr") : Promise.resolve("")
     ).then(
-      token =>
-        new Promise<Blob>((resolve, reject) => {
+      (token) =>
+        new Promise<Blob | undefined>((resolve, reject) => {
           const socket = new WebSocket(
             token.length
               ? `${this.wssHost}/be_kmehr/generateSumehr;tokenid=${token}`
               : `${this.wssHost}/be_kmehr/generateSumehr;sessionid=${sessionId}`
           )
-          socket.addEventListener("open", function() {
+          socket.addEventListener("open", function () {
             socket.send(
               JSON.stringify({
-                parameters: { patientId: patientId, language: language, info: body }
+                parameters: { patientId: patientId, language: language, info: body },
               })
             )
           })
@@ -173,22 +179,21 @@ export class IccBekmehrXApi extends iccBekmehrApi {
     language: string,
     body: models.SumehrExportInfoDto,
     sessionId?: string
-  ): Promise<Blob> {
-    return (!sessionId
-      ? this.authApi.token("GET", "/ws/be_kmehr/generateSumehrV2")
-      : Promise.resolve("")
+  ): Promise<Blob | undefined> {
+    return (
+      !sessionId ? this.authApi.token("GET", "/ws/be_kmehr/generateSumehrV2") : Promise.resolve("")
     ).then(
-      token =>
-        new Promise<Blob>((resolve, reject) => {
+      (token) =>
+        new Promise<Blob | undefined>((resolve, reject) => {
           const socket = new WebSocket(
             token.length
               ? `${this.wssHost}/be_kmehr/generateSumehrV2;tokenid=${token}`
               : `${this.wssHost}/be_kmehr/generateSumehrV2;sessionid=${sessionId}`
           )
-          socket.addEventListener("open", function() {
+          socket.addEventListener("open", function () {
             socket.send(
               JSON.stringify({
-                parameters: { patientId: patientId, language: language, info: body }
+                parameters: { patientId: patientId, language: language, info: body },
               })
             )
           })
@@ -207,22 +212,21 @@ export class IccBekmehrXApi extends iccBekmehrApi {
     language: string,
     body: models.SumehrExportInfoDto,
     sessionId?: string
-  ): Promise<Blob> {
-    return (!sessionId
-      ? this.authApi.token("GET", "/ws/be_kmehr/generateDiaryNote")
-      : Promise.resolve("")
+  ): Promise<Blob | undefined> {
+    return (
+      !sessionId ? this.authApi.token("GET", "/ws/be_kmehr/generateDiaryNote") : Promise.resolve("")
     ).then(
-      token =>
-        new Promise<Blob>((resolve, reject) => {
+      (token) =>
+        new Promise<Blob | undefined>((resolve, reject) => {
           const socket = new WebSocket(
             token.length
               ? `${this.wssHost}/be_kmehr/generateDiaryNote;tokenid=${token}`
               : `${this.wssHost}/be_kmehr/generateDiaryNote;sessionid=${sessionId}`
           )
-          socket.addEventListener("open", function() {
+          socket.addEventListener("open", function () {
             socket.send(
               JSON.stringify({
-                parameters: { patientId: patientId, language: language, info: body }
+                parameters: { patientId: patientId, language: language, info: body },
               })
             )
           })
@@ -243,19 +247,20 @@ export class IccBekmehrXApi extends iccBekmehrApi {
     version: number,
     body: models.MedicationSchemeExportInfoDto,
     sessionId?: string
-  ): Promise<Blob> {
-    return (!sessionId
-      ? this.authApi.token("GET", "/ws/be_kmehr/generateMedicationScheme")
-      : Promise.resolve("")
+  ): Promise<Blob | undefined> {
+    return (
+      !sessionId
+        ? this.authApi.token("GET", "/ws/be_kmehr/generateMedicationScheme")
+        : Promise.resolve("")
     ).then(
-      token =>
-        new Promise<Blob>((resolve, reject) => {
+      (token) =>
+        new Promise<Blob | undefined>((resolve, reject) => {
           const socket = new WebSocket(
             token.length
               ? `${this.wssHost}/be_kmehr/generateMedicationScheme;tokenid=${token}`
               : `${this.wssHost}/be_kmehr/generateMedicationScheme;sessionid=${sessionId}`
           )
-          socket.addEventListener("open", function() {
+          socket.addEventListener("open", function () {
             socket.send(
               JSON.stringify({
                 parameters: {
@@ -263,8 +268,8 @@ export class IccBekmehrXApi extends iccBekmehrApi {
                   language: language,
                   recipientSafe: recipientSafe,
                   version: version,
-                  info: body
-                }
+                  info: body,
+                },
               })
             )
           })

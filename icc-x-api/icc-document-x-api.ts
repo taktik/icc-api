@@ -90,7 +90,7 @@ export class IccDocumentXApi extends iccDocumentApi {
     "unofficial.m3u8Playlist": "application/x-mpegURL",
     "unofficial.plsPlaylist": "audio/scpls",
     "unofficial.rdfFeed": "application/rdf+xml",
-    "unofficial.rssFeed": "application/rss+xml"
+    "unofficial.rssFeed": "application/rss+xml",
   }
 
   utiRevDefs: { [key: string]: string } = {
@@ -229,7 +229,7 @@ export class IccDocumentXApi extends iccDocumentApi {
     "unofficial.opml": "text/x-opml",
     "unofficial.pls-playlist": "audio/scpls",
     "unofficial.rdf-feed": "application/rdf+xml",
-    "unofficial.rss-feed": "application/rss+xml"
+    "unofficial.rss-feed": "application/rss+xml",
   }
 
   utiExts: { [key: string]: string } = {
@@ -245,7 +245,7 @@ export class IccDocumentXApi extends iccDocumentApi {
     xls: "com.microsoft.excel.xls",
     xlsx: "com.microsoft.excel.xls",
     doc: "com.microsoft.word.doc",
-    docx: "com.microsoft.word.doc"
+    docx: "com.microsoft.word.doc",
   }
 
   utiDefs: { [key: string]: string } = {
@@ -541,7 +541,7 @@ export class IccDocumentXApi extends iccDocumentApi {
     "video/x-msvideo": "public.avi",
     "video/x-ogg": "org.xiph.ogg-theora",
     "x-msdos-program": "com.microsoft.windows-executable",
-    "x-music/x-midi": "public.midi"
+    "x-music/x-midi": "public.midi",
   }
 
   constructor(
@@ -553,8 +553,8 @@ export class IccDocumentXApi extends iccDocumentApi {
     "undefined"
       ? window.fetch
       : typeof self !== "undefined"
-        ? self.fetch
-        : fetch
+      ? self.fetch
+      : fetch
   ) {
     super(host, headers, fetchImpl)
     this.authApi = authApi
@@ -573,7 +573,7 @@ export class IccDocumentXApi extends iccDocumentApi {
         responsible: user.healthcarePartyId || user.patientId,
         author: user.id,
         codes: [],
-        tags: []
+        tags: [],
       },
       c || {}
     )
@@ -589,7 +589,7 @@ export class IccDocumentXApi extends iccDocumentApi {
     const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto
       .extractDelegationsSFKs(message, hcpId)
-      .then(secretForeignKeys =>
+      .then((secretForeignKeys) =>
         Promise.all([
           this.crypto.initObjectDelegations(
             document,
@@ -597,17 +597,17 @@ export class IccDocumentXApi extends iccDocumentApi {
             hcpId!,
             secretForeignKeys.extractedKeys[0]
           ),
-          this.crypto.initEncryptionKeys(document, hcpId!)
+          this.crypto.initEncryptionKeys(document, hcpId!),
         ])
       )
-      .then(initData => {
+      .then((initData) => {
         const dels = initData[0]
         const eks = initData[1]
         _.extend(document, {
           delegations: dels.delegations,
           cryptedForeignKeys: dels.cryptedForeignKeys,
           secretForeignKeys: dels.secretForeignKeys,
-          encryptionKeys: eks.encryptionKeys
+          encryptionKeys: eks.encryptionKeys,
         })
 
         let promise = Promise.resolve(document)
@@ -615,8 +615,8 @@ export class IccDocumentXApi extends iccDocumentApi {
           ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
           : []
         ).forEach(
-          delegateId =>
-            (promise = promise.then(document =>
+          (delegateId) =>
+            (promise = promise.then((document) =>
               this.crypto
                 .addDelegationsAndEncryptionKeys(
                   message,
@@ -626,7 +626,7 @@ export class IccDocumentXApi extends iccDocumentApi {
                   dels.secretId,
                   eks.secretId
                 )
-                .catch(e => {
+                .catch((e) => {
                   console.log(e)
                   return document
                 })
@@ -638,23 +638,23 @@ export class IccDocumentXApi extends iccDocumentApi {
 
   initEncryptionKeys(user: models.UserDto, document: models.DocumentDto) {
     const hcpId = user.healthcarePartyId || user.patientId
-    return this.crypto.initEncryptionKeys(document, hcpId!).then(eks => {
+    return this.crypto.initEncryptionKeys(document, hcpId!).then((eks) => {
       let promise = Promise.resolve(
         _.extend(document, {
-          encryptionKeys: eks.encryptionKeys
+          encryptionKeys: eks.encryptionKeys,
         })
       )
       ;(user.autoDelegations
         ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
         : []
       ).forEach(
-        delegateId =>
-          (promise = promise.then(document =>
+        (delegateId) =>
+          (promise = promise.then((document) =>
             this.crypto
               .appendEncryptionKeys(document, hcpId!, delegateId, eks.secretId)
-              .then(extraEks => {
+              .then((extraEks) => {
                 return _.extend(document, {
-                  encryptionKeys: extraEks.encryptionKeys
+                  encryptionKeys: extraEks.encryptionKeys,
                 })
               })
           ))
@@ -667,14 +667,14 @@ export class IccDocumentXApi extends iccDocumentApi {
   findByMessage(hcpartyId: string, message: models.MessageDto) {
     return this.crypto
       .extractDelegationsSFKs(message, hcpartyId)
-      .then(secretForeignKeys =>
+      .then((secretForeignKeys) =>
         this.findDocumentsByHCPartyPatientForeignKeys(
           secretForeignKeys.hcpartyId!,
           secretForeignKeys.extractedKeys.join(",")
         )
       )
-      .then(documents => this.decrypt(hcpartyId, documents))
-      .then(function(decryptedForms) {
+      .then((documents) => this.decrypt(hcpartyId, documents))
+      .then(function (decryptedForms) {
         return decryptedForms
       })
   }
@@ -684,7 +684,7 @@ export class IccDocumentXApi extends iccDocumentApi {
     documents: Array<models.DocumentDto>
   ): Promise<Array<models.DocumentDto> | void> {
     return Promise.all(
-      documents.map(document =>
+      documents.map((document) =>
         this.crypto
           .extractKeysFromDelegationsForHcpHierarchy(
             hcpartyId,
@@ -697,23 +697,42 @@ export class IccDocumentXApi extends iccDocumentApi {
               return Promise.resolve(document)
             }
 
-            if (sfks.length && document.encryptedSelf) {
+            if (sfks.length && (document.encryptedSelf || document.encryptedAttachment)) {
               return this.crypto.AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
-                .then(
-                  (key: CryptoKey) =>
-                    new Promise((resolve: (value: ArrayBuffer | null) => any) => {
-                      this.crypto.AES.decrypt(
-                        key,
-                        utils.text2ua(atob(document.encryptedSelf!))
-                      ).then(resolve, () => {
-                        console.log("Cannot decrypt document", document.id)
-                        resolve(null)
-                      })
-                    })
+                .then((key: CryptoKey) =>
+                  Promise.all([
+                    document.encryptedSelf
+                      ? new Promise((resolve: (value: ArrayBuffer | null) => any) => {
+                          this.crypto.AES.decrypt(
+                            key,
+                            utils.text2ua(atob(document.encryptedSelf!))
+                          ).then(resolve, () => {
+                            console.log("Cannot decrypt document", document.id)
+                            resolve(null)
+                          })
+                        })
+                      : Promise.resolve(null),
+                    document.encryptedAttachment
+                      ? new Promise((resolve: (value: ArrayBuffer | null) => any) => {
+                          this.crypto.AES.decrypt(key, document.encryptedAttachment!).then(
+                            resolve,
+                            () => {
+                              console.log("Cannot decrypt document", document.id)
+                              resolve(null)
+                            }
+                          )
+                        })
+                      : Promise.resolve(null),
+                  ])
                 )
-                .then((decrypted: ArrayBuffer | null) => {
+                .then((decrypted: [ArrayBuffer | null, ArrayBuffer | null]) => {
                   if (decrypted) {
-                    document = _.extend(document, JSON.parse(utils.ua2text(decrypted)))
+                    if (decrypted[0]) {
+                      document = _.extend(document, JSON.parse(utils.ua2text(decrypted[0])))
+                    }
+                    if (decrypted[1]) {
+                      document.encryptedAttachment = decrypted[1]
+                    }
                   }
                   return document
                 })
@@ -722,7 +741,7 @@ export class IccDocumentXApi extends iccDocumentApi {
             }
           })
       )
-    ).catch(function(e: Error) {
+    ).catch(function (e: Error) {
       console.log(e)
     })
   }
@@ -748,8 +767,8 @@ export class IccDocumentXApi extends iccDocumentApi {
       (enckeys ? `&enckeys=${enckeys}` : "") +
       (fileName ? `&fileName=${fileName}` : "")
     return XHR.sendCommand("GET", url, this.headers, null, this.fetchImpl, returnType)
-      .then(doc => doc.body)
-      .catch(err => this.handleError(err))
+      .then((doc) => doc.body)
+      .catch((err) => this.handleError(err))
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -762,7 +781,7 @@ export class IccDocumentXApi extends iccDocumentApi {
     return this.authApi
       .token("GET", `/rest/v1/document/${documentId}/attachment/${attachmentId}`)
       .then(
-        token =>
+        (token) =>
           this.host +
           `/document/${documentId}/attachment/${attachmentId}${token ? `;tokenid=${token}` : ""}` +
           (sfks && sfks.length ? "?enckeys=" + sfks.join(",") : "") +

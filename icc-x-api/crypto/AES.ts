@@ -8,7 +8,7 @@ export class AESUtils {
 
   aesKeyGenParams = {
     name: "AES-CBC",
-    length: 256
+    length: 256,
   }
   private crypto: Crypto
   private _debug: boolean
@@ -21,8 +21,8 @@ export class AESUtils {
     crypto: Crypto = typeof window !== "undefined"
       ? window.crypto
       : typeof self !== "undefined"
-        ? self.crypto
-        : ({} as Crypto)
+      ? self.crypto
+      : ({} as Crypto)
   ) {
     this.crypto = crypto
     this._debug = false
@@ -32,27 +32,27 @@ export class AESUtils {
     return new Promise((resolve: (value: ArrayBuffer) => any, reject: (reason: any) => any) => {
       if (plainData instanceof Uint8Array) {
         const buffer = plainData.buffer
-        plainData = (buffer.byteLength > plainData.byteLength
-          ? buffer.slice(0, plainData.byteLength)
-          : buffer) as ArrayBuffer
+        plainData = (
+          buffer.byteLength > plainData.byteLength ? buffer.slice(0, plainData.byteLength) : buffer
+        ) as ArrayBuffer
       }
       const aesAlgorithmEncrypt = {
         name: this.aesAlgorithmEncryptName,
-        iv: this.generateIV(this.ivLength)
+        iv: this.generateIV(this.ivLength),
       }
       this._debug && console.log(`encrypt ${plainData} with ${rawKey}`)
       this.crypto.subtle
         .encrypt(
           {
-            ...aesAlgorithmEncrypt
+            ...aesAlgorithmEncrypt,
           } /* some ill behaved implementations change the values in place */,
           cryptoKey,
           plainData
         )
         .then(
-          cipherData =>
+          (cipherData) =>
             resolve(utils.appendBuffer(aesAlgorithmEncrypt.iv!.buffer! as ArrayBuffer, cipherData)),
-          err => reject("AES encryption failed: " + err)
+          (err) => reject("AES encryption failed: " + err)
         )
     })
   }
@@ -76,24 +76,24 @@ export class AESUtils {
       }
       const aesAlgorithmEncrypt = {
         name: this.aesAlgorithmEncryptName,
-        iv: encryptedDataUnit8.subarray(0, this.ivLength)
+        iv: encryptedDataUnit8.subarray(0, this.ivLength),
 
         /*
-    * IF THIS BIT OF CODE PRODUCES A DOMEXCEPTION CODE 0 ERROR, IT MIGHT BE RELATED TO THIS:
-    *
-    * NOTOK:
-    * if (!hcparty.hcPartyKeys && !hcparty.hcPartyKeys[hcpartyId] && hcparty.hcPartyKeys[hcpartyId].length !== 2) {
-    *   throw 'No hcPartyKey for this Healthcare party(' + hcpartyId + ').';
-    * }
-    * var delegateHcPartyKey = hcparty.hcPartyKeys[hcpartyId][1];
-    *
-    * SHOULD BE:
-    * var delegatorId = patient.delegations[hcpartyId][0].owner;
-    * if (!hcparty.hcPartyKeys && !hcparty.hcPartyKeys[delegatorId] && hcparty.hcPartyKeys[delegatorId].length !== 2) {
-    *   throw 'No hcPartyKey for this Healthcare party(' + delegatorId + ').';
-    * }
-    * var delegateHcPartyKey = hcparty.hcPartyKeys[delegatorId][1];
-    */
+         * IF THIS BIT OF CODE PRODUCES A DOMEXCEPTION CODE 0 ERROR, IT MIGHT BE RELATED TO THIS:
+         *
+         * NOTOK:
+         * if (!hcparty.hcPartyKeys && !hcparty.hcPartyKeys[hcpartyId] && hcparty.hcPartyKeys[hcpartyId].length !== 2) {
+         *   throw 'No hcPartyKey for this Healthcare party(' + hcpartyId + ').';
+         * }
+         * var delegateHcPartyKey = hcparty.hcPartyKeys[hcpartyId][1];
+         *
+         * SHOULD BE:
+         * var delegatorId = patient.delegations[hcpartyId][0].owner;
+         * if (!hcparty.hcPartyKeys && !hcparty.hcPartyKeys[delegatorId] && hcparty.hcPartyKeys[delegatorId].length !== 2) {
+         *   throw 'No hcPartyKey for this Healthcare party(' + delegatorId + ').';
+         * }
+         * var delegateHcPartyKey = hcparty.hcPartyKeys[delegatorId][1];
+         */
       }
       this._debug && console.log(`decrypt with ${rawKey}`)
       this.crypto.subtle
@@ -102,7 +102,7 @@ export class AESUtils {
           cryptoKey,
           encryptedDataUnit8.subarray(this.ivLength, encryptedDataUnit8.length)
         )
-        .then(resolve, err => {
+        .then(resolve, (err) => {
           reject("AES decryption failed: " + err)
         })
     })
@@ -119,7 +119,7 @@ export class AESUtils {
     return new Promise(
       (resolve: (value: CryptoKey | string) => any, reject: (reason: any) => any) => {
         const extractable = true
-        const keyUsages = ["decrypt", "encrypt"]
+        const keyUsages: KeyUsage[] = ["decrypt", "encrypt"]
         if (toHex === undefined || !toHex) {
           return this.crypto.subtle
             .generateKey(this.aesKeyGenParams, extractable, keyUsages)
@@ -127,8 +127,8 @@ export class AESUtils {
         } else {
           return this.crypto.subtle
             .generateKey(this.aesKeyGenParams, extractable, keyUsages)
-            .then(k => this.exportKey(k, "raw"), reject)
-            .then(raw => resolve(utils.ua2hex(raw)), reject)
+            .then((k) => this.exportKey(k, "raw"), reject)
+            .then((raw) => resolve(utils.ua2hex(raw)), reject)
         }
       }
     )
@@ -170,7 +170,7 @@ export class AESUtils {
   importKey(format: string, aesKey: JsonWebKey | ArrayBuffer | Uint8Array) {
     return new Promise((resolve: (value: CryptoKey) => any, reject: (reason: any) => any) => {
       var extractable = true
-      var keyUsages = ["decrypt", "encrypt"]
+      var keyUsages: KeyUsage[] = ["decrypt", "encrypt"]
       return this.crypto.subtle
         .importKey(format, aesKey, this.aesKeyGenParams, extractable, keyUsages)
         .then(resolve, reject)
