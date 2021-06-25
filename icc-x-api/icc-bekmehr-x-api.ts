@@ -4,6 +4,7 @@ import { IccContactXApi } from "./icc-contact-x-api"
 import { IccHelementXApi } from "./icc-helement-x-api"
 import { utils } from "./crypto/utils"
 import { IccDocumentXApi } from "./icc-document-x-api"
+import { DocumentDto } from "../icc-api/model/models"
 
 export class IccBekmehrXApi extends iccBekmehrApi {
   private readonly ctcApi: IccContactXApi
@@ -63,7 +64,10 @@ export class IccBekmehrXApi extends iccBekmehrApi {
             .then((res) => send("decryptResponse", msg.uuid, res))
         } else if (msg.type === "DocumentDto") {
           that.documentApi
-            .decrypt(healthcarePartyId, msg.body)
+            .decrypt(
+              healthcarePartyId,
+              msg.body.map((d: JSON) => new DocumentDto(d))
+            )
             .then((res) => send("decryptResponse", msg.uuid, res))
         } else {
           that.ctcApi
