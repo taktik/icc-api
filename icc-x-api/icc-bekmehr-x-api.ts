@@ -68,7 +68,16 @@ export class IccBekmehrXApi extends iccBekmehrApi {
               healthcarePartyId,
               msg.body.map((d: JSON) => new DocumentDto(d))
             )
-            .then((res) => send("decryptResponse", msg.uuid, res))
+            .then((res) =>
+              send(
+                "decryptResponse",
+                msg.uuid,
+                res?.map((d) => {
+                  const { encryptedAttachment, ...stripped } = d
+                  return stripped
+                })
+              )
+            )
         } else {
           that.ctcApi
             .decryptServices(healthcarePartyId, msg.body)

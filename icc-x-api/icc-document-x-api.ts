@@ -731,7 +731,7 @@ export class IccDocumentXApi extends iccDocumentApi {
                       document = _.extend(document, JSON.parse(utils.ua2text(decrypted[0])))
                     }
                     if (decrypted[1]) {
-                      document.encryptedAttachment = decrypted[1]
+                      document.decryptedAttachment = decrypted[1]
                     }
                   }
                   return document
