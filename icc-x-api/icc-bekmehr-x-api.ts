@@ -73,8 +73,11 @@ export class IccBekmehrXApi extends iccBekmehrApi {
                 "decryptResponse",
                 msg.uuid,
                 res?.map((d) => {
+                  const de = d.decryptedAttachment
                   const { encryptedAttachment, ...stripped } = d
-                  return stripped
+                  return de
+                    ? { ...stripped, decryptedAttachment: btoa(utils.ua2text(de)) }
+                    : stripped
                 })
               )
             )
