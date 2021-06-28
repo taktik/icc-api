@@ -682,7 +682,7 @@ export class IccDocumentXApi extends iccDocumentApi {
   decrypt(
     hcpartyId: string,
     documents: Array<models.DocumentDto>
-  ): Promise<Array<models.DocumentDto> | void> {
+  ): Promise<Array<models.DocumentDto>> {
     return Promise.all(
       documents.map((document) =>
         this.crypto
@@ -743,6 +743,7 @@ export class IccDocumentXApi extends iccDocumentApi {
       )
     ).catch(function (e: Error) {
       console.log(e)
+      return Promise.resolve(documents)
     })
   }
 
