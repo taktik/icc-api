@@ -1,8 +1,8 @@
 import { iccHcpartyApi, iccPatientApi } from "../icc-api/iccApi"
-import { AES, AESUtils } from "./crypto/AES"
-import { RSA, RSAUtils } from "./crypto/RSA"
+import { AESUtils } from "./crypto/AES"
+import { RSAUtils } from "./crypto/RSA"
 import { utils, UtilsClass } from "./crypto/utils"
-import { shamir, ShamirClass } from "./crypto/shamir"
+import { ShamirClass } from "./crypto/shamir"
 
 import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
@@ -1410,7 +1410,7 @@ export class IccCryptoXApi {
   }
 
   // noinspection JSUnusedGlobalSymbols
-  loadKeyPairsInBrowserLocalStorage(healthcarePartyId: string, file: Blob) {
+  loadKeyPairsInBrowserLocalStorage(healthcarePartyId: string, file: Blob): Promise<void> {
     const fr = new FileReader()
     return new Promise<void>((resolve: () => void, reject) => {
       fr.onerror = reject

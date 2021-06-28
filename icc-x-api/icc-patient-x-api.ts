@@ -1428,17 +1428,33 @@ export class IccPatientXApi extends iccPatientApi {
                             : cls
                         )
                     ) as Promise<Array<models.ClassificationDto>>,
-                    retry(() =>
-                      this.calendarItemApi
-                        .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(","))
-                        .then((cls) =>
-                          parentId
-                            ? this.calendarItemApi
-                                .findByHCPartyPatientSecretFKeys(parentId, delSfks.join(","))
-                                .then((moreCls) => _.uniqBy(cls.concat(moreCls), "id"))
-                            : cls
+                    retry(async () => {
+                      const delegationSFKs = delSfks.join(",")
+                      try {
+                        let calendarItems =
+                          await this.calendarItemApi.findByHCPartyPatientSecretFKeys(
+                            ownerId,
+                            delegationSFKs
+                          )
+
+                        if (parentId) {
+                          const moreCalendarItems =
+                            await this.calendarItemApi.findByHCPartyPatientSecretFKeys(
+                              parentId,
+                              delegationSFKs
+                            )
+
+                          calendarItems = _.uniqBy(calendarItems.concat(moreCalendarItems), "id")
+                        }
+
+                        return calendarItems
+                      } catch (ex) {
+                        console.log(
+                          `exception occured exporting calendarItem for ownerId: ${ownerId} - ${ex}`
                         )
-                    ) as Promise<Array<models.CalendarItemDto>>,
+                        //throw ex
+                      }
+                    }) as Promise<Array<models.CalendarItemDto>>,
                   ]).then(([hes, frms, ctcs, ivs, cls, cis]) => {
                     const docIds: { [key: string]: number } = {}
                     ctcs.forEach(
@@ -1532,7 +1548,11 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   async getPatientIdOfChildDocumentForHcpAndHcpParents(
-    childDocument: models.InvoiceDto | models.CalendarItemDto | models.ContactDto,
+    childDocument:
+      | models.InvoiceDto
+      | models.CalendarItemDto
+      | models.ContactDto
+      | models.AccessLogDto,
     hcpId: string
   ): Promise<string> {
     const parentIdsArray = (await this.crypto.extractCryptedFKs(childDocument, hcpId)).extractedKeys

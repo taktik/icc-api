@@ -7,6 +7,10 @@ import * as _ from "lodash"
 import { utils } from "./crypto/utils"
 import { AccessLogDto, PaginatedListAccessLogDto } from "../icc-api/model/models"
 
+export interface AccessLogWithPatientId extends AccessLogDto {
+  patientId: string
+}
+
 export class IccAccesslogXApi extends iccAccesslogApi {
   crypto: IccCryptoXApi
   cryptedKeys = ["detail", "objectId"]
@@ -40,6 +44,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
         codes: [],
         tags: [],
         user: user.id,
+        patientId: patient.id,
         accessType: "USER_ACCESS",
       },
       h || {}
@@ -128,7 +133,7 @@ export class IccAccesslogXApi extends iccAccesslogApi {
   findByHCPartyPatientSecretFKeys(
     hcPartyId: string,
     secretFKeys: string
-  ): Promise<Array<models.ContactDto> | any> {
+  ): Promise<Array<models.AccessLogDto> | any> {
     return super
       .findAccessLogsByHCPartyPatientForeignKeys(hcPartyId, secretFKeys)
       .then((accesslogs) => this.decrypt(hcPartyId, accesslogs))
@@ -366,5 +371,71 @@ export class IccAccesslogXApi extends iccAccesslogApi {
           Object.assign(accessLog, { rows: dr })
         )
       )
+  }
+
+  async findLatestAccessLogsOfPatientsWithUser(
+    user: models.UserDto,
+    userId: string,
+    limit: number = 100,
+    startDate?: number
+  ): Promise<models.AccessLogDto[]> {
+    let foundAccessLogs: AccessLogWithPatientId[] = [],
+      nextKeyPair: models.PaginatedDocumentKeyIdPairObject | undefined = undefined
+    const numberRequestedAccessLogs = 100
+    const MAX_WHILE_ITERATIONS = 5
+
+    for (
+      let currentIteration = 0;
+      foundAccessLogs.length < limit && currentIteration < MAX_WHILE_ITERATIONS;
+      currentIteration++
+    ) {
+      const currentLimit = limit - foundAccessLogs.length
+      const { rows: logs, nextKeyPair: newNextKeyPair }: models.PaginatedListAccessLogDto =
+        (await super.findByUserAfterDate(
+          userId,
+          "USER_ACCESS",
+          startDate,
+          nextKeyPair && JSON.stringify(nextKeyPair.startKey!),
+          nextKeyPair && nextKeyPair.startKeyDocId!,
+          numberRequestedAccessLogs,
+          true
+        )) as models.PaginatedListAccessLogDto
+      const logsWithPatientId: AccessLogWithPatientId[] = await this.decrypt(
+        (user.healthcarePartyId || user.patientId)!,
+        logs as AccessLogDto[]
+      ).then((decryptedLogs) =>
+        Promise.all(
+          _.map(decryptedLogs, (decryptedLog) => {
+            return this.crypto
+              .extractCryptedFKs(decryptedLog, user.healthcarePartyId as string)
+              .then(
+                (keys) =>
+                  ({
+                    ...decryptedLog,
+                    patientId: _.head(keys.extractedKeys),
+                  } as AccessLogWithPatientId)
+              )
+          })
+        )
+      )
+
+      const uniqueLogs: AccessLogWithPatientId[] = _.chain(logsWithPatientId)
+        .reject((log) => _.some(foundAccessLogs, ({ patientId }) => patientId === log.patientId))
+        .uniqBy((log: AccessLogWithPatientId) => log.patientId)
+        .value()
+        .slice(0, currentLimit)
+
+      foundAccessLogs = [...foundAccessLogs, ...uniqueLogs]
+
+      if ((logs || []).length < numberRequestedAccessLogs) {
+        break
+      } else if (newNextKeyPair) {
+        nextKeyPair = newNextKeyPair
+      } else {
+        break
+      }
+    }
+
+    return foundAccessLogs
   }
 }

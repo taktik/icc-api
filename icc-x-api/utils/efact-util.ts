@@ -6,7 +6,7 @@ import {
   ListOfIdsDto,
   PatientDto,
   MessageDto,
-  InsurabilityDto
+  InsurabilityDto,
 } from "../../icc-api/model/models"
 import { IccInvoiceXApi, IccMessageXApi } from "../../icc-x-api"
 import { iccInsuranceApi } from "../../icc-api/api/iccInsuranceApi"
@@ -41,13 +41,13 @@ function ensureNoFederation(invoices: Array<InvoiceWithPatient>, insurances: Arr
   // We will check here for recipient which are federations (except 306).
 
   const federations = insurances.filter(
-    i => i.code !== "306" && i.code !== "675" && i.id === i.parent
+    (i) => i.code !== "306" && i.code !== "675" && i.id === i.parent
   )
 
   if (federations.length > 0) {
     console.error(
-      `Invoices directed to ${federations.map(i => i.code).join()}, invoices ${invoices.map(
-        i => i.invoiceDto.id
+      `Invoices directed to ${federations.map((i) => i.code).join()}, invoices ${invoices.map(
+        (i) => i.invoiceDto.id
       )}`
     )
     throw "Some invoices are directly destinated to federations inside of mutuality office !"
@@ -61,16 +61,18 @@ export function getFederaton(
   return insuranceApi
     .getInsurances(
       new ListOfIdsDto({
-        ids: _.compact(invoices.map(iwp => iwp.invoiceDto.recipientId))
+        ids: _.compact(invoices.map((iwp) => iwp.invoiceDto.recipientId)),
       })
     )
     .then((insurances: Array<InsuranceDto>) => {
       ensureNoFederation(invoices, insurances)
 
       return insuranceApi
-        .getInsurances(new ListOfIdsDto({ ids: _.uniq(_.compact(insurances.map(i => i.parent))) }))
+        .getInsurances(
+          new ListOfIdsDto({ ids: _.uniq(_.compact(insurances.map((i) => i.parent))) })
+        )
         .then((parents: Array<InsuranceDto>) => {
-          const parentsWithFedCode = parents.filter(i => i.code)
+          const parentsWithFedCode = parents.filter((i) => i.code)
 
           if (!parentsWithFedCode.length) {
             throw "The federation is missing from the recipients of the invoices"
@@ -95,10 +97,10 @@ export function getRelatedInvoicesInfo(
   const getRelatedInvoiceId = (iv: InvoiceDto) =>
     (iv.creditNote && iv.creditNoteRelatedInvoiceId) || iv.correctedInvoiceId
 
-  return Promise.resolve(invoicesWithPatient).then(invoicesWithPatient => {
+  return Promise.resolve(invoicesWithPatient).then((invoicesWithPatient) => {
     const invoices = _(invoicesWithPatient)
-      .map(iwp => iwp.invoiceDto)
-      .filter(piv => !!getRelatedInvoiceId(piv))
+      .map((iwp) => iwp.invoiceDto)
+      .filter((piv) => !!getRelatedInvoiceId(piv))
       .value()
 
     if (invoices.length === 0) {
@@ -106,17 +108,17 @@ export function getRelatedInvoicesInfo(
     }
 
     const relatedInvoiceIds = new ListOfIdsDto({
-      ids: invoices.map(iv => getRelatedInvoiceId(iv))
+      ids: invoices.map((iv) => getRelatedInvoiceId(iv)),
     })
 
     return Promise.all([
       messageXApi.listMessagesByInvoiceIds(relatedInvoiceIds),
-      invoiceXApi.getInvoices(relatedInvoiceIds)
-    ]).then(result => {
+      invoiceXApi.getInvoices(relatedInvoiceIds),
+    ]).then((result) => {
       const messages: MessageDto[] = result[0]
       const relatedInvoices: InvoiceDto[] = result[1]
       const insuranceIds = _(relatedInvoices)
-        .map(civ => civ.recipientId)
+        .map((civ) => civ.recipientId)
         .uniq()
         .value()
 
@@ -125,18 +127,18 @@ export function getRelatedInvoicesInfo(
         .then((insurances: InsuranceDto[]) => {
           const relatedInvoicesInfo: RelatedInvoiceInfo[] = []
 
-          _.forEach(invoices, invoice => {
+          _.forEach(invoices, (invoice) => {
             const relatedInvoice = _.find(
               relatedInvoices,
-              riv => !!(riv.id === getRelatedInvoiceId(invoice))
+              (riv) => !!(riv.id === getRelatedInvoiceId(invoice))
             )
             const message = _.find(
               messages,
-              m => !!(relatedInvoice && m.invoiceIds!!.indexOf(relatedInvoice.id!!) > -1)
+              (m) => !!(relatedInvoice && m.invoiceIds!!.indexOf(relatedInvoice.id!!) > -1)
             )
             const insurance = _.find(
               insurances,
-              ins => !!(relatedInvoice && ins.id === relatedInvoice.recipientId)
+              (ins) => !!(relatedInvoice && ins.id === relatedInvoice.recipientId)
             )
 
             if (!relatedInvoice || !message || !insurance) return
@@ -147,7 +149,7 @@ export function getRelatedInvoicesInfo(
               invoiceReference: relatedInvoice.invoiceReference,
               sendNumber: message.externalRef,
               invoicingYear: _.padStart(message.metas!!.invoiceYear, 4, "0"),
-              invoicingMonth: _.padStart(message.metas!!.invoiceMonth, 2, "0")
+              invoicingMonth: _.padStart(message.metas!!.invoiceMonth, 2, "0"),
             })
           })
 
@@ -172,16 +174,18 @@ export function toInvoiceBatch(
   return insuranceApi
     .getInsurances(
       new ListOfIdsDto({
-        ids: _.compact(invoicesWithPatient.map(iwp => iwp.invoiceDto.recipientId))
+        ids: _.compact(invoicesWithPatient.map((iwp) => iwp.invoiceDto.recipientId)),
       })
     )
     .then((insurances: Array<InsuranceDto>) => {
       ensureNoFederation(invoicesWithPatient, insurances)
 
       return insuranceApi
-        .getInsurances(new ListOfIdsDto({ ids: _.uniq(_.compact(insurances.map(i => i.parent))) }))
+        .getInsurances(
+          new ListOfIdsDto({ ids: _.uniq(_.compact(insurances.map((i) => i.parent))) })
+        )
         .then((parents: Array<InsuranceDto>) => {
-          const fedCodes = _.compact(parents.map(i => i.code && i.code.substr(0, 3)))
+          const fedCodes = _.compact(parents.map((i) => i.code && i.code.substr(0, 3)))
           if (!fedCodes.length) {
             throw "The federation is missing from the recipients of the invoices"
           }
@@ -209,9 +213,9 @@ export function toInvoiceBatch(
                 const invoice = invWithPat.aggregatedInvoice || invWithPat.invoiceDto
                 const relatedInvoiceInfo = _.find(
                   relatedInvoicesInfo,
-                  rivi => rivi.invoiceId === invoice.id
+                  (rivi) => rivi.invoiceId === invoice.id
                 )
-                const insurance = insurances.find(ins => ins.id === invoice.recipientId)
+                const insurance = insurances.find((ins) => ins.id === invoice.recipientId)
                 if (!insurance) {
                   throw "Insurance is invalid for patient " + invWithPat.patientDto.id
                 }
@@ -230,22 +234,21 @@ export function toInvoiceBatch(
             const now = new Date()
             //do invoiceDate stats
             const invoiceDates = _.groupBy(
-              invoicesWithPatient.map(
-                inv =>
-                  !!inv && !!inv.invoiceDto && !!inv.invoiceDto.invoiceDate
-                    ? inv.invoiceDto.invoiceDate.toString().substring(0, 6) + "01"
-                    : "10000101"
+              invoicesWithPatient.map((inv) =>
+                !!inv && !!inv.invoiceDto && !!inv.invoiceDto.invoiceDate
+                  ? inv.invoiceDto.invoiceDate.toString().substring(0, 6) + "01"
+                  : "10000101"
               )
             )
             let dateCounts: any[] = []
-            _.forOwn(invoiceDates, function(val, key) {
+            _.forOwn(invoiceDates, function (val, key) {
               dateCounts.push({ date: key, count: val.length })
             })
             const invoiceDate = toMoment(
               _.get(
                 _.head(_.orderBy(dateCounts, ["count", "date"], ["desc", "desc"])),
                 "date",
-                invoicesWithPatient[0].invoiceDto.invoiceDate
+                invoicesWithPatient[0].invoiceDto.invoiceDate!!
               )
             )
             const invoicingMonth = !!invoiceDate ? invoiceDate.month() + 1 : 0
@@ -283,9 +286,7 @@ function toInvoice(
   flatrateInvoice: boolean = false
 ): Invoice {
   const invoice = new Invoice({})
-  const invoiceYear = moment(invoiceDto.created)
-    .year()
-    .toString()
+  const invoiceYear = moment(invoiceDto.created).year().toString()
 
   invoice.hospitalisedPatient = isPatientHospitalized(patientDto)
   // FIXME : coder l'invoice ref
@@ -337,15 +338,11 @@ function toInvoiceItem(
   invoiceItem.codeNomenclature = Number(invoicingCode.tarificationId!!.split("|")[1])
   invoiceItem.dateCode = dateEncode(toMoment(invoicingCode.dateCode!!)!!.toDate())
   // Only applies to flatrate invoicing
-  if(flatrateInvoice) {
+  if (flatrateInvoice) {
     invoiceItem.endDateCode =
       invoiceItem.codeNomenclature === 109594 // Diabetes pre-care pathways
         ? dateEncode(toMoment(invoicingCode.dateCode!!)!!.toDate())
-        : dateEncode(
-        toMoment(invoicingCode.dateCode!!)!!
-          .endOf("month")
-          .toDate()
-        )
+        : dateEncode(toMoment(invoicingCode.dateCode!!)!!.endOf("month").toDate())
   }
   invoiceItem.doctorIdentificationNumber = nihiiHealthcareProvider
   invoiceItem.doctorSupplement = Number(((invoicingCode.doctorSupplement || 0) * 100).toFixed(0))
@@ -355,7 +352,7 @@ function toInvoiceItem(
       readType: "1",
       readDate: invoiceItem.dateCode,
       readHour: invoicingCode.eidReadingHour,
-      readvalue: invoicingCode.eidReadingValue
+      readvalue: invoicingCode.eidReadingValue,
     })
   }
   invoiceItem.gnotionNihii = invoiceDto.gnotionNihii
@@ -365,7 +362,7 @@ function toInvoiceItem(
 
   invoiceItem.override3rdPayerCode = invoicingCode.override3rdPayerCode
   invoiceItem.patientFee = Number(((invoicingCode.patientIntervention || 0) * 100).toFixed(0))
-  invoiceItem.percentNorm = InvoiceItem.PercentNormEnum.None
+  invoiceItem.percentNorm = getPercentNorm(invoicingCode.percentNorm || 0)
   invoiceItem.personalInterventionCoveredByThirdPartyCode =
     invoicingCode.cancelPatientInterventionReason
   invoiceItem.prescriberNihii = invoicingCode.prescriberNihii
@@ -382,66 +379,96 @@ function toInvoiceItem(
   return invoiceItem
 }
 
-function getSideCode(code: number) {
+export function getPercentNorm(norm: number) {
+  return norm === 0
+    ? InvoiceItem.PercentNormEnum.None
+    : norm === 1
+    ? InvoiceItem.PercentNormEnum.SurgicalAid1
+    : norm === 2
+    ? InvoiceItem.PercentNormEnum.SurgicalAid2
+    : norm === 3
+    ? InvoiceItem.PercentNormEnum.ReducedFee
+    : norm === 4
+    ? InvoiceItem.PercentNormEnum.Ah1n1
+    : norm === 5
+    ? InvoiceItem.PercentNormEnum.HalfPriceSecondAct
+    : norm === 6
+    ? InvoiceItem.PercentNormEnum.InvoiceException
+    : norm === 7
+    ? InvoiceItem.PercentNormEnum.ForInformation
+    : InvoiceItem.PercentNormEnum.None
+}
+
+export function getSideCode(code: number) {
   return code === 0
     ? InvoiceItem.SideCodeEnum.None
     : code === 1
-      ? InvoiceItem.SideCodeEnum.Left
-      : code === 2
-        ? InvoiceItem.SideCodeEnum.Right
-        : InvoiceItem.SideCodeEnum.None
+    ? InvoiceItem.SideCodeEnum.Left
+    : code === 2
+    ? InvoiceItem.SideCodeEnum.Right
+    : InvoiceItem.SideCodeEnum.None
+}
+
+export function getSideNumber(code: InvoiceItem.SideCodeEnum) {
+  return code === InvoiceItem.SideCodeEnum.None
+    ? 0
+    : code === InvoiceItem.SideCodeEnum.Left
+    ? 1
+    : code === InvoiceItem.SideCodeEnum.Right
+    ? 2
+    : 0
 }
 
 function getTimeOfDay(code: number) {
   return code === 0
     ? InvoiceItem.TimeOfDayEnum.Other
     : code === 1
-      ? InvoiceItem.TimeOfDayEnum.Night
-      : code === 2
-        ? InvoiceItem.TimeOfDayEnum.Weekend
-        : code === 3
-          ? InvoiceItem.TimeOfDayEnum.Bankholiday
-          : code === 4
-            ? InvoiceItem.TimeOfDayEnum.Urgent
-            : InvoiceItem.TimeOfDayEnum.Other
+    ? InvoiceItem.TimeOfDayEnum.Night
+    : code === 2
+    ? InvoiceItem.TimeOfDayEnum.Weekend
+    : code === 3
+    ? InvoiceItem.TimeOfDayEnum.Bankholiday
+    : code === 4
+    ? InvoiceItem.TimeOfDayEnum.Urgent
+    : InvoiceItem.TimeOfDayEnum.Other
 }
 
 function getPrescriberNorm(code: number) {
   return code === 0
     ? InvoiceItem.PrescriberNormEnum.None
     : code === 1
-      ? InvoiceItem.PrescriberNormEnum.OnePrescriber
-      : code === 3
-        ? InvoiceItem.PrescriberNormEnum.SelfPrescriber
-        : code === 4
-          ? InvoiceItem.PrescriberNormEnum.AddedCode
-          : code === 9
-            ? InvoiceItem.PrescriberNormEnum.ManyPrescribers
-            : InvoiceItem.PrescriberNormEnum.None
+    ? InvoiceItem.PrescriberNormEnum.OnePrescriber
+    : code === 3
+    ? InvoiceItem.PrescriberNormEnum.SelfPrescriber
+    : code === 4
+    ? InvoiceItem.PrescriberNormEnum.AddedCode
+    : code === 9
+    ? InvoiceItem.PrescriberNormEnum.ManyPrescribers
+    : InvoiceItem.PrescriberNormEnum.None
 }
 
 export function getDerogationMaxNumber(code: number): InvoiceItem.DerogationMaxNumberEnum {
   return code === 0
     ? InvoiceItem.DerogationMaxNumberEnum.Other
     : code === 1
-      ? InvoiceItem.DerogationMaxNumberEnum.DerogationMaxNumber
-      : code === 2
-        ? InvoiceItem.DerogationMaxNumberEnum.OtherPrescription
-        : code === 3
-          ? InvoiceItem.DerogationMaxNumberEnum.SecondPrestationOfDay
-          : InvoiceItem.DerogationMaxNumberEnum.ThirdAndNextPrestationOfDay
+    ? InvoiceItem.DerogationMaxNumberEnum.DerogationMaxNumber
+    : code === 2
+    ? InvoiceItem.DerogationMaxNumberEnum.OtherPrescription
+    : code === 3
+    ? InvoiceItem.DerogationMaxNumberEnum.SecondPrestationOfDay
+    : InvoiceItem.DerogationMaxNumberEnum.ThirdAndNextPrestationOfDay
 }
 
 export function toDerogationMaxNumber(derogation: InvoiceItem.DerogationMaxNumberEnum): number {
   return derogation === InvoiceItem.DerogationMaxNumberEnum.Other
     ? 0
     : derogation === InvoiceItem.DerogationMaxNumberEnum.DerogationMaxNumber
-      ? 1
-      : derogation === InvoiceItem.DerogationMaxNumberEnum.OtherPrescription
-        ? 2
-        : derogation === InvoiceItem.DerogationMaxNumberEnum.SecondPrestationOfDay
-          ? 3
-          : 4
+    ? 1
+    : derogation === InvoiceItem.DerogationMaxNumberEnum.OtherPrescription
+    ? 2
+    : derogation === InvoiceItem.DerogationMaxNumberEnum.SecondPrestationOfDay
+    ? 3
+    : 4
 }
 
 export function uuidBase36(uuid: string): string {

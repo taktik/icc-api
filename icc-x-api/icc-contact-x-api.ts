@@ -22,8 +22,8 @@ export class IccContactXApi extends iccContactApi {
     "undefined"
       ? window.fetch
       : typeof self !== "undefined"
-        ? self.fetch
-        : fetch
+      ? self.fetch
+      : fetch
   ) {
     super(host, headers, fetchImpl)
     this.crypto = crypto
@@ -49,7 +49,7 @@ export class IccContactXApi extends iccContactApi {
           groupId: this.crypto.randomUuid(),
           subContacts: [],
           services: [],
-          openingDate: parseInt(moment().format("YYYYMMDDHHmmss"))
+          openingDate: parseInt(moment().format("YYYYMMDDHHmmss")),
         },
         c || {}
       )
@@ -75,7 +75,7 @@ export class IccContactXApi extends iccContactApi {
     const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto
       .extractPreferredSfk(patient, hcpId!!, confidential)
-      .then(key => {
+      .then((key) => {
         if (!key) {
           console.error(
             `SFK cannot be found for HealthElement ${key}. The health element will not be reachable from the patient side`
@@ -83,7 +83,7 @@ export class IccContactXApi extends iccContactApi {
         }
         return Promise.all([
           this.crypto.initObjectDelegations(contact, patient, hcpId!, key),
-          this.crypto.initEncryptionKeys(contact, hcpId!)
+          this.crypto.initEncryptionKeys(contact, hcpId!),
         ])
       })
       .then(([dels, eks]) => {
@@ -91,7 +91,7 @@ export class IccContactXApi extends iccContactApi {
           delegations: dels.delegations,
           cryptedForeignKeys: dels.cryptedForeignKeys,
           secretForeignKeys: dels.secretForeignKeys,
-          encryptionKeys: eks.encryptionKeys
+          encryptionKeys: eks.encryptionKeys,
         })
 
         let promise = Promise.resolve(contact)
@@ -99,8 +99,8 @@ export class IccContactXApi extends iccContactApi {
           ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
           : []
         ).forEach(
-          delegateId =>
-            (promise = promise.then(contact =>
+          (delegateId) =>
+            (promise = promise.then((contact) =>
               this.crypto
                 .addDelegationsAndEncryptionKeys(
                   patient,
@@ -110,15 +110,18 @@ export class IccContactXApi extends iccContactApi {
                   dels.secretId,
                   eks.secretId
                 )
-                .catch(e => {
+                .catch((e) => {
                   console.log(e)
                   return contact
                 })
             ))
         )
-        ;(user.autoDelegations ? user.autoDelegations.anonymousMedicalInformation : []).forEach(
-          delegateId =>
-            (promise = promise.then(contact =>
+        ;(user.autoDelegations && user.autoDelegations.anonymousMedicalInformation
+          ? user.autoDelegations.anonymousMedicalInformation
+          : []
+        ).forEach(
+          (delegateId) =>
+            (promise = promise.then((contact) =>
               this.crypto
                 .addDelegationsAndEncryptionKeys(
                   patient,
@@ -128,7 +131,7 @@ export class IccContactXApi extends iccContactApi {
                   null,
                   eks.secretId
                 )
-                .catch(e => {
+                .catch((e) => {
                   console.log(e)
                   return contact
                 })
@@ -140,10 +143,10 @@ export class IccContactXApi extends iccContactApi {
 
   initEncryptionKeys(user: models.UserDto, ctc: models.ContactDto) {
     const hcpId = user.healthcarePartyId || user.patientId
-    return this.crypto.initEncryptionKeys(ctc, hcpId!).then(eks => {
+    return this.crypto.initEncryptionKeys(ctc, hcpId!).then((eks) => {
       let promise = Promise.resolve(
         _.extend(ctc, {
-          encryptionKeys: eks.encryptionKeys
+          encryptionKeys: eks.encryptionKeys,
         })
       )
       ;(user.autoDelegations
@@ -152,16 +155,16 @@ export class IccContactXApi extends iccContactApi {
             .concat(user.autoDelegations.anonymousMedicalInformation || [])
         : []
       ).forEach(
-        delegateId =>
-          (promise = promise.then(contact =>
+        (delegateId) =>
+          (promise = promise.then((contact) =>
             this.crypto
               .appendEncryptionKeys(contact, hcpId!, delegateId, eks.secretId)
-              .then(extraEks => {
+              .then((extraEks) => {
                 return _.extend(contact, {
-                  encryptionKeys: extraEks.encryptionKeys
+                  encryptionKeys: extraEks.encryptionKeys,
                 })
               })
-              .catch(e => {
+              .catch((e) => {
                 console.log(e.message)
                 return contact
               })
@@ -187,32 +190,30 @@ export class IccContactXApi extends iccContactApi {
    * @param patient (Promise)
    */
   findBy(hcpartyId: string, patient: models.PatientDto) {
-    return this.crypto.extractSFKsHierarchyFromDelegations(patient, hcpartyId).then(
-      secretForeignKeys =>
+    return this.crypto
+      .extractSFKsHierarchyFromDelegations(patient, hcpartyId)
+      .then((secretForeignKeys) =>
         secretForeignKeys && secretForeignKeys.length > 0
           ? Promise.all(
               secretForeignKeys
-                .reduce(
-                  (acc, level) => {
-                    return acc.concat([
-                      {
-                        hcpartyId: level.hcpartyId,
-                        extractedKeys: level.extractedKeys.filter(
-                          key =>
-                            !acc.some(previousLevel => previousLevel.extractedKeys.includes(key))
-                        )
-                      }
-                    ])
-                  },
-                  [] as Array<{ hcpartyId: string; extractedKeys: Array<string> }>
-                )
-                .filter(l => l.extractedKeys.length > 0)
+                .reduce((acc, level) => {
+                  return acc.concat([
+                    {
+                      hcpartyId: level.hcpartyId,
+                      extractedKeys: level.extractedKeys.filter(
+                        (key) =>
+                          !acc.some((previousLevel) => previousLevel.extractedKeys.includes(key))
+                      ),
+                    },
+                  ])
+                }, [] as Array<{ hcpartyId: string; extractedKeys: Array<string> }>)
+                .filter((l) => l.extractedKeys.length > 0)
                 .map(({ hcpartyId, extractedKeys }) =>
                   this.findByHCPartyPatientSecretFKeys(hcpartyId, extractedKeys.join(","))
                 )
-            ).then(results => _.uniqBy(_.flatMap(results), x => x.id))
+            ).then((results) => _.uniqBy(_.flatMap(results), (x) => x.id))
           : Promise.resolve([])
-    )
+      )
   }
 
   async findByPatientSFKs(
@@ -222,20 +223,17 @@ export class IccContactXApi extends iccContactApi {
     const perHcpId: { [key: string]: string[] } = {}
     for (const patient of patients) {
       ;(await this.crypto.extractSFKsHierarchyFromDelegations(patient, hcpartyId))
-        .reduce(
-          (acc, level) => {
-            return acc.concat([
-              {
-                hcpartyId: level.hcpartyId,
-                extractedKeys: level.extractedKeys.filter(
-                  key => !acc.some(previousLevel => previousLevel.extractedKeys.includes(key))
-                )
-              }
-            ])
-          },
-          [] as Array<{ hcpartyId: string; extractedKeys: Array<string> }>
-        )
-        .filter(l => l.extractedKeys.length > 0)
+        .reduce((acc, level) => {
+          return acc.concat([
+            {
+              hcpartyId: level.hcpartyId,
+              extractedKeys: level.extractedKeys.filter(
+                (key) => !acc.some((previousLevel) => previousLevel.extractedKeys.includes(key))
+              ),
+            },
+          ])
+        }, [] as Array<{ hcpartyId: string; extractedKeys: Array<string> }>)
+        .filter((l) => l.extractedKeys.length > 0)
         .forEach(({ hcpartyId, extractedKeys }) => {
           ;(perHcpId[hcpartyId] || (perHcpId[hcpartyId] = [])).push(...extractedKeys)
         })
@@ -244,17 +242,17 @@ export class IccContactXApi extends iccContactApi {
     return _.uniqBy(
       _.flatMap(
         await Promise.all(
-          Object.keys(perHcpId).map(hcpId =>
+          Object.keys(perHcpId).map((hcpId) =>
             this.findContactsByHCPartyPatientForeignKeys(
               hcpartyId,
               new models.ListOfIdsDto({
-                ids: perHcpId[hcpId]
+                ids: perHcpId[hcpId],
               })
             )
           )
         )
       ),
-      x => x.id
+      (x) => x.id
     )
   }
 
@@ -331,7 +329,7 @@ export class IccContactXApi extends iccContactApi {
   ): Promise<Array<models.ContactDto> | any> {
     return super
       .findByHCPartyPatientSecretFKeys(hcPartyId, secretFKeys, planOfActionIds, skipClosedContacts)
-      .then(contacts => this.decrypt(hcPartyId, contacts))
+      .then((contacts) => this.decrypt(hcPartyId, contacts))
   }
 
   filterByWithUser(
@@ -342,8 +340,8 @@ export class IccContactXApi extends iccContactApi {
   ): Promise<PaginatedListContactDto | any> {
     return super
       .filterContactsBy(startDocumentId, limit, body)
-      .then(ctcs =>
-        this.decrypt(user.healthcarePartyId!, ctcs.rows!).then(decryptedRows =>
+      .then((ctcs) =>
+        this.decrypt(user.healthcarePartyId! || user.patientId!, ctcs.rows!).then((decryptedRows) =>
           Object.assign(ctcs, { rows: decryptedRows })
         )
       )
@@ -359,10 +357,11 @@ export class IccContactXApi extends iccContactApi {
   ): Promise<PaginatedListContactDto | any> {
     return super
       .listContactsByOpeningDate(startKey, endKey, hcpartyid, startDocumentId, limit)
-      .then(ctcs => {
-        ;(ctcs as any).rows = this.decrypt((user.healthcarePartyId || user.patientId)!, ctcs.rows!)
-        return ctcs
-      })
+      .then((ctcs) =>
+        this.decrypt(user.healthcarePartyId! || user.patientId!, ctcs.rows!).then((decryptedRows) =>
+          Object.assign(ctcs, { rows: decryptedRows })
+        )
+      )
   }
 
   findByHCPartyFormIdWithUser(
@@ -372,7 +371,7 @@ export class IccContactXApi extends iccContactApi {
   ): Promise<Array<models.ContactDto> | any> {
     return super
       .findByHCPartyFormId(hcPartyId, formId)
-      .then(ctcs => this.decrypt((user.healthcarePartyId || user.patientId)!, ctcs))
+      .then((ctcs) => this.decrypt((user.healthcarePartyId || user.patientId)!, ctcs))
   }
 
   findByHCPartyFormIdsWithUser(
@@ -382,14 +381,14 @@ export class IccContactXApi extends iccContactApi {
   ): Promise<Array<models.ContactDto> | any> {
     return super
       .findByHCPartyFormIds(hcPartyId, body)
-      .then(ctcs => this.decrypt((user.healthcarePartyId || user.patientId)!, ctcs))
+      .then((ctcs) => this.decrypt((user.healthcarePartyId || user.patientId)!, ctcs))
   }
 
   getContactWithUser(user: models.UserDto, contactId: string): Promise<models.ContactDto | any> {
     return super
       .getContact(contactId)
-      .then(ctc => this.decrypt((user.healthcarePartyId || user.patientId)!, [ctc]))
-      .then(ctcs => ctcs[0])
+      .then((ctc) => this.decrypt((user.healthcarePartyId || user.patientId)!, [ctc]))
+      .then((ctcs) => ctcs[0])
   }
 
   getContactsWithUser(
@@ -398,7 +397,7 @@ export class IccContactXApi extends iccContactApi {
   ): Promise<Array<models.ContactDto> | any> {
     return super
       .getContacts(body)
-      .then(ctcs => this.decrypt((user.healthcarePartyId || user.patientId)!, ctcs))
+      .then((ctcs) => this.decrypt((user.healthcarePartyId || user.patientId)!, ctcs))
   }
 
   modifyContactWithUser(
@@ -407,9 +406,9 @@ export class IccContactXApi extends iccContactApi {
   ): Promise<models.ContactDto | any> {
     return body
       ? this.encrypt(user, [_.cloneDeep(body)])
-          .then(ctcs => super.modifyContact(ctcs[0]))
-          .then(ctc => this.decrypt((user.healthcarePartyId || user.patientId)!, [ctc]))
-          .then(ctcs => ctcs[0])
+          .then((ctcs) => super.modifyContact(ctcs[0]))
+          .then((ctc) => this.decrypt((user.healthcarePartyId || user.patientId)!, [ctc]))
+          .then((ctcs) => ctcs[0])
       : Promise.resolve(null)
   }
 
@@ -418,9 +417,12 @@ export class IccContactXApi extends iccContactApi {
     bodies?: Array<models.ContactDto>
   ): Promise<models.ContactDto | any> {
     return bodies
-      ? this.encrypt(user, bodies.map(c => _.cloneDeep(c)))
-          .then(ctcs => super.modifyContacts(ctcs))
-          .then(ctcs => this.decrypt((user.healthcarePartyId || user.patientId)!, ctcs))
+      ? this.encrypt(
+          user,
+          bodies.map((c) => _.cloneDeep(c))
+        )
+          .then((ctcs) => super.modifyContacts(ctcs))
+          .then((ctcs) => this.decrypt((user.healthcarePartyId || user.patientId)!, ctcs))
       : Promise.resolve(null)
   }
 
@@ -430,9 +432,9 @@ export class IccContactXApi extends iccContactApi {
   ): Promise<models.ContactDto | any> {
     return body
       ? this.encrypt(user, [_.cloneDeep(body)])
-          .then(ctcs => super.createContact(ctcs[0]))
-          .then(ctc => this.decrypt((user.healthcarePartyId || user.patientId)!, [ctc]))
-          .then(ctcs => ctcs[0])
+          .then((ctcs) => super.createContact(ctcs[0]))
+          .then((ctc) => this.decrypt((user.healthcarePartyId || user.patientId)!, [ctc]))
+          .then((ctcs) => ctcs[0])
       : Promise.resolve(null)
   }
 
@@ -442,14 +444,14 @@ export class IccContactXApi extends iccContactApi {
     services: ServiceDto[]
   ): PromiseLike<ServiceDto[]> {
     return Promise.all(
-      services.map(async svc => {
+      services.map(async (svc) => {
         if (!svc.content) {
           return svc
         }
 
         if (
           Object.values(svc.content).every(
-            c =>
+            (c) =>
               c.compoundValue &&
               !c.stringValue &&
               !c.documentId &&
@@ -464,7 +466,7 @@ export class IccContactXApi extends iccContactApi {
         ) {
           svc.content = _.fromPairs(
             await Promise.all(
-              _.toPairs(svc.content).map(async p => {
+              _.toPairs(svc.content).map(async (p) => {
                 p[1].compoundValue = await this.encryptServices(key, rawKey, p[1].compoundValue!)
                 return p
               })
@@ -492,7 +494,7 @@ export class IccContactXApi extends iccContactApi {
     const bypassEncryption = false //Used for debug
 
     return Promise.all(
-      ctcs.map(async ctc => {
+      ctcs.map(async (ctc) => {
         const initialisedCtc = bypassEncryption //Prevent encryption for test ctc
           ? ctc
           : await (ctc.encryptionKeys && Object.keys(ctc.encryptionKeys || {}).length
@@ -529,7 +531,7 @@ export class IccContactXApi extends iccContactApi {
 
   decrypt(hcpartyId: string, ctcs: Array<models.ContactDto>): Promise<Array<models.ContactDto>> {
     return Promise.all(
-      ctcs.map(async ctc => {
+      ctcs.map(async (ctc) => {
         const { extractedKeys: sfks } = await this.crypto.extractKeysFromDelegationsForHcpHierarchy(
           hcpartyId,
           ctc.id!,
@@ -573,15 +575,14 @@ export class IccContactXApi extends iccContactApi {
     rawKey?: string
   ): Promise<Array<models.ServiceDto>> {
     return Promise.all(
-      svcs.map(async svc => {
+      svcs.map(async (svc) => {
         if (!key) {
-          const {
-            extractedKeys: sfks
-          } = await this.crypto.extractKeysFromDelegationsForHcpHierarchy(
-            hcpartyId,
-            svc.id!,
-            _.size(svc.encryptionKeys) ? svc.encryptionKeys! : svc.delegations!
-          )
+          const { extractedKeys: sfks } =
+            await this.crypto.extractKeysFromDelegationsForHcpHierarchy(
+              hcpartyId,
+              svc.id!,
+              _.size(svc.encryptionKeys) ? svc.encryptionKeys! : svc.delegations!
+            )
           key = await this.crypto.AES.importKey("raw", utils.hex2ua(sfks[0].replace(/-/g, "")))
         }
 
@@ -617,7 +618,7 @@ export class IccContactXApi extends iccContactApi {
         } else {
           svc.content = _.fromPairs(
             await Promise.all(
-              _.toPairs(svc.content).map(async p => {
+              _.toPairs(svc.content).map(async (p) => {
                 if (p[1].compoundValue) {
                   p[1].compoundValue = await this.decryptServices(
                     hcpartyId,
@@ -639,8 +640,8 @@ export class IccContactXApi extends iccContactApi {
   contactOfService(ctcs: Array<models.ContactDto>, svcId: string): models.ContactDto | undefined {
     let latestContact: models.ContactDto | undefined = undefined
     let latestService: models.ServiceDto
-    ctcs.forEach(c => {
-      const s: models.ServiceDto | undefined = c.services!.find(it => svcId === it.id)
+    ctcs.forEach((c) => {
+      const s: models.ServiceDto | undefined = c.services!.find((it) => svcId === it.id)
       if (s && (!latestService || moment(s.valueDate).isAfter(moment(latestService.valueDate)))) {
         latestContact = c
         latestService = s
@@ -651,14 +652,16 @@ export class IccContactXApi extends iccContactApi {
 
   filteredServices(ctcs: Array<models.ContactDto>, filter: any): Array<models.ServiceDto> {
     const byIds: { [key: string]: models.ServiceDto } = {}
-    ctcs.forEach(c =>
-      (c.services || []).filter(s => filter(s, c)).forEach(s => {
-        const ps = byIds[s.id!]
-        if (!ps || !ps.modified || (s.modified && ps.modified < s.modified)) {
-          byIds[s.id!] = s
-          s.contactId = c.id
-        }
-      })
+    ctcs.forEach((c) =>
+      (c.services || [])
+        .filter((s) => filter(s, c))
+        .forEach((s) => {
+          const ps = byIds[s.id!]
+          if (!ps || !ps.modified || (s.modified && ps.modified < s.modified)) {
+            byIds[s.id!] = s
+            s.contactId = c.id
+          }
+        })
     )
     return _.values(byIds).filter((s: any) => !s.deleted && !s.endOfLife)
   }
@@ -669,7 +672,7 @@ export class IccContactXApi extends iccContactApi {
   }
 
   services(ctc: models.ContactDto, label: string) {
-    return ctc.services!.filter(s => s.label === label)
+    return ctc.services!.filter((s) => s.label === label)
   }
 
   preferredContent(svc: models.ServiceDto, lng: string) {
@@ -708,7 +711,8 @@ export class IccContactXApi extends iccContactApi {
           (c.measureValue.value || c.measureValue.value === 0 ? c.measureValue.value : "-") +
           (c.measureValue.unit ? " " + c.measureValue.unit : "")) ||
       (c.medicationValue ? this.medication().medicationToString(c.medicationValue, lng) : null) ||
-      ((c.booleanValue && label) || "OK")
+      (c.booleanValue && label) ||
+      "OK"
     )
   }
 
@@ -778,22 +782,22 @@ export class IccContactXApi extends iccContactApi {
     if (!ctc) {
       return null
     }
-    const existing = ctc.services!.find(s => s.id === svc.id)
+    const existing = ctc.services!.find((s) => s.id === svc.id)
     const promoted = _.extend(_.extend(existing || {}, svc), {
       author: user.id,
       responsible: user.healthcarePartyId || user.patientId,
-      modified: new Date().getTime()
+      modified: new Date().getTime(),
     })
     if (!existing) {
       ;(ctc.services || (ctc.services = [])).push(promoted)
     }
-    const allSubcontactsInCurrentContactContainingService = (ctc.subContacts || []).filter(csc =>
-      (csc.services || []).some(s => s.serviceId === svc.id)
+    const allSubcontactsInCurrentContactContainingService = (ctc.subContacts || []).filter((csc) =>
+      (csc.services || []).some((s) => s.serviceId === svc.id)
     )
 
     //Rearrange poaIds and heIds as a hierarchy
     const hierarchyOfHeAndPoaIds: { [key: string]: Array<any> } = {}
-    ;(heIds || []).forEach(id => (hierarchyOfHeAndPoaIds[id || "_"] = []))
+    ;(heIds || []).forEach((id) => (hierarchyOfHeAndPoaIds[id || "_"] = []))
     Object.keys(poaIds || {}).forEach((k: string) => {
       const poas = hierarchyOfHeAndPoaIds[k]
       if (poas) {
@@ -804,13 +808,13 @@ export class IccContactXApi extends iccContactApi {
     })
 
     const pastCtc =
-      (svc.contactId && svc.contactId !== ctc.id && ctcs.find(c => c.id === svc.contactId)) ||
+      (svc.contactId && svc.contactId !== ctc.id && ctcs.find((c) => c.id === svc.contactId)) ||
       ctcs.reduce(
         (
           selected: { s: models.ServiceDto | null; c: models.ContactDto | null },
           c: models.ContactDto
         ) => {
-          const candidate = (c.services || []).find(s => s.id === svc.id)
+          const candidate = (c.services || []).find((s) => s.id === svc.id)
           return ctc.id !== c.id &&
             candidate &&
             (selected.s === null || utils.before(selected.s.modified || 0, candidate.modified || 0))
@@ -822,21 +826,21 @@ export class IccContactXApi extends iccContactApi {
     //Make sure that all scs the svc was belonging to are copied inside the current contact
     pastCtc &&
       pastCtc
-        .subContacts!.filter(psc => psc.services!.some(s => s.serviceId === svc.id))
-        .forEach(psc => {
+        .subContacts!.filter((psc) => psc.services!.some((s) => s.serviceId === svc.id))
+        .forEach((psc) => {
           const sameInCurrent = allSubcontactsInCurrentContactContainingService.find(
-            csc =>
+            (csc) =>
               csc.formId === psc.formId &&
               csc.planOfActionId === psc.planOfActionId &&
               csc.healthElementId === psc.healthElementId
           )
           if (sameInCurrent) {
-            if (!sameInCurrent.services!.some(s => s.serviceId === svc.id)) {
+            if (!sameInCurrent.services!.some((s) => s.serviceId === svc.id)) {
               sameInCurrent.services!.push({ serviceId: svc.id })
             }
           } else {
             const newSubContact = _.assign(_.assign({}, psc), {
-              services: [{ serviceId: svc.id }]
+              services: [{ serviceId: svc.id }],
             })
             ctc.subContacts!.push(newSubContact)
             allSubcontactsInCurrentContactContainingService.push(newSubContact)
@@ -852,10 +856,10 @@ export class IccContactXApi extends iccContactApi {
         heId = null
       }
       const subPoaIds = heId ? hierarchyOfHeAndPoaIds[heId] : []
-      ;((subPoaIds || []).length ? subPoaIds : [null]).forEach(poaId => {
+      ;((subPoaIds || []).length ? subPoaIds : [null]).forEach((poaId) => {
         //Create or assign subcontacts for all pairs he/poa (can be null/null)
         let destinationSubcontact = ctc.subContacts!.find(
-          sc =>
+          (sc) =>
             (!formId || sc.formId === formId) &&
             ((!poaId && !sc.planOfActionId) || sc.planOfActionId === poaId) &&
             ((!heId && !sc.healthElementId) || sc.healthElementId === heId)
@@ -866,17 +870,17 @@ export class IccContactXApi extends iccContactApi {
               formId: formId || undefined,
               planOfActionId: poaId,
               healthElementId: heId,
-              services: []
+              services: [],
             }))
           )
         }
 
         const redundantSubcontact =
           allSubcontactsInCurrentContactContainingService.find(
-            aSc => destinationSubcontact === aSc
+            (aSc) => destinationSubcontact === aSc
           ) ||
           allSubcontactsInCurrentContactContainingService.find(
-            aSc =>
+            (aSc) =>
               (!aSc.planOfActionId ||
                 aSc.planOfActionId === destinationSubcontact!.planOfActionId) &&
               (!aSc.healthElementId ||
@@ -886,11 +890,11 @@ export class IccContactXApi extends iccContactApi {
 
         if (redundantSubcontact && redundantSubcontact !== destinationSubcontact) {
           redundantSubcontact.services!.splice(
-            redundantSubcontact.services!.findIndex(link => link.serviceId === svc.id),
+            redundantSubcontact.services!.findIndex((link) => link.serviceId === svc.id),
             1
           )
         }
-        if (!destinationSubcontact.services!.some(s => s.serviceId === svc.id)) {
+        if (!destinationSubcontact.services!.some((s) => s.serviceId === svc.id)) {
           destinationSubcontact.services!.push({ serviceId: svc.id! })
         }
       })
@@ -918,10 +922,10 @@ export class IccContactXApi extends iccContactApi {
             codes: [],
             tags: [],
             content: {},
-            valueDate: parseInt(moment().format("YYYYMMDDHHmmss"))
+            valueDate: parseInt(moment().format("YYYYMMDDHHmmss")),
           },
           s
-        )
+        ),
     }
   }
 
@@ -948,19 +952,19 @@ export class IccContactXApi extends iccContactApi {
       night: 230000,
       beforemeals: -30000,
       betweenmeals: -20000,
-      aftermeals: -10000
+      aftermeals: -10000,
     }
 
     const myself = {
-      regimenScores: function() {
+      regimenScores: function () {
         return regimenScores
       },
-      medicationNameToString: function(m: any): string {
+      medicationNameToString: function (m: any): string {
         return m && m.compoundPrescription
           ? m.compoundPrescription
           : m && m.substanceProduct
-            ? myself.productToString(m && m.substanceProduct)
-            : myself.productToString(m && m.medicinalProduct)
+          ? myself.productToString(m && m.substanceProduct)
+          : myself.productToString(m && m.medicinalProduct)
       },
       reimbursementReasonToString: (m: any, lang: string) => {
         return m &&
@@ -1030,24 +1034,23 @@ export class IccContactXApi extends iccContactApi {
           )
             ? this.i18n[lang].weekly
             : m.regimen.find((r: any) => r.date)
-              ? this.i18n[lang].monthly
-              : this.i18n[lang].daily
+            ? this.i18n[lang].monthly
+            : this.i18n[lang].daily
 
           return `${quantityUnit}, ${m.regimen.length} x ${dayPeriod}, ${_.sortBy(
             m.regimen,
-            r =>
+            (r) =>
               (r.date ? r.date * 1000000 : 29990000000000) +
               (r.dayNumber || 0) * 1000000 +
               ((r.weekday && r.weekday.weekNumber) || 0) * 7 * 1000000 +
               (r.timeOfDay
                 ? r.timeOfDay
                 : r.dayPeriod && r.dayPeriod.code
-                  ? (regimenScores[r.dayPeriod.code] as number)
-                  : 0)
+                ? (regimenScores[r.dayPeriod.code] as number)
+                : 0)
           )
-            .map(
-              r =>
-                cplxRegimen ? myself.regimenToExtString(r, lang) : myself.regimenToString(r, lang)
+            .map((r) =>
+              cplxRegimen ? myself.regimenToExtString(r, lang) : myself.regimenToString(r, lang)
             )
             .join(", ")}`
         }
@@ -1063,8 +1066,8 @@ export class IccContactXApi extends iccContactApi {
         const dayPeriod = m.regimen.find((r: any) => r.weekday !== null && r.weekday !== undefined)
           ? this.i18n[lang].weekly
           : m.regimen.find((r: any) => r.date)
-            ? this.i18n[lang].monthly
-            : this.i18n[lang].daily
+          ? this.i18n[lang].monthly
+          : this.i18n[lang].daily
 
         return `${m.regimen.length} x ${dayPeriod}`
       },
@@ -1075,10 +1078,11 @@ export class IccContactXApi extends iccContactApi {
         const desc = myself.regimenToString(r, lang)
         return (
           (r.administratedQuantity && r.administratedQuantity.quantity && desc
-            ? `${desc} (${r.administratedQuantity.quantity} ${(r.administratedQuantity
-                .administrationUnit
-                ? r.administratedQuantity.administrationUnit.code
-                : r.administratedQuantity.unit) || this.i18n[lang].take_s_})`
+            ? `${desc} (${r.administratedQuantity.quantity} ${
+                (r.administratedQuantity.administrationUnit
+                  ? r.administratedQuantity.administrationUnit.code
+                  : r.administratedQuantity.unit) || this.i18n[lang].take_s_
+              })`
             : desc) || ""
         )
       },
@@ -1086,15 +1090,17 @@ export class IccContactXApi extends iccContactApi {
         let res = r.date
           ? `${this.i18n[lang].the} ${moment(r.date).format("DD/MM/YYYY")}`
           : r.dayNumber
-            ? `${this.i18n[lang].onDay} ${r.dayNumber}`
-            : r.weekday && r.weekday.weekday
-              ? `${this.i18n[lang].on} ${r.weekday.weekday}`
-              : null
+          ? `${this.i18n[lang].onDay} ${r.dayNumber}`
+          : r.weekday && r.weekday.weekday
+          ? `${this.i18n[lang].on} ${r.weekday.weekday}`
+          : null
         if (r.dayPeriod && r.dayPeriod.code && r.dayPeriod.code.length) {
           res = res
-            ? `${res} ${this.i18n[lang][r.dayPeriod.code] ||
+            ? `${res} ${
+                this.i18n[lang][r.dayPeriod.code] ||
                 this.localize(r.dayPeriod.label, lang) ||
-                r.dayPeriod.code}`
+                r.dayPeriod.code
+              }`
             : this.i18n[lang][r.dayPeriod.code] ||
               this.localize(r.dayPeriod.label, lang) ||
               r.dayPeriod.code
@@ -1120,16 +1126,13 @@ export class IccContactXApi extends iccContactApi {
           (this.i18n[lang][s.toLowerCase()] &&
             this.i18n[lang][s.toLowerCase()]
               .split("")
-              .map(
-                (c: string, idx: number) =>
-                  idx >= s.length || s[idx].toLocaleLowerCase() === s[idx]
-                    ? c
-                    : c.toLocaleUpperCase()
+              .map((c: string, idx: number) =>
+                idx >= s.length || s[idx].toLocaleLowerCase() === s[idx] ? c : c.toLocaleUpperCase()
               )
               .join("")) ||
           s
         ) //Applies the (lower/upper)case to the translated lowercase version of the input string (s)
-      }
+      },
     }
     return myself
   }

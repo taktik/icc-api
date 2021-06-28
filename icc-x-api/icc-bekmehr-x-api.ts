@@ -41,7 +41,7 @@ export class IccBekmehrXApi extends iccBekmehrApi {
   socketEventListener(
     socket: WebSocket,
     healthcarePartyId: string,
-    resolve: (value?: Blob) => void,
+    resolve: (value: Blob) => void,
     reject: (reason?: any) => void,
     progressCallback?: (progress: number) => void
   ) {
@@ -86,7 +86,7 @@ export class IccBekmehrXApi extends iccBekmehrApi {
             .decryptServices(healthcarePartyId, msg.body)
             .then((res) => send("decryptResponse", msg.uuid, res))
         }
-      } else if ((msg.command = "progress")) {
+      } else if (msg.command === "progress") {
         if (progressCallback && msg.body && msg.body[0]) {
           progressCallback(msg.body[0].progress)
         }

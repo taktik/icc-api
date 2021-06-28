@@ -21,8 +21,8 @@ export class IccDoctemplateXApi extends iccDoctemplateApi {
     "undefined"
       ? window.fetch
       : typeof self !== "undefined"
-        ? self.fetch
-        : fetch
+      ? self.fetch
+      : fetch
   ) {
     super(host, headers, fetchImpl)
     this.crypto = crypto
@@ -42,7 +42,7 @@ export class IccDoctemplateXApi extends iccDoctemplateApi {
           group: null,
           specialty: null,
           attachment: this.crypto.utils.text2ua(template),
-          mainUti: "public.plain-text"
+          mainUti: "public.plain-text",
         },
         c || {}
       )
@@ -62,7 +62,7 @@ export class IccDoctemplateXApi extends iccDoctemplateApi {
 
   // noinspection JSUnusedLocalSymbols
   findAllByOwnerId(ownerId: string): Promise<Array<models.DocumentTemplateDto>> {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       reject(console.log("findByHCPartyPatientSecretFKeys not implemented in document API!"))
     })
   }
@@ -75,5 +75,35 @@ export class IccDoctemplateXApi extends iccDoctemplateApi {
         .replace("{documentId}", documentId)
         .replace("{attachmentId}", attachmentId)
     )
+  }
+
+  getAttachmentText(documentTemplateId: string, attachmentId: string): Promise<any | Boolean> {
+    const _body = null
+
+    const _url =
+      this.host +
+      "/doctemplate/{documentTemplateId}/attachmentText/{attachmentId}"
+        .replace("{documentTemplateId}", documentTemplateId + "")
+        .replace("{attachmentId}", attachmentId + "") +
+      "?ts=" +
+      new Date().getTime()
+
+    return XHR.sendCommand("GET", _url, this.headers, _body, this.fetchImpl)
+      .then((doc) => {
+        if (doc.contentType.startsWith("application/octet-stream")) {
+          const enc = new TextDecoder("utf-8")
+          const arr = new Uint8Array(doc.body)
+          return enc.decode(arr)
+        } else if (
+          doc.contentType.startsWith("text/plain") ||
+          doc.contentType.startsWith("text/html") ||
+          doc.contentType.startsWith("text/xml")
+        ) {
+          return doc.body
+        } else {
+          return false
+        }
+      })
+      .catch((err) => this.handleError(err))
   }
 }
