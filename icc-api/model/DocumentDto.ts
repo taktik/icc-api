@@ -19,7 +19,16 @@ import { decodeBase64 } from "./ModelHelper"
 
 export class DocumentDto {
   constructor(json: JSON | any) {
-    Object.assign(this as DocumentDto, json)
+    Object.assign(
+      this as DocumentDto,
+      json,
+      json.encryptedAttachment
+        ? { encryptedAttachment: decodeBase64(json.encryptedAttachment) }
+        : {},
+      json.decryptedAttachment
+        ? { decryptedAttachment: decodeBase64(json.decryptedAttachment) }
+        : {}
+    )
   }
 
   /**
@@ -125,6 +134,10 @@ export class DocumentDto {
   /**
    * The secretForeignKeys are filled at the to many end of a one to many relationship (for example inside Contact for the Patient -> Contacts relationship). Used when we want to find all contacts for a specific patient. These keys are in clear. You can have several to partition the medical document space.
    */
+
+  encryptedAttachment?: ArrayBuffer
+  decryptedAttachment?: ArrayBuffer
+
   secretForeignKeys?: Array<string>
   /**
    * The secretForeignKeys are filled at the to many end of a one to many relationship (for example inside Contact for the Patient -> Contacts relationship). Used when we want to find the patient for a specific contact. These keys are the encrypted id (using the hcParty key for the delegate) that can be found in clear inside the patient. ids encrypted using the hcParty keys.
@@ -147,7 +160,7 @@ export namespace DocumentDto {
   export type DocumentLocationEnum = "annex" | "body"
   export const DocumentLocationEnum = {
     Annex: "annex" as DocumentLocationEnum,
-    Body: "body" as DocumentLocationEnum
+    Body: "body" as DocumentLocationEnum,
   }
   export type DocumentTypeEnum =
     | "admission"
@@ -228,7 +241,7 @@ export namespace DocumentDto {
     Template: "template" as DocumentTypeEnum,
     TemplateAdmin: "template_admin" as DocumentTypeEnum,
     Treatmentsuspension: "treatmentsuspension" as DocumentTypeEnum,
-    Vaccination: "vaccination" as DocumentTypeEnum
+    Vaccination: "vaccination" as DocumentTypeEnum,
   }
   export type DocumentStatusEnum =
     | "draft"
@@ -249,6 +262,6 @@ export namespace DocumentDto {
     Signed: "signed" as DocumentStatusEnum,
     Canceled: "canceled" as DocumentStatusEnum,
     Sent: "sent" as DocumentStatusEnum,
-    Delivered: "delivered" as DocumentStatusEnum
+    Delivered: "delivered" as DocumentStatusEnum,
   }
 }
