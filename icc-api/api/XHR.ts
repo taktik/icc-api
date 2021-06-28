@@ -44,8 +44,8 @@ export namespace XHR {
     "undefined"
       ? window.fetch
       : typeof self !== "undefined"
-        ? self.fetch
-        : fetch
+      ? self.fetch
+      : fetch
   ): Promise<Response> {
     return new Promise((resolve, reject) => {
       // Set timeout timer
@@ -54,11 +54,11 @@ export namespace XHR {
         timeout
       )
       fetchImpl(url, init)
-        .then(response => {
+        .then((response) => {
           clearTimeout(timer)
           resolve(response)
         })
-        .catch(err => {
+        .catch((err) => {
           clearTimeout(timer)
           reject(err)
         })
@@ -74,16 +74,18 @@ export namespace XHR {
     "undefined"
       ? window.fetch
       : typeof self !== "undefined"
-        ? self.fetch
-        : fetch,
+      ? self.fetch
+      : fetch,
     contentTypeOverride?: "application/json" | "text/plain" | "application/octet-stream"
   ): Promise<Data> {
     const contentType =
       headers &&
-      headers.find(it => (it.header ? it.header.toLowerCase() === "content-type" : false))
+      headers.find((it) => (it.header ? it.header.toLowerCase() === "content-type" : false))
     const clientTimeout =
       headers &&
-      headers.find(it => (it.header ? it.header.toUpperCase() === "X-CLIENT-SIDE-TIMEOUT" : false))
+      headers.find((it) =>
+        it.header ? it.header.toUpperCase() === "X-CLIENT-SIDE-TIMEOUT" : false
+      )
     const timeout = clientTimeout ? Number(clientTimeout.data) : 600000
     return fetchWithTimeout(
       url,
@@ -95,7 +97,7 @@ export namespace XHR {
             (headers &&
               headers
                 .filter(
-                  h =>
+                  (h) =>
                     (h.header.toLowerCase() !== "content-type" ||
                       h.data !== "multipart/form-data") &&
                     h.header.toUpperCase() !== "X-CLIENT-SIDE-TIMEOUT"
@@ -104,7 +106,7 @@ export namespace XHR {
                   acc[h.header] = h.data
                   return acc
                 }, {})) ||
-            {}
+            {},
         },
         method === "POST" || method === "PUT"
           ? {
@@ -115,13 +117,13 @@ export namespace XHR {
                         ? btoa(new Uint8Array(v).reduce((d, b) => d + String.fromCharCode(b), ""))
                         : v
                     })
-                  : data
+                  : data,
             }
           : {}
       ),
       timeout,
       fetchImpl
-    ).then(async function(response) {
+    ).then(async function (response) {
       if (response.status >= 400) {
         const error: {
           error: string
@@ -131,12 +133,15 @@ export namespace XHR {
         throw new XHRError(error.message, error.status, error.error, response.headers)
       }
       const ct = contentTypeOverride || response.headers.get("content-type") || "text/plain"
-      return (ct.startsWith("application/json")
-        ? response.json()
-        : ct.startsWith("application/xml") || ct.startsWith("text/")
+      return (
+        ct.startsWith("application/json")
+          ? response.json()
+          : ct.startsWith("application/xml") || ct.startsWith("text/")
           ? response.text()
-          : response.arrayBuffer()
-      ).then(d => new Data(response.status, ct, d))
+          : response.arrayBuffer
+          ? response.arrayBuffer()
+          : response.blob().then((blob) => new Response(blob).arrayBuffer())
+      ).then((d) => new Data(response.status, ct, d))
     })
   }
 }
