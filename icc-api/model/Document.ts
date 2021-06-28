@@ -15,9 +15,15 @@ import { Delegation } from './Delegation'
 /**
  * This entity is a root level object. It represents a Document. It is serialized in JSON and saved in the underlying CouchDB database.
  */
+import { b64_2ab } from './ModelHelper'
 export class Document {
   constructor(json: JSON | any) {
-    Object.assign(this as Document, json)
+    Object.assign(
+      this as Document,
+      json,
+      json.encryptedAttachment ? { encryptedAttachment: b64_2ab(json.encryptedAttachment) } : {},
+      json.decryptedAttachment ? { decryptedAttachment: b64_2ab(json.decryptedAttachment) } : {}
+    )
   }
 
   /**
@@ -120,6 +126,8 @@ export class Document {
    * Id of attachment to this document
    */
   attachmentId?: string
+  encryptedAttachment?: ArrayBuffer
+  decryptedAttachment?: ArrayBuffer
   /**
    * The secretForeignKeys are filled at the to many end of a one to many relationship (for example inside Contact for the Patient -> Contacts relationship). Used when we want to find all contacts for a specific patient. These keys are in clear. You can have several to partition the medical document space.
    */

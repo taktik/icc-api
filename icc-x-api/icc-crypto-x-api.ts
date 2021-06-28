@@ -8,6 +8,7 @@ import * as _ from 'lodash'
 import * as models from '../icc-api/model/models'
 import { Delegation, HealthcareParty, Patient } from '../icc-api/model/models'
 import { b2a, b64_2uas, hex2ua, string2ua, ua2hex, ua2string, ua2utf8, utf8_2ua } from './utils/binary-utils'
+import { IccHcpartyXApi } from './icc-hcparty-x-api'
 
 export class IccCryptoXApi {
   get shamir(): ShamirClass {
@@ -740,28 +741,13 @@ export class IccCryptoXApi {
     child: T,
     ownerId: string,
     delegateId: string,
-    secretDelegationKey: string,
+    secretDelegationKey: string | null,
     secretEncryptionKey: string | null
   ): Promise<T> {
     if (parent) this.throwDetailedExceptionForInvalidParameter('parent.id', parent.id, 'addDelegationsAndEncryptionKeys', arguments)
 
     this.throwDetailedExceptionForInvalidParameter('child.id', child.id, 'addDelegationsAndEncryptionKeys', arguments)
 
-    /* This can happen if the document is not linked to a parent but we still want to share the encryption keys (example: a document referenced by its id from a service)
-    this.throwDetailedExceptionForInvalidParameter(
-      "secretDelegationKey",
-      secretDelegationKey,
-      "addDelegationsAndEncryptionKeys",
-      arguments
-    ) */
-
-    /* This can happen if the document is not encrypted
-    this.throwDetailedExceptionForInvalidParameter(
-      "secretEncryptionKey",
-      secretEncryptionKey,
-      "addDelegationsAndEncryptionKeys",
-      arguments
-    ) */
     return (secretDelegationKey
       ? this.extendedDelegationsAndCryptedForeignKeys(child, parent, ownerId, delegateId, secretDelegationKey)
       : Promise.resolve({ delegations: {}, cryptedForeignKeys: {} })
@@ -1203,11 +1189,19 @@ export class IccCryptoXApi {
   generateKeyForDelegate(ownerId: string, delegateId: string): PromiseLike<models.HealthcareParty | models.Patient> {
     //Preload hcp and patient because we need them and they are going to be invalidated from the caches
     return this._utils.notConcurrent(this.generateKeyConcurrencyMap, ownerId, () =>
-      Promise.all([this.getHcpOrPatient(ownerId), this.getHcpOrPatient(delegateId)]).then(([owner, delegate]) => {
+      Promise.all([
+        (this.hcpartyBaseApi as IccHcpartyXApi)
+          .getHealthcareParty(ownerId, true)
+          .then((x) => ({ type: 'hcp', hcpOrPat: x }))
+          .catch(() => this.patientBaseApi.getPatient(ownerId).then((x) => ({ type: 'patient', hcpOrPat: x }))),
+        (this.hcpartyBaseApi as IccHcpartyXApi)
+          .getHealthcareParty(delegateId, true)
+          .then((x) => ({ type: 'hcp', hcpOrPat: x }))
+          .catch(() => this.patientBaseApi.getPatient(delegateId).then((x) => ({ type: 'patient', hcpOrPat: x }))),
+      ]).then(([{ type: ownerType, hcpOrPat: owner }, { hcpOrPat: delegate }]) => {
         if ((owner.hcPartyKeys || {})[delegateId]) {
           return owner
         }
-        const ownerType = owner.constructor && owner.constructor.name === 'Patient' ? 'patient' : 'hcp'
         const genProm = new Promise<[null | 'hcp' | 'patient', models.HealthcareParty | models.Patient]>((resolve, reject) => {
           delegate.publicKey
             ? this._AES

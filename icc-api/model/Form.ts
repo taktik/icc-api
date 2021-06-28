@@ -64,7 +64,7 @@ export class Form {
   openingDate?: number
   status?: string
   version?: number
-  lid?: string
+  logicalUuid?: string
   /**
    * Name/basic description of the form
    */
@@ -72,7 +72,7 @@ export class Form {
   /**
    * A unique external id (from another external source).
    */
-  formUuid?: string
+  uniqueId?: string
   /**
    * Id of the form template being used to display the form
    */

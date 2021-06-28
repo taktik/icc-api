@@ -652,7 +652,7 @@ export class IccDocumentXApi extends IccDocumentApi {
       })
   }
 
-  decrypt(hcpartyId: string, documents: Array<models.Document>): Promise<Array<models.Document> | void> {
+  decrypt(hcpartyId: string, documents: Array<models.Document>): Promise<Array<models.Document>> {
     return Promise.all(
       documents.map((document) =>
         this.crypto
@@ -667,20 +667,36 @@ export class IccDocumentXApi extends IccDocumentApi {
               return Promise.resolve(document)
             }
 
-            if (sfks.length && document.encryptedSelf) {
+            if (sfks.length && (document.encryptedSelf || document.encryptedAttachment)) {
               return this.crypto.AES.importKey('raw', hex2ua(sfks[0].replace(/-/g, '')))
-                .then(
-                  (key: CryptoKey) =>
-                    new Promise((resolve: (value: ArrayBuffer | null) => any) => {
-                      this.crypto.AES.decrypt(key, string2ua(a2b(document.encryptedSelf!))).then(resolve, () => {
-                        console.log('Cannot decrypt document', document.id)
-                        resolve(null)
-                      })
-                    })
+                .then((key: CryptoKey) =>
+                  Promise.all([
+                    document.encryptedSelf
+                      ? new Promise((resolve: (value: ArrayBuffer | null) => any) => {
+                          this.crypto.AES.decrypt(key, string2ua(a2b(document.encryptedSelf!))).then(resolve, () => {
+                            console.log('Cannot decrypt document', document.id)
+                            resolve(null)
+                          })
+                        })
+                      : Promise.resolve(null),
+                    document.encryptedAttachment
+                      ? new Promise((resolve: (value: ArrayBuffer | null) => any) => {
+                          this.crypto.AES.decrypt(key, document.encryptedAttachment!).then(resolve, () => {
+                            console.log('Cannot decrypt document', document.id)
+                            resolve(null)
+                          })
+                        })
+                      : Promise.resolve(null),
+                  ])
                 )
-                .then((decrypted: ArrayBuffer | null) => {
+                .then((decrypted: [ArrayBuffer | null, ArrayBuffer | null]) => {
                   if (decrypted) {
-                    document = _.extend(document, JSON.parse(ua2string(decrypted)))
+                    if (decrypted[0]) {
+                      document = _.extend(document, JSON.parse(ua2string(decrypted[0])))
+                    }
+                    if (decrypted[1]) {
+                      document.decryptedAttachment = decrypted[1]
+                    }
                   }
                   return document
                 })
@@ -691,6 +707,7 @@ export class IccDocumentXApi extends IccDocumentApi {
       )
     ).catch(function (e: Error) {
       console.log(e)
+      return documents
     })
   }
 

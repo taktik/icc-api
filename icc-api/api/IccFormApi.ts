@@ -227,13 +227,13 @@ export class IccFormApi {
 
   /**
    *
-   * @summary Gets a form
-   * @param formUuid
+   * @summary Gets the most recent form with the given logicalUuid
+   * @param logicalUuid
    */
-  getFormByExternalUuid(formUuid: string): Promise<Form> {
+  getFormByLogicalUuid(logicalUuid: string): Promise<Form> {
     const _body = null
 
-    const _url = this.host + `/form/formUuid/${encodeURIComponent(String(formUuid))}` + '?ts=' + new Date().getTime()
+    const _url = this.host + `/form/logicalUuid/${encodeURIComponent(String(logicalUuid))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Form(doc.body as JSON))
@@ -242,13 +242,13 @@ export class IccFormApi {
 
   /**
    *
-   * @summary Gets a form
-   * @param lid
+   * @summary Gets the most recent form with the given uniqueId
+   * @param uniqueId
    */
-  getFormBylid(lid: string): Promise<Form> {
+  getFormByUniqueId(uniqueId: string): Promise<Form> {
     const _body = null
 
-    const _url = this.host + `/form/lid/${encodeURIComponent(String(lid))}` + '?ts=' + new Date().getTime()
+    const _url = this.host + `/form/uniqueId/${encodeURIComponent(String(uniqueId))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Form(doc.body as JSON))
@@ -309,13 +309,13 @@ export class IccFormApi {
 
   /**
    *
-   * @summary Gets all forms by formUuid
-   * @param formUuid
+   * @summary Gets all forms with given logicalUuid
+   * @param logicalUuid
    */
-  getFormsByExternalUuid(formUuid: string): Promise<Array<Form>> {
+  getFormsByLogicalUuid(logicalUuid: string): Promise<Array<Form>> {
     const _body = null
 
-    const _url = this.host + `/form/all/formUuid/${encodeURIComponent(String(formUuid))}` + '?ts=' + new Date().getTime()
+    const _url = this.host + `/form/all/logicalUuid/${encodeURIComponent(String(logicalUuid))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Form(it)))
@@ -324,13 +324,13 @@ export class IccFormApi {
 
   /**
    *
-   * @summary Gets all forms by lid
-   * @param lid
+   * @summary Gets all forms by uniqueId
+   * @param uniqueId
    */
-  getFormsBylid(lid: string): Promise<Array<Form>> {
+  getFormsByUniqueId(uniqueId: string): Promise<Array<Form>> {
     const _body = null
 
-    const _url = this.host + `/form/all/lid/${encodeURIComponent(String(lid))}` + '?ts=' + new Date().getTime()
+    const _url = this.host + `/form/all/uniqueId/${encodeURIComponent(String(uniqueId))}` + '?ts=' + new Date().getTime()
     const headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Form(it)))

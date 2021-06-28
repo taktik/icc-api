@@ -1,12 +1,15 @@
 import * as models from '../icc-api/model/models'
 import { IccAuthApi, IccBekmehrApi } from '../icc-api'
 import { IccContactXApi } from './icc-contact-x-api'
+import { IccDocumentXApi } from './icc-document-x-api'
 import { IccHelementXApi } from './icc-helement-x-api'
-import { string2ua } from './utils/binary-utils'
+import { string2ua, ua2string } from './utils/binary-utils'
+import { Document } from '../icc-api/model/models'
 
 export class IccBekmehrXApi extends IccBekmehrApi {
   private readonly ctcApi: IccContactXApi
   private readonly helementApi: IccHelementXApi
+  private readonly documentApi: IccDocumentXApi
   private readonly wssHost: string
   private readonly authApi: IccAuthApi
 
@@ -16,6 +19,7 @@ export class IccBekmehrXApi extends IccBekmehrApi {
     authApi: IccAuthApi,
     ctcApi: IccContactXApi,
     helementApi: IccHelementXApi,
+    documentApi: IccDocumentXApi,
     fetchImpl: (input: RequestInfo, init?: RequestInit) => Promise<Response> = typeof window !== 'undefined'
       ? window.fetch
       : typeof self !== 'undefined'
@@ -26,6 +30,7 @@ export class IccBekmehrXApi extends IccBekmehrApi {
     this.authApi = authApi
     this.ctcApi = ctcApi
     this.helementApi = helementApi
+    this.documentApi = documentApi
 
     this.wssHost = new URL(this.host, typeof window !== 'undefined' ? window.location.href : undefined).href
       .replace(/^http/, 'ws')
@@ -52,6 +57,23 @@ export class IccBekmehrXApi extends IccBekmehrApi {
           that.ctcApi.decrypt(healthcarePartyId, msg.body).then((res) => send('decryptResponse', msg.uuid, res))
         } else if (msg.type === 'HealthElement') {
           that.helementApi.decrypt(healthcarePartyId, msg.body).then((res) => send('decryptResponse', msg.uuid, res))
+        } else if (msg.type === 'Document') {
+          that.documentApi
+            .decrypt(
+              healthcarePartyId,
+              msg.body.map((d: JSON) => new Document(d))
+            )
+            .then((res) =>
+              send(
+                'decryptResponse',
+                msg.uuid,
+                res?.map((d) => {
+                  const de = d.decryptedAttachment
+                  const { encryptedAttachment, ...stripped } = d
+                  return de ? { ...stripped, decryptedAttachment: btoa(ua2string(de)) } : stripped
+                })
+              )
+            )
         } else {
           that.ctcApi.decryptServices(healthcarePartyId, msg.body).then((res) => send('decryptResponse', msg.uuid, res))
         }
@@ -97,10 +119,10 @@ export class IccBekmehrXApi extends IccBekmehrApi {
     body: models.SoftwareMedicalFileExport,
     progressCallback?: (progress: number) => void,
     sessionId?: string
-  ): Promise<Blob> {
+  ): Promise<Blob | undefined> {
     return (!sessionId ? this.authApi.token('GET', '/ws/be_kmehr/generateSmf') : Promise.resolve('')).then(
       (token) =>
-        new Promise<Blob>((resolve, reject) => {
+        new Promise<Blob | undefined>((resolve, reject) => {
           const socket = new WebSocket(
             token.length ? `${this.wssHost}/be_kmehr/generateSmf;tokenid=${token}` : `${this.wssHost}/be_kmehr/generateSmf;sessionid=${sessionId}`
           )
@@ -124,10 +146,10 @@ export class IccBekmehrXApi extends IccBekmehrApi {
     language: string,
     body: models.SumehrExportInfo,
     sessionId?: string
-  ): Promise<Blob> {
+  ): Promise<Blob | undefined> {
     return (!sessionId ? this.authApi.token('GET', '/ws/be_kmehr/generateSumehr') : Promise.resolve('')).then(
       (token) =>
-        new Promise<Blob>((resolve, reject) => {
+        new Promise<Blob | undefined>((resolve, reject) => {
           const socket = new WebSocket(
             token.length
               ? `${this.wssHost}/be_kmehr/generateSumehr;tokenid=${token}`
@@ -152,10 +174,10 @@ export class IccBekmehrXApi extends IccBekmehrApi {
     language: string,
     body: models.SumehrExportInfo,
     sessionId?: string
-  ): Promise<Blob> {
+  ): Promise<Blob | undefined> {
     return (!sessionId ? this.authApi.token('GET', '/ws/be_kmehr/generateSumehrV2') : Promise.resolve('')).then(
       (token) =>
-        new Promise<Blob>((resolve, reject) => {
+        new Promise<Blob | undefined>((resolve, reject) => {
           const socket = new WebSocket(
             token.length
               ? `${this.wssHost}/be_kmehr/generateSumehrV2;tokenid=${token}`
@@ -180,10 +202,10 @@ export class IccBekmehrXApi extends IccBekmehrApi {
     language: string,
     body: models.SumehrExportInfo,
     sessionId?: string
-  ): Promise<Blob> {
+  ): Promise<Blob | undefined> {
     return (!sessionId ? this.authApi.token('GET', '/ws/be_kmehr/generateDiaryNote') : Promise.resolve('')).then(
       (token) =>
-        new Promise<Blob>((resolve, reject) => {
+        new Promise<Blob | undefined>((resolve, reject) => {
           const socket = new WebSocket(
             token.length
               ? `${this.wssHost}/be_kmehr/generateDiaryNote;tokenid=${token}`
@@ -210,10 +232,10 @@ export class IccBekmehrXApi extends IccBekmehrApi {
     version: number,
     body: models.MedicationSchemeExportInfo,
     sessionId?: string
-  ): Promise<Blob> {
+  ): Promise<Blob | undefined> {
     return (!sessionId ? this.authApi.token('GET', '/ws/be_kmehr/generateMedicationScheme') : Promise.resolve('')).then(
       (token) =>
-        new Promise<Blob>((resolve, reject) => {
+        new Promise<Blob | undefined>((resolve, reject) => {
           const socket = new WebSocket(
             token.length
               ? `${this.wssHost}/be_kmehr/generateMedicationScheme;tokenid=${token}`

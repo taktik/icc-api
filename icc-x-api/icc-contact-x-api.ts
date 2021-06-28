@@ -94,6 +94,15 @@ export class IccContactXApi extends IccContactApi {
               })
             ))
         )
+        ;(user.autoDelegations ? user.autoDelegations.anonymousMedicalInformation : []).forEach(
+          (delegateId) =>
+            (promise = promise.then((contact) =>
+              this.crypto.addDelegationsAndEncryptionKeys(patient, contact, hcpId!, delegateId, null, eks.secretId).catch((e) => {
+                console.log(e)
+                return contact
+              })
+            ))
+        )
         return promise
       })
   }
