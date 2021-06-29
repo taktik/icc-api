@@ -323,6 +323,12 @@ export class IccContactXApi extends iccContactApi {
     )
   }
 
+  createContacts(body?: Array<ContactDto>): never {
+    throw new Error(
+      "Cannot call a method that creates contacts without providing a user for de/encryption"
+    )
+  }
+
   findByHCPartyPatientSecretFKeys(
     hcPartyId: string,
     secretFKeys?: string,
@@ -435,6 +441,17 @@ export class IccContactXApi extends iccContactApi {
           .then(ctcs => super.createContact(ctcs[0]))
           .then(ctc => this.decrypt((user.healthcarePartyId || user.patientId)!, [ctc]))
           .then(ctcs => ctcs[0])
+      : Promise.resolve(null)
+  }
+
+  createContactsWithUser(
+    user: models.UserDto,
+    bodies?: Array<models.ContactDto>
+  ): Promise<models.ContactDto | any> {
+    return bodies
+      ? this.encrypt(user, bodies.map(c => _.cloneDeep(c)))
+          .then(ctcs => super.createContacts(ctcs))
+          .then(ctcs => this.decrypt((user.healthcarePartyId || user.patientId)!, ctcs))
       : Promise.resolve(null)
   }
 
