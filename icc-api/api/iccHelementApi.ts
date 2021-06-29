@@ -56,6 +56,24 @@ export class iccHelementApi {
       .then(doc =>  new models.HealthElementDto(doc.body as JSON))
       .catch(err => this.handleError(err))
 }
+  /**
+   * Returns the created healthcare elements.
+   * @summary Create a batch of healthcare elements
+   * @param body
+   */
+   createHealthElements(body?: Array<models.HealthElementDto>): Promise<Array<models.HealthElementDto> | any> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/helement/batch` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.HealthElementDto(it)))
+      .catch(err => this.handleError(err))
+  }
   deleteHealthElements(healthElementIds: string): Promise<Array<string> | any> {
     let _body = null
     
