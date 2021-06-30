@@ -707,7 +707,7 @@ export class IccDocumentXApi extends IccDocumentApi {
       )
     ).catch(function (e: Error) {
       console.log(e)
-      return documents
+      return Promise.resolve(documents)
     })
   }
 

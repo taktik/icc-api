@@ -467,9 +467,10 @@ export class IccPatientXApi extends IccPatientApi {
   }
 
   decrypt(user: models.User, pats: Array<models.Patient>, fillDelegations = true): Promise<Array<models.Patient>> {
-    return (user.healthcarePartyId
-      ? this.hcpartyApi.getHealthcareParty(user.healthcarePartyId!).then((hcp) => [hcp.id, hcp.parentId])
-      : Promise.resolve([user.patientId])
+    return (
+      user.healthcarePartyId
+        ? this.hcpartyApi.getHealthcareParty(user.healthcarePartyId!).then((hcp) => [hcp.id, hcp.parentId])
+        : Promise.resolve([user.patientId])
     ).then((ids) => {
       const hcpId = ids[0]
       //First check that we have no dangling delegation
@@ -605,12 +606,22 @@ export class IccPatientXApi extends IccPatientApi {
       )
     }
 
+    const allTags: string[] = _.uniq(_.flatMap(Object.values(delegationTags)))
+
+    // Determine which keys to share, depending on the delegation tag. For example, anonymousMedicalData only shares encryption keys and no delegations or secret foreign keys.
+    const shareDelegations: boolean = allTags.some((tag) => tag != 'anonymousMedicalInformation')
+    const shareEncryptionKeys: boolean = true
+    const shareCryptedForeignKeys: boolean = allTags.some((tag) => tag != 'anonymousMedicalInformation')
+
+    // Anonymous sharing, will not change anything to the patient, only its contacts and health elements.
+    const shareAnonymously: boolean = allTags.every((tag) => tag == 'anonymousMedicalInformation')
+
     return this.hcpartyApi.getHealthcareParty(ownerId).then((hcp) => {
       const parentId = hcp.parentId
-      const allTags = _.uniq(_.flatMap(Object.values(delegationTags)))
       const status = {
         contacts: {
-          success: allTags.includes('medicalInformation') || allTags.includes('all') ? false : null,
+          success:
+            allTags.includes('medicalInformation') || allTags.includes('anonymousMedicalInformation') || allTags.includes('all') ? false : null,
           error: null,
           modified: 0,
         },
@@ -620,7 +631,8 @@ export class IccPatientXApi extends IccPatientApi {
           modified: 0,
         },
         healthElements: {
-          success: allTags.includes('medicalInformation') || allTags.includes('all') ? false : null,
+          success:
+            allTags.includes('medicalInformation') || allTags.includes('anonymousMedicalInformation') || allTags.includes('all') ? false : null,
           error: null,
           modified: 0,
         },
@@ -734,55 +746,25 @@ export class IccPatientXApi extends IccPatientApi {
                       )
                   ) as Promise<Array<models.CalendarItem>>,
                 ]).then(([hes, frms, ctcs, ivs, cls, cis]) => {
+                  let cloneKeysAndDelegations = function (x: models.IcureStubDto) {
+                    return {
+                      delegations: shareDelegations ? _.clone(x.delegations) : undefined,
+                      cryptedForeignKeys: shareCryptedForeignKeys ? _.clone(x.cryptedForeignKeys) : undefined,
+                      encryptionKeys: shareEncryptionKeys ? _.clone(x.encryptionKeys) : undefined,
+                    }
+                  }
+
                   const ctcsStubs = ctcs.map((c) => ({
                     id: c.id,
                     rev: c.rev,
-                    delegations: _.clone(c.delegations),
-                    cryptedForeignKeys: _.clone(c.cryptedForeignKeys),
-                    encryptionKeys: _.clone(c.encryptionKeys),
+                    ...cloneKeysAndDelegations(c),
                   }))
-                  const oHes = hes.map((x) =>
-                    _.assign(new IcureStub({}), x, {
-                      delegations: _.clone(x.delegations),
-                      cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
-                      encryptionKeys: _.clone(x.encryptionKeys),
-                    })
-                  )
-                  const oFrms = frms.map((x) =>
-                    _.assign(new IcureStub({}), x, {
-                      delegations: _.clone(x.delegations),
-                      cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
-                      encryptionKeys: _.clone(x.encryptionKeys),
-                    })
-                  )
-                  const oCtcsStubs = ctcsStubs.map((x) =>
-                    _.assign({}, x, {
-                      delegations: _.clone(x.delegations),
-                      cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
-                      encryptionKeys: _.clone(x.encryptionKeys),
-                    })
-                  )
-                  const oIvs = ivs.map((x) =>
-                    _.assign(new Invoice({}), x, {
-                      delegations: _.clone(x.delegations),
-                      cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
-                      encryptionKeys: _.clone(x.encryptionKeys),
-                    })
-                  )
-                  const oCls = cls.map((x) =>
-                    _.assign(new Classification({}), x, {
-                      delegations: _.clone(x.delegations),
-                      cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
-                      encryptionKeys: _.clone(x.encryptionKeys),
-                    })
-                  )
-                  const oCis = cis.map((x) =>
-                    _.assign(new CalendarItem({}), x, {
-                      delegations: _.clone(x.delegations),
-                      cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
-                      encryptionKeys: _.clone(x.encryptionKeys),
-                    })
-                  )
+                  const oHes = hes.map((x) => _.assign(new IcureStub({}), x, cloneKeysAndDelegations(x)))
+                  const oFrms = frms.map((x) => _.assign(new IcureStub({}), x, cloneKeysAndDelegations(x)))
+                  const oCtcsStubs = ctcsStubs.map((x) => _.assign({}, x, cloneKeysAndDelegations(x)))
+                  const oIvs = ivs.map((x) => _.assign(new Invoice({}), x, cloneKeysAndDelegations(x)))
+                  const oCls = cls.map((x) => _.assign(new Classification({}), x, cloneKeysAndDelegations(x)))
+                  const oCis = cis.map((x) => _.assign(new CalendarItem({}), x, cloneKeysAndDelegations(x)))
 
                   const docIds: { [key: string]: number } = {}
                   ctcs.forEach(
@@ -792,13 +774,7 @@ export class IccPatientXApi extends IccPatientApi {
                   )
 
                   return retry(() => this.documentApi.getDocuments(new ListOfIds({ ids: Object.keys(docIds) }))).then((docs: Array<Document>) => {
-                    const oDocs = docs.map((x) =>
-                      _.assign({}, x, {
-                        delegations: _.clone(x.delegations),
-                        cryptedForeignKeys: _.clone(x.cryptedForeignKeys),
-                        encryptionKeys: _.clone(x.encryptionKeys),
-                      })
-                    )
+                    const oDocs = docs.map((x) => _.assign({}, x, cloneKeysAndDelegations(x)))
 
                     let markerPromise: Promise<any> = Promise.resolve(null)
                     delegateIds.forEach((delegateId) => {
@@ -806,32 +782,36 @@ export class IccPatientXApi extends IccPatientApi {
                       markerPromise = markerPromise.then(() => {
                         //Share patient
                         //console.log(`share ${patient.id} to ${delegateId}`)
-                        return this.crypto
-                          .addDelegationsAndEncryptionKeys(null, patient, ownerId, delegateId, delSfks[0], ecKeys[0])
-                          .then(async (patient) => {
-                            if (delSfks.length > 1) {
-                              return delSfks.slice(1).reduce(async (patientPromise: Promise<models.Patient>, delSfk: string) => {
-                                const patient = await patientPromise
-                                return this.crypto
-                                  .addDelegationsAndEncryptionKeys(null, patient, ownerId, delegateId, delSfk, null)
-                                  .catch((e: any) => {
-                                    console.log(e)
-                                    return patient
-                                  })
-                              }, Promise.resolve(patient))
-                            }
-                            return patient
-                          })
-                          .catch((e) => {
-                            console.log(e)
-                            return patient
-                          })
+                        return shareAnonymously
+                          ? patient
+                          : this.crypto
+                              .addDelegationsAndEncryptionKeys(null, patient, ownerId, delegateId, delSfks[0], ecKeys[0])
+                              .then(async (patient) => {
+                                if (delSfks.length > 1) {
+                                  return delSfks.slice(1).reduce(async (patientPromise: Promise<models.Patient>, delSfk: string) => {
+                                    const patient = await patientPromise
+                                    return shareAnonymously
+                                      ? patient
+                                      : this.crypto
+                                          .addDelegationsAndEncryptionKeys(null, patient, ownerId, delegateId, delSfk, null)
+                                          .catch((e: any) => {
+                                            console.log(e)
+                                            return patient
+                                          })
+                                  }, Promise.resolve(patient))
+                                }
+                                return patient
+                              })
+                              .catch((e) => {
+                                console.log(e)
+                                return patient
+                              })
                       })
-                      ;(tags.includes('medicalInformation') || tags.includes('all')) &&
+                      ;(tags.includes('medicalInformation') || tags.includes('anonymousMedicalInformation') || tags.includes('all')) &&
                         (markerPromise = addDelegationsAndKeys(hes, markerPromise, delegateId, patient))
                       ;(tags.includes('medicalInformation') || tags.includes('all')) &&
                         (markerPromise = addDelegationsAndKeys(frms, markerPromise, delegateId, patient))
-                      ;(tags.includes('medicalInformation') || tags.includes('all')) &&
+                      ;(tags.includes('medicalInformation') || tags.includes('anonymousMedicalInformation') || tags.includes('all')) &&
                         (markerPromise = addDelegationsAndKeys(ctcsStubs, markerPromise, delegateId, patient))
                       ;(tags.includes('medicalInformation') || tags.includes('all')) &&
                         (markerPromise = addDelegationsAndKeys(cls, markerPromise, delegateId, patient))
@@ -847,7 +827,7 @@ export class IccPatientXApi extends IccPatientApi {
                       .then(() => {
                         //console.log("scd")
                         return (
-                          ((allTags.includes('medicalInformation') || allTags.includes('all')) &&
+                          ((allTags.includes('medicalInformation') || allTags.includes('anonymousMedicalInformation') || allTags.includes('all')) &&
                             ctcsStubs &&
                             ctcsStubs.length &&
                             !_.isEqual(oCtcsStubs, ctcsStubs) &&
@@ -864,7 +844,7 @@ export class IccPatientXApi extends IccPatientApi {
                       .then(() => {
                         //console.log("shed")
                         return (
-                          ((allTags.includes('medicalInformation') || allTags.includes('all')) &&
+                          ((allTags.includes('medicalInformation') || allTags.includes('anonymousMedicalInformation') || allTags.includes('all')) &&
                             hes &&
                             hes.length &&
                             !_.isEqual(oHes, hes) &&
@@ -977,16 +957,19 @@ export class IccPatientXApi extends IccPatientApi {
                       })
                   })
                 })
-              : this.modifyPatientWithUser(
-                  user,
-                  _.assign(patient, {
-                    delegations: _.assign(
-                      patient.delegations,
-                      delegateIds
-                        .filter((id) => !patient.delegations || !patient.delegations[id]) //If there are delegations do not modify
-                        .reduce((acc, del: string) => Object.assign(acc, _.fromPairs([[del, []]])), patient.delegations || {})
-                    ),
-                  })
+              : (allTags.includes('anonymousMedicalInformation')
+                  ? Promise.resolve(patient)
+                  : this.modifyPatientWithUser(
+                      user,
+                      _.assign(patient, {
+                        delegations: _.assign(
+                          patient.delegations,
+                          delegateIds
+                            .filter((id) => !patient.delegations || !patient.delegations[id]) //If there are delegations do not modify
+                            .reduce((acc, del: string) => Object.assign(acc, _.fromPairs([[del, []]])), patient.delegations || {})
+                        ),
+                      })
+                    )
                 )
                   .then((p) => {
                     status.patient.success = true
@@ -1074,17 +1057,22 @@ export class IccPatientXApi extends IccPatientApi {
                           : cls
                       )
                   ) as Promise<Array<models.Classification>>,
-                  retry(() =>
-                    this.calendarItemApi
-                      .findByHCPartyPatientSecretFKeys(ownerId, delSfks.join(','))
-                      .then((cls) =>
-                        parentId
-                          ? this.calendarItemApi
-                              .findByHCPartyPatientSecretFKeys(parentId, delSfks.join(','))
-                              .then((moreCls) => _.uniqBy(cls.concat(moreCls), 'id'))
-                          : cls
-                      )
-                  ) as Promise<Array<models.CalendarItem>>,
+                  retry(async () => {
+                    const delegationSFKs = delSfks.join(',')
+                    try {
+                      let calendarItems = await this.calendarItemApi.findByHCPartyPatientSecretFKeys(ownerId, delegationSFKs)
+
+                      if (parentId) {
+                        const moreCalendarItems = await this.calendarItemApi.findByHCPartyPatientSecretFKeys(parentId, delegationSFKs)
+                        calendarItems = _.uniqBy(calendarItems.concat(moreCalendarItems), 'id')
+                      }
+
+                      return calendarItems
+                    } catch (ex) {
+                      console.log(`exception occured exporting calendarItem for ownerId: ${ownerId} - ${ex}`)
+                      //throw ex
+                    }
+                  }) as Promise<Array<models.CalendarItem>>,
                 ]).then(([hes, frms, ctcs, ivs, cls, cis]) => {
                   const docIds: { [key: string]: number } = {}
                   ctcs.forEach(
@@ -1146,9 +1134,10 @@ export class IccPatientXApi extends IccPatientApi {
     ssin = ssin.replace(new RegExp('[^(0-9)]', 'g'), '')
     let isValidNiss = false
 
-    const normalNumber = /^[0-9][0-9](([0][0-9])|([1][0-2]))(([0-2][0-9])|([3][0-1]))(([0-9]{2}[1-9])|([0-9][1-9][0-9])|([1-9][0-9]{2}))(([0-8][0-9])|([9][0-7]))$/.test(
-      ssin
-    )
+    const normalNumber =
+      /^[0-9][0-9](([0][0-9])|([1][0-2]))(([0-2][0-9])|([3][0-1]))(([0-9]{2}[1-9])|([0-9][1-9][0-9])|([1-9][0-9]{2}))(([0-8][0-9])|([9][0-7]))$/.test(
+        ssin
+      )
     const bisNumber = /^[0-9][0-9](([2][0-9])|([3][0-2]))(([0-2][0-9])|([3][0-1]))[0-9]{3}(([0-8][0-9])|([9][0-7]))$/.test(ssin)
     const terNumber = /^[0-9][0-9](([4][0-9])|([5][0-2]))(([0-2][0-9])|([3][0-1]))[0-9]{3}(([0-8][0-9])|([9][0-7]))$/.test(ssin)
 
@@ -1163,7 +1152,7 @@ export class IccPatientXApi extends IccPatientApi {
   }
 
   async getPatientIdOfChildDocumentForHcpAndHcpParents(
-    childDocument: models.Invoice | models.CalendarItem | models.Contact,
+    childDocument: models.Invoice | models.CalendarItem | models.Contact | models.AccessLog,
     hcpId: string
   ): Promise<string> {
     const parentIdsArray = (await this.crypto.extractCryptedFKs(childDocument, hcpId)).extractedKeys

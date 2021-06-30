@@ -15,6 +15,7 @@ import { IccReceiptXApi } from './icc-receipt-x-api'
 import { IccAccesslogXApi } from './icc-accesslog-x-api'
 import { IccTimeTableXApi } from './icc-time-table-x-api'
 
+export * from './icc-accesslog-x-api'
 export * from './icc-bekmehr-x-api'
 export * from './icc-calendar-item-x-api'
 export * from './icc-classification-x-api'

@@ -209,9 +209,12 @@ export class IccCryptoXApi {
       return Promise.resolve(res)
     } else {
       const keyPair = this._RSA.rsaKeyPairs[hcPartyKeyOwner]
-      return (keyPair
-        ? Promise.resolve(keyPair)
-        : Promise.resolve(this._RSA.loadKeyPairNotImported(hcPartyKeyOwner)).then((keyPairInJwk) => this.cacheKeyPair(keyPairInJwk, hcPartyKeyOwner))
+      return (
+        keyPair
+          ? Promise.resolve(keyPair)
+          : Promise.resolve(this._RSA.loadKeyPairNotImported(hcPartyKeyOwner)).then((keyPairInJwk) =>
+              this.cacheKeyPair(keyPairInJwk, hcPartyKeyOwner)
+            )
       )
         .then((keyPair) => this._RSA.decrypt(keyPair.privateKey, hex2ua(encryptedHcPartyKey)))
         .catch((e) => {
@@ -748,9 +751,10 @@ export class IccCryptoXApi {
 
     this.throwDetailedExceptionForInvalidParameter('child.id', child.id, 'addDelegationsAndEncryptionKeys', arguments)
 
-    return (secretDelegationKey
-      ? this.extendedDelegationsAndCryptedForeignKeys(child, parent, ownerId, delegateId, secretDelegationKey)
-      : Promise.resolve({ delegations: {}, cryptedForeignKeys: {} })
+    return (
+      secretDelegationKey
+        ? this.extendedDelegationsAndCryptedForeignKeys(child, parent, ownerId, delegateId, secretDelegationKey)
+        : Promise.resolve({ delegations: {}, cryptedForeignKeys: {} })
     )
       .then((extendedChildObjectSPKsAndCFKs) =>
         secretEncryptionKey
@@ -1100,7 +1104,7 @@ export class IccCryptoXApi {
   }
 
   // noinspection JSUnusedGlobalSymbols
-  loadKeyPairsInBrowserLocalStorage(healthcarePartyId: string, file: Blob) {
+  loadKeyPairsInBrowserLocalStorage(healthcarePartyId: string, file: Blob): Promise<void> {
     const fr = new FileReader()
     return new Promise((resolve, reject) => {
       fr.onerror = reject

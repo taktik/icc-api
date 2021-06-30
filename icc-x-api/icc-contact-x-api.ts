@@ -94,7 +94,7 @@ export class IccContactXApi extends IccContactApi {
               })
             ))
         )
-        ;(user.autoDelegations ? user.autoDelegations.anonymousMedicalInformation : []).forEach(
+        ;(user.autoDelegations && user.autoDelegations.anonymousMedicalInformation ? user.autoDelegations.anonymousMedicalInformation : []).forEach(
           (delegateId) =>
             (promise = promise.then((contact) =>
               this.crypto.addDelegationsAndEncryptionKeys(patient, contact, hcpId!, delegateId, null, eks.secretId).catch((e) => {
@@ -115,7 +115,12 @@ export class IccContactXApi extends IccContactApi {
           encryptionKeys: eks.encryptionKeys,
         })
       )
-      ;(user.autoDelegations ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || []) : []).forEach(
+      ;(user.autoDelegations
+        ? (user.autoDelegations.all || [])
+            .concat(user.autoDelegations.medicalInformation || [])
+            .concat(user.autoDelegations.anonymousMedicalInformation || [])
+        : []
+      ).forEach(
         (delegateId) =>
           (promise = promise.then((contact) =>
             this.crypto
@@ -260,7 +265,9 @@ export class IccContactXApi extends IccContactApi {
   ): Promise<PaginatedListContact | any> {
     return super
       .filterContactsBy(startDocumentId, limit, body)
-      .then((ctcs) => this.decrypt(user.healthcarePartyId!, ctcs.rows!).then((decryptedRows) => Object.assign(ctcs, { rows: decryptedRows })))
+      .then((ctcs) =>
+        this.decrypt(user.healthcarePartyId! || user.patientId!, ctcs.rows!).then((decryptedRows) => Object.assign(ctcs, { rows: decryptedRows }))
+      )
   }
 
   listContactsByOpeningDateWithUser(
@@ -271,10 +278,11 @@ export class IccContactXApi extends IccContactApi {
     startDocumentId?: string,
     limit?: number
   ): Promise<PaginatedListContact | any> {
-    return super.listContactsByOpeningDate(startKey, endKey, hcpartyid, startDocumentId, limit).then((ctcs) => {
-      ;(ctcs as any).rows = this.decrypt((user.healthcarePartyId || user.patientId)!, ctcs.rows!)
-      return ctcs
-    })
+    return super
+      .listContactsByOpeningDate(startKey, endKey, hcpartyid, startDocumentId, limit)
+      .then((ctcs) =>
+        this.decrypt(user.healthcarePartyId! || user.patientId!, ctcs.rows!).then((decryptedRows) => Object.assign(ctcs, { rows: decryptedRows }))
+      )
   }
 
   findByHCPartyFormIdWithUser(user: models.User, hcPartyId: string, formId: string): Promise<Array<models.Contact> | any> {
