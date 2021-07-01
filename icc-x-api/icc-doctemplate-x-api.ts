@@ -5,6 +5,7 @@ import { extend } from 'lodash'
 import * as models from '../icc-api/model/models'
 import { DocumentTemplate } from '../icc-api/model/models'
 import { string2ua } from './utils/binary-utils'
+import { XHR } from '../icc-api/api/XHR'
 
 // noinspection JSUnusedGlobalSymbols
 export class IccDoctemplateXApi extends IccDoctemplateApi {

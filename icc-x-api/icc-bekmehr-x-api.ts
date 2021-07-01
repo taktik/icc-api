@@ -4,24 +4,24 @@ import { IccContactXApi } from './icc-contact-x-api'
 import { IccDocumentXApi } from './icc-document-x-api'
 import { IccHelementXApi } from './icc-helement-x-api'
 import { string2ua, ua2string } from './utils/binary-utils'
-import { Document } from '../icc-api/model/models'
+import { Contact, Document, HealthElement, Service } from '../icc-api/model/models'
 
 export type Patcher = ContactPatcher | HealthElementPatcher | DocumentPatcher | ServicePatcher
 export interface ContactPatcher {
   type: 'ContactDto'
-  patch: (contacts: ContactDto[]) => Promise<ContactDto[]>
+  patch: (contacts: Contact[]) => Promise<Contact[]>
 }
 export interface HealthElementPatcher {
   type: 'HealthElementDto'
-  patch: (patients: HealthElementDto[]) => Promise<HealthElementDto[]>
+  patch: (patients: HealthElement[]) => Promise<HealthElement[]>
 }
 export interface DocumentPatcher {
   type: 'DocumentDto'
-  patch: (documents: DocumentDto[]) => Promise<DocumentDto[]>
+  patch: (documents: Document[]) => Promise<Document[]>
 }
 export interface ServicePatcher {
   type: 'ServiceDto'
-  patch: (documents: ServiceDto[]) => Promise<ServiceDto[]>
+  patch: (documents: Service[]) => Promise<Service[]>
 }
 
 export class IccBekmehrXApi extends IccBekmehrApi {

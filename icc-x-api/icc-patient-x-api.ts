@@ -467,10 +467,9 @@ export class IccPatientXApi extends IccPatientApi {
   }
 
   decrypt(user: models.User, pats: Array<models.Patient>, fillDelegations = true): Promise<Array<models.Patient>> {
-    return (
-      user.healthcarePartyId
-        ? this.hcpartyApi.getHealthcareParty(user.healthcarePartyId!).then((hcp) => [hcp.id, hcp.parentId])
-        : Promise.resolve([user.patientId])
+    return (user.healthcarePartyId
+      ? this.hcpartyApi.getHealthcareParty(user.healthcarePartyId!).then((hcp) => [hcp.id, hcp.parentId])
+      : Promise.resolve([user.patientId])
     ).then((ids) => {
       const hcpId = ids[0]
       //First check that we have no dangling delegation
@@ -746,7 +745,7 @@ export class IccPatientXApi extends IccPatientApi {
                       )
                   ) as Promise<Array<models.CalendarItem>>,
                 ]).then(([hes, frms, ctcs, ivs, cls, cis]) => {
-                  let cloneKeysAndDelegations = function (x: models.IcureStubDto) {
+                  let cloneKeysAndDelegations = function (x: models.IcureStub) {
                     return {
                       delegations: shareDelegations ? _.clone(x.delegations) : undefined,
                       cryptedForeignKeys: shareCryptedForeignKeys ? _.clone(x.cryptedForeignKeys) : undefined,
@@ -1134,10 +1133,9 @@ export class IccPatientXApi extends IccPatientApi {
     ssin = ssin.replace(new RegExp('[^(0-9)]', 'g'), '')
     let isValidNiss = false
 
-    const normalNumber =
-      /^[0-9][0-9](([0][0-9])|([1][0-2]))(([0-2][0-9])|([3][0-1]))(([0-9]{2}[1-9])|([0-9][1-9][0-9])|([1-9][0-9]{2}))(([0-8][0-9])|([9][0-7]))$/.test(
-        ssin
-      )
+    const normalNumber = /^[0-9][0-9](([0][0-9])|([1][0-2]))(([0-2][0-9])|([3][0-1]))(([0-9]{2}[1-9])|([0-9][1-9][0-9])|([1-9][0-9]{2}))(([0-8][0-9])|([9][0-7]))$/.test(
+      ssin
+    )
     const bisNumber = /^[0-9][0-9](([2][0-9])|([3][0-2]))(([0-2][0-9])|([3][0-1]))[0-9]{3}(([0-8][0-9])|([9][0-7]))$/.test(ssin)
     const terNumber = /^[0-9][0-9](([4][0-9])|([5][0-2]))(([0-2][0-9])|([3][0-1]))[0-9]{3}(([0-8][0-9])|([9][0-7]))$/.test(ssin)
 

@@ -8,7 +8,7 @@ import { utils } from './crypto/utils'
 import { AccessLog, PaginatedListAccessLog } from '../icc-api/model/models'
 import { hex2ua, ua2utf8, utf8_2ua } from './utils/binary-utils'
 
-export interface AccessLogWithPatientId extends AccessLogDto {
+export interface AccessLogWithPatientId extends AccessLog {
   patientId: string
 }
 
@@ -281,11 +281,11 @@ export class IccAccesslogXApi extends IccAccesslogApi {
   }
 
   async findLatestAccessLogsOfPatientsWithUser(
-    user: models.UserDto,
+    user: models.User,
     userId: string,
     limit: number = 100,
     startDate?: number
-  ): Promise<models.AccessLogDto[]> {
+  ): Promise<models.AccessLog[]> {
     let foundAccessLogs: AccessLogWithPatientId[] = [],
       nextKeyPair: models.PaginatedDocumentKeyIdPairObject | undefined = undefined
     const numberRequestedAccessLogs = 100
@@ -293,7 +293,7 @@ export class IccAccesslogXApi extends IccAccesslogApi {
 
     for (let currentIteration = 0; foundAccessLogs.length < limit && currentIteration < MAX_WHILE_ITERATIONS; currentIteration++) {
       const currentLimit = limit - foundAccessLogs.length
-      const { rows: logs, nextKeyPair: newNextKeyPair }: models.PaginatedListAccessLogDto = (await super.findByUserAfterDate(
+      const { rows: logs, nextKeyPair: newNextKeyPair }: models.PaginatedListAccessLog = (await super.findByUserAfterDate(
         userId,
         'USER_ACCESS',
         startDate,
@@ -301,22 +301,20 @@ export class IccAccesslogXApi extends IccAccesslogApi {
         nextKeyPair && nextKeyPair.startKeyDocId!,
         numberRequestedAccessLogs,
         true
-      )) as models.PaginatedListAccessLogDto
-      const logsWithPatientId: AccessLogWithPatientId[] = await this.decrypt(
-        (user.healthcarePartyId || user.patientId)!,
-        logs as AccessLogDto[]
-      ).then((decryptedLogs) =>
-        Promise.all(
-          _.map(decryptedLogs, (decryptedLog) => {
-            return this.crypto.extractCryptedFKs(decryptedLog, user.healthcarePartyId as string).then(
-              (keys) =>
-                ({
-                  ...decryptedLog,
-                  patientId: _.head(keys.extractedKeys),
-                } as AccessLogWithPatientId)
-            )
-          })
-        )
+      )) as models.PaginatedListAccessLog
+      const logsWithPatientId: AccessLogWithPatientId[] = await this.decrypt((user.healthcarePartyId || user.patientId)!, logs as AccessLog[]).then(
+        (decryptedLogs) =>
+          Promise.all(
+            _.map(decryptedLogs, (decryptedLog) => {
+              return this.crypto.extractCryptedFKs(decryptedLog, user.healthcarePartyId as string).then(
+                (keys) =>
+                  ({
+                    ...decryptedLog,
+                    patientId: _.head(keys.extractedKeys),
+                  } as AccessLogWithPatientId)
+              )
+            })
+          )
       )
 
       const uniqueLogs: AccessLogWithPatientId[] = _.chain(logsWithPatientId)
