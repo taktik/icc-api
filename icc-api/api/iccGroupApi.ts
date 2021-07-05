@@ -73,6 +73,23 @@ export class iccGroupApi {
       .then(doc => new models.GroupDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+
+  /**
+   * Get a group by id
+   * @summary Get a group by id
+   * @param id The id of the group
+   */
+  getGroup(id: string): Promise<models.GroupDto | any> {
+    let _body = null
+
+    const _url =
+      this.host + `/group/${encodeURIComponent(String(id))}` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then((doc) => new models.GroupDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
+  }
+
   listGroups(): Promise<Array<models.GroupDto> | any> {
     let _body = null
 
