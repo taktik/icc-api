@@ -24,6 +24,6 @@ export namespace SumehrValidityDto {
   export const SumehrValidEnum = {
     Absent: "absent" as SumehrValidEnum,
     Uptodate: "uptodate" as SumehrValidEnum,
-    Outdated: "outdated" as SumehrValidEnum
+    Outdated: "outdated" as SumehrValidEnum,
   }
 }

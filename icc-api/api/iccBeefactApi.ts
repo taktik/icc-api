@@ -24,7 +24,7 @@ export class iccBeefactApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -62,10 +62,10 @@ export class iccBeefactApi {
       new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new MessageWithBatch(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new MessageWithBatch(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 }

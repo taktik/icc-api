@@ -35,6 +35,7 @@ export class InvoiceItem {
   derogationMaxNumber?: InvoiceItem.DerogationMaxNumberEnum
   prescriberNorm?: InvoiceItem.PrescriberNormEnum
   prescriberNihii?: string
+  prescriptionDate?: number
   personalInterventionCoveredByThirdPartyCode?: number
   doctorIdentificationNumber?: string
   invoiceRef?: string
@@ -45,7 +46,7 @@ export namespace InvoiceItem {
   export const SideCodeEnum = {
     None: "None" as SideCodeEnum,
     Left: "Left" as SideCodeEnum,
-    Right: "Right" as SideCodeEnum
+    Right: "Right" as SideCodeEnum,
   }
   export type TimeOfDayEnum = "Other" | "Night" | "Weekend" | "Bankholiday" | "Urgent"
   export const TimeOfDayEnum = {
@@ -53,7 +54,7 @@ export namespace InvoiceItem {
     Night: "Night" as TimeOfDayEnum,
     Weekend: "Weekend" as TimeOfDayEnum,
     Bankholiday: "Bankholiday" as TimeOfDayEnum,
-    Urgent: "Urgent" as TimeOfDayEnum
+    Urgent: "Urgent" as TimeOfDayEnum,
   }
   export type DerogationMaxNumberEnum =
     | "Other"
@@ -66,7 +67,7 @@ export namespace InvoiceItem {
     DerogationMaxNumber: "DerogationMaxNumber" as DerogationMaxNumberEnum,
     OtherPrescription: "OtherPrescription" as DerogationMaxNumberEnum,
     SecondPrestationOfDay: "SecondPrestationOfDay" as DerogationMaxNumberEnum,
-    ThirdAndNextPrestationOfDay: "ThirdAndNextPrestationOfDay" as DerogationMaxNumberEnum
+    ThirdAndNextPrestationOfDay: "ThirdAndNextPrestationOfDay" as DerogationMaxNumberEnum,
   }
   export type PrescriberNormEnum =
     | "None"
@@ -79,7 +80,7 @@ export namespace InvoiceItem {
     OnePrescriber: "OnePrescriber" as PrescriberNormEnum,
     SelfPrescriber: "SelfPrescriber" as PrescriberNormEnum,
     AddedCode: "AddedCode" as PrescriberNormEnum,
-    ManyPrescribers: "ManyPrescribers" as PrescriberNormEnum
+    ManyPrescribers: "ManyPrescribers" as PrescriberNormEnum,
   }
   export type PercentNormEnum =
     | "None"
@@ -98,6 +99,6 @@ export namespace InvoiceItem {
     Ah1n1: "Ah1n1" as PercentNormEnum,
     HalfPriceSecondAct: "HalfPriceSecondAct" as PercentNormEnum,
     InvoiceException: "InvoiceException" as PercentNormEnum,
-    ForInformation: "ForInformation" as PercentNormEnum
+    ForInformation: "ForInformation" as PercentNormEnum,
   }
 }

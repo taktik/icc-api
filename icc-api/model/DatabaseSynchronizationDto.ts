@@ -27,6 +27,6 @@ export namespace DatabaseSynchronizationDto {
   export const LocalTargetEnum = {
     Base: "base" as LocalTargetEnum,
     Healthdata: "healthdata" as LocalTargetEnum,
-    Patient: "patient" as LocalTargetEnum
+    Patient: "patient" as LocalTargetEnum,
   }
 }

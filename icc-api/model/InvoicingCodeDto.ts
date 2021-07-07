@@ -89,6 +89,6 @@ export namespace InvoicingCodeDto {
     Debitcard: "debitcard" as PaymentTypeEnum,
     Paypal: "paypal" as PaymentTypeEnum,
     Bitcoin: "bitcoin" as PaymentTypeEnum,
-    Other: "other" as PaymentTypeEnum
+    Other: "other" as PaymentTypeEnum,
   }
 }

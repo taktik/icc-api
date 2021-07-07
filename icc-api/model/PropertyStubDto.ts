@@ -13,7 +13,7 @@ import { PropertyTypeStubDto } from "./PropertyTypeStubDto"
 import { TypedValueDtoObject } from "./TypedValueDtoObject"
 
 /**
- * Extra properties for the user. Those properties are typed (see class Property)
+ * Extra properties
  */
 import { decodeBase64 } from "./ModelHelper"
 

@@ -42,11 +42,11 @@ export class InvoiceDto {
    */
   modified?: number
   /**
-   * The id of the User that has created this form, will be filled automatically if missing. Not enforced by the application server.
+   * The id of the User that has created this entity, will be filled automatically if missing. Not enforced by the application server.
    */
   author?: string
   /**
-   * The id of the HealthcareParty that is responsible for this form, will be filled automatically if missing. Not enforced by the application server.
+   * The id of the HealthcareParty that is responsible for this entity, will be filled automatically if missing. Not enforced by the application server.
    */
   responsible?: string
   /**
@@ -179,7 +179,7 @@ export namespace InvoiceDto {
     Payingagency: "payingagency" as InvoiceTypeEnum,
     Insurance: "insurance" as InvoiceTypeEnum,
     Efact: "efact" as InvoiceTypeEnum,
-    Other: "other" as InvoiceTypeEnum
+    Other: "other" as InvoiceTypeEnum,
   }
   export type SentMediumTypeEnum = "cdrom" | "eattest" | "efact" | "email" | "mediprima" | "paper"
   export const SentMediumTypeEnum = {
@@ -188,12 +188,12 @@ export namespace InvoiceDto {
     Efact: "efact" as SentMediumTypeEnum,
     Email: "email" as SentMediumTypeEnum,
     Mediprima: "mediprima" as SentMediumTypeEnum,
-    Paper: "paper" as SentMediumTypeEnum
+    Paper: "paper" as SentMediumTypeEnum,
   }
   export type InterventionTypeEnum = "total" | "userfees"
   export const InterventionTypeEnum = {
     Total: "total" as InterventionTypeEnum,
-    Userfees: "userfees" as InterventionTypeEnum
+    Userfees: "userfees" as InterventionTypeEnum,
   }
   export type PaymentTypeEnum =
     | "cash"
@@ -212,6 +212,6 @@ export namespace InvoiceDto {
     Debitcard: "debitcard" as PaymentTypeEnum,
     Paypal: "paypal" as PaymentTypeEnum,
     Bitcoin: "bitcoin" as PaymentTypeEnum,
-    Other: "other" as PaymentTypeEnum
+    Other: "other" as PaymentTypeEnum,
   }
 }

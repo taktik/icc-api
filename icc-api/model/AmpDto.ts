@@ -49,11 +49,11 @@ export namespace AmpDto {
   export const StatusEnum = {
     AUTHORIZED: "AUTHORIZED" as StatusEnum,
     SUSPENDED: "SUSPENDED" as StatusEnum,
-    REVOKED: "REVOKED" as StatusEnum
+    REVOKED: "REVOKED" as StatusEnum,
   }
   export type MedicineTypeEnum = "ALLOPATHIC" | "HOMEOPATHIC"
   export const MedicineTypeEnum = {
     ALLOPATHIC: "ALLOPATHIC" as MedicineTypeEnum,
-    HOMEOPATHIC: "HOMEOPATHIC" as MedicineTypeEnum
+    HOMEOPATHIC: "HOMEOPATHIC" as MedicineTypeEnum,
   }
 }

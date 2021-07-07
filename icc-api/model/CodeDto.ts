@@ -199,6 +199,6 @@ export namespace CodeDto {
     Deptvisceraldigestiveabdominalsurgery: "deptvisceraldigestiveabdominalsurgery" as FlagsEnum,
     Depttransplantsurgery: "depttransplantsurgery" as FlagsEnum,
     Deptpercutaneous: "deptpercutaneous" as FlagsEnum,
-    Deptchildbirth: "deptchildbirth" as FlagsEnum
+    Deptchildbirth: "deptchildbirth" as FlagsEnum,
   }
 }

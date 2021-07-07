@@ -48,11 +48,11 @@ export class DocumentDto {
    */
   modified?: number
   /**
-   * The id of the User that has created this form, will be filled automatically if missing. Not enforced by the application server.
+   * The id of the User that has created this entity, will be filled automatically if missing. Not enforced by the application server.
    */
   author?: string
   /**
-   * The id of the HealthcareParty that is responsible for this form, will be filled automatically if missing. Not enforced by the application server.
+   * The id of the HealthcareParty that is responsible for this entity, will be filled automatically if missing. Not enforced by the application server.
    */
   responsible?: string
   /**
@@ -75,6 +75,10 @@ export class DocumentDto {
    * hard delete (unix epoch in ms) timestamp of the object. Filled automatically when deletePatient is called.
    */
   deletionDate?: number
+  /**
+   * Reference in object store
+   */
+  objectStoreReference?: string
   /**
    * Location of the document
    */
@@ -131,13 +135,11 @@ export class DocumentDto {
    * Id of attachment to this document
    */
   attachmentId?: string
+  encryptedAttachment?: ArrayBuffer
+  decryptedAttachment?: ArrayBuffer
   /**
    * The secretForeignKeys are filled at the to many end of a one to many relationship (for example inside Contact for the Patient -> Contacts relationship). Used when we want to find all contacts for a specific patient. These keys are in clear. You can have several to partition the medical document space.
    */
-
-  encryptedAttachment?: ArrayBuffer
-  decryptedAttachment?: ArrayBuffer
-
   secretForeignKeys?: Array<string>
   /**
    * The secretForeignKeys are filled at the to many end of a one to many relationship (for example inside Contact for the Patient -> Contacts relationship). Used when we want to find the patient for a specific contact. These keys are the encrypted id (using the hcParty key for the delegate) that can be found in clear inside the patient. ids encrypted using the hcParty keys.

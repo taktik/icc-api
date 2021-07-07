@@ -37,11 +37,11 @@ export namespace DmppDto {
     P: "P" as DeliveryEnvironmentEnum,
     A: "A" as DeliveryEnvironmentEnum,
     H: "H" as DeliveryEnvironmentEnum,
-    R: "R" as DeliveryEnvironmentEnum
+    R: "R" as DeliveryEnvironmentEnum,
   }
   export type CodeTypeEnum = "CNK" | "PSEUDO"
   export const CodeTypeEnum = {
     CNK: "CNK" as CodeTypeEnum,
-    PSEUDO: "PSEUDO" as CodeTypeEnum
+    PSEUDO: "PSEUDO" as CodeTypeEnum,
   }
 }

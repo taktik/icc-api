@@ -33,6 +33,6 @@ export namespace FlatRateTarificationDto {
     Physician: "physician" as FlatRateTypeEnum,
     Physiotherapist: "physiotherapist" as FlatRateTypeEnum,
     Nurse: "nurse" as FlatRateTypeEnum,
-    Ptd: "ptd" as FlatRateTypeEnum
+    Ptd: "ptd" as FlatRateTypeEnum,
   }
 }

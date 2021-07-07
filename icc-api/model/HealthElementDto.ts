@@ -42,11 +42,11 @@ export class HealthElementDto {
    */
   modified?: number
   /**
-   * The id of the User that has created this form, will be filled automatically if missing. Not enforced by the application server.
+   * The id of the User that has created this entity, will be filled automatically if missing. Not enforced by the application server.
    */
   author?: string
   /**
-   * The id of the HealthcareParty that is responsible for this form, will be filled automatically if missing. Not enforced by the application server.
+   * The id of the HealthcareParty that is responsible for this entity, will be filled automatically if missing. Not enforced by the application server.
    */
   responsible?: string
   /**
@@ -154,6 +154,6 @@ export namespace HealthElementDto {
   export type LateralityEnum = "left" | "right"
   export const LateralityEnum = {
     Left: "left" as LateralityEnum,
-    Right: "right" as LateralityEnum
+    Right: "right" as LateralityEnum,
   }
 }

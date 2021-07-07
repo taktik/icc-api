@@ -33,6 +33,6 @@ export namespace IngredientDto {
   export type TypeEnum = "ACTIVE_SUBSTANCE" | "EXCIPIENT"
   export const TypeEnum = {
     ACTIVESUBSTANCE: "ACTIVE_SUBSTANCE" as TypeEnum,
-    EXCIPIENT: "EXCIPIENT" as TypeEnum
+    EXCIPIENT: "EXCIPIENT" as TypeEnum,
   }
 }

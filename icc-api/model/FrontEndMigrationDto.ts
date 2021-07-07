@@ -9,6 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { PropertyStubDto } from "./PropertyStubDto"
 
 import { decodeBase64 } from "./ModelHelper"
 
@@ -32,12 +33,17 @@ export class FrontEndMigrationDto {
   startKey?: string
   startKeyDocId?: string
   processCount?: number
+  /**
+   * Extra properties for the fem. Those properties are typed (see class Property)
+   */
+  properties?: Array<PropertyStubDto>
 }
 export namespace FrontEndMigrationDto {
-  export type StatusEnum = "STARTED" | "ERROR" | "SUCCESS"
+  export type StatusEnum = "STARTED" | "PAUSED" | "ERROR" | "SUCCESS"
   export const StatusEnum = {
     STARTED: "STARTED" as StatusEnum,
+    PAUSED: "PAUSED" as StatusEnum,
     ERROR: "ERROR" as StatusEnum,
-    SUCCESS: "SUCCESS" as StatusEnum
+    SUCCESS: "SUCCESS" as StatusEnum,
   }
 }

@@ -10,6 +10,9 @@
  * Do not edit the class manually.
  */
 
+/**
+ * The ids of databases to reset
+ */
 import { decodeBase64 } from "./ModelHelper"
 
 export class ListOfIdsDto {

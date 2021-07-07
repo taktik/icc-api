@@ -34,7 +34,7 @@ export class iccBesamv2Api {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -61,8 +61,8 @@ export class iccBesamv2Api {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new AmpDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new AmpDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -91,8 +91,8 @@ export class iccBesamv2Api {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListAmpDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListAmpDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -121,8 +121,8 @@ export class iccBesamv2Api {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListAmpDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListAmpDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -151,8 +151,8 @@ export class iccBesamv2Api {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListAmpDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListAmpDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -185,8 +185,8 @@ export class iccBesamv2Api {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListAmpDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListAmpDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -215,8 +215,8 @@ export class iccBesamv2Api {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListAmpDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListAmpDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -245,8 +245,8 @@ export class iccBesamv2Api {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListAmpDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListAmpDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -279,8 +279,8 @@ export class iccBesamv2Api {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListNmpDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListNmpDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -313,8 +313,8 @@ export class iccBesamv2Api {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListVmpGroupDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListVmpGroupDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -343,8 +343,8 @@ export class iccBesamv2Api {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListVmpGroupDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListVmpGroupDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -373,8 +373,8 @@ export class iccBesamv2Api {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListVmpDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListVmpDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -403,8 +403,8 @@ export class iccBesamv2Api {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListVmpDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListVmpDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -437,8 +437,8 @@ export class iccBesamv2Api {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListVmpDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListVmpDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -467,8 +467,8 @@ export class iccBesamv2Api {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListVmpDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListVmpDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -481,8 +481,8 @@ export class iccBesamv2Api {
     const _url = this.host + `/be_samv2/v` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new SamVersionDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new SamVersionDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -497,11 +497,11 @@ export class iccBesamv2Api {
     const _url = this.host + `/be_samv2/amp/byDmppCodes` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new AmpDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new AmpDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -516,11 +516,11 @@ export class iccBesamv2Api {
     const _url = this.host + `/be_samv2/amp/byGroupCodes` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new AmpDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new AmpDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -535,11 +535,11 @@ export class iccBesamv2Api {
     const _url = this.host + `/be_samv2/amp/byGroupIds` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new AmpDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new AmpDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -554,11 +554,11 @@ export class iccBesamv2Api {
     const _url = this.host + `/be_samv2/amp/byVmpCodes` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new AmpDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new AmpDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -573,11 +573,11 @@ export class iccBesamv2Api {
     const _url = this.host + `/be_samv2/amp/byVmpIds` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new AmpDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new AmpDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -592,11 +592,11 @@ export class iccBesamv2Api {
     const _url = this.host + `/be_samv2/nmp/byCnks` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new NmpDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new NmpDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -609,8 +609,8 @@ export class iccBesamv2Api {
     const _url = this.host + `/be_samv2/pharmaform` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new PharmaceuticalFormDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new PharmaceuticalFormDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -623,8 +623,8 @@ export class iccBesamv2Api {
     const _url = this.host + `/be_samv2/substance` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new SubstanceDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new SubstanceDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -639,11 +639,11 @@ export class iccBesamv2Api {
     const _url = this.host + `/be_samv2/vmpgroup/byGroupCodes` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new VmpGroupDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new VmpGroupDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -658,11 +658,11 @@ export class iccBesamv2Api {
     const _url = this.host + `/be_samv2/vmp/byGroupIds` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new VmpDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new VmpDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -677,10 +677,10 @@ export class iccBesamv2Api {
     const _url = this.host + `/be_samv2/vmp/byVmpCodes` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new VmpDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new VmpDto(it)))
+      .catch((err) => this.handleError(err))
   }
 }

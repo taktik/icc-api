@@ -24,7 +24,7 @@ export class iccPlaceApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -48,11 +48,11 @@ export class iccPlaceApi {
     const _url = this.host + `/place` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PlaceDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PlaceDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -67,8 +67,8 @@ export class iccPlaceApi {
       this.host + `/place/${encodeURIComponent(String(placeIds))}` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new DocIdentifier(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -83,8 +83,8 @@ export class iccPlaceApi {
       this.host + `/place/${encodeURIComponent(String(placeId))}` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PlaceDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PlaceDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -97,8 +97,8 @@ export class iccPlaceApi {
     const _url = this.host + `/place` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new PlaceDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new PlaceDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -113,10 +113,10 @@ export class iccPlaceApi {
     const _url = this.host + `/place` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PlaceDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PlaceDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 }

@@ -34,6 +34,6 @@ export namespace Editor {
     Up: "Up" as LabelPositionEnum,
     Down: "Down" as LabelPositionEnum,
     Left: "Left" as LabelPositionEnum,
-    Right: "Right" as LabelPositionEnum
+    Right: "Right" as LabelPositionEnum,
   }
 }

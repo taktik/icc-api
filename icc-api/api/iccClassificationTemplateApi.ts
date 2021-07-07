@@ -26,7 +26,7 @@ export class iccClassificationTemplateApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -52,11 +52,11 @@ export class iccClassificationTemplateApi {
     const _url = this.host + `/classificationTemplate` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new ClassificationTemplateDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new ClassificationTemplateDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -74,8 +74,8 @@ export class iccClassificationTemplateApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new DocIdentifier(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -99,8 +99,8 @@ export class iccClassificationTemplateApi {
       (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new ClassificationTemplateDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new ClassificationTemplateDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -118,8 +118,8 @@ export class iccClassificationTemplateApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new ClassificationTemplateDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new ClassificationTemplateDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -137,8 +137,8 @@ export class iccClassificationTemplateApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new ClassificationTemplateDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new ClassificationTemplateDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -165,8 +165,8 @@ export class iccClassificationTemplateApi {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListClassificationTemplateDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListClassificationTemplateDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -183,11 +183,11 @@ export class iccClassificationTemplateApi {
     const _url = this.host + `/classificationTemplate` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new ClassificationTemplateDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new ClassificationTemplateDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -210,10 +210,10 @@ export class iccClassificationTemplateApi {
       new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new ClassificationTemplateDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new ClassificationTemplateDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 }

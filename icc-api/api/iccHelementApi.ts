@@ -27,7 +27,7 @@ export class iccHelementApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -51,11 +51,30 @@ export class iccHelementApi {
     const _url = this.host + `/helement` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new HealthElementDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new HealthElementDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
+   * Returns the created healthcare elements.
+   * @summary Create a batch of healthcare elements
+   * @param body
+   */
+  createHealthElements(body?: Array<HealthElementDto>): Promise<Array<HealthElementDto>> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/helement/batch` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter((h) => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new HealthElementDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -73,8 +92,8 @@ export class iccHelementApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new DocIdentifier(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -89,11 +108,11 @@ export class iccHelementApi {
     const _url = this.host + `/helement/filter` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new HealthElementDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new HealthElementDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -117,8 +136,8 @@ export class iccHelementApi {
       (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new HealthElementDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new HealthElementDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -142,8 +161,8 @@ export class iccHelementApi {
       (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new IcureStubDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new IcureStubDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -161,8 +180,8 @@ export class iccHelementApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new HealthElementDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new HealthElementDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -177,11 +196,11 @@ export class iccHelementApi {
     const _url = this.host + `/helement` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new HealthElementDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new HealthElementDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -196,11 +215,11 @@ export class iccHelementApi {
     const _url = this.host + `/helement/batch` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new HealthElementDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new HealthElementDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -223,11 +242,11 @@ export class iccHelementApi {
       new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new HealthElementDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new HealthElementDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -242,10 +261,10 @@ export class iccHelementApi {
     const _url = this.host + `/helement/delegations` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new HealthElementDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new HealthElementDto(it)))
+      .catch((err) => this.handleError(err))
   }
 }

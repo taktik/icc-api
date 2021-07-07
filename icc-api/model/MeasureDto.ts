@@ -27,6 +27,7 @@ export class MeasureDto {
   ref?: number
   severity?: number
   severityCode?: string
+  evolution?: number
   unit?: string
   unitCodes?: Array<CodeStubDto>
   comment?: string

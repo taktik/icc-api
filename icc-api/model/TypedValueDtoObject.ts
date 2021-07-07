@@ -37,6 +37,6 @@ export namespace TypedValueDtoObject {
     STRING: "STRING" as TypeEnum,
     DATE: "DATE" as TypeEnum,
     CLOB: "CLOB" as TypeEnum,
-    JSON: "JSON" as TypeEnum
+    JSON: "JSON" as TypeEnum,
   }
 }

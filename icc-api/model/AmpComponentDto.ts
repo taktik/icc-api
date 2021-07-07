@@ -42,12 +42,12 @@ export namespace AmpComponentDto {
   export const CrushableEnum = {
     Y: "Y" as CrushableEnum,
     N: "N" as CrushableEnum,
-    X: "X" as CrushableEnum
+    X: "X" as CrushableEnum,
   }
   export type ContainsAlcoholEnum = "Y" | "N" | "X"
   export const ContainsAlcoholEnum = {
     Y: "Y" as ContainsAlcoholEnum,
     N: "N" as ContainsAlcoholEnum,
-    X: "X" as ContainsAlcoholEnum
+    X: "X" as ContainsAlcoholEnum,
   }
 }

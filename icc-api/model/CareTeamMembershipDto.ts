@@ -36,6 +36,6 @@ export namespace CareTeamMembershipDto {
     Mutuality: "mutuality" as MembershipTypeEnum,
     Patient: "patient" as MembershipTypeEnum,
     Specialist: "specialist" as MembershipTypeEnum,
-    Other: "other" as MembershipTypeEnum
+    Other: "other" as MembershipTypeEnum,
   }
 }

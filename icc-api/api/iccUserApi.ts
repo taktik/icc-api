@@ -29,7 +29,7 @@ export class iccUserApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -56,8 +56,8 @@ export class iccUserApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new UserDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new UserDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -71,12 +71,12 @@ export class iccUserApi {
     let headers = this.headers
     password && (headers = headers.concat(new XHR.Header("password", password)))
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => JSON.parse(JSON.stringify(doc.body)))
-      .catch(err => this.handleError(err))
+      .then((doc) => JSON.parse(JSON.stringify(doc.body)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
-   * Create a user. HealthcareParty ID should be set. Email has to be set and the Login has to be null. On server-side, Email will be used for Login.
+   * Create a user. HealthcareParty ID should be set. Email or Login have to be set. If login hasn't been set, Email will be used for Login instead.
    * @summary Create a user
    * @param body
    */
@@ -87,11 +87,11 @@ export class iccUserApi {
     const _url = this.host + `/user` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new UserDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new UserDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -111,11 +111,11 @@ export class iccUserApi {
       new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new UserDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new UserDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -130,8 +130,8 @@ export class iccUserApi {
       this.host + `/user/${encodeURIComponent(String(userId))}` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
-      .then(doc => new DocIdentifier(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new DocIdentifier(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -150,8 +150,8 @@ export class iccUserApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Unit(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new Unit(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -165,8 +165,8 @@ export class iccUserApi {
     let headers = this.headers
     password && (headers = headers.concat(new XHR.Header("password", password)))
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => JSON.parse(JSON.stringify(doc.body)))
-      .catch(err => this.handleError(err))
+      .then((doc) => JSON.parse(JSON.stringify(doc.body)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -184,8 +184,8 @@ export class iccUserApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => JSON.parse(JSON.stringify(it))))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -205,11 +205,11 @@ export class iccUserApi {
       new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => JSON.parse(JSON.stringify(doc.body)))
-      .catch(err => this.handleError(err))
+      .then((doc) => JSON.parse(JSON.stringify(doc.body)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -222,8 +222,8 @@ export class iccUserApi {
     const _url = this.host + `/user/session` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => JSON.parse(JSON.stringify(doc.body)))
-      .catch(err => this.handleError(err))
+      .then((doc) => JSON.parse(JSON.stringify(doc.body)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -236,8 +236,8 @@ export class iccUserApi {
     const _url = this.host + `/user/current` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new UserDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new UserDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -250,8 +250,8 @@ export class iccUserApi {
     const _url = this.host + `/user/matches` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new UserGroupDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new UserGroupDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -266,8 +266,8 @@ export class iccUserApi {
       this.host + `/user/${encodeURIComponent(String(userId))}` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new UserDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new UserDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -285,8 +285,8 @@ export class iccUserApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new UserDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new UserDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -313,8 +313,8 @@ export class iccUserApi {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListUserDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListUserDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -343,8 +343,8 @@ export class iccUserApi {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListUserDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListUserDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -364,11 +364,11 @@ export class iccUserApi {
       new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new UserDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new UserDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -383,11 +383,11 @@ export class iccUserApi {
     const _url = this.host + `/user` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new UserDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new UserDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -407,10 +407,10 @@ export class iccUserApi {
       new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new UserDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new UserDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 }

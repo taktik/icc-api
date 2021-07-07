@@ -71,6 +71,6 @@ export namespace AmppDto {
   export const StatusEnum = {
     AUTHORIZED: "AUTHORIZED" as StatusEnum,
     SUSPENDED: "SUSPENDED" as StatusEnum,
-    REVOKED: "REVOKED" as StatusEnum
+    REVOKED: "REVOKED" as StatusEnum,
   }
 }

@@ -9,6 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { PropertyStubDto } from "./PropertyStubDto"
 
 /**
  * This entity represents a group
@@ -48,5 +49,9 @@ export class GroupDto {
    * Whether the group has a super admin permission, originally set to no access.
    */
   superAdmin?: boolean
+  /**
+   * Extra properties for the user. Those properties are typed (see class Property)
+   */
+  properties?: Array<PropertyStubDto>
   superGroup?: string
 }

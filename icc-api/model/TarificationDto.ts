@@ -210,6 +210,6 @@ export namespace TarificationDto {
     Deptvisceraldigestiveabdominalsurgery: "deptvisceraldigestiveabdominalsurgery" as FlagsEnum,
     Depttransplantsurgery: "depttransplantsurgery" as FlagsEnum,
     Deptpercutaneous: "deptpercutaneous" as FlagsEnum,
-    Deptchildbirth: "deptchildbirth" as FlagsEnum
+    Deptchildbirth: "deptchildbirth" as FlagsEnum,
   }
 }

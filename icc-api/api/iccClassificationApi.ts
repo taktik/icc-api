@@ -26,7 +26,7 @@ export class iccClassificationApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -50,11 +50,11 @@ export class iccClassificationApi {
     const _url = this.host + `/classification` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new ClassificationDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new ClassificationDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -72,8 +72,8 @@ export class iccClassificationApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new DocIdentifier(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -97,8 +97,8 @@ export class iccClassificationApi {
       (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new ClassificationDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new ClassificationDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -116,8 +116,8 @@ export class iccClassificationApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new ClassificationDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new ClassificationDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -135,8 +135,8 @@ export class iccClassificationApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new ClassificationDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new ClassificationDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -151,11 +151,11 @@ export class iccClassificationApi {
     const _url = this.host + `/classification` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new ClassificationDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new ClassificationDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -178,11 +178,11 @@ export class iccClassificationApi {
       new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new ClassificationDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new ClassificationDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -197,10 +197,10 @@ export class iccClassificationApi {
     const _url = this.host + `/classification/delegations` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new IcureStubDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new IcureStubDto(it)))
+      .catch((err) => this.handleError(err))
   }
 }

@@ -26,7 +26,7 @@ export class iccDocumentApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -50,11 +50,11 @@ export class iccDocumentApi {
     const _url = this.host + `/document` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new DocumentDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new DocumentDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -72,8 +72,8 @@ export class iccDocumentApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
-      .then(doc => new DocumentDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new DocumentDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -91,8 +91,8 @@ export class iccDocumentApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new DocIdentifier(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -121,8 +121,8 @@ export class iccDocumentApi {
       (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new DocumentDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocumentDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -146,8 +146,8 @@ export class iccDocumentApi {
       (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new DocumentDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocumentDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -166,8 +166,8 @@ export class iccDocumentApi {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new DocumentDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocumentDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -185,8 +185,8 @@ export class iccDocumentApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new DocumentDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new DocumentDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -216,8 +216,8 @@ export class iccDocumentApi {
       (fileName ? "&fileName=" + encodeURIComponent(String(fileName)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => doc.body)
-      .catch(err => this.handleError(err))
+      .then((doc) => doc.body)
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -235,8 +235,8 @@ export class iccDocumentApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new DocumentDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new DocumentDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -251,11 +251,11 @@ export class iccDocumentApi {
     const _url = this.host + `/document/batch` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new DocumentDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocumentDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -273,8 +273,8 @@ export class iccDocumentApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new DocumentDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocumentDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -289,11 +289,11 @@ export class iccDocumentApi {
     const _url = this.host + `/document` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new DocumentDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new DocumentDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -308,11 +308,11 @@ export class iccDocumentApi {
     const _url = this.host + `/document/batch` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new DocumentDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocumentDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -338,11 +338,11 @@ export class iccDocumentApi {
       (enckeys ? "&enckeys=" + encodeURIComponent(String(enckeys)) : "")
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/octet-stream"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new DocumentDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new DocumentDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -362,11 +362,11 @@ export class iccDocumentApi {
       (enckeys ? "&enckeys=" + encodeURIComponent(String(enckeys)) : "")
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "multipart/form-data"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new DocumentDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new DocumentDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -381,11 +381,11 @@ export class iccDocumentApi {
     const _url = this.host + `/document/delegations` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new IcureStubDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new IcureStubDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -412,10 +412,10 @@ export class iccDocumentApi {
       (enckeys ? "&enckeys=" + encodeURIComponent(String(enckeys)) : "")
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/octet-stream"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new DocumentDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new DocumentDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 }

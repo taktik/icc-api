@@ -32,7 +32,7 @@ export class iccPatientApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -46,21 +46,78 @@ export class iccPatientApi {
 
   /**
    * Returns the id and _rev of created patients
-   * @summary Modify a patient
+   * @summary Create patients in bulk
    * @param body
    */
-  bulkUpdatePatients(body?: Array<PatientDto>): Promise<Array<IdWithRevDto>> {
+  bulkCreatePatients(body?: Array<PatientDto>): Promise<Array<IdWithRevDto>> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/patient/batch` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter((h) => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new IdWithRevDto(it)))
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
+   * Returns the id and _rev of created patients
+   * @summary Create patients in bulk
+   * @param body
+   */
+  bulkCreatePatients1(body?: Array<PatientDto>): Promise<Array<IdWithRevDto>> {
     let _body = null
     _body = body
 
     const _url = this.host + `/patient/bulk` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new IdWithRevDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new IdWithRevDto(it)))
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
+   * Returns the id and _rev of modified patients
+   * @summary Modify patients in bulk
+   * @param body
+   */
+  bulkUpdatePatients(body?: Array<PatientDto>): Promise<Array<IdWithRevDto>> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/patient/batch` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter((h) => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new IdWithRevDto(it)))
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
+   * Returns the id and _rev of modified patients
+   * @summary Modify patients in bulk
+   * @param body
+   */
+  bulkUpdatePatients1(body?: Array<PatientDto>): Promise<Array<IdWithRevDto>> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/patient/bulk` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter((h) => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new IdWithRevDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -78,8 +135,8 @@ export class iccPatientApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new ContentDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new ContentDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -94,11 +151,11 @@ export class iccPatientApi {
     const _url = this.host + `/patient` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PatientDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PatientDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -116,8 +173,8 @@ export class iccPatientApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new DocIdentifier(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -156,11 +213,11 @@ export class iccPatientApi {
       (desc ? "&desc=" + encodeURIComponent(String(desc)) : "")
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListPatientDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListPatientDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -195,8 +252,8 @@ export class iccPatientApi {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListPatientDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListPatientDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -214,8 +271,8 @@ export class iccPatientApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PatientDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PatientDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -253,8 +310,8 @@ export class iccPatientApi {
       (sortDirection ? "&sortDirection=" + encodeURIComponent(String(sortDirection)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListPatientDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListPatientDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -281,8 +338,8 @@ export class iccPatientApi {
       (dateOfBirth ? "&dateOfBirth=" + encodeURIComponent(String(dateOfBirth)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new PatientDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new PatientDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -300,8 +357,8 @@ export class iccPatientApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PatientDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PatientDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -319,8 +376,8 @@ export class iccPatientApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => JSON.parse(JSON.stringify(doc.body)))
-      .catch(err => this.handleError(err))
+      .then((doc) => JSON.parse(JSON.stringify(doc.body)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -335,11 +392,11 @@ export class iccPatientApi {
     const _url = this.host + `/patient/byIds` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new PatientDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new PatientDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -372,8 +429,8 @@ export class iccPatientApi {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListPatientDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListPatientDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -394,8 +451,8 @@ export class iccPatientApi {
       (lastName ? "&lastName=" + encodeURIComponent(String(lastName)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new PatientDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new PatientDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -413,8 +470,8 @@ export class iccPatientApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new PatientDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new PatientDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -443,8 +500,8 @@ export class iccPatientApi {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListPatientDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListPatientDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -480,8 +537,8 @@ export class iccPatientApi {
       (sortDirection ? "&sortDirection=" + encodeURIComponent(String(sortDirection)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListPatientDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListPatientDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -516,8 +573,8 @@ export class iccPatientApi {
       (sortDirection ? "&sortDirection=" + encodeURIComponent(String(sortDirection)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListPatientDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListPatientDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -547,8 +604,8 @@ export class iccPatientApi {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListString(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListString(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -583,8 +640,8 @@ export class iccPatientApi {
       (sortDirection ? "&sortDirection=" + encodeURIComponent(String(sortDirection)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListPatientDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListPatientDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -599,11 +656,11 @@ export class iccPatientApi {
     const _url = this.host + `/patient/match` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => JSON.parse(JSON.stringify(it))))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -624,8 +681,8 @@ export class iccPatientApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PatientDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PatientDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -640,11 +697,11 @@ export class iccPatientApi {
     const _url = this.host + `/patient` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PatientDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PatientDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -674,8 +731,8 @@ export class iccPatientApi {
       (end ? "&end=" + encodeURIComponent(String(end)) : "")
     let headers = this.headers
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PatientDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PatientDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -695,11 +752,11 @@ export class iccPatientApi {
       new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PatientDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PatientDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -717,7 +774,7 @@ export class iccPatientApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new DocIdentifier(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
+      .catch((err) => this.handleError(err))
   }
 }

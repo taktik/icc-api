@@ -25,7 +25,7 @@ export class iccAccesslogApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -49,11 +49,11 @@ export class iccAccesslogApi {
     const _url = this.host + `/accesslog` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new AccessLogDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new AccessLogDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -71,8 +71,8 @@ export class iccAccesslogApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new DocIdentifier(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -96,8 +96,8 @@ export class iccAccesslogApi {
       (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new AccessLogDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new AccessLogDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -136,8 +136,8 @@ export class iccAccesslogApi {
       (descending ? "&descending=" + encodeURIComponent(String(descending)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListAccessLogDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListAccessLogDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -155,8 +155,8 @@ export class iccAccesslogApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new AccessLogDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new AccessLogDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -192,8 +192,8 @@ export class iccAccesslogApi {
       (descending ? "&descending=" + encodeURIComponent(String(descending)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListAccessLogDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListAccessLogDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -208,10 +208,10 @@ export class iccAccesslogApi {
     const _url = this.host + `/accesslog` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new AccessLogDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new AccessLogDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 }

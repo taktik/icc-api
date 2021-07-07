@@ -59,6 +59,6 @@ export namespace TelecomDto {
     Web: "web" as TelecomTypeEnum,
     Print: "print" as TelecomTypeEnum,
     Disk: "disk" as TelecomTypeEnum,
-    Other: "other" as TelecomTypeEnum
+    Other: "other" as TelecomTypeEnum,
   }
 }

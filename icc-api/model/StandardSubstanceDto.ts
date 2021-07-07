@@ -30,6 +30,6 @@ export namespace StandardSubstanceDto {
     CAS: "CAS" as TypeEnum,
     DMD: "DM_D" as TypeEnum,
     EDQM: "EDQM" as TypeEnum,
-    SNOMEDCT: "SNOMED_CT" as TypeEnum
+    SNOMEDCT: "SNOMED_CT" as TypeEnum,
   }
 }

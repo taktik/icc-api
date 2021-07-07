@@ -113,12 +113,12 @@ export namespace UserDto {
   export const TypeEnum = {
     Database: "database" as TypeEnum,
     Ldap: "ldap" as TypeEnum,
-    Token: "token" as TypeEnum
+    Token: "token" as TypeEnum,
   }
   export type StatusEnum = "ACTIVE" | "DISABLED" | "REGISTERING"
   export const StatusEnum = {
     ACTIVE: "ACTIVE" as StatusEnum,
     DISABLED: "DISABLED" as StatusEnum,
-    REGISTERING: "REGISTERING" as StatusEnum
+    REGISTERING: "REGISTERING" as StatusEnum,
   }
 }

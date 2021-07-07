@@ -29,7 +29,7 @@ export class iccMessageApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -53,11 +53,11 @@ export class iccMessageApi {
     const _url = this.host + `/message` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new MessageDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new MessageDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -78,8 +78,8 @@ export class iccMessageApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
-      .then(doc => new MessageDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new MessageDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -97,8 +97,8 @@ export class iccMessageApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("DELETE", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new DocIdentifier(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -113,11 +113,11 @@ export class iccMessageApi {
     const _url = this.host + `/message/delete/byIds` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new DocIdentifier(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -144,8 +144,8 @@ export class iccMessageApi {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListMessageDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListMessageDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -178,8 +178,8 @@ export class iccMessageApi {
       (hcpId ? "&hcpId=" + encodeURIComponent(String(hcpId)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListMessageDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListMessageDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -198,8 +198,8 @@ export class iccMessageApi {
       (secretFKeys ? "&secretFKeys=" + encodeURIComponent(String(secretFKeys)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new MessageDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new MessageDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -235,8 +235,8 @@ export class iccMessageApi {
       (hcpId ? "&hcpId=" + encodeURIComponent(String(hcpId)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListMessageDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListMessageDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -272,8 +272,8 @@ export class iccMessageApi {
       (hcpId ? "&hcpId=" + encodeURIComponent(String(hcpId)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListMessageDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListMessageDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -312,8 +312,8 @@ export class iccMessageApi {
       (hcpId ? "&hcpId=" + encodeURIComponent(String(hcpId)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListMessageDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListMessageDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -331,8 +331,8 @@ export class iccMessageApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new MessageDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new MessageDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -347,11 +347,11 @@ export class iccMessageApi {
     const _url = this.host + `/message/children/batch` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new MessageDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new MessageDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -369,8 +369,8 @@ export class iccMessageApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new MessageDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new MessageDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -385,11 +385,36 @@ export class iccMessageApi {
     const _url = this.host + `/message/byInvoiceId` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new MessageDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new MessageDto(it)))
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
+   *
+   * @summary Get all messages for current HC Party and provided transportGuids
+   * @param body
+   * @param hcpId
+   */
+  listMessagesByTransportGuids(hcpId: string, body?: ListOfIdsDto): Promise<Array<MessageDto>> {
+    let _body = null
+    _body = body
+
+    const _url =
+      this.host +
+      `/message/byTransportGuid/list` +
+      "?ts=" +
+      new Date().getTime() +
+      (hcpId ? "&hcpId=" + encodeURIComponent(String(hcpId)) : "")
+    let headers = this.headers
+    headers = headers
+      .filter((h) => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new MessageDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -404,11 +429,11 @@ export class iccMessageApi {
     const _url = this.host + `/message` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new MessageDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new MessageDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -428,11 +453,11 @@ export class iccMessageApi {
       new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new IcureStubDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new IcureStubDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -447,11 +472,11 @@ export class iccMessageApi {
     const _url = this.host + `/message/readstatus` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new MessageDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new MessageDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -471,10 +496,10 @@ export class iccMessageApi {
       new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new MessageDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new MessageDto(it)))
+      .catch((err) => this.handleError(err))
   }
 }

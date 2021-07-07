@@ -34,6 +34,6 @@ export namespace Formula {
     OnChange: "OnChange" as LifecycleEnum,
     OnSave: "OnSave" as LifecycleEnum,
     OnDestroy: "OnDestroy" as LifecycleEnum,
-    OnLoadPropertiesEditor: "OnLoadPropertiesEditor" as LifecycleEnum
+    OnLoadPropertiesEditor: "OnLoadPropertiesEditor" as LifecycleEnum,
   }
 }

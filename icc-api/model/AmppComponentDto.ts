@@ -33,6 +33,6 @@ export namespace AmppComponentDto {
     ACTIVECOMPONENT: "ACTIVE_COMPONENT" as ContentTypeEnum,
     SOLVENT: "SOLVENT" as ContentTypeEnum,
     DEVICE: "DEVICE" as ContentTypeEnum,
-    EXCIPIENT: "EXCIPIENT" as ContentTypeEnum
+    EXCIPIENT: "EXCIPIENT" as ContentTypeEnum,
   }
 }

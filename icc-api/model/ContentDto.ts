@@ -13,6 +13,9 @@ import { MeasureDto } from "./MeasureDto"
 import { MedicationDto } from "./MedicationDto"
 import { ServiceDto } from "./ServiceDto"
 
+/**
+ * The type of the content recorded in the documents for the service
+ */
 import { decodeBase64 } from "./ModelHelper"
 
 export class ContentDto {

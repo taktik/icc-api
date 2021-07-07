@@ -34,11 +34,11 @@ export class DocumentTemplateDto {
    */
   modified?: number
   /**
-   * The id of the User that has created this form, will be filled automatically if missing. Not enforced by the application server.
+   * The id of the User that has created this entity, will be filled automatically if missing. Not enforced by the application server.
    */
   author?: string
   /**
-   * The id of the HealthcareParty that is responsible for this form, will be filled automatically if missing. Not enforced by the application server.
+   * The id of the HealthcareParty that is responsible for this entity, will be filled automatically if missing. Not enforced by the application server.
    */
   responsible?: string
   /**
@@ -77,6 +77,6 @@ export class DocumentTemplateDto {
 export namespace DocumentTemplateDto {
   export type VersionEnum = "V1_0_0"
   export const VersionEnum = {
-    _0: "V1_0_0" as VersionEnum
+    _0: "V1_0_0" as VersionEnum,
   }
 }

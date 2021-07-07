@@ -94,6 +94,6 @@ export namespace AddressDto {
     Temporary: "temporary" as AddressTypeEnum,
     Postal: "postal" as AddressTypeEnum,
     Diplomatic: "diplomatic" as AddressTypeEnum,
-    Reference: "reference" as AddressTypeEnum
+    Reference: "reference" as AddressTypeEnum,
   }
 }

@@ -61,6 +61,6 @@ export namespace PatientHealthCarePartyDto {
     Hospital: "hospital" as TypeEnum,
     Other: "other" as TypeEnum,
     Referringphysician: "referringphysician" as TypeEnum,
-    ReferralHospital: "referralHospital" as TypeEnum
+    ReferralHospital: "referralHospital" as TypeEnum,
   }
 }

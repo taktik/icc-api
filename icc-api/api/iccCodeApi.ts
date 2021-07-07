@@ -25,7 +25,7 @@ export class iccCodeApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -49,11 +49,11 @@ export class iccCodeApi {
     const _url = this.host + `/code` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new CodeDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new CodeDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -92,11 +92,11 @@ export class iccCodeApi {
       (desc ? "&desc=" + encodeURIComponent(String(desc)) : "")
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListCodeDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListCodeDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -117,8 +117,8 @@ export class iccCodeApi {
       (type ? "&type=" + encodeURIComponent(String(type)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => JSON.parse(JSON.stringify(it))))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -148,8 +148,8 @@ export class iccCodeApi {
       (version ? "&version=" + encodeURIComponent(String(version)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new CodeDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new CodeDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -188,8 +188,8 @@ export class iccCodeApi {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListCodeDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListCodeDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -228,8 +228,8 @@ export class iccCodeApi {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListCodeDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListCodeDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -261,8 +261,8 @@ export class iccCodeApi {
       (limit ? "&limit=" + encodeURIComponent(String(limit)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new PaginatedListCodeDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new PaginatedListCodeDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -283,8 +283,8 @@ export class iccCodeApi {
       (type ? "&type=" + encodeURIComponent(String(type)) : "")
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => JSON.parse(JSON.stringify(it))))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => JSON.parse(JSON.stringify(it))))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -299,8 +299,8 @@ export class iccCodeApi {
       this.host + `/code/${encodeURIComponent(String(codeId))}` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new CodeDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new CodeDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -322,8 +322,8 @@ export class iccCodeApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new CodeDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new CodeDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -341,8 +341,8 @@ export class iccCodeApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new CodeDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new CodeDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -357,10 +357,10 @@ export class iccCodeApi {
     const _url = this.host + `/code` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
-      .then(doc => new CodeDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new CodeDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 }

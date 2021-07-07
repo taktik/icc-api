@@ -45,6 +45,6 @@ export namespace EfactInvoice {
     ProfessionalDisease: "ProfessionalDisease" as ReasonEnum,
     WorkAccident: "WorkAccident" as ReasonEnum,
     Accident: "Accident" as ReasonEnum,
-    Other: "Other" as ReasonEnum
+    Other: "Other" as ReasonEnum,
   }
 }

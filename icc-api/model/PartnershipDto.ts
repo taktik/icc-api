@@ -95,12 +95,12 @@ export namespace PartnershipDto {
     Stepfather: "stepfather" as TypeEnum,
     Stepmother: "stepmother" as TypeEnum,
     Stepson: "stepson" as TypeEnum,
-    Tutor: "tutor" as TypeEnum
+    Tutor: "tutor" as TypeEnum,
   }
   export type StatusEnum = "active" | "complicated" | "past"
   export const StatusEnum = {
     Active: "active" as StatusEnum,
     Complicated: "complicated" as StatusEnum,
-    Past: "past" as StatusEnum
+    Past: "past" as StatusEnum,
   }
 }

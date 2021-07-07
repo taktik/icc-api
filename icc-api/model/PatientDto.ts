@@ -52,11 +52,11 @@ export class PatientDto {
    */
   modified?: number
   /**
-   * The id of the User that has created this form, will be filled automatically if missing. Not enforced by the application server.
+   * The id of the User that has created this entity, will be filled automatically if missing. Not enforced by the application server.
    */
   author?: string
   /**
-   * The id of the HealthcareParty that is responsible for this form, will be filled automatically if missing. Not enforced by the application server.
+   * The id of the HealthcareParty that is responsible for this entity, will be filled automatically if missing. Not enforced by the application server.
    */
   responsible?: string
   /**
@@ -74,7 +74,7 @@ export class PatientDto {
   /**
    * hard delete (unix epoch in ms) timestamp of the object. Filled automatically when deletePatient is called.
    */
-  deleted?: number
+  deletionDate?: number
   /**
    * the firstname (name) of the patient.
    */
@@ -300,7 +300,7 @@ export namespace PatientDto {
     C: "C" as GenderEnum,
     Y: "Y" as GenderEnum,
     X: "X" as GenderEnum,
-    U: "U" as GenderEnum
+    U: "U" as GenderEnum,
   }
   export type BirthSexEnum = "M" | "F" | "I" | "C" | "Y" | "X" | "U"
   export const BirthSexEnum = {
@@ -310,7 +310,7 @@ export namespace PatientDto {
     C: "C" as BirthSexEnum,
     Y: "Y" as BirthSexEnum,
     X: "X" as BirthSexEnum,
-    U: "U" as BirthSexEnum
+    U: "U" as BirthSexEnum,
   }
   export type DeactivationReasonEnum =
     | "deceased"
@@ -327,7 +327,7 @@ export namespace PatientDto {
     Retired: "retired" as DeactivationReasonEnum,
     NoContact: "no_contact" as DeactivationReasonEnum,
     Unknown: "unknown" as DeactivationReasonEnum,
-    None: "none" as DeactivationReasonEnum
+    None: "none" as DeactivationReasonEnum,
   }
   export type PersonalStatusEnum =
     | "single"
@@ -354,6 +354,6 @@ export namespace PatientDto {
     Complicated: "complicated" as PersonalStatusEnum,
     Unknown: "unknown" as PersonalStatusEnum,
     Contract: "contract" as PersonalStatusEnum,
-    Other: "other" as PersonalStatusEnum
+    Other: "other" as PersonalStatusEnum,
   }
 }

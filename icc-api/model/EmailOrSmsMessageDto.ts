@@ -36,6 +36,6 @@ export namespace EmailOrSmsMessageDto {
   export type TypeEnum = "EMAIL" | "SMS"
   export const TypeEnum = {
     EMAIL: "EMAIL" as TypeEnum,
-    SMS: "SMS" as TypeEnum
+    SMS: "SMS" as TypeEnum,
   }
 }

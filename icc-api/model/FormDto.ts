@@ -36,11 +36,11 @@ export class FormDto {
    */
   modified?: number
   /**
-   * The id of the User that has created this form, will be filled automatically if missing. Not enforced by the application server.
+   * The id of the User that has created this entity, will be filled automatically if missing. Not enforced by the application server.
    */
   author?: string
   /**
-   * The id of the HealthcareParty that is responsible for this form, will be filled automatically if missing. Not enforced by the application server.
+   * The id of the HealthcareParty that is responsible for this entity, will be filled automatically if missing. Not enforced by the application server.
    */
   responsible?: string
   /**
@@ -64,6 +64,9 @@ export class FormDto {
    */
   deletionDate?: number
   openingDate?: number
+  status?: string
+  version?: number
+  logicalUuid?: string
   /**
    * Name/basic description of the form
    */
@@ -71,7 +74,7 @@ export class FormDto {
   /**
    * A unique external id (from another external source).
    */
-  externalUuid?: string
+  uniqueId?: string
   /**
    * Id of the form template being used to display the form
    */

@@ -13,6 +13,7 @@ import { AddressDto } from "./AddressDto"
 import { CodeStubDto } from "./CodeStubDto"
 import { FinancialInstitutionInformationDto } from "./FinancialInstitutionInformationDto"
 import { FlatRateTarificationDto } from "./FlatRateTarificationDto"
+import { HealthcarePartyHistoryStatusDto } from "./HealthcarePartyHistoryStatusDto"
 
 /**
  * This entity is a root level object. It represents a healthcare party. It is serialized in JSON and saved in the underlying icure-healthcareParty CouchDB database.
@@ -125,6 +126,10 @@ export class HealthcarePartyDto {
    */
   statuses?: Array<HealthcarePartyDto.StatusesEnum>
   /**
+   * The healthcare party's status history
+   */
+  statusHistory?: Array<HealthcarePartyHistoryStatusDto>
+  /**
    * Medical specialty of the healthcare party codified using FHIR or Kmehr codificaiton scheme
    */
   specialityCodes?: Array<CodeStubDto>
@@ -172,12 +177,12 @@ export namespace HealthcarePartyDto {
     C: "C" as GenderEnum,
     Y: "Y" as GenderEnum,
     X: "X" as GenderEnum,
-    U: "U" as GenderEnum
+    U: "U" as GenderEnum,
   }
   export type StatusesEnum = "trainee" | "withconvention" | "accreditated"
   export const StatusesEnum = {
     Trainee: "trainee" as StatusesEnum,
     Withconvention: "withconvention" as StatusesEnum,
-    Accreditated: "accreditated" as StatusesEnum
+    Accreditated: "accreditated" as StatusesEnum,
   }
 }

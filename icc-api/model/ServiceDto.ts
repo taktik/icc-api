@@ -14,7 +14,7 @@ import { ContentDto } from "./ContentDto"
 import { DelegationDto } from "./DelegationDto"
 
 /**
- * This entity represents a Service. A Service is created in the course a contact. A contact contains a series of services (acts, observations, exchanges) performed on the patient. These services can be linked to healthcare elements
+ * This entity represents a Service. A Service is created in the course a contact. Services include subjective information provided by the patient, such as complaints, reason for visit, feelings, etc. or objective information like bio-metric measures (blood pressure, temperature, heart beat, etc.), or physical exam description, diagnosis, prescription, integration of lab reports from another healthcare party, action plan, etc. Any action performed by the healthcare party which is relevant for the healthcare element of a patient is considered a service. The services can be linked to healthcare elements or other structuring elements of the medical record
  */
 import { decodeBase64 } from "./ModelHelper"
 
@@ -89,11 +89,11 @@ export class ServiceDto {
    */
   endOfLife?: number
   /**
-   * The id of the User that has created this form, will be filled automatically if missing. Not enforced by the application server.
+   * The id of the User that has created this entity, will be filled automatically if missing. Not enforced by the application server.
    */
   author?: string
   /**
-   * The id of the HealthcareParty that is responsible for this form, will be filled automatically if missing. Not enforced by the application server.
+   * The id of the HealthcareParty that is responsible for this entity, will be filled automatically if missing. Not enforced by the application server.
    */
   responsible?: string
   /**
@@ -112,7 +112,7 @@ export class ServiceDto {
   /**
    * Links towards related services (possibly in other contacts)
    */
-  qualifiedLinks?: { [key: string]: Array<string> }
+  qualifiedLinks?: { [key: string]: { [key: string]: string } }
   /**
    * A code is an item from a codification system that qualifies the content of this entity. SNOMED-CT, ICPC-2 or ICD-10 codifications systems can be used for codes
    */

@@ -24,7 +24,7 @@ export class iccAuthApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -48,11 +48,11 @@ export class iccAuthApi {
     const _url = this.host + `/auth/login` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new AuthenticationResponse(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new AuthenticationResponse(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -65,8 +65,8 @@ export class iccAuthApi {
     const _url = this.host + `/auth/logout` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new AuthenticationResponse(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new AuthenticationResponse(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -79,8 +79,8 @@ export class iccAuthApi {
     const _url = this.host + `/auth/logout` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new AuthenticationResponse(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new AuthenticationResponse(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -99,7 +99,7 @@ export class iccAuthApi {
       new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => JSON.parse(JSON.stringify(doc.body)))
-      .catch(err => this.handleError(err))
+      .then((doc) => JSON.parse(JSON.stringify(doc.body)))
+      .catch((err) => this.handleError(err))
   }
 }

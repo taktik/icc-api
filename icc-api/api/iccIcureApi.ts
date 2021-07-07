@@ -25,7 +25,7 @@ export class iccIcureApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -47,8 +47,8 @@ export class iccIcureApi {
     const _url = this.host + `/icure/i` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new IndexingInfoDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new IndexingInfoDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -61,13 +61,13 @@ export class iccIcureApi {
     const _url = this.host + `/icure/p` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => JSON.parse(JSON.stringify(doc.body)))
-      .catch(err => this.handleError(err))
+      .then((doc) => JSON.parse(JSON.stringify(doc.body)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
    *
-   * @summary Get index info
+   * @summary Get replication info
    */
   getReplicationInfo(): Promise<ReplicationInfoDto> {
     let _body = null
@@ -75,8 +75,8 @@ export class iccIcureApi {
     const _url = this.host + `/icure/r` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => new ReplicationInfoDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new ReplicationInfoDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -89,8 +89,8 @@ export class iccIcureApi {
     const _url = this.host + `/icure/v` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => JSON.parse(JSON.stringify(doc.body)))
-      .catch(err => this.handleError(err))
+      .then((doc) => JSON.parse(JSON.stringify(doc.body)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -103,8 +103,8 @@ export class iccIcureApi {
     const _url = this.host + `/icure/ok` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => JSON.parse(JSON.stringify(doc.body)))
-      .catch(err => this.handleError(err))
+      .then((doc) => JSON.parse(JSON.stringify(doc.body)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -117,8 +117,8 @@ export class iccIcureApi {
     const _url = this.host + `/icure/conflicts/contact` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Unit(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new Unit(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -137,8 +137,8 @@ export class iccIcureApi {
       (ids ? "&ids=" + encodeURIComponent(String(ids)) : "")
     let headers = this.headers
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Unit(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new Unit(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -151,8 +151,8 @@ export class iccIcureApi {
     const _url = this.host + `/icure/conflicts/form` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Unit(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new Unit(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -165,8 +165,8 @@ export class iccIcureApi {
     const _url = this.host + `/icure/conflicts/healthelement` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Unit(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new Unit(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -179,8 +179,8 @@ export class iccIcureApi {
     const _url = this.host + `/icure/conflicts/invoice` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Unit(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new Unit(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -193,8 +193,8 @@ export class iccIcureApi {
     const _url = this.host + `/icure/conflicts/message` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Unit(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new Unit(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -207,8 +207,8 @@ export class iccIcureApi {
     const _url = this.host + `/icure/conflicts/patient` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new Unit(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new Unit(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -228,7 +228,7 @@ export class iccIcureApi {
       (warmup ? "&warmup=" + encodeURIComponent(String(warmup)) : "")
     let headers = this.headers
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => JSON.parse(JSON.stringify(doc.body)))
-      .catch(err => this.handleError(err))
+      .then((doc) => JSON.parse(JSON.stringify(doc.body)))
+      .catch((err) => this.handleError(err))
   }
 }

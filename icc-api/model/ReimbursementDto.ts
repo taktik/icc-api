@@ -44,16 +44,16 @@ export namespace ReimbursementDto {
     P: "P" as DeliveryEnvironmentEnum,
     A: "A" as DeliveryEnvironmentEnum,
     H: "H" as DeliveryEnvironmentEnum,
-    R: "R" as DeliveryEnvironmentEnum
+    R: "R" as DeliveryEnvironmentEnum,
   }
   export type CodeTypeEnum = "CNK" | "PSEUDO"
   export const CodeTypeEnum = {
     CNK: "CNK" as CodeTypeEnum,
-    PSEUDO: "PSEUDO" as CodeTypeEnum
+    PSEUDO: "PSEUDO" as CodeTypeEnum,
   }
   export type MultipleEnum = "M" | "V"
   export const MultipleEnum = {
     M: "M" as MultipleEnum,
-    V: "V" as MultipleEnum
+    V: "V" as MultipleEnum,
   }
 }

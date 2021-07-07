@@ -34,11 +34,15 @@ export class MedicalHouseContractDto {
   endOfCoverage?: number
   kine?: boolean
   gp?: boolean
+  ptd?: boolean
   nurse?: boolean
   noKine?: boolean
   noGp?: boolean
   noNurse?: boolean
   unsubscriptionReasonId?: number
+  ptdStart?: number
+  ptdEnd?: number
+  ptdLastInvoiced?: number
   startOfSuspension?: number
   endOfSuspension?: number
   suspensionReason?: MedicalHouseContractDto.SuspensionReasonEnum
@@ -46,6 +50,7 @@ export class MedicalHouseContractDto {
   forcedSuspension?: boolean
   signatureType?: MedicalHouseContractDto.SignatureTypeEnum
   status?: number
+  options?: { [key: string]: string }
   receipts?: { [key: string]: string }
   /**
    * The base64 encoded data of this object, formatted as JSON and encrypted in AES using the random master key from encryptionKeys.
@@ -62,7 +67,7 @@ export namespace MedicalHouseContractDto {
     InscriptionStart: "inscriptionStart" as ChangeTypeEnum,
     InscriptionEnd: "inscriptionEnd" as ChangeTypeEnum,
     Suspension: "suspension" as ChangeTypeEnum,
-    CoverageChange: "coverageChange" as ChangeTypeEnum
+    CoverageChange: "coverageChange" as ChangeTypeEnum,
   }
   export type SuspensionReasonEnum =
     | "notInsured"
@@ -75,7 +80,7 @@ export namespace MedicalHouseContractDto {
     NoReasonGiven: "noReasonGiven" as SuspensionReasonEnum,
     IsHospitalized: "isHospitalized" as SuspensionReasonEnum,
     OutsideOfCountry: "outsideOfCountry" as SuspensionReasonEnum,
-    ChangeOfMutuality: "changeOfMutuality" as SuspensionReasonEnum
+    ChangeOfMutuality: "changeOfMutuality" as SuspensionReasonEnum,
   }
   export type SignatureTypeEnum =
     | "holderEid"
@@ -86,6 +91,6 @@ export namespace MedicalHouseContractDto {
     HolderEid: "holderEid" as SignatureTypeEnum,
     HolderPaper: "holderPaper" as SignatureTypeEnum,
     LegalrepresentativeEid: "legalrepresentativeEid" as SignatureTypeEnum,
-    LegalrepresentativePaper: "legalrepresentativePaper" as SignatureTypeEnum
+    LegalrepresentativePaper: "legalrepresentativePaper" as SignatureTypeEnum,
   }
 }

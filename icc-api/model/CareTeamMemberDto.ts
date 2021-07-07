@@ -35,6 +35,6 @@ export namespace CareTeamMemberDto {
   export const CareTeamMemberTypeEnum = {
     Physician: "physician" as CareTeamMemberTypeEnum,
     Specialist: "specialist" as CareTeamMemberTypeEnum,
-    Other: "other" as CareTeamMemberTypeEnum
+    Other: "other" as CareTeamMemberTypeEnum,
   }
 }
