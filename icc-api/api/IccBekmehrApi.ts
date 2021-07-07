@@ -278,6 +278,27 @@ export class IccBekmehrApi {
 
   /**
    *
+   * @summary Get KMEHR Patient Info export
+   * @param patientId
+   * @param language
+   */
+  generatePatientInfoExport(patientId: string, language?: string): Promise<ArrayBuffer> {
+    const _body = null
+
+    const _url =
+      this.host +
+      `/be_kmehr/patientinfo/${encodeURIComponent(String(patientId))}/export` +
+      '?ts=' +
+      new Date().getTime() +
+      (language ? '&language=' + encodeURIComponent(String(language)) : '')
+    const headers = this.headers
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => doc.body)
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
+   *
    * @summary Get Kmehr prescription
    * @param body
    * @param patientId

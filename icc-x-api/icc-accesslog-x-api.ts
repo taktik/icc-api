@@ -280,12 +280,7 @@ export class IccAccesslogXApi extends IccAccesslogApi {
       )
   }
 
-  async findLatestAccessLogsOfPatientsWithUser(
-    user: models.User,
-    userId: string,
-    limit: number = 100,
-    startDate?: number
-  ): Promise<models.AccessLog[]> {
+  async findLatestAccessLogsOfPatientsWithUser(user: models.User, userId: string, limit = 100, startDate?: number): Promise<models.AccessLog[]> {
     let foundAccessLogs: AccessLogWithPatientId[] = [],
       nextKeyPair: models.PaginatedDocumentKeyIdPairObject | undefined = undefined
     const numberRequestedAccessLogs = 100

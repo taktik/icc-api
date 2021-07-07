@@ -32,11 +32,15 @@ export class MedicalHouseContract {
   endOfCoverage?: number
   kine?: boolean
   gp?: boolean
+  ptd?: boolean
   nurse?: boolean
   noKine?: boolean
   noGp?: boolean
   noNurse?: boolean
   unsubscriptionReasonId?: number
+  ptdStart?: number
+  ptdEnd?: number
+  ptdLastInvoiced?: number
   startOfSuspension?: number
   endOfSuspension?: number
   suspensionReason?: MedicalHouseContract.SuspensionReasonEnum
@@ -44,6 +48,7 @@ export class MedicalHouseContract {
   forcedSuspension?: boolean
   signatureType?: MedicalHouseContract.SignatureTypeEnum
   status?: number
+  options?: { [key: string]: string }
   receipts?: { [key: string]: string }
   /**
    * The base64 encoded data of this object, formatted as JSON and encrypted in AES using the random master key from encryptionKeys.

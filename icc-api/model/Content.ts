@@ -13,6 +13,9 @@ import { Measure } from './Measure'
 import { Medication } from './Medication'
 import { Service } from './Service'
 
+/**
+ * The type of the content recorded in the documents for the service
+ */
 import { b64_2ab } from './ModelHelper'
 export class Content {
   constructor(json: JSON | any) {

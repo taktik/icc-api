@@ -72,7 +72,7 @@ export class IccDoctemplateXApi extends IccDoctemplateApi {
     )
   }
 
-  getAttachmentText(documentTemplateId: string, attachmentId: string): Promise<any | Boolean> {
+  getAttachmentText(documentTemplateId: string, attachmentId: string): Promise<any | boolean> {
     const _body = null
 
     const _url =

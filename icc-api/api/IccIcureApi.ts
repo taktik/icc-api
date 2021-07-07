@@ -63,7 +63,7 @@ export class IccIcureApi {
 
   /**
    *
-   * @summary Get index info
+   * @summary Get replication info
    */
   getReplicationInfo(): Promise<ReplicationInfo> {
     const _body = null

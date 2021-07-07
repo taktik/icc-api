@@ -169,7 +169,7 @@ export class IccContactApi {
    * @summary List contacts found By externalId.
    * @param externalId
    */
-  findByExternalId(externalId: string): Promise<Array<Contact>> {
+  findContactsByExternalId(externalId: string): Promise<Array<Contact>> {
     const _body = null
 
     const _url =

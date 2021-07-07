@@ -9,14 +9,16 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { Form } from './Form'
+import { PaginatedDocumentKeyIdPairObject } from './PaginatedDocumentKeyIdPairObject'
 
-/**
- * The ids of databases to reset
- */
-export class ListOfIds {
+export class PaginatedListForm {
   constructor(json: JSON | any) {
-    Object.assign(this as ListOfIds, json)
+    Object.assign(this as PaginatedListForm, json)
   }
 
-  ids?: Array<string>
+  pageSize?: number
+  totalSize?: number
+  rows?: Array<Form>
+  nextKeyPair?: PaginatedDocumentKeyIdPairObject
 }

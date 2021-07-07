@@ -609,7 +609,7 @@ export class IccPatientXApi extends IccPatientApi {
 
     // Determine which keys to share, depending on the delegation tag. For example, anonymousMedicalData only shares encryption keys and no delegations or secret foreign keys.
     const shareDelegations: boolean = allTags.some((tag) => tag != 'anonymousMedicalInformation')
-    const shareEncryptionKeys: boolean = true
+    const shareEncryptionKeys = true
     const shareCryptedForeignKeys: boolean = allTags.some((tag) => tag != 'anonymousMedicalInformation')
 
     // Anonymous sharing, will not change anything to the patient, only its contacts and health elements.
@@ -745,7 +745,7 @@ export class IccPatientXApi extends IccPatientApi {
                       )
                   ) as Promise<Array<models.CalendarItem>>,
                 ]).then(([hes, frms, ctcs, ivs, cls, cis]) => {
-                  let cloneKeysAndDelegations = function (x: models.IcureStub) {
+                  const cloneKeysAndDelegations = function (x: models.IcureStub) {
                     return {
                       delegations: shareDelegations ? _.clone(x.delegations) : undefined,
                       cryptedForeignKeys: shareCryptedForeignKeys ? _.clone(x.cryptedForeignKeys) : undefined,
