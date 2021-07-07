@@ -333,8 +333,8 @@ export class IccTmpApi {
   }
 
   /**
-   * Response is a set containing the ID's of deleted healthcare elements.
-   * @summary Delete healthcare elements.
+   * Response is a set containing the ID's of deleted items.
+   * @summary Soft delete items.
    * @param body
    */
   deleteTmpItems(body?: Array<string>): Promise<Array<DocIdentifier>> {
@@ -1064,6 +1064,40 @@ export class IccTmpApi {
     headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Patient(it)))
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
+   * Response is a set containing the ID's of deleted items.
+   * @summary Hard delete items.
+   * @param body
+   */
+  purgeTmpItems(body?: Array<string>): Promise<Array<DocIdentifier>> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/tmp/batch/purge` + '?ts=' + new Date().getTime()
+    let headers = this.headers
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
+   *
+   * @param body
+   * @param from
+   */
+  replicateToTmpDatabase(from: string, body?: Array<string>): Promise<Unit> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/tmp/replicate/from/${encodeURIComponent(String(from))}` + '?ts=' + new Date().getTime()
+    let headers = this.headers
+    headers = headers.filter((h) => h.header !== 'Content-Type').concat(new XHR.Header('Content-Type', 'application/json'))
+    return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Unit(doc.body as JSON))
       .catch((err) => this.handleError(err))
   }
 }
