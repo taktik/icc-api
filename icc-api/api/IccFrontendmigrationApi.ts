@@ -55,10 +55,10 @@ export class IccFrontendmigrationApi {
    * @param frontEndMigrationId
    */
   deleteFrontEndMigration(frontEndMigrationId: string): Promise<DocIdentifier> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/frontendmigration/${encodeURIComponent(String(frontEndMigrationId))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => new DocIdentifier(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -70,10 +70,10 @@ export class IccFrontendmigrationApi {
    * @param frontEndMigrationId
    */
   getFrontEndMigration(frontEndMigrationId: string): Promise<FrontEndMigration> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/frontendmigration/${encodeURIComponent(String(frontEndMigrationId))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new FrontEndMigration(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -85,10 +85,10 @@ export class IccFrontendmigrationApi {
    * @param frontEndMigrationName
    */
   getFrontEndMigrationByName(frontEndMigrationName: string): Promise<Array<FrontEndMigration>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/frontendmigration/byName/${encodeURIComponent(String(frontEndMigrationName))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new FrontEndMigration(it)))
       .catch((err) => this.handleError(err))
@@ -99,10 +99,10 @@ export class IccFrontendmigrationApi {
    * @summary Gets a front end migration
    */
   getFrontEndMigrations(): Promise<Array<FrontEndMigration>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/frontendmigration` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new FrontEndMigration(it)))
       .catch((err) => this.handleError(err))

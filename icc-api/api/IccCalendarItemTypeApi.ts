@@ -55,10 +55,10 @@ export class IccCalendarItemTypeApi {
    * @param calendarItemTypeIds
    */
   deleteCalendarItemType(calendarItemTypeIds: string): Promise<Array<DocIdentifier>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/calendarItemType/${encodeURIComponent(String(calendarItemTypeIds))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
       .catch((err) => this.handleError(err))
@@ -70,10 +70,10 @@ export class IccCalendarItemTypeApi {
    * @param calendarItemTypeId
    */
   getCalendarItemType(calendarItemTypeId: string): Promise<CalendarItemType> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/calendarItemType/${encodeURIComponent(String(calendarItemTypeId))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new CalendarItemType(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -84,10 +84,10 @@ export class IccCalendarItemTypeApi {
    * @summary Gets all calendarItemTypes
    */
   getCalendarItemTypes(): Promise<Array<CalendarItemType>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/calendarItemType` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new CalendarItemType(it)))
       .catch((err) => this.handleError(err))
@@ -98,10 +98,10 @@ export class IccCalendarItemTypeApi {
    * @summary Gets all calendarItemTypes include deleted
    */
   getCalendarItemTypesIncludeDeleted(): Promise<Array<CalendarItemType>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/calendarItemType/includeDeleted` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new CalendarItemType(it)))
       .catch((err) => this.handleError(err))

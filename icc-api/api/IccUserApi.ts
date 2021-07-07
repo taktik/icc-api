@@ -43,10 +43,10 @@ export class IccUserApi {
    * @param healthcarePartyId
    */
   assignHealthcareParty(healthcarePartyId: string): Promise<User> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/user/current/hcparty/${encodeURIComponent(String(healthcarePartyId))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new User(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -57,7 +57,7 @@ export class IccUserApi {
    * @param password
    */
   checkPassword(password: string): Promise<boolean> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/user/checkPassword` + '?ts=' + new Date().getTime()
     let headers = this.headers
@@ -108,10 +108,10 @@ export class IccUserApi {
    * @param userId
    */
   deleteUser(userId: string): Promise<DocIdentifier> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/user/${encodeURIComponent(String(userId))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => new DocIdentifier(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -124,11 +124,11 @@ export class IccUserApi {
    * @param userId
    */
   deleteUserInGroup(groupId: string, userId: string): Promise<Unit> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host + `/user/inGroup/${encodeURIComponent(String(groupId))}/${encodeURIComponent(String(userId))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Unit(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -139,7 +139,7 @@ export class IccUserApi {
    * @param password
    */
   encodePassword(password: string): Promise<string> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/user/encodePassword` + '?ts=' + new Date().getTime()
     let headers = this.headers
@@ -155,10 +155,10 @@ export class IccUserApi {
    * @param id
    */
   findByHcpartyId(id: string): Promise<Array<string>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/user/byHealthcarePartyId/${encodeURIComponent(String(id))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => JSON.parse(JSON.stringify(it))))
       .catch((err) => this.handleError(err))
@@ -187,10 +187,10 @@ export class IccUserApi {
    * @summary Get Currently logged-in user session.
    */
   getCurrentSession(): Promise<string> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/user/session` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => JSON.parse(JSON.stringify(doc.body)))
       .catch((err) => this.handleError(err))
@@ -201,10 +201,10 @@ export class IccUserApi {
    * @summary Get presently logged-in user.
    */
   getCurrentUser(): Promise<User> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/user/current` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new User(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -215,10 +215,10 @@ export class IccUserApi {
    * @summary Get presently logged-in user.
    */
   getMatchingUsers(): Promise<Array<UserGroup>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/user/matches` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new UserGroup(it)))
       .catch((err) => this.handleError(err))
@@ -230,10 +230,10 @@ export class IccUserApi {
    * @param userId
    */
   getUser(userId: string): Promise<User> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/user/${encodeURIComponent(String(userId))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new User(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -245,10 +245,10 @@ export class IccUserApi {
    * @param email
    */
   getUserByEmail(email: string): Promise<User> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/user/byEmail/${encodeURIComponent(String(email))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new User(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -262,7 +262,7 @@ export class IccUserApi {
    * @param limit Number of rows
    */
   listUsers(startKey?: string, startDocumentId?: string, limit?: number): Promise<PaginatedListUser> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -272,7 +272,7 @@ export class IccUserApi {
       (startKey ? '&startKey=' + encodeURIComponent(String(startKey)) : '') +
       (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
       (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListUser(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -287,7 +287,7 @@ export class IccUserApi {
    * @param limit Number of rows
    */
   listUsersInGroup(groupId: string, startKey?: string, startDocumentId?: string, limit?: number): Promise<PaginatedListUser> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -297,7 +297,7 @@ export class IccUserApi {
       (startKey ? '&startKey=' + encodeURIComponent(String(startKey)) : '') +
       (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
       (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListUser(doc.body as JSON))
       .catch((err) => this.handleError(err))

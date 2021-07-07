@@ -55,10 +55,10 @@ export class IccEntitytemplateApi {
    * @param entityTemplateIds
    */
   deleteEntityTemplate(entityTemplateIds: string): Promise<Array<DocIdentifier>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/entitytemplate/${encodeURIComponent(String(entityTemplateIds))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
       .catch((err) => this.handleError(err))
@@ -72,7 +72,7 @@ export class IccEntitytemplateApi {
    * @param includeEntities
    */
   findAllEntityTemplates(type: string, searchString?: string, includeEntities?: boolean): Promise<Array<EntityTemplate>> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -81,7 +81,7 @@ export class IccEntitytemplateApi {
       new Date().getTime() +
       (searchString ? '&searchString=' + encodeURIComponent(String(searchString)) : '') +
       (includeEntities ? '&includeEntities=' + encodeURIComponent(String(includeEntities)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new EntityTemplate(it)))
       .catch((err) => this.handleError(err))
@@ -95,7 +95,7 @@ export class IccEntitytemplateApi {
    * @param includeEntities
    */
   findAllEntityTemplatesByKeyword(type: string, keyword: string, includeEntities?: boolean): Promise<Array<EntityTemplate>> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -103,7 +103,7 @@ export class IccEntitytemplateApi {
       '?ts=' +
       new Date().getTime() +
       (includeEntities ? '&includeEntities=' + encodeURIComponent(String(includeEntities)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new EntityTemplate(it)))
       .catch((err) => this.handleError(err))
@@ -118,7 +118,7 @@ export class IccEntitytemplateApi {
    * @param includeEntities
    */
   findEntityTemplates(userId: string, type: string, searchString?: string, includeEntities?: boolean): Promise<Array<EntityTemplate>> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -127,7 +127,7 @@ export class IccEntitytemplateApi {
       new Date().getTime() +
       (searchString ? '&searchString=' + encodeURIComponent(String(searchString)) : '') +
       (includeEntities ? '&includeEntities=' + encodeURIComponent(String(includeEntities)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new EntityTemplate(it)))
       .catch((err) => this.handleError(err))
@@ -142,7 +142,7 @@ export class IccEntitytemplateApi {
    * @param includeEntities
    */
   findEntityTemplatesByKeyword(userId: string, type: string, keyword: string, includeEntities?: boolean): Promise<Array<EntityTemplate>> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -152,7 +152,7 @@ export class IccEntitytemplateApi {
       '?ts=' +
       new Date().getTime() +
       (includeEntities ? '&includeEntities=' + encodeURIComponent(String(includeEntities)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new EntityTemplate(it)))
       .catch((err) => this.handleError(err))
@@ -164,10 +164,10 @@ export class IccEntitytemplateApi {
    * @param entityTemplateId EntityTemplate id
    */
   getEntityTemplate(entityTemplateId: string): Promise<EntityTemplate> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/entitytemplate/${encodeURIComponent(String(entityTemplateId))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new EntityTemplate(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -179,10 +179,10 @@ export class IccEntitytemplateApi {
    * @param entityTemplateIds
    */
   getEntityTemplates(entityTemplateIds: string): Promise<Array<EntityTemplate>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/entitytemplate/byIds/${encodeURIComponent(String(entityTemplateIds))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new EntityTemplate(it)))
       .catch((err) => this.handleError(err))

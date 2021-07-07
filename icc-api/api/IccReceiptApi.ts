@@ -55,10 +55,10 @@ export class IccReceiptApi {
    * @param receiptIds
    */
   deleteReceipt(receiptIds: string): Promise<Array<DocIdentifier>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/receipt/${encodeURIComponent(String(receiptIds))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
       .catch((err) => this.handleError(err))
@@ -70,10 +70,10 @@ export class IccReceiptApi {
    * @param receiptId
    */
   getReceipt(receiptId: string): Promise<Receipt> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/receipt/${encodeURIComponent(String(receiptId))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Receipt(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -87,7 +87,7 @@ export class IccReceiptApi {
    * @param enckeys
    */
   getReceiptAttachment(receiptId: string, attachmentId: string, enckeys: string): Promise<ArrayBuffer> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -95,7 +95,7 @@ export class IccReceiptApi {
       '?ts=' +
       new Date().getTime() +
       (enckeys ? '&enckeys=' + encodeURIComponent(String(enckeys)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => doc.body)
       .catch((err) => this.handleError(err))
@@ -107,10 +107,10 @@ export class IccReceiptApi {
    * @param ref
    */
   listByReference(ref: string): Promise<Array<Receipt>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/receipt/byref/${encodeURIComponent(String(ref))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Receipt(it)))
       .catch((err) => this.handleError(err))

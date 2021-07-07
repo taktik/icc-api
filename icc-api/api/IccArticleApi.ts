@@ -55,10 +55,10 @@ export class IccArticleApi {
    * @param articleIds
    */
   deleteArticle(articleIds: string): Promise<Array<DocIdentifier>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/article/${encodeURIComponent(String(articleIds))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
       .catch((err) => this.handleError(err))
@@ -70,10 +70,10 @@ export class IccArticleApi {
    * @param articleId
    */
   getArticle(articleId: string): Promise<Article> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/article/${encodeURIComponent(String(articleId))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Article(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -84,10 +84,10 @@ export class IccArticleApi {
    * @summary Gets all articles
    */
   getArticles(): Promise<Array<Article>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/article` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Article(it)))
       .catch((err) => this.handleError(err))

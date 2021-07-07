@@ -98,7 +98,7 @@ export class IccCodeApi {
    * @param type Code type
    */
   findCodeTypes(region?: string, type?: string): Promise<Array<string>> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -107,7 +107,7 @@ export class IccCodeApi {
       new Date().getTime() +
       (region ? '&region=' + encodeURIComponent(String(region)) : '') +
       (type ? '&type=' + encodeURIComponent(String(type)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => JSON.parse(JSON.stringify(it))))
       .catch((err) => this.handleError(err))
@@ -122,7 +122,7 @@ export class IccCodeApi {
    * @param version Code version
    */
   findCodes(region?: string, type?: string, code?: string, version?: string): Promise<Array<Code>> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -133,7 +133,7 @@ export class IccCodeApi {
       (type ? '&type=' + encodeURIComponent(String(type)) : '') +
       (code ? '&code=' + encodeURIComponent(String(code)) : '') +
       (version ? '&version=' + encodeURIComponent(String(version)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Code(it)))
       .catch((err) => this.handleError(err))
@@ -159,7 +159,7 @@ export class IccCodeApi {
     startDocumentId?: string,
     limit?: number
   ): Promise<PaginatedListCode> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -173,7 +173,7 @@ export class IccCodeApi {
       (startKey ? '&startKey=' + encodeURIComponent(String(startKey)) : '') +
       (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
       (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListCode(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -199,7 +199,7 @@ export class IccCodeApi {
     startDocumentId?: string,
     limit?: number
   ): Promise<PaginatedListCode> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -213,7 +213,7 @@ export class IccCodeApi {
       (startKey ? '&startKey=' + encodeURIComponent(String(startKey)) : '') +
       (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
       (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListCode(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -235,7 +235,7 @@ export class IccCodeApi {
     startDocumentId?: string,
     limit?: number
   ): Promise<PaginatedListCode> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -246,7 +246,7 @@ export class IccCodeApi {
       (startKey ? '&startKey=' + encodeURIComponent(String(startKey)) : '') +
       (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
       (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListCode(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -259,7 +259,7 @@ export class IccCodeApi {
    * @param type Code type
    */
   findTagTypes(region?: string, type?: string): Promise<Array<string>> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -268,7 +268,7 @@ export class IccCodeApi {
       new Date().getTime() +
       (region ? '&region=' + encodeURIComponent(String(region)) : '') +
       (type ? '&type=' + encodeURIComponent(String(type)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => JSON.parse(JSON.stringify(it))))
       .catch((err) => this.handleError(err))
@@ -280,10 +280,10 @@ export class IccCodeApi {
    * @param codeId Code id
    */
   getCode(codeId: string): Promise<Code> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/code/${encodeURIComponent(String(codeId))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Code(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -297,14 +297,14 @@ export class IccCodeApi {
    * @param version Code version
    */
   getCodeWithParts(type: string, code: string, version: string): Promise<Code> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
       `/code/${encodeURIComponent(String(type))}/${encodeURIComponent(String(code))}/${encodeURIComponent(String(version))}` +
       '?ts=' +
       new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Code(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -316,10 +316,10 @@ export class IccCodeApi {
    * @param codeIds
    */
   getCodes(codeIds: string): Promise<Array<Code>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/code/byIds/${encodeURIComponent(String(codeIds))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Code(it)))
       .catch((err) => this.handleError(err))

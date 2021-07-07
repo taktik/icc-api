@@ -56,10 +56,10 @@ export class IccDoctemplateApi {
    * @param documentTemplateIds
    */
   deleteDocumentTemplate(documentTemplateIds: string): Promise<Array<DocIdentifier>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/doctemplate/${encodeURIComponent(String(documentTemplateIds))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
       .catch((err) => this.handleError(err))
@@ -70,10 +70,10 @@ export class IccDoctemplateApi {
    * @summary Gets all document templates for all users
    */
   findAllDocumentTemplates(): Promise<Array<DocumentTemplate>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/doctemplate/find/all` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocumentTemplate(it)))
       .catch((err) => this.handleError(err))
@@ -84,10 +84,10 @@ export class IccDoctemplateApi {
    * @summary Gets all document templates for current user
    */
   findDocumentTemplates(): Promise<Array<DocumentTemplate>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/doctemplate` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocumentTemplate(it)))
       .catch((err) => this.handleError(err))
@@ -99,10 +99,10 @@ export class IccDoctemplateApi {
    * @param documentTypeCode
    */
   findDocumentTemplatesByDocumentType(documentTypeCode: string): Promise<Array<DocumentTemplate>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/doctemplate/byDocumentType/${encodeURIComponent(String(documentTypeCode))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocumentTemplate(it)))
       .catch((err) => this.handleError(err))
@@ -114,11 +114,11 @@ export class IccDoctemplateApi {
    * @param documentTypeCode
    */
   findDocumentTemplatesByDocumentTypeForCurrentUser(documentTypeCode: string): Promise<Array<DocumentTemplate>> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host + `/doctemplate/byDocumentTypeForCurrentUser/${encodeURIComponent(String(documentTypeCode))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocumentTemplate(it)))
       .catch((err) => this.handleError(err))
@@ -130,10 +130,10 @@ export class IccDoctemplateApi {
    * @param specialityCode
    */
   findDocumentTemplatesBySpeciality(specialityCode: string): Promise<Array<DocumentTemplate>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/doctemplate/bySpecialty/${encodeURIComponent(String(specialityCode))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocumentTemplate(it)))
       .catch((err) => this.handleError(err))
@@ -146,14 +146,14 @@ export class IccDoctemplateApi {
    * @param attachmentId
    */
   getAttachmentText(documentTemplateId: string, attachmentId: string): Promise<ArrayBuffer> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
       `/doctemplate/${encodeURIComponent(String(documentTemplateId))}/attachmentText/${encodeURIComponent(String(attachmentId))}` +
       '?ts=' +
       new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => doc.body)
       .catch((err) => this.handleError(err))
@@ -165,10 +165,10 @@ export class IccDoctemplateApi {
    * @param documentTemplateId
    */
   getDocumentTemplate(documentTemplateId: string): Promise<DocumentTemplate> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/doctemplate/${encodeURIComponent(String(documentTemplateId))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new DocumentTemplate(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -181,14 +181,14 @@ export class IccDoctemplateApi {
    * @param attachmentId
    */
   getDocumentTemplateAttachment(documentTemplateId: string, attachmentId: string): Promise<ArrayBuffer> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
       `/doctemplate/${encodeURIComponent(String(documentTemplateId))}/attachment/${encodeURIComponent(String(attachmentId))}` +
       '?ts=' +
       new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => doc.body)
       .catch((err) => this.handleError(err))

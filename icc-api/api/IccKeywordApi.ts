@@ -55,10 +55,10 @@ export class IccKeywordApi {
    * @param keywordIds
    */
   deleteKeywords(keywordIds: string): Promise<Array<DocIdentifier>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/keyword/${encodeURIComponent(String(keywordIds))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
       .catch((err) => this.handleError(err))
@@ -70,10 +70,10 @@ export class IccKeywordApi {
    * @param keywordId
    */
   getKeyword(keywordId: string): Promise<Keyword> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/keyword/${encodeURIComponent(String(keywordId))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Keyword(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -84,10 +84,10 @@ export class IccKeywordApi {
    * @summary Gets all keywords
    */
   getKeywords(): Promise<Array<Keyword>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/keyword` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Keyword(it)))
       .catch((err) => this.handleError(err))
@@ -99,10 +99,10 @@ export class IccKeywordApi {
    * @param userId
    */
   getKeywordsByUser(userId: string): Promise<Array<Keyword>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/keyword/byUser/${encodeURIComponent(String(userId))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Keyword(it)))
       .catch((err) => this.handleError(err))

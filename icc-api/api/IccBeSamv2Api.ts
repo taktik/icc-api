@@ -48,10 +48,10 @@ export class IccBesamv2Api {
    * @param dmppCode dmppCode
    */
   findAmpsByDmppCode(dmppCode: string): Promise<Array<Amp>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/be_samv2/amp/byDmppCode/${encodeURIComponent(String(dmppCode))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Amp(it)))
       .catch((err) => this.handleError(err))
@@ -66,7 +66,7 @@ export class IccBesamv2Api {
    * @param limit Number of rows
    */
   findPaginatedAmpsByAtc(atcCode: string, startKey?: string, startDocumentId?: string, limit?: number): Promise<PaginatedListAmp> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -76,7 +76,7 @@ export class IccBesamv2Api {
       (startKey ? '&startKey=' + encodeURIComponent(String(startKey)) : '') +
       (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
       (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListAmp(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -91,7 +91,7 @@ export class IccBesamv2Api {
    * @param limit Number of rows
    */
   findPaginatedAmpsByGroupCode(vmpgCode: string, startKey?: string, startDocumentId?: string, limit?: number): Promise<PaginatedListAmp> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -101,7 +101,7 @@ export class IccBesamv2Api {
       (startKey ? '&startKey=' + encodeURIComponent(String(startKey)) : '') +
       (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
       (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListAmp(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -116,7 +116,7 @@ export class IccBesamv2Api {
    * @param limit Number of rows
    */
   findPaginatedAmpsByGroupId(vmpgId: string, startKey?: string, startDocumentId?: string, limit?: number): Promise<PaginatedListAmp> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -126,7 +126,7 @@ export class IccBesamv2Api {
       (startKey ? '&startKey=' + encodeURIComponent(String(startKey)) : '') +
       (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
       (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListAmp(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -148,7 +148,7 @@ export class IccBesamv2Api {
     startDocumentId?: string,
     limit?: number
   ): Promise<PaginatedListAmp> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -160,7 +160,7 @@ export class IccBesamv2Api {
       (startKey ? '&startKey=' + encodeURIComponent(String(startKey)) : '') +
       (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
       (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListAmp(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -175,7 +175,7 @@ export class IccBesamv2Api {
    * @param limit Number of rows
    */
   findPaginatedAmpsByVmpCode(vmpCode: string, startKey?: string, startDocumentId?: string, limit?: number): Promise<PaginatedListAmp> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -185,7 +185,7 @@ export class IccBesamv2Api {
       (startKey ? '&startKey=' + encodeURIComponent(String(startKey)) : '') +
       (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
       (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListAmp(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -200,7 +200,7 @@ export class IccBesamv2Api {
    * @param limit Number of rows
    */
   findPaginatedAmpsByVmpId(vmpId: string, startKey?: string, startDocumentId?: string, limit?: number): Promise<PaginatedListAmp> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -210,7 +210,7 @@ export class IccBesamv2Api {
       (startKey ? '&startKey=' + encodeURIComponent(String(startKey)) : '') +
       (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
       (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListAmp(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -232,7 +232,7 @@ export class IccBesamv2Api {
     startDocumentId?: string,
     limit?: number
   ): Promise<PaginatedListNmp> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -244,7 +244,7 @@ export class IccBesamv2Api {
       (startKey ? '&startKey=' + encodeURIComponent(String(startKey)) : '') +
       (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
       (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListNmp(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -266,7 +266,7 @@ export class IccBesamv2Api {
     startDocumentId?: string,
     limit?: number
   ): Promise<PaginatedListVmpGroup> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -278,7 +278,7 @@ export class IccBesamv2Api {
       (startKey ? '&startKey=' + encodeURIComponent(String(startKey)) : '') +
       (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
       (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListVmpGroup(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -298,7 +298,7 @@ export class IccBesamv2Api {
     startDocumentId?: string,
     limit?: number
   ): Promise<PaginatedListVmpGroup> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -308,7 +308,7 @@ export class IccBesamv2Api {
       (startKey ? '&startKey=' + encodeURIComponent(String(startKey)) : '') +
       (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
       (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListVmpGroup(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -323,7 +323,7 @@ export class IccBesamv2Api {
    * @param limit Number of rows
    */
   findPaginatedVmpsByGroupCode(vmpgCode: string, startKey?: string, startDocumentId?: string, limit?: number): Promise<PaginatedListVmp> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -333,7 +333,7 @@ export class IccBesamv2Api {
       (startKey ? '&startKey=' + encodeURIComponent(String(startKey)) : '') +
       (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
       (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListVmp(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -348,7 +348,7 @@ export class IccBesamv2Api {
    * @param limit Number of rows
    */
   findPaginatedVmpsByGroupId(vmpgId: string, startKey?: string, startDocumentId?: string, limit?: number): Promise<PaginatedListVmp> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -358,7 +358,7 @@ export class IccBesamv2Api {
       (startKey ? '&startKey=' + encodeURIComponent(String(startKey)) : '') +
       (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
       (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListVmp(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -380,7 +380,7 @@ export class IccBesamv2Api {
     startDocumentId?: string,
     limit?: number
   ): Promise<PaginatedListVmp> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -392,7 +392,7 @@ export class IccBesamv2Api {
       (startKey ? '&startKey=' + encodeURIComponent(String(startKey)) : '') +
       (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
       (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListVmp(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -407,7 +407,7 @@ export class IccBesamv2Api {
    * @param limit Number of rows
    */
   findPaginatedVmpsByVmpCode(vmpCode: string, startKey?: string, startDocumentId?: string, limit?: number): Promise<PaginatedListVmp> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -417,7 +417,7 @@ export class IccBesamv2Api {
       (startKey ? '&startKey=' + encodeURIComponent(String(startKey)) : '') +
       (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
       (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListVmp(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -428,10 +428,10 @@ export class IccBesamv2Api {
    * @summary Get Samv2 version.
    */
   getSamVersion(): Promise<SamVersion> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/be_samv2/v` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new SamVersion(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -544,10 +544,10 @@ export class IccBesamv2Api {
    * @summary List all pharmaceutical forms.
    */
   listPharmaceuticalForms(): Promise<Array<PharmaceuticalForm>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/be_samv2/pharmaform` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new PharmaceuticalForm(it)))
       .catch((err) => this.handleError(err))
@@ -558,10 +558,10 @@ export class IccBesamv2Api {
    * @summary List all substances.
    */
   listSubstances(): Promise<Array<Substance>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/be_samv2/substance` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Substance(it)))
       .catch((err) => this.handleError(err))

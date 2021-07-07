@@ -55,10 +55,10 @@ export class IccPlaceApi {
    * @param placeIds
    */
   deletePlace(placeIds: string): Promise<Array<DocIdentifier>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/place/${encodeURIComponent(String(placeIds))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
       .catch((err) => this.handleError(err))
@@ -70,10 +70,10 @@ export class IccPlaceApi {
    * @param placeId
    */
   getPlace(placeId: string): Promise<Place> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/place/${encodeURIComponent(String(placeId))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Place(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -84,10 +84,10 @@ export class IccPlaceApi {
    * @summary Gets all places
    */
   getPlaces(): Promise<Array<Place>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/place` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Place(it)))
       .catch((err) => this.handleError(err))

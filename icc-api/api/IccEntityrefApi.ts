@@ -54,10 +54,10 @@ export class IccEntityrefApi {
    * @param prefix
    */
   getLatest(prefix: string): Promise<EntityReference> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/entityref/latest/${encodeURIComponent(String(prefix))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new EntityReference(doc.body as JSON))
       .catch((err) => this.handleError(err))

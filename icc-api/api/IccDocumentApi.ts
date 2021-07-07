@@ -57,10 +57,10 @@ export class IccDocumentApi {
    * @param documentId
    */
   deleteAttachment(documentId: string): Promise<Document> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/document/${encodeURIComponent(String(documentId))}/attachment` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Document(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -72,10 +72,10 @@ export class IccDocumentApi {
    * @param documentIds
    */
   deleteDocument(documentIds: string): Promise<Array<DocIdentifier>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/document/${encodeURIComponent(String(documentIds))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
       .catch((err) => this.handleError(err))
@@ -89,7 +89,7 @@ export class IccDocumentApi {
    * @param secretFKeys
    */
   findByTypeHCPartyMessageSecretFKeys(documentTypeCode: string, hcPartyId: string, secretFKeys: string): Promise<Array<Document>> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -99,7 +99,7 @@ export class IccDocumentApi {
       (documentTypeCode ? '&documentTypeCode=' + encodeURIComponent(String(documentTypeCode)) : '') +
       (hcPartyId ? '&hcPartyId=' + encodeURIComponent(String(hcPartyId)) : '') +
       (secretFKeys ? '&secretFKeys=' + encodeURIComponent(String(secretFKeys)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Document(it)))
       .catch((err) => this.handleError(err))
@@ -112,7 +112,7 @@ export class IccDocumentApi {
    * @param secretFKeys
    */
   findDocumentsByHCPartyPatientForeignKeys(hcPartyId: string, secretFKeys: string): Promise<Array<Document>> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -121,7 +121,7 @@ export class IccDocumentApi {
       new Date().getTime() +
       (hcPartyId ? '&hcPartyId=' + encodeURIComponent(String(hcPartyId)) : '') +
       (secretFKeys ? '&secretFKeys=' + encodeURIComponent(String(secretFKeys)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Document(it)))
       .catch((err) => this.handleError(err))
@@ -133,10 +133,10 @@ export class IccDocumentApi {
    * @param limit
    */
   findWithoutDelegation(limit?: number): Promise<Array<Document>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/document/woDelegation` + '?ts=' + new Date().getTime() + (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Document(it)))
       .catch((err) => this.handleError(err))
@@ -148,10 +148,10 @@ export class IccDocumentApi {
    * @param documentId
    */
   getDocument(documentId: string): Promise<Document> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/document/${encodeURIComponent(String(documentId))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Document(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -166,7 +166,7 @@ export class IccDocumentApi {
    * @param fileName
    */
   getDocumentAttachment(documentId: string, attachmentId: string, enckeys?: string, fileName?: string): Promise<ArrayBuffer> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -175,7 +175,7 @@ export class IccDocumentApi {
       new Date().getTime() +
       (enckeys ? '&enckeys=' + encodeURIComponent(String(enckeys)) : '') +
       (fileName ? '&fileName=' + encodeURIComponent(String(fileName)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => doc.body)
       .catch((err) => this.handleError(err))
@@ -187,10 +187,10 @@ export class IccDocumentApi {
    * @param externalUuid
    */
   getDocumentByExternalUuid(externalUuid: string): Promise<Document> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/document/externaluuid/${encodeURIComponent(String(externalUuid))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Document(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -219,10 +219,10 @@ export class IccDocumentApi {
    * @param externalUuid
    */
   getDocumentsByExternalUuid(externalUuid: string): Promise<Array<Document>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/document/externaluuid/${encodeURIComponent(String(externalUuid))}/all` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Document(it)))
       .catch((err) => this.handleError(err))
@@ -293,7 +293,7 @@ export class IccDocumentApi {
    * @param enckeys
    */
   setDocumentAttachmentMulti(documentId: string, enckeys?: string): Promise<Document> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +

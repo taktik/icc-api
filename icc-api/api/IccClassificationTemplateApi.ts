@@ -57,10 +57,10 @@ export class IccClassificationTemplateApi {
    * @param classificationTemplateIds
    */
   deleteClassificationTemplates(classificationTemplateIds: string): Promise<Array<DocIdentifier>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/classificationTemplate/${encodeURIComponent(String(classificationTemplateIds))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
       .catch((err) => this.handleError(err))
@@ -73,7 +73,7 @@ export class IccClassificationTemplateApi {
    * @param secretFKeys
    */
   findClassificationTemplatesByHCPartyPatientForeignKeys(hcPartyId: string, secretFKeys: string): Promise<Array<ClassificationTemplate>> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -82,7 +82,7 @@ export class IccClassificationTemplateApi {
       new Date().getTime() +
       (hcPartyId ? '&hcPartyId=' + encodeURIComponent(String(hcPartyId)) : '') +
       (secretFKeys ? '&secretFKeys=' + encodeURIComponent(String(secretFKeys)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new ClassificationTemplate(it)))
       .catch((err) => this.handleError(err))
@@ -94,10 +94,10 @@ export class IccClassificationTemplateApi {
    * @param classificationTemplateId
    */
   getClassificationTemplate(classificationTemplateId: string): Promise<ClassificationTemplate> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/classificationTemplate/${encodeURIComponent(String(classificationTemplateId))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new ClassificationTemplate(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -109,10 +109,10 @@ export class IccClassificationTemplateApi {
    * @param ids
    */
   getClassificationTemplateByIds(ids: string): Promise<Array<ClassificationTemplate>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/classificationTemplate/byIds/${encodeURIComponent(String(ids))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new ClassificationTemplate(it)))
       .catch((err) => this.handleError(err))
@@ -126,7 +126,7 @@ export class IccClassificationTemplateApi {
    * @param limit Number of rows
    */
   listClassificationTemplates(startKey?: string, startDocumentId?: string, limit?: number): Promise<PaginatedListClassificationTemplate> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -136,7 +136,7 @@ export class IccClassificationTemplateApi {
       (startKey ? '&startKey=' + encodeURIComponent(String(startKey)) : '') +
       (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
       (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListClassificationTemplate(doc.body as JSON))
       .catch((err) => this.handleError(err))

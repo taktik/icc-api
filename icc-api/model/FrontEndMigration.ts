@@ -9,6 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { PropertyStub } from './PropertyStub'
 
 export class FrontEndMigration {
   constructor(json: JSON | any) {
@@ -30,6 +31,10 @@ export class FrontEndMigration {
   startKey?: string
   startKeyDocId?: string
   processCount?: number
+  /**
+   * Extra properties for the fem. Those properties are typed (see class Property)
+   */
+  properties?: Array<PropertyStub>
 }
 export namespace FrontEndMigration {
   export type StatusEnum = 'STARTED' | 'PAUSED' | 'ERROR' | 'SUCCESS'

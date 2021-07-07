@@ -72,10 +72,10 @@ export class IccPubsubApi {
    * @param bucket
    */
   recoverAuth(bucket: string): Promise<ArrayBuffer> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/pubsub/auth/recover/${encodeURIComponent(String(bucket))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => doc.body)
       .catch((err) => this.handleError(err))
@@ -87,10 +87,10 @@ export class IccPubsubApi {
    * @param key
    */
   sub(key: string): Promise<ArrayBuffer> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/pubsub/sub/${encodeURIComponent(String(key))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => doc.body)
       .catch((err) => this.handleError(err))

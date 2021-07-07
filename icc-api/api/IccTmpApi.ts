@@ -119,10 +119,10 @@ export class IccTmpApi {
    * @summary Create tmp database for current user
    */
   createTmpDatabase(): Promise<Unit> {
-    const _body = null
+    let _body = null
 
-    const _url = this.host + `/icure` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    const _url = this.host + `/tmp` + '?ts=' + new Date().getTime()
+    let headers = this.headers
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Unit(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -354,10 +354,10 @@ export class IccTmpApi {
    * @summary Destroy tmp database for current user
    */
   destroyTmpDatabase(): Promise<Unit> {
-    const _body = null
+    let _body = null
 
-    const _url = this.host + `/icure` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    const _url = this.host + `/tmp` + '?ts=' + new Date().getTime()
+    let headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Unit(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -369,10 +369,10 @@ export class IccTmpApi {
    * @param id
    */
   getTmpClassification(id: string): Promise<Classification> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/tmp/classification/byId/${encodeURIComponent(String(id))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Classification(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -401,10 +401,10 @@ export class IccTmpApi {
    * @param id
    */
   getTmpContact(id: string): Promise<Contact> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/tmp/contact/byId/${encodeURIComponent(String(id))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Contact(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -433,10 +433,10 @@ export class IccTmpApi {
    * @param id
    */
   getTmpDocument(id: string): Promise<Document> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/tmp/document/byId/${encodeURIComponent(String(id))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Document(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -465,10 +465,10 @@ export class IccTmpApi {
    * @param id
    */
   getTmpForm(id: string): Promise<Form> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/tmp/byId/form/${encodeURIComponent(String(id))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Form(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -497,10 +497,10 @@ export class IccTmpApi {
    * @param id
    */
   getTmpHealthElement(id: string): Promise<HealthElement> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/tmp/healthElement/byId/${encodeURIComponent(String(id))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new HealthElement(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -529,10 +529,10 @@ export class IccTmpApi {
    * @param id
    */
   getTmpInvoice(id: string): Promise<Invoice> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/tmp/invoice/byId/${encodeURIComponent(String(id))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Invoice(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -561,10 +561,10 @@ export class IccTmpApi {
    * @param id
    */
   getTmpMessage(id: string): Promise<Message> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/tmp/message/byId/${encodeURIComponent(String(id))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Message(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -593,10 +593,10 @@ export class IccTmpApi {
    * @param id
    */
   getTmpPatient(id: string): Promise<Patient> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/tmp/patient/byId/${encodeURIComponent(String(id))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Patient(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -626,7 +626,7 @@ export class IccTmpApi {
    * @param pageSize
    */
   listTmpClassifications(firstClassificationId: string, pageSize: number): Promise<PaginatedListClassification> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -635,7 +635,7 @@ export class IccTmpApi {
       new Date().getTime() +
       (firstClassificationId ? '&firstClassificationId=' + encodeURIComponent(String(firstClassificationId)) : '') +
       (pageSize ? '&pageSize=' + encodeURIComponent(String(pageSize)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListClassification(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -648,7 +648,7 @@ export class IccTmpApi {
    * @param pageSize
    */
   listTmpContacts(firstContactId: string, pageSize: number): Promise<PaginatedListInvoice> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -657,7 +657,7 @@ export class IccTmpApi {
       new Date().getTime() +
       (firstContactId ? '&firstContactId=' + encodeURIComponent(String(firstContactId)) : '') +
       (pageSize ? '&pageSize=' + encodeURIComponent(String(pageSize)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListInvoice(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -670,7 +670,7 @@ export class IccTmpApi {
    * @param pageSize
    */
   listTmpDocuments(firstDocumentId: string, pageSize: number): Promise<PaginatedListDocument> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -679,7 +679,7 @@ export class IccTmpApi {
       new Date().getTime() +
       (firstDocumentId ? '&firstDocumentId=' + encodeURIComponent(String(firstDocumentId)) : '') +
       (pageSize ? '&pageSize=' + encodeURIComponent(String(pageSize)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListDocument(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -692,7 +692,7 @@ export class IccTmpApi {
    * @param pageSize
    */
   listTmpForms(firstFormId: string, pageSize: number): Promise<PaginatedListForm> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -701,7 +701,7 @@ export class IccTmpApi {
       new Date().getTime() +
       (firstFormId ? '&firstFormId=' + encodeURIComponent(String(firstFormId)) : '') +
       (pageSize ? '&pageSize=' + encodeURIComponent(String(pageSize)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListForm(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -714,7 +714,7 @@ export class IccTmpApi {
    * @param pageSize
    */
   listTmpHealthElements(firstHealthElementId: string, pageSize: number): Promise<PaginatedListHealthElement> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -723,7 +723,7 @@ export class IccTmpApi {
       new Date().getTime() +
       (firstHealthElementId ? '&firstHealthElementId=' + encodeURIComponent(String(firstHealthElementId)) : '') +
       (pageSize ? '&pageSize=' + encodeURIComponent(String(pageSize)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListHealthElement(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -736,7 +736,7 @@ export class IccTmpApi {
    * @param pageSize
    */
   listTmpInvoices(firstInvoiceId: string, pageSize: number): Promise<PaginatedListInvoice> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -745,7 +745,7 @@ export class IccTmpApi {
       new Date().getTime() +
       (firstInvoiceId ? '&firstInvoiceId=' + encodeURIComponent(String(firstInvoiceId)) : '') +
       (pageSize ? '&pageSize=' + encodeURIComponent(String(pageSize)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListInvoice(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -758,7 +758,7 @@ export class IccTmpApi {
    * @param pageSize
    */
   listTmpMessages(firstMessageId: string, pageSize: number): Promise<PaginatedListInvoice> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -767,7 +767,7 @@ export class IccTmpApi {
       new Date().getTime() +
       (firstMessageId ? '&firstMessageId=' + encodeURIComponent(String(firstMessageId)) : '') +
       (pageSize ? '&pageSize=' + encodeURIComponent(String(pageSize)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListInvoice(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -780,7 +780,7 @@ export class IccTmpApi {
    * @param pageSize
    */
   listTmpPatients(firstPatientId: string, pageSize: number): Promise<PaginatedListPatient> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -789,7 +789,7 @@ export class IccTmpApi {
       new Date().getTime() +
       (firstPatientId ? '&firstPatientId=' + encodeURIComponent(String(firstPatientId)) : '') +
       (pageSize ? '&pageSize=' + encodeURIComponent(String(pageSize)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListPatient(doc.body as JSON))
       .catch((err) => this.handleError(err))

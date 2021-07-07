@@ -39,7 +39,7 @@ export class IccBeresultimportApi {
    * @param enckeys
    */
   canHandle(id: string, enckeys: string): Promise<boolean> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -47,7 +47,7 @@ export class IccBeresultimportApi {
       '?ts=' +
       new Date().getTime() +
       (enckeys ? '&enckeys=' + encodeURIComponent(String(enckeys)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => JSON.parse(JSON.stringify(doc.body)))
       .catch((err) => this.handleError(err))
@@ -75,7 +75,7 @@ export class IccBeresultimportApi {
     enckeys: string,
     ctc: Contact
   ): Promise<Contact> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -89,7 +89,7 @@ export class IccBeresultimportApi {
       (planOfActionId ? '&planOfActionId=' + encodeURIComponent(String(planOfActionId)) : '') +
       (enckeys ? '&enckeys=' + encodeURIComponent(String(enckeys)) : '') +
       (ctc ? '&ctc=' + encodeURIComponent(String(ctc)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Contact(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -104,7 +104,7 @@ export class IccBeresultimportApi {
    * @param full
    */
   getInfos(id: string, language: string, enckeys: string, full?: boolean): Promise<Array<ResultInfo>> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -114,7 +114,7 @@ export class IccBeresultimportApi {
       (language ? '&language=' + encodeURIComponent(String(language)) : '') +
       (enckeys ? '&enckeys=' + encodeURIComponent(String(enckeys)) : '') +
       (full ? '&full=' + encodeURIComponent(String(full)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new ResultInfo(it)))
       .catch((err) => this.handleError(err))

@@ -43,10 +43,10 @@ export class IccBemikronoApi {
    * @param calendarDate
    */
   appointmentsByDate(calendarDate: number): Promise<Array<Appointment>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/be_mikrono/appointments/byDate/${encodeURIComponent(String(calendarDate))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Appointment(it)))
       .catch((err) => this.handleError(err))
@@ -60,7 +60,7 @@ export class IccBemikronoApi {
    * @param to
    */
   appointmentsByPatient(patientId: string, from?: number, to?: number): Promise<Array<Appointment>> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -69,7 +69,7 @@ export class IccBemikronoApi {
       new Date().getTime() +
       (from ? '&from=' + encodeURIComponent(String(from)) : '') +
       (to ? '&to=' + encodeURIComponent(String(to)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Appointment(it)))
       .catch((err) => this.handleError(err))
@@ -114,15 +114,15 @@ export class IccBemikronoApi {
    * @param appointmentId
    * @param action
    */
-  notify(appointmentId: string, action: string): Promise<any | boolean> {
-    const _body = null
+  notify(appointmentId: string, action: string): Promise<any | Boolean> {
+    let _body = null
 
     const _url =
       this.host +
       `/be_mikrono/notify/${encodeURIComponent(String(appointmentId))}/${encodeURIComponent(String(action))}` +
       '?ts=' +
       new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => true)
       .catch((err) => this.handleError(err))

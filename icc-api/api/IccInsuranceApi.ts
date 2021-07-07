@@ -56,10 +56,10 @@ export class IccInsuranceApi {
    * @param insuranceId
    */
   deleteInsurance(insuranceId: string): Promise<DocIdentifier> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/insurance/${encodeURIComponent(String(insuranceId))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => new DocIdentifier(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -71,10 +71,10 @@ export class IccInsuranceApi {
    * @param insuranceId
    */
   getInsurance(insuranceId: string): Promise<Insurance> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/insurance/${encodeURIComponent(String(insuranceId))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Insurance(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -103,10 +103,10 @@ export class IccInsuranceApi {
    * @param insuranceCode
    */
   listInsurancesByCode(insuranceCode: string): Promise<Array<Insurance>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/insurance/byCode/${encodeURIComponent(String(insuranceCode))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Insurance(it)))
       .catch((err) => this.handleError(err))
@@ -118,10 +118,10 @@ export class IccInsuranceApi {
    * @param insuranceName
    */
   listInsurancesByName(insuranceName: string): Promise<Array<Insurance>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/insurance/byName/${encodeURIComponent(String(insuranceName))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Insurance(it)))
       .catch((err) => this.handleError(err))

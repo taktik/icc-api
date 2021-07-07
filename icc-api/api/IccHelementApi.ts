@@ -75,10 +75,10 @@ export class IccHelementApi {
    * @param healthElementIds
    */
   deleteHealthElements(healthElementIds: string): Promise<Array<DocIdentifier>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/helement/${encodeURIComponent(String(healthElementIds))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
       .catch((err) => this.handleError(err))
@@ -108,7 +108,7 @@ export class IccHelementApi {
    * @param secretFKeys
    */
   findHealthElementsByHCPartyPatientForeignKeys(hcPartyId: string, secretFKeys: string): Promise<Array<HealthElement>> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -117,7 +117,7 @@ export class IccHelementApi {
       new Date().getTime() +
       (hcPartyId ? '&hcPartyId=' + encodeURIComponent(String(hcPartyId)) : '') +
       (secretFKeys ? '&secretFKeys=' + encodeURIComponent(String(secretFKeys)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new HealthElement(it)))
       .catch((err) => this.handleError(err))
@@ -130,7 +130,7 @@ export class IccHelementApi {
    * @param secretFKeys
    */
   findHealthElementsDelegationsStubsByHCPartyPatientForeignKeys(hcPartyId: string, secretFKeys: string): Promise<Array<IcureStub>> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -139,7 +139,7 @@ export class IccHelementApi {
       new Date().getTime() +
       (hcPartyId ? '&hcPartyId=' + encodeURIComponent(String(hcPartyId)) : '') +
       (secretFKeys ? '&secretFKeys=' + encodeURIComponent(String(secretFKeys)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new IcureStub(it)))
       .catch((err) => this.handleError(err))
@@ -151,10 +151,10 @@ export class IccHelementApi {
    * @param healthElementId
    */
   getHealthElement(healthElementId: string): Promise<HealthElement> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/helement/${encodeURIComponent(String(healthElementId))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new HealthElement(doc.body as JSON))
       .catch((err) => this.handleError(err))

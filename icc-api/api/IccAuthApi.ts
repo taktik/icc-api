@@ -54,10 +54,10 @@ export class IccAuthApi {
    * @summary logout
    */
   logout(): Promise<AuthenticationResponse> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/auth/logout` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new AuthenticationResponse(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -68,10 +68,10 @@ export class IccAuthApi {
    * @summary logout
    */
   logoutPost(): Promise<AuthenticationResponse> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/auth/logout` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new AuthenticationResponse(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -84,10 +84,10 @@ export class IccAuthApi {
    * @param path
    */
   token(method: string, path: string): Promise<string> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/auth/token/${encodeURIComponent(String(method))}/${encodeURIComponent(String(path))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => JSON.parse(JSON.stringify(doc.body)))
       .catch((err) => this.handleError(err))

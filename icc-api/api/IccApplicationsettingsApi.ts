@@ -36,10 +36,10 @@ export class IccApplicationsettingsApi {
    * @summary Gets all application settings
    */
   getApplicationSettings(): Promise<Array<ApplicationSettings>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/appsettings` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new ApplicationSettings(it)))
       .catch((err) => this.handleError(err))

@@ -71,6 +71,10 @@ export class Document {
    */
   deletionDate?: number
   /**
+   * Reference in object store
+   */
+  objectStoreReference?: string
+  /**
    * Location of the document
    */
   documentLocation?: Document.DocumentLocationEnum

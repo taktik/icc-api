@@ -68,7 +68,7 @@ export class IccTarificationApi {
     startDocumentId?: string,
     limit?: number
   ): Promise<PaginatedListTarification> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -81,7 +81,7 @@ export class IccTarificationApi {
       (version ? '&version=' + encodeURIComponent(String(version)) : '') +
       (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
       (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListTarification(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -105,7 +105,7 @@ export class IccTarificationApi {
     startDocumentId?: string,
     limit?: number
   ): Promise<PaginatedListTarification> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -118,7 +118,7 @@ export class IccTarificationApi {
       (label ? '&label=' + encodeURIComponent(String(label)) : '') +
       (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
       (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListTarification(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -133,7 +133,7 @@ export class IccTarificationApi {
    * @param version Tarification version
    */
   findTarifications(region?: string, type?: string, tarification?: string, version?: string): Promise<Array<Tarification>> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -144,7 +144,7 @@ export class IccTarificationApi {
       (type ? '&type=' + encodeURIComponent(String(type)) : '') +
       (tarification ? '&tarification=' + encodeURIComponent(String(tarification)) : '') +
       (version ? '&version=' + encodeURIComponent(String(version)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Tarification(it)))
       .catch((err) => this.handleError(err))
@@ -156,10 +156,10 @@ export class IccTarificationApi {
    * @param tarificationId Tarification id
    */
   getTarification(tarificationId: string): Promise<Tarification> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/tarification/${encodeURIComponent(String(tarificationId))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Tarification(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -173,14 +173,14 @@ export class IccTarificationApi {
    * @param version Tarification version
    */
   getTarificationWithParts(type: string, tarification: string, version: string): Promise<Tarification> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
       `/tarification/${encodeURIComponent(String(type))}/${encodeURIComponent(String(tarification))}/${encodeURIComponent(String(version))}` +
       '?ts=' +
       new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Tarification(doc.body as JSON))
       .catch((err) => this.handleError(err))

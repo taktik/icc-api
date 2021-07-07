@@ -107,7 +107,7 @@ export class IccAccesslogApi {
     limit?: number,
     descending?: boolean
   ): Promise<PaginatedListAccessLog> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -121,7 +121,7 @@ export class IccAccesslogApi {
       (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
       (limit ? '&limit=' + encodeURIComponent(String(limit)) : '') +
       (descending ? '&descending=' + encodeURIComponent(String(descending)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListAccessLog(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -133,10 +133,10 @@ export class IccAccesslogApi {
    * @param accessLogId
    */
   getAccessLog(accessLogId: string): Promise<AccessLog> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/accesslog/${encodeURIComponent(String(accessLogId))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new AccessLog(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -160,7 +160,7 @@ export class IccAccesslogApi {
     limit?: number,
     descending?: boolean
   ): Promise<PaginatedListAccessLog> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -173,7 +173,7 @@ export class IccAccesslogApi {
       (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
       (limit ? '&limit=' + encodeURIComponent(String(limit)) : '') +
       (descending ? '&descending=' + encodeURIComponent(String(descending)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new PaginatedListAccessLog(doc.body as JSON))
       .catch((err) => this.handleError(err))

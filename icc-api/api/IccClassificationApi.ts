@@ -57,10 +57,10 @@ export class IccClassificationApi {
    * @param classificationIds
    */
   deleteClassifications(classificationIds: string): Promise<Array<DocIdentifier>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/classification/${encodeURIComponent(String(classificationIds))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
       .catch((err) => this.handleError(err))
@@ -73,7 +73,7 @@ export class IccClassificationApi {
    * @param secretFKeys
    */
   findClassificationsByHCPartyPatientForeignKeys(hcPartyId: string, secretFKeys: string): Promise<Array<Classification>> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -82,7 +82,7 @@ export class IccClassificationApi {
       new Date().getTime() +
       (hcPartyId ? '&hcPartyId=' + encodeURIComponent(String(hcPartyId)) : '') +
       (secretFKeys ? '&secretFKeys=' + encodeURIComponent(String(secretFKeys)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Classification(it)))
       .catch((err) => this.handleError(err))
@@ -94,10 +94,10 @@ export class IccClassificationApi {
    * @param classificationId
    */
   getClassification(classificationId: string): Promise<Classification> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/classification/${encodeURIComponent(String(classificationId))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Classification(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -109,10 +109,10 @@ export class IccClassificationApi {
    * @param ids
    */
   getClassificationByHcPartyId(ids: string): Promise<Array<Classification>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/classification/byIds/${encodeURIComponent(String(ids))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Classification(it)))
       .catch((err) => this.handleError(err))

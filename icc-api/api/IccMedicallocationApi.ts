@@ -55,10 +55,10 @@ export class IccMedicallocationApi {
    * @param locationIds
    */
   deleteMedicalLocation(locationIds: string): Promise<Array<DocIdentifier>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/medicallocation/${encodeURIComponent(String(locationIds))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('DELETE', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new DocIdentifier(it)))
       .catch((err) => this.handleError(err))
@@ -70,10 +70,10 @@ export class IccMedicallocationApi {
    * @param locationId
    */
   getMedicalLocation(locationId: string): Promise<MedicalLocation> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/medicallocation/${encodeURIComponent(String(locationId))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new MedicalLocation(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -84,10 +84,10 @@ export class IccMedicallocationApi {
    * @summary Gets all medical locations
    */
   getMedicalLocations(): Promise<Array<MedicalLocation>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/medicallocation` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new MedicalLocation(it)))
       .catch((err) => this.handleError(err))

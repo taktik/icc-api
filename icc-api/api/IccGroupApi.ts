@@ -76,10 +76,10 @@ export class IccGroupApi {
    * @param id The id of the group
    */
   getGroup(id: string): Promise<Group> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/group/${encodeURIComponent(String(id))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Group(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -91,10 +91,10 @@ export class IccGroupApi {
    * @param id The id of the group
    */
   getReplicationInfo1(id: string): Promise<ReplicationInfo> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/group/${encodeURIComponent(String(id))}/r` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new ReplicationInfo(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -108,7 +108,7 @@ export class IccGroupApi {
    * @param warmup Warmup the design doc
    */
   initDesignDocs(id: string, clazz?: string, warmup?: boolean): Promise<Unit> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -117,7 +117,7 @@ export class IccGroupApi {
       new Date().getTime() +
       (clazz ? '&clazz=' + encodeURIComponent(String(clazz)) : '') +
       (warmup ? '&warmup=' + encodeURIComponent(String(warmup)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Unit(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -128,10 +128,10 @@ export class IccGroupApi {
    * @summary List groups
    */
   listGroups(): Promise<Array<Group>> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/group` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new Group(it)))
       .catch((err) => this.handleError(err))
@@ -144,10 +144,10 @@ export class IccGroupApi {
    * @param name The new name for the group
    */
   modifyGroupName(id: string, name: string): Promise<Group> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/group/${encodeURIComponent(String(id))}/name/${encodeURIComponent(String(name))}` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('PUT', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Group(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -221,7 +221,7 @@ export class IccGroupApi {
    * @param password The new password for the group (can only contain digits, letters, - and _)
    */
   setGroupPassword(id: string, password: string): Promise<Group> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/group/${encodeURIComponent(String(id))}/password` + '?ts=' + new Date().getTime()
     let headers = this.headers
@@ -238,7 +238,7 @@ export class IccGroupApi {
    * @param warmup Warmup the design doc
    */
   solveConflicts(id: string, warmup?: boolean): Promise<Unit> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -246,7 +246,7 @@ export class IccGroupApi {
       '?ts=' +
       new Date().getTime() +
       (warmup ? '&warmup=' + encodeURIComponent(String(warmup)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Unit(doc.body as JSON))
       .catch((err) => this.handleError(err))

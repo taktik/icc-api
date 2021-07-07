@@ -38,10 +38,10 @@ export class IccIcureApi {
    * @summary Get index info
    */
   getIndexingInfo(): Promise<IndexingInfo> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/icure/i` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new IndexingInfo(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -52,10 +52,10 @@ export class IccIcureApi {
    * @summary Get process info
    */
   getProcessInfo(): Promise<string> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/icure/p` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => JSON.parse(JSON.stringify(doc.body)))
       .catch((err) => this.handleError(err))
@@ -66,10 +66,10 @@ export class IccIcureApi {
    * @summary Get replication info
    */
   getReplicationInfo(): Promise<ReplicationInfo> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/icure/r` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new ReplicationInfo(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -80,10 +80,10 @@ export class IccIcureApi {
    * @summary Get version
    */
   getVersion(): Promise<string> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/icure/v` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => JSON.parse(JSON.stringify(doc.body)))
       .catch((err) => this.handleError(err))
@@ -94,10 +94,10 @@ export class IccIcureApi {
    * @summary Check if a user exists
    */
   isReady(): Promise<string> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/icure/ok` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => JSON.parse(JSON.stringify(doc.body)))
       .catch((err) => this.handleError(err))
@@ -108,10 +108,10 @@ export class IccIcureApi {
    * @summary Resolve contacts conflicts
    */
   resolveContactsConflicts(): Promise<Unit> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/icure/conflicts/contact` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Unit(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -123,10 +123,10 @@ export class IccIcureApi {
    * @param ids
    */
   resolveDocumentsConflicts(ids?: string): Promise<Unit> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/icure/conflicts/document` + '?ts=' + new Date().getTime() + (ids ? '&ids=' + encodeURIComponent(String(ids)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Unit(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -137,10 +137,10 @@ export class IccIcureApi {
    * @summary resolve forms conflicts
    */
   resolveFormsConflicts(): Promise<Unit> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/icure/conflicts/form` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Unit(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -151,10 +151,10 @@ export class IccIcureApi {
    * @summary resolve healthcare elements conflicts
    */
   resolveHealthElementsConflicts(): Promise<Unit> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/icure/conflicts/healthelement` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Unit(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -165,10 +165,10 @@ export class IccIcureApi {
    * @summary resolve invoices conflicts
    */
   resolveInvoicesConflicts(): Promise<Unit> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/icure/conflicts/invoice` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Unit(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -179,10 +179,10 @@ export class IccIcureApi {
    * @summary resolve messages conflicts
    */
   resolveMessagesConflicts(): Promise<Unit> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/icure/conflicts/message` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Unit(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -193,10 +193,10 @@ export class IccIcureApi {
    * @summary Resolve patients conflicts
    */
   resolvePatientsConflicts(): Promise<Unit> {
-    const _body = null
+    let _body = null
 
     const _url = this.host + `/icure/conflicts/patient` + '?ts=' + new Date().getTime()
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Unit(doc.body as JSON))
       .catch((err) => this.handleError(err))
@@ -209,7 +209,7 @@ export class IccIcureApi {
    * @param warmup
    */
   updateDesignDoc(entityName: string, warmup?: boolean): Promise<boolean> {
-    const _body = null
+    let _body = null
 
     const _url =
       this.host +
@@ -217,7 +217,7 @@ export class IccIcureApi {
       '?ts=' +
       new Date().getTime() +
       (warmup ? '&warmup=' + encodeURIComponent(String(warmup)) : '')
-    const headers = this.headers
+    let headers = this.headers
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => JSON.parse(JSON.stringify(doc.body)))
       .catch((err) => this.handleError(err))
