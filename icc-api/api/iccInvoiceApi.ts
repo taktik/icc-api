@@ -108,6 +108,25 @@ export class iccInvoiceApi {
   }
 
   /**
+   * Returns the created invoices.
+   * @summary Create a batch of invoices
+   * @param body
+   */
+  createInvoices(body?: Array<InvoiceDto>): Promise<Array<InvoiceDto>> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/invoice/batch` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter((h) => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new InvoiceDto(it)))
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
    *
    * @summary Deletes an invoice
    * @param invoiceId
@@ -609,6 +628,25 @@ export class iccInvoiceApi {
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
       .then((doc) => new InvoiceDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
+   * Returns the modified invoices.
+   * @summary Modify a batch of invoices
+   * @param body
+   */
+  modifyInvoices(body?: Array<InvoiceDto>): Promise<Array<InvoiceDto>> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/invoice/batch` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter((h) => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new InvoiceDto(it)))
       .catch((err) => this.handleError(err))
   }
 
