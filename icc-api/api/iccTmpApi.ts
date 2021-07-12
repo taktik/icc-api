@@ -31,8 +31,9 @@ export class iccTmpApi {
     this.headers = h
   }
 
-  handleError(e: XHR.XHRError): never {
-    throw e
+  handleError(e: XHR.Data) {
+    if (e.status == 401) throw Error("auth-failed")
+    else throw Error("api-error" + e.status)
   }
 
   /**
