@@ -12,6 +12,7 @@
 import { XHR } from "./XHR"
 import { DatabaseInitialisationDto } from "../model/DatabaseInitialisationDto"
 import { GroupDto } from "../model/GroupDto"
+import { IdWithRevDto } from "../model/IdWithRevDto"
 import { ListOfIdsDto } from "../model/ListOfIdsDto"
 import { ListOfPropertiesDto } from "../model/ListOfPropertiesDto"
 import { RegistrationInformationDto } from "../model/RegistrationInformationDto"
@@ -273,7 +274,7 @@ export class iccGroupApi {
    * @param id The id of the group
    * @param warmup Warmup the design doc
    */
-  solveConflicts(id: string, warmup?: boolean): Promise<Unit> {
+  solveConflicts(id: string, warmup?: boolean): Promise<Array<IdWithRevDto>> {
     let _body = null
 
     const _url =
@@ -284,7 +285,7 @@ export class iccGroupApi {
       (warmup ? "&warmup=" + encodeURIComponent(String(warmup)) : "")
     let headers = this.headers
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then((doc) => new Unit(doc.body as JSON))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new IdWithRevDto(it)))
       .catch((err) => this.handleError(err))
   }
 }

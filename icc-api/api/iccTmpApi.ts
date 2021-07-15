@@ -422,7 +422,7 @@ export class iccTmpApi {
 
   /**
    * Returns an instance of created classification.
-   * @summary Create a classification with the current user
+   * @summary Get classifications by ids with the current user
    * @param body
    */
   getTmpClassifications(body?: Array<string>): Promise<Array<ClassificationDto>> {
@@ -460,7 +460,7 @@ export class iccTmpApi {
 
   /**
    * Returns an instance of created contact.
-   * @summary Create a contact with the current user
+   * @summary Get contacts by ids with the current user
    * @param body
    */
   getTmpContacts(body?: Array<string>): Promise<Array<ContactDto>> {
@@ -498,7 +498,7 @@ export class iccTmpApi {
 
   /**
    * Returns an instance of created document.
-   * @summary Create a document with the current user
+   * @summary Get documents by ids with the current user
    * @param body
    */
   getTmpDocuments(body?: Array<string>): Promise<Array<DocumentDto>> {
@@ -524,7 +524,7 @@ export class iccTmpApi {
     let _body = null
 
     const _url =
-      this.host + `/tmp/byId/form/${encodeURIComponent(String(id))}` + "?ts=" + new Date().getTime()
+      this.host + `/tmp/form/byId/${encodeURIComponent(String(id))}` + "?ts=" + new Date().getTime()
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then((doc) => new FormDto(doc.body as JSON))
@@ -533,14 +533,14 @@ export class iccTmpApi {
 
   /**
    * Returns an instance of created form.
-   * @summary Create a form with the current user
+   * @summary Get forms by ids with the current user
    * @param body
    */
   getTmpForms(body?: Array<string>): Promise<Array<FormDto>> {
     let _body = null
     _body = body
 
-    const _url = this.host + `/tmp/fget/list` + "?ts=" + new Date().getTime()
+    const _url = this.host + `/tmp/form/get` + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter((h) => h.header !== "Content-Type")
@@ -571,7 +571,7 @@ export class iccTmpApi {
 
   /**
    * Returns an instance of created healthElement.
-   * @summary Create a healthElement with the current user
+   * @summary Get healthElements by ids with the current user
    * @param body
    */
   getTmpHealthElements(body?: Array<string>): Promise<Array<HealthElementDto>> {
@@ -609,7 +609,7 @@ export class iccTmpApi {
 
   /**
    * Returns an instance of created invoice.
-   * @summary Create a invoice with the current user
+   * @summary Get invoices by ids with the current user
    * @param body
    */
   getTmpInvoices(body?: Array<string>): Promise<Array<InvoiceDto>> {
@@ -647,7 +647,7 @@ export class iccTmpApi {
 
   /**
    * Returns an instance of created message.
-   * @summary Create a message with the current user
+   * @summary Get messages by ids with the current user
    * @param body
    */
   getTmpMessages(body?: Array<string>): Promise<Array<MessageDto>> {
@@ -685,7 +685,7 @@ export class iccTmpApi {
 
   /**
    * Returns an instance of created patient.
-   * @summary Create a patient with the current user
+   * @summary Get patients by ids with the current user
    * @param body
    */
   getTmpPatients(body?: Array<string>): Promise<Array<PatientDto>> {
@@ -709,8 +709,8 @@ export class iccTmpApi {
    * @param pageSize
    */
   listTmpClassifications(
-    firstClassificationId: string,
-    pageSize: number
+    firstClassificationId?: string,
+    pageSize?: number
   ): Promise<PaginatedListClassificationDto> {
     let _body = null
 
@@ -735,7 +735,7 @@ export class iccTmpApi {
    * @param firstContactId
    * @param pageSize
    */
-  listTmpContacts(firstContactId: string, pageSize: number): Promise<PaginatedListInvoiceDto> {
+  listTmpContacts(firstContactId?: string, pageSize?: number): Promise<PaginatedListInvoiceDto> {
     let _body = null
 
     const _url =
@@ -757,7 +757,7 @@ export class iccTmpApi {
    * @param firstDocumentId
    * @param pageSize
    */
-  listTmpDocuments(firstDocumentId: string, pageSize: number): Promise<PaginatedListDocumentDto> {
+  listTmpDocuments(firstDocumentId?: string, pageSize?: number): Promise<PaginatedListDocumentDto> {
     let _body = null
 
     const _url =
@@ -779,7 +779,7 @@ export class iccTmpApi {
    * @param firstFormId
    * @param pageSize
    */
-  listTmpForms(firstFormId: string, pageSize: number): Promise<PaginatedListFormDto> {
+  listTmpForms(firstFormId?: string, pageSize?: number): Promise<PaginatedListFormDto> {
     let _body = null
 
     const _url =
@@ -802,8 +802,8 @@ export class iccTmpApi {
    * @param pageSize
    */
   listTmpHealthElements(
-    firstHealthElementId: string,
-    pageSize: number
+    firstHealthElementId?: string,
+    pageSize?: number
   ): Promise<PaginatedListHealthElementDto> {
     let _body = null
 
@@ -828,7 +828,7 @@ export class iccTmpApi {
    * @param firstInvoiceId
    * @param pageSize
    */
-  listTmpInvoices(firstInvoiceId: string, pageSize: number): Promise<PaginatedListInvoiceDto> {
+  listTmpInvoices(firstInvoiceId?: string, pageSize?: number): Promise<PaginatedListInvoiceDto> {
     let _body = null
 
     const _url =
@@ -850,7 +850,7 @@ export class iccTmpApi {
    * @param firstMessageId
    * @param pageSize
    */
-  listTmpMessages(firstMessageId: string, pageSize: number): Promise<PaginatedListInvoiceDto> {
+  listTmpMessages(firstMessageId?: string, pageSize?: number): Promise<PaginatedListInvoiceDto> {
     let _body = null
 
     const _url =
@@ -872,7 +872,7 @@ export class iccTmpApi {
    * @param firstPatientId
    * @param pageSize
    */
-  listTmpPatients(firstPatientId: string, pageSize: number): Promise<PaginatedListPatientDto> {
+  listTmpPatients(firstPatientId?: string, pageSize?: number): Promise<PaginatedListPatientDto> {
     let _body = null
 
     const _url =
