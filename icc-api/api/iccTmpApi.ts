@@ -25,6 +25,7 @@ import { PaginatedListHealthElementDto } from "../model/PaginatedListHealthEleme
 import { PaginatedListInvoiceDto } from "../model/PaginatedListInvoiceDto"
 import { PaginatedListPatientDto } from "../model/PaginatedListPatientDto"
 import { PatientDto } from "../model/PatientDto"
+import { ReplicatorDocument } from "../model/ReplicatorDocument"
 import { Unit } from "../model/Unit"
 
 export class iccTmpApi {
@@ -1216,7 +1217,7 @@ export class iccTmpApi {
    * @param body
    * @param from
    */
-  replicateToTmpDatabase(from: string, body?: Array<string>): Promise<Unit> {
+  replicateToTmpDatabase(from: string, body?: Array<string>): Promise<ReplicatorDocument> {
     let _body = null
     _body = body
 
@@ -1230,7 +1231,7 @@ export class iccTmpApi {
       .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then((doc) => new Unit(doc.body as JSON))
+      .then((doc) => new ReplicatorDocument(doc.body as JSON))
       .catch((err) => this.handleError(err))
   }
 }

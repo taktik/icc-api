@@ -19,6 +19,7 @@ import { InvoiceDto } from "../model/InvoiceDto"
 import { MessageDto } from "../model/MessageDto"
 import { PatientDto } from "../model/PatientDto"
 import { ReplicationInfoDto } from "../model/ReplicationInfoDto"
+import { ReplicatorDocument } from "../model/ReplicatorDocument"
 
 export class iccIcureApi {
   host: string
@@ -82,6 +83,22 @@ export class iccIcureApi {
     let headers = this.headers
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then((doc) => new ReplicationInfoDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
+   *
+   * @summary Get replication info
+   * @param id
+   */
+  getReplicatorInfo(id: string): Promise<ReplicatorDocument> {
+    let _body = null
+
+    const _url =
+      this.host + `/icure/r/${encodeURIComponent(String(id))}` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then((doc) => new ReplicatorDocument(doc.body as JSON))
       .catch((err) => this.handleError(err))
   }
 
