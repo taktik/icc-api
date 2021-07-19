@@ -1749,4 +1749,31 @@ export class IccCryptoXApi {
 
     throw "### THIS SHOULD NOT HAPPEN: " + argName + " has an invalid value: " + argValue + details
   }
+
+  getEncryptionDecryptionKeys(
+    healthcarePartyId: string,
+    document:
+      | models.AccessLogDto
+      | models.CalendarItemDto
+      | models.ClassificationDto
+      | models.ContactDto
+      | models.DocumentDto
+      | models.FormDto
+      | models.HealthElementDto
+      | models.InvoiceDto
+      | models.MessageDto
+      | models.PatientDto
+      | models.ReceiptDto
+  ): Promise<Array<string> | null> {
+    return !document.id
+      ? Promise.resolve(null)
+      : this.extractKeysFromDelegationsForHcpHierarchy(
+        healthcarePartyId,
+        document.id,
+        document.encryptionKeys && Object.keys(document.encryptionKeys).length && document.encryptionKeys || document.delegations!
+      )
+        .then(({ extractedKeys }) => extractedKeys)
+        .catch(() => null);
+  }
+
 }
