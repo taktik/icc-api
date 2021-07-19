@@ -41,7 +41,7 @@ export class iccTmpApi {
    * @param body
    * @param from
    */
-  replicateToTmpDatabase(from: string, body?: Array<string>): Promise<Unit> {
+  replicateToTmpDatabase(from: string, body?: Array<string>): Promise<Unit | void> {
     let _body = null
     _body = body
 
