@@ -85,6 +85,21 @@ export class iccIcureApi {
       .then(doc =>  new models.ReplicationInfoDto(doc.body as JSON))
       .catch(err => this.handleError(err))
 }
+  /**
+   *
+   * @summary Get replication info
+   * @param id
+   */
+   getReplicatorInfo(id: string): Promise<models.ReplicatorDocument | any > {
+    let _body = null
+
+    const _url =
+      this.host + `/icure/r/${encodeURIComponent(String(id))}` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then((doc) => new models.ReplicatorDocument(doc.body as JSON))
+      .catch((err) => this.handleError(err))
+  }
   getUsers(): Promise<Array<models.UserStubDto> | any> {
     let _body = null
     
