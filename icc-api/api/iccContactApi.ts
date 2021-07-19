@@ -234,6 +234,25 @@ export class iccContactApi {
       .then(doc => (doc.body as Array<JSON>).map(it => new models.ContactDto(it)))
       .catch(err => this.handleError(err))
 }
+  /**
+   * Returns the modified contacts.
+   * @summary Modify a batch of contacts
+   * @param body
+   */
+   createContacts(body?: Array<models.ContactDto>): Promise<Array<models.ContactDto> | any> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/contact/batch` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter(h => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then(doc => (doc.body as Array<JSON>).map(it => new models.ContactDto(it)))
+      .catch(err => this.handleError(err))
+  }
+
   newDelegations(contactId: string, body?: models.DelegationDto): Promise<models.ContactDto | any> {
     let _body = null
     _body = body

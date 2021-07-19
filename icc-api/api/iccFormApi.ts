@@ -67,6 +67,25 @@ export class iccFormApi {
       .then(doc =>  new models.FormDto(doc.body as JSON))
       .catch(err => this.handleError(err))
 }
+     /**
+      * Returns the created forms.
+      * @summary Create a batch of forms
+      * @param body 
+      */
+      createForms(body?: Array<models.FormDto>): Promise<Array<models.FormDto> | any> {
+        let _body = null
+        _body = body
+    
+        const _url = this.host + `/form/batch` + "?ts=" + new Date().getTime() 
+        let headers = this.headers
+        headers = headers.filter(h => h.header !== "Content-Type").concat(new XHR.Header("Content-Type", "application/json"))
+        return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+          .then(doc => 
+              
+                  (doc.body as Array<JSON>).map(it => new models.FormDto(it))
+          )
+          .catch(err => this.handleError(err))
+    }
   createFormTemplate(body?: models.FormTemplateDto): Promise<models.FormTemplateDto | any> {
     let _body = null
     _body = body

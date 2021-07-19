@@ -73,6 +73,23 @@ export class iccGroupApi {
       .then(doc => new models.GroupDto(doc.body as JSON))
       .catch(err => this.handleError(err))
   }
+
+  /**
+   * Get a group by id
+   * @summary Get a group by id
+   * @param id The id of the group
+   */
+  getGroup(id: string): Promise<models.GroupDto | any> {
+    let _body = null
+
+    const _url =
+      this.host + `/group/${encodeURIComponent(String(id))}` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then((doc) => new models.GroupDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
+  }
+
   listGroups(): Promise<Array<models.GroupDto> | any> {
     let _body = null
 
@@ -84,5 +101,32 @@ export class iccGroupApi {
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
       .then(doc => (doc.body as Array<JSON>).map(it => new models.GroupDto(it)))
       .catch(err => this.handleError(err))
+  }
+
+  /**
+   * Update existing group properties
+   * @summary Update group properties
+   * @param body
+   * @param id The id of the group
+   */
+  modifyGroupProperties(
+    id: string,
+    body?: models.ListOfPropertiesDto
+  ): Promise<models.GroupDto | void> {
+    let _body = null
+    _body = body
+
+    const _url =
+      this.host +
+      `/group/${encodeURIComponent(String(id))}/properties` +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter((h) => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
+      .then((doc) => new models.GroupDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 }
