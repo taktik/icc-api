@@ -1775,4 +1775,31 @@ export class IccCryptoXApi {
       .then(({ extractedKeys }) => extractedKeys)
       .catch(() => null);
   }
+
+  async encryptDecrypt(
+    method: "encrypt" | "decrypt",
+    content: Uint8Array | ArrayBuffer,
+    edKey?: string,
+    user?: models.UserDto,
+    documentObject?: models.DocumentDto
+  ): Promise<Uint8Array | Array<any> | any> {
+
+    if (!content || !(edKey || user?.healthcarePartyId && documentObject)) return content;
+
+    if(edKey) {
+
+      const importedEdKey = await this._AES.importKey('raw', this._utils.hex2ua(edKey.replace(/-/g, '')))
+
+      try { return this._AES[method]/*.bind(this._AES)*/(importedEdKey, content) } catch (e) { return content }
+
+    }
+
+    const sfks = await this.extractKeysFromDelegationsForHcpHierarchy(user?.healthcarePartyId!, documentObject?.id!, documentObject?.encryptionKeys!)
+
+    const importedEdKey = await this._AES.importKey('raw', this._utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, '')))
+
+    try { return this._AES[method]/*.bind(this._AES)*/(importedEdKey, content) } catch (e) { return content }
+
+  }
+
 }
