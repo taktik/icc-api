@@ -1790,7 +1790,7 @@ export class IccCryptoXApi {
 
       const importedEdKey = await this._AES.importKey('raw', this._utils.hex2ua(edKey.replace(/-/g, '')))
 
-      try { return this._AES[method]/*.bind(this._AES)*/(importedEdKey, content) } catch (e) { return content }
+      try { return this._AES[method](importedEdKey, content) } catch (e) { return content }
 
     }
 
@@ -1798,7 +1798,7 @@ export class IccCryptoXApi {
 
     const importedEdKey = await this._AES.importKey('raw', this._utils.hex2ua(sfks.extractedKeys[0].replace(/-/g, '')))
 
-    try { return this._AES[method]/*.bind(this._AES)*/(importedEdKey, content) } catch (e) { return content }
+    try { return this._AES[method](importedEdKey, content) } catch (e) { return content }
 
   }
 }
