@@ -37,6 +37,20 @@ export class iccTmpApi {
   }
 
   /**
+   * Nothing happens if the database already exists
+   * @summary Create tmp database for current user
+   */
+  createTmpDatabase(): Promise<Unit | void> {
+    let _body = null
+
+    const _url = this.host + `/tmp` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then((doc) => new Unit(doc.body as JSON))
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
    *
    * @param body
    * @param from
