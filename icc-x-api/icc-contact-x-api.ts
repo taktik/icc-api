@@ -567,7 +567,7 @@ export class IccContactXApi extends iccContactApi {
                                 }
                               ).catch(e => {
                                 console.log("Cannot decrypt service", svc.id);
-                                return null;
+                                resolve(svc);
                               })
                             : svc.encryptedSelf
                               ? this.crypto.AES.decrypt(
@@ -597,7 +597,7 @@ export class IccContactXApi extends iccContactApi {
                                   }
                                 ).catch(e => {
                                   console.log("Cannot decrypt service", svc.id);
-                                  return null;
+                                  resolve(svc);
                                 })
                               : resolve(null)
                         }).catch(e => {
@@ -649,7 +649,7 @@ export class IccContactXApi extends iccContactApi {
                               }
                             ).catch(e => {
                               console.log("Cannot decrypt contact", ctc.id);
-                              return ctc;
+                              resolve(ctc);
                             })
                           }
                         )
