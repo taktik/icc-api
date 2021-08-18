@@ -565,7 +565,10 @@ export class IccContactXApi extends iccContactApi {
                                   console.log("Cannot decrypt service", svc.id)
                                   resolve(null)
                                 }
-                              )
+                              ).catch(e => {
+                                console.log("Cannot decrypt service", svc.id);
+                                resolve(svc);
+                              })
                             : svc.encryptedSelf
                               ? this.crypto.AES.decrypt(
                                   key,
@@ -592,8 +595,14 @@ export class IccContactXApi extends iccContactApi {
                                     console.log("Cannot decrypt service", svc.id)
                                     resolve(null)
                                   }
-                                )
+                                ).catch(e => {
+                                  console.log("Cannot decrypt service", svc.id);
+                                  resolve(svc);
+                                })
                               : resolve(null)
+                        }).catch(e => {
+                          console.log("Cannot decrypt service", svc.id);
+                          return null;
                         })
                     )
                     .then(decrypted => {
@@ -638,10 +647,16 @@ export class IccContactXApi extends iccContactApi {
                                 console.log("Cannot decrypt contact", ctc.id)
                                 resolve(ctc)
                               }
-                            )
+                            ).catch(e => {
+                              console.log("Cannot decrypt contact", ctc.id);
+                              resolve(ctc);
+                            })
                           }
                         )
-                    )
+                    ).catch(e => {
+                      console.log("Cannot decrypt contact", ctc.id);
+                      return ctc;
+                    })
                 : Promise.resolve(ctc)
             })
           })

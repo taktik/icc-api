@@ -137,5 +137,24 @@ export class iccEntitytemplateApi {
       .then(doc =>  new models.EntityTemplateDto(doc.body as JSON))
       .catch(err => this.handleError(err))
 }
+
+  /**
+     * Returns the modified entityTemplates.
+     * @summary Modify a batch of entityTemplates
+     * @param body
+     */
+  modifyEntityTemplates(body?: Array<models.EntityTemplateDto>): Promise<Array<models.EntityTemplateDto> | any> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/entitytemplate/batch` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter((h) => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new models.EntityTemplateDto(it)))
+      .catch((err) => this.handleError(err))
+  }
 }
 
