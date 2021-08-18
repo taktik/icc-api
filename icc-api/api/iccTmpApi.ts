@@ -11,6 +11,11 @@
  */
 import { XHR } from "./XHR"
 import { Unit } from "../model/Unit"
+import { EntityTemplateDto } from "../model/EntityTemplateDto"
+import { FormDto } from "../model/FormDto"
+import { HealthElementDto } from "../model/HealthElementDto"
+import { InvoiceDto } from "../model/InvoiceDto"
+import { ContactDto } from "../model/ContactDto"
 
 export class iccTmpApi {
   host: string
@@ -70,6 +75,137 @@ export class iccTmpApi {
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then((doc) => new Unit(doc.body as JSON))
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
+   * Returns an instance of created entityTemplate.
+   * @summary Create a entityTemplate with the current user
+   * @param body
+   */
+  createTmpEntityTemplate(body?: EntityTemplateDto): Promise<void | EntityTemplateDto> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/tmp/entityTemplate` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter((h) => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then((doc) => new EntityTemplateDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
+  }
+  /**
+   * Returns an instance of entityTemplate.
+   * @summary Get a entityTemplate by id
+   * @param id
+   */
+  getTmpEntityTemplate(id: string): Promise<EntityTemplateDto | void> {
+    let _body = null
+
+    const _url =
+      this.host +
+      `/tmp/entityTemplate/byId/${encodeURIComponent(String(id))}` +
+      "?ts=" +
+      new Date().getTime()
+    let headers = this.headers
+    return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
+      .then((doc) => new EntityTemplateDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
+   * Returns the modified entityTemplate.
+   * @summary Modify a entityTemplate
+   * @param body
+   */
+  modifyTmpEntityTemplate(body?: EntityTemplateDto): Promise<EntityTemplateDto | void> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/tmp/entityTemplate` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter((h) => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
+      .then((doc) => new EntityTemplateDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
+   * Returns an instance of created contact.
+   * @summary Get contacts by ids with the current user
+   * @param body
+   */
+  getTmpContacts(body?: Array<string>): Promise<void | Array<ContactDto>> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/tmp/contact/get` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter((h) => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new ContactDto(it)))
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
+   * Returns an instance of created form.
+   * @summary Get forms by ids with the current user
+   * @param body
+   */
+  getTmpForms(body?: Array<string>): Promise<void | Array<FormDto>> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/tmp/form/get` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter((h) => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new FormDto(it)))
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
+   * Returns an instance of created healthElement.
+   * @summary Get healthElements by ids with the current user
+   * @param body
+   */
+  getTmpHealthElements(body?: Array<string>): Promise<void | Array<HealthElementDto>> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/tmp/healthElement/get` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter((h) => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new HealthElementDto(it)))
+      .catch((err) => this.handleError(err))
+  }
+  /**
+   * Returns an instance of created invoice.
+   * @summary Get invoices by ids with the current user
+   * @param body
+   */
+  getTmpInvoices(body?: Array<string>): Promise<void | Array<InvoiceDto>> {
+    let _body = null
+    _body = body
+
+    const _url = this.host + `/tmp/invoice/get` + "?ts=" + new Date().getTime()
+    let headers = this.headers
+    headers = headers
+      .filter((h) => h.header !== "Content-Type")
+      .concat(new XHR.Header("Content-Type", "application/json"))
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new InvoiceDto(it)))
       .catch((err) => this.handleError(err))
   }
 }
