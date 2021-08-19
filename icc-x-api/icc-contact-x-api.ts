@@ -609,6 +609,9 @@ export class IccContactXApi extends iccContactApi {
                       decrypted && _.assign(svc, decrypted)
                       return svc
                     })
+                    .catch(e => {
+                      return svc
+                    })
                 } else {
                   return svc
                 }
