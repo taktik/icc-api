@@ -432,7 +432,7 @@ export class IccCryptoXApi {
     const delegationsArray = delegations[healthcarePartyId]
     if (delegationsArray && delegationsArray.length) {
       delegationsArray.forEach(function (delegationItem) {
-        delegatorIds[delegationItem.owner!] = true //TODO: why is set to true?
+        delegatorIds[delegationItem.owner!] = true //Just store a set of ids as a map
       })
     } else if (fallbackOnParent) {
       return this.getHcpOrPatient(healthcarePartyId).then((hcp) =>
