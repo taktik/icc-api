@@ -246,7 +246,7 @@ export function toInvoiceBatch(
             })
             const invoiceDate = toMoment(
               _.get(
-                _.head(_.orderBy(dateCounts, ["count", "date"], ["desc", "desc"])),
+                _.head(_.orderBy(dateCounts, ["date"], ["desc"])),
                 "date",
                 invoicesWithPatient[0].invoiceDto.invoiceDate!!
               )
