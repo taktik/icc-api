@@ -314,6 +314,10 @@ export class IccPatientXApi extends iccPatientApi {
     return super.getPatient(patientId)
   }
 
+  getPatientsRaw(body?: models.ListOfIdsDto): Promise<Array<models.PatientDto> | any> {
+    return super.getPatients(body)
+  }
+
   getPatientWithUser(user: models.UserDto, patientId: string): Promise<models.PatientDto | any> {
     return super
       .getPatient(patientId)
