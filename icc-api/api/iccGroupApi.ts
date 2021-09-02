@@ -24,6 +24,7 @@
 
 import { XHR } from "./XHR"
 import * as models from "../model/models"
+import { IdWithRevDto } from "../model/IdWithRevDto"
 
 export class iccGroupApi {
   host: string
@@ -36,7 +37,7 @@ export class iccGroupApi {
     fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>
   ) {
     this.host = host
-    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -67,11 +68,11 @@ export class iccGroupApi {
       (password ? "&password=" + password : "")
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
-      .then(doc => new models.GroupDto(doc.body as JSON))
-      .catch(err => this.handleError(err))
+      .then((doc) => new models.GroupDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -96,11 +97,11 @@ export class iccGroupApi {
     const _url = this.host + "/group" + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
-      .filter(h => h.header !== "Content-Type")
+      .filter((h) => h.header !== "Content-Type")
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("GET", _url, headers, _body, this.fetchImpl)
-      .then(doc => (doc.body as Array<JSON>).map(it => new models.GroupDto(it)))
-      .catch(err => this.handleError(err))
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new models.GroupDto(it)))
+      .catch((err) => this.handleError(err))
   }
 
   /**
@@ -127,6 +128,33 @@ export class iccGroupApi {
       .concat(new XHR.Header("Content-Type", "application/json"))
     return XHR.sendCommand("PUT", _url, headers, _body, this.fetchImpl)
       .then((doc) => new models.GroupDto(doc.body as JSON))
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
+   * Solve conflicts for group
+   * @summary Solve conflicts for group
+   * @param id The id of the group
+   * @param limit Solve at most limit conflicts
+   * @param warmup Warmup the design doc
+   */
+  solveConflicts(
+    id: string,
+    limit?: number,
+    warmup?: boolean
+  ): Promise<Array<IdWithRevDto> | void> {
+    let _body = null
+
+    const _url =
+      this.host +
+      `/group/${encodeURIComponent(String(id))}/conflicts` +
+      "?ts=" +
+      new Date().getTime() +
+      (limit ? "&limit=" + encodeURIComponent(String(limit)) : "") +
+      (warmup ? "&warmup=" + encodeURIComponent(String(warmup)) : "")
+    let headers = this.headers
+    return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => new IdWithRevDto(it)))
       .catch((err) => this.handleError(err))
   }
 }
