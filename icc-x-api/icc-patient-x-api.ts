@@ -210,6 +210,19 @@ export class IccPatientXApi extends iccPatientApi {
       .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
   }
 
+  filterByWithoutDecryption(
+    startKey?: string,
+    startDocumentId?: string,
+    limit?: number,
+    skip?: number,
+    sort?: string,
+    desc?: boolean,
+    body?: models.FilterChain
+  ): Promise<models.PatientPaginatedList | any> {
+    return super
+      .filterBy(startKey, startDocumentId, limit, skip, sort, desc, body)
+  }
+
   findByAccessLogUserAfterDate(
     userId: string,
     accessType?: string,
