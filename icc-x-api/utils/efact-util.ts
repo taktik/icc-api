@@ -234,6 +234,13 @@ export function toInvoiceBatch(
                     : "10000101"
               )
             )
+            //The invoiceMonth/Year of the batch must be equal to the most recent month/year of the invoices that has the highest count within the batch.
+            //From the INAMI Rules: (https://www.riziv.fgov.be/SiteCollectionDocuments/instructions_facturation_electronique_2021.pdf page 213)
+            // In deze zone bedoelt men de maand waarin het merendeel der prestaties, die op deze factuur staan,
+            // werden verricht. Deze maand kan verschillend zijn van de maand waarin de factuur werd opgemaakt
+            //Examples:
+            //A. 10 invoices 02/2020, 10 invoices 03/2020, 5 invoices 04/2020 --> 03/2020
+            //B. 10 invoices 02/2020;  9 invoices 03/2020, 5 invoices 04/2020 --> 02/2020
             let dateCounts: any[] = []
             _.forOwn(invoiceDates, function(val, key) {
               dateCounts.push({ date: key, count: val.length })
