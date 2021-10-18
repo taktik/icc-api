@@ -30,6 +30,8 @@ export class CalendarItemDto {
   }
   id?: string
 
+  recurrenceId?: string
+
   rev?: string
 
   deletionDate?: number
