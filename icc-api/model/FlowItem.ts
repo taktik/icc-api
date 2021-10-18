@@ -93,6 +93,10 @@ export class FlowItem {
   description?: string
 
   interventionCode?: string
+
+  encryptedSelf?: string
+
+  encryptionKeys1733?: { [key: string]: string }
 }
 
 export namespace FlowItem {
