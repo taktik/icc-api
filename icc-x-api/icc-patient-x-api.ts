@@ -210,19 +210,6 @@ export class IccPatientXApi extends iccPatientApi {
       .then(pl => this.decrypt(user, pl.rows, false).then(dr => Object.assign(pl, { rows: dr })))
   }
 
-  filterByWithoutDecryption(
-    startKey?: string,
-    startDocumentId?: string,
-    limit?: number,
-    skip?: number,
-    sort?: string,
-    desc?: boolean,
-    body?: models.FilterChain
-  ): Promise<models.PatientPaginatedList | any> {
-    return super
-      .filterBy(startKey, startDocumentId, limit, skip, sort, desc, body)
-  }
-
   findByAccessLogUserAfterDate(
     userId: string,
     accessType?: string,
@@ -325,10 +312,6 @@ export class IccPatientXApi extends iccPatientApi {
 
   getPatientRaw(patientId: string): Promise<models.PatientDto | any> {
     return super.getPatient(patientId)
-  }
-
-  getPatientsRaw(body?: models.ListOfIdsDto): Promise<Array<models.PatientDto> | any> {
-    return super.getPatients(body)
   }
 
   getPatientWithUser(user: models.UserDto, patientId: string): Promise<models.PatientDto | any> {
@@ -465,25 +448,6 @@ export class IccPatientXApi extends iccPatientApi {
   ): never {
     throw new Error(
       "Cannot call a method that returns contacts without providing a user for de/encryption"
-    )
-  }
-
-  // NEVER EVER modify non-decrypted patient back, only meant as "readonly" for performance purposes
-  listEncryptedPatientsByHcParty(
-    hcPartyId: string,
-    sortField?: string,
-    startKey?: string,
-    startDocumentId?: string,
-    limit?: number,
-    sortDirection?: string
-  ): Promise<models.PatientPaginatedList | any> {
-    return super.listPatientsByHcParty(
-      hcPartyId,
-      sortField,
-      startKey,
-      startDocumentId,
-      limit,
-      sortDirection
     )
   }
 

@@ -356,16 +356,6 @@ export class IccContactXApi extends iccContactApi {
       )
   }
 
-  filterByWithoutDecryption(
-    startKey?: string,
-    startDocumentId?: string,
-    limit?: number,
-    body?: models.FilterChain
-  ): Promise<models.ContactPaginatedList | any> {
-    return super
-      .filterBy(startKey, startDocumentId, limit, body)
-  }
-
   listContactsByOpeningDateWithUser(
     user: models.UserDto,
     startKey: number,
