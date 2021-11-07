@@ -78,6 +78,8 @@ export class MedicalHouseContractDto  {
 
   ptdLastInvoiced?: number
 
+  options?: { [key: string]: string }
+
   startOfSuspension?: number
 
   endOfSuspension?: number
