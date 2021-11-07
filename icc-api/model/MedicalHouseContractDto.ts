@@ -54,6 +54,8 @@ export class MedicalHouseContractDto  {
 
   gp?: boolean
 
+  ptd?: boolean
+
   nurse?: boolean
 
   unsubscriptionReasonId?: number
@@ -69,6 +71,14 @@ export class MedicalHouseContractDto  {
   status?: number
 
   receipts?: { [key: string]: string }
+
+  ptdStart?: number
+
+  ptdEnd?: number
+
+  ptdLastInvoiced?: number
+
+  options?: { [key: string]: string }
 
   startOfSuspension?: number
 
