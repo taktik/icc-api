@@ -102,5 +102,5 @@ export class CalendarItemDto {
 
   meetingTags?: Array<models.CalendarItemTagDto>
 
-  flowItem?: models.FlowItemDto
+  flowItem?: models.FlowItem
 }
