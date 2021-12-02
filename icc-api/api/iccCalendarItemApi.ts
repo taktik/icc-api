@@ -65,7 +65,7 @@ export class iccCalendarItemApi {
   deleteCalendarItems(body?: Array<string>): Promise<any | Boolean> {
     let _body = null
     _body = body
-    const _url = this.host + "/calendarItem/deleteCalendarItems" + "?ts=" + new Date().getTime()
+    const _url = this.host + "/calendarItem/delete" + "?ts=" + new Date().getTime()
     let headers = this.headers
     headers = headers
       .filter(h => h.header !== "Content-Type")
