@@ -154,7 +154,7 @@ export class IccCalendarItemXApi extends iccCalendarItemApi {
         secretForeignKeys.extractedKeys.length > 0
         ? this.findByHCPartyPatientSecretFKeys(
             secretForeignKeys.hcpartyId!,
-            secretForeignKeys.extractedKeys.join(",")
+            _.uniq(secretForeignKeys.extractedKeys).join(",")
           )
         : Promise.resolve([])
     })
