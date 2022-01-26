@@ -208,7 +208,7 @@ export class IccInvoiceXApi extends iccInvoiceApi {
       .then(secretForeignKeys =>
         this.findByHCPartyPatientSecretFKeys(
           secretForeignKeys.hcpartyId,
-          secretForeignKeys.extractedKeys.join(",")
+          _.uniq(secretForeignKeys.extractedKeys).join(",")
         )
       )
       .then(invoices => this.decrypt(hcpartyId, invoices))

@@ -146,7 +146,7 @@ export class IccFormXApi extends iccFormApi {
       .then(secretForeignKeys =>
         this.findByHCPartyPatientSecretFKeys(
           secretForeignKeys.hcpartyId,
-          secretForeignKeys.extractedKeys.join(",")
+          _.uniq(secretForeignKeys.extractedKeys).join(",")
         )
       )
       .then(forms => this.decrypt(hcpartyId, forms))

@@ -665,7 +665,7 @@ export class IccDocumentXApi extends iccDocumentApi {
       .then(secretForeignKeys =>
         this.findByHCPartyMessageSecretFKeys(
           secretForeignKeys.hcpartyId,
-          secretForeignKeys.extractedKeys.join(",")
+          _.uniq(secretForeignKeys.extractedKeys).join(",")
         )
       )
       .then(documents => this.decrypt(hcpartyId, documents))

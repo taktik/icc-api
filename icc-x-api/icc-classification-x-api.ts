@@ -107,7 +107,7 @@ export class IccClassificationXApi extends iccClassificationApi {
       .then(secretForeignKeys =>
         this.findByHCPartyPatientSecretFKeys(
           secretForeignKeys.hcpartyId,
-          secretForeignKeys.extractedKeys.join(",")
+          _.uniq(secretForeignKeys.extractedKeys).join(",")
         )
       )
   }
