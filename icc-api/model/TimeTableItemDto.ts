@@ -41,4 +41,8 @@ export class TimeTableItemDto  {
   unavailable?: boolean
 
   placeId?: string
+
+  publicTimeTableItem?: boolean
+
+  acceptsNewPatient?: boolean
 }
