@@ -423,7 +423,10 @@ export class UtilsClass {
    * @param obj the object to encrypt
    * @param decryptor the decryptor function (returns a promise)
    */
-  async decrypt(obj: any, decryptor: (obj: Uint8Array) => Promise<{ [key: string]: string }>) {
+  async decrypt(
+    obj: any,
+    decryptor: (obj: Uint8Array) => Promise<{ [key: string]: string } | undefined>
+  ) {
     await Object.keys(obj).reduce(async (prev: Promise<void>, k: any) => {
       await prev
       if (Array.isArray(obj[k])) {

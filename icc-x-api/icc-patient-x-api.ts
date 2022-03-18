@@ -655,12 +655,12 @@ export class IccPatientXApi extends iccPatientApi {
                                   p.id,
                                   jsonContent || "Invalid content"
                                 )
-                                return p
+                                return undefined
                               }
                             })
                             .catch(err => {
                               console.log("Cannot decrypt patient", p.id, err)
-                              return p
+                              return undefined
                             })
                         )
                       )
@@ -872,7 +872,10 @@ export class IccPatientXApi extends iccPatientApi {
                           ctcs =>
                             parentId
                               ? this.contactApi
-                                  .findByHCPartyPatientSecretFKeys(parentId, _.uniq(delSfks).join(","))
+                                  .findByHCPartyPatientSecretFKeys(
+                                    parentId,
+                                    _.uniq(delSfks).join(",")
+                                  )
                                   .then(moreCtcs => _.uniqBy(ctcs.concat(moreCtcs), "id"))
                               : ctcs
                         )
@@ -899,7 +902,10 @@ export class IccPatientXApi extends iccPatientApi {
                           cls =>
                             parentId
                               ? this.classificationApi
-                                  .findByHCPartyPatientSecretFKeys(parentId, _.uniq(delSfks).join(","))
+                                  .findByHCPartyPatientSecretFKeys(
+                                    parentId,
+                                    _.uniq(delSfks).join(",")
+                                  )
                                   .then(moreCls => _.uniqBy(cls.concat(moreCls), "id"))
                               : cls
                         )
@@ -911,7 +917,10 @@ export class IccPatientXApi extends iccPatientApi {
                           cls =>
                             parentId
                               ? this.calendarItemApi
-                                  .findByHCPartyPatientSecretFKeys(parentId, _.uniq(delSfks).join(","))
+                                  .findByHCPartyPatientSecretFKeys(
+                                    parentId,
+                                    _.uniq(delSfks).join(",")
+                                  )
                                   .then(moreCls => _.uniqBy(cls.concat(moreCls), "id"))
                               : cls
                         )
@@ -1282,7 +1291,10 @@ export class IccPatientXApi extends iccPatientApi {
                           hes =>
                             parentId
                               ? this.helementApi
-                                  .findByHCPartyPatientSecretFKeys(parentId, _.uniq(delSfks).join(","))
+                                  .findByHCPartyPatientSecretFKeys(
+                                    parentId,
+                                    _.uniq(delSfks).join(",")
+                                  )
                                   .then(moreHes => _.uniqBy(hes.concat(moreHes), "id"))
                               : hes
                         )
@@ -1294,7 +1306,10 @@ export class IccPatientXApi extends iccPatientApi {
                           frms =>
                             parentId
                               ? this.formApi
-                                  .findByHCPartyPatientSecretFKeys(parentId, _.uniq(delSfks).join(","))
+                                  .findByHCPartyPatientSecretFKeys(
+                                    parentId,
+                                    _.uniq(delSfks).join(",")
+                                  )
                                   .then(moreFrms => _.uniqBy(frms.concat(moreFrms), "id"))
                               : frms
                         )
@@ -1306,7 +1321,10 @@ export class IccPatientXApi extends iccPatientApi {
                           ctcs =>
                             parentId
                               ? this.contactApi
-                                  .findByHCPartyPatientSecretFKeys(parentId, _.uniq(delSfks).join(","))
+                                  .findByHCPartyPatientSecretFKeys(
+                                    parentId,
+                                    _.uniq(delSfks).join(",")
+                                  )
                                   .then(moreCtcs => _.uniqBy(ctcs.concat(moreCtcs), "id"))
                               : ctcs
                         )
@@ -1318,7 +1336,10 @@ export class IccPatientXApi extends iccPatientApi {
                           ivs =>
                             parentId
                               ? this.invoiceApi
-                                  .findByHCPartyPatientSecretFKeys(parentId, _.uniq(delSfks).join(","))
+                                  .findByHCPartyPatientSecretFKeys(
+                                    parentId,
+                                    _.uniq(delSfks).join(",")
+                                  )
                                   .then(moreIvs => _.uniqBy(ivs.concat(moreIvs), "id"))
                               : ivs
                         )
@@ -1330,7 +1351,10 @@ export class IccPatientXApi extends iccPatientApi {
                           cls =>
                             parentId
                               ? this.classificationApi
-                                  .findByHCPartyPatientSecretFKeys(parentId, _.uniq(delSfks).join(","))
+                                  .findByHCPartyPatientSecretFKeys(
+                                    parentId,
+                                    _.uniq(delSfks).join(",")
+                                  )
                                   .then(moreCls => _.uniqBy(cls.concat(moreCls), "id"))
                               : cls
                         )
