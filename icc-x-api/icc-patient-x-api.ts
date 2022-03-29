@@ -575,12 +575,12 @@ export class IccPatientXApi extends IccPatientApi {
                                   return JSON.parse(jsonContent)
                                 } catch (e) {
                                   console.log('Cannot parse patient', p.id, jsonContent || 'Invalid content')
-                                  return p
+                                  return undefined
                                 }
                               })
                               .catch((err) => {
                                 console.log('Cannot decrypt patient', p.id, err)
-                                return p
+                                return undefined
                               })
                           )
                           .then((p) => {
