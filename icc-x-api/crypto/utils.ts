@@ -25,9 +25,9 @@ export class UtilsClass {
 
   ua2ArrayBuffer(ua: Uint8Array): ArrayBuffer {
     const buffer = ua.buffer
-    return (buffer.byteLength > ua.byteLength
-      ? buffer.slice(0, ua.byteLength)
-      : buffer) as ArrayBuffer
+    return (
+      buffer.byteLength > ua.byteLength ? buffer.slice(0, ua.byteLength) : buffer
+    ) as ArrayBuffer
   }
 
   base64toArrayBuffer(s: string) {
@@ -82,7 +82,7 @@ export class UtilsClass {
     return {
       kty: "RSA",
       n: this.base64url(this.minimalRep(key.modulus)),
-      e: this.base64url(this.minimalRep(key.publicExponent))
+      e: this.base64url(this.minimalRep(key.publicExponent)),
     }
   }
 
@@ -129,7 +129,7 @@ export class UtilsClass {
       q: this.base64url(this.minimalRep(key.prime2)),
       dp: this.base64url(this.minimalRep(key.exponent1)),
       dq: this.base64url(this.minimalRep(key.exponent2)),
-      qi: this.base64url(this.minimalRep(key.coefficient))
+      qi: this.base64url(this.minimalRep(key.coefficient)),
     }
   }
 
@@ -172,7 +172,7 @@ export class UtilsClass {
             0xf0 | (charcode >> 18),
             0x80 | ((charcode >> 12) & 0x3f),
             0x80 | ((charcode >> 6) & 0x3f),
-            0x80 | (charcode & 0x3f)
+            0x80 | (charcode & 0x3f),
           ],
           j
         )
@@ -265,11 +265,7 @@ export class UtilsClass {
   }
 
   base64url(b: Uint8Array): string {
-    return base64js
-      .fromByteArray(b)
-      .replace(/\+/g, "-")
-      .replace(/\//g, "_")
-      .replace(/=/g, "")
+    return base64js.fromByteArray(b).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "")
   }
 
   /**
@@ -397,49 +393,57 @@ export class UtilsClass {
     cryptor: (obj: { [key: string]: string }) => Promise<ArrayBuffer>,
     keys: Array<string>
   ) {
-    const subObj = _.pick(obj, keys.filter(k => !k.includes("*")))
+    const subObj = _.pick(
+      obj,
+      keys.filter((k) => !k.includes("*"))
+    )
     obj.encryptedSelf = btoa(this.ua2text(await cryptor(subObj)))
-    Object.keys(subObj).forEach(k => delete obj[k])
+    Object.keys(subObj).forEach((k) => delete obj[k])
 
-    await keys.filter(k => k.includes("*")).reduce(async (prev: Promise<void>, k: any) => {
-      await prev
-      const k1 = k.split(".*.")[0]
-      const k2 = k.substr(k1.length + 3)
+    await keys
+      .filter((k) => k.includes("*"))
+      .reduce(async (prev: Promise<void>, k: any) => {
+        await prev
+        const k1 = k.split(".*.")[0]
+        const k2 = k.substr(k1.length + 3)
 
-      const mapped = await Promise.all(
-        (_.get(obj, k1) || []).map((so: any) =>
-          this.crypt(so, cryptor, k2.startsWith("[") ? JSON.parse(k2) : [k2])
+        const mapped = await Promise.all(
+          (_.get(obj, k1) || []).map((so: any) =>
+            this.crypt(so, cryptor, k2.startsWith("[") ? JSON.parse(k2) : [k2])
+          )
         )
-      )
-      _.set(obj, k1, mapped)
-    }, Promise.resolve())
+        _.set(obj, k1, mapped)
+      }, Promise.resolve())
 
     return obj
   }
 
   /**
-   * Decrypt object graph recursively
+   * Decrypt object
    *
-   * @param obj the object to encrypt
+   * @param obj the object to decrypt
    * @param decryptor the decryptor function (returns a promise)
    */
   async decrypt(
     obj: any,
-    decryptor: (obj: Uint8Array) => Promise<{ [key: string]: string } | undefined>
+    decryptor: (obj: Uint8Array, key: string) => Promise<{ [key: string]: string }>,
+    key = "/"
   ) {
     await Object.keys(obj).reduce(async (prev: Promise<void>, k: any) => {
       await prev
       if (Array.isArray(obj[k])) {
         await (obj[k] as Array<any>)
-          .filter(o => typeof o === "object" && o !== null)
-          .reduce(async (prev: Promise<void>, so: any) => {
+          .filter((o) => typeof o === "object" && o !== null)
+          .reduce(async (prev: Promise<void>, so: any, idx) => {
             await prev
-            await this.decrypt(so, decryptor)
+            await this.decrypt(so, decryptor, `${key}${k}/${idx}/`)
           }, Promise.resolve())
+      } else if (typeof obj[k] === "object" && obj[k] !== null) {
+        await this.decrypt(obj[k], decryptor, `${key}${k}/`)
       }
     }, Promise.resolve())
     if (obj.encryptedSelf) {
-      Object.assign(obj, await decryptor(utils.text2ua(atob(obj.encryptedSelf))))
+      Object.assign(obj, await decryptor(utils.text2ua(atob(obj.encryptedSelf)), key))
     }
     return obj
   }
