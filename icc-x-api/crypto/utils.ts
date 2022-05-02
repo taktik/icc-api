@@ -214,25 +214,25 @@ export class UtilsClass {
   }
 
   /**
-   * Decrypt object graph recursively
+   * Decrypt object
    *
-   * @param obj the object to encrypt
+   * @param obj the object to decrypt
    * @param decryptor the decryptor function (returns a promise)
    */
-  async decrypt(obj: any, decryptor: (obj: Uint8Array) => Promise<{ [key: string]: string }>) {
+  async decrypt(obj: any, decryptor: (obj: Uint8Array, key: string) => Promise<{ [key: string]: string }>, key = '/') {
     await Object.keys(obj).reduce(async (prev: Promise<void>, k: any) => {
       await prev
       if (Array.isArray(obj[k])) {
         await (obj[k] as Array<any>)
           .filter((o) => typeof o === 'object' && o !== null)
-          .reduce(async (prev: Promise<void>, so: any) => {
+          .reduce(async (prev: Promise<void>, so: any, idx) => {
             await prev
-            await this.decrypt(so, decryptor)
+            await this.decrypt(so, decryptor, `${key}${k}/${idx}/`)
           }, Promise.resolve())
       }
     }, Promise.resolve())
     if (obj.encryptedSelf) {
-      Object.assign(obj, await decryptor(string2ua(a2b(obj.encryptedSelf))))
+      Object.assign(obj, await decryptor(string2ua(a2b(obj.encryptedSelf)), key))
     }
     return obj
   }
