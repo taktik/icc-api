@@ -229,6 +229,8 @@ export class UtilsClass {
             await prev
             await this.decrypt(so, decryptor, `${key}${k}/${idx}/`)
           }, Promise.resolve())
+      } else if (typeof obj[k] === 'object' && obj[k] !== null) {
+        await this.decrypt(obj[k], decryptor, `${key}${k}/`)
       }
     }, Promise.resolve())
     if (obj.encryptedSelf) {
