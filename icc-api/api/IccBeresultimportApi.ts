@@ -9,9 +9,9 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import {XHR} from './XHR'
-import {Contact} from '../model/Contact'
-import {ResultInfo} from '../model/ResultInfo'
+import { XHR } from './XHR'
+import { Contact } from '../model/Contact'
+import { ResultInfo } from '../model/ResultInfo'
 
 export class IccBeresultimportApi {
   host: string
@@ -20,7 +20,7 @@ export class IccBeresultimportApi {
 
   constructor(host: string, headers: any, fetchImpl?: (input: RequestInfo, init?: RequestInit) => Promise<Response>) {
     this.host = host
-    this.headers = Object.keys(headers).map((k) => new XHR.Header(k, headers[k]))
+    this.headers = Object.keys(headers).map(k => new XHR.Header(k, headers[k]))
     this.fetchImpl = fetchImpl
   }
 
@@ -49,8 +49,8 @@ export class IccBeresultimportApi {
       (enckeys ? '&enckeys=' + encodeURIComponent(String(enckeys)) : '')
     let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
-      .then((doc) => JSON.parse(JSON.stringify(doc.body)))
-      .catch((err) => this.handleError(err))
+      .then(doc => JSON.parse(JSON.stringify(doc.body)))
+      .catch(err => this.handleError(err))
   }
 
   /**
@@ -75,7 +75,7 @@ export class IccBeresultimportApi {
     enckeys: string,
     ctc: Contact
   ): Promise<Contact> {
-    let _body = null
+    let _body = ctc
 
     const _url =
       this.host +
@@ -87,12 +87,11 @@ export class IccBeresultimportApi {
       (protocolIds ? '&protocolIds=' + encodeURIComponent(String(protocolIds)) : '') +
       (formIds ? '&formIds=' + encodeURIComponent(String(formIds)) : '') +
       (planOfActionId ? '&planOfActionId=' + encodeURIComponent(String(planOfActionId)) : '') +
-      (enckeys ? '&enckeys=' + encodeURIComponent(String(enckeys)) : '') +
-      (ctc ? '&ctc=' + encodeURIComponent(String(ctc)) : '')
+      (enckeys ? '&enckeys=' + encodeURIComponent(String(enckeys)) : '')
     let headers = this.headers
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
-      .then((doc) => new Contact(doc.body as JSON))
-      .catch((err) => this.handleError(err))
+      .then(doc => new Contact(doc.body as JSON))
+      .catch(err => this.handleError(err))
   }
 
   /**
@@ -116,7 +115,7 @@ export class IccBeresultimportApi {
       (full ? '&full=' + encodeURIComponent(String(full)) : '')
     let headers = this.headers
     return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
-      .then((doc) => (doc.body as Array<JSON>).map((it) => new ResultInfo(it)))
-      .catch((err) => this.handleError(err))
+      .then(doc => (doc.body as Array<JSON>).map(it => new ResultInfo(it)))
+      .catch(err => this.handleError(err))
   }
 }
