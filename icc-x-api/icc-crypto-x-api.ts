@@ -1,30 +1,36 @@
-import { iccHcpartyApi, iccPatientApi } from "../icc-api/iccApi"
-import { AESUtils } from "./crypto/AES"
-import { RSAUtils } from "./crypto/RSA"
-import { utils, UtilsClass } from "./crypto/utils"
-import { ShamirClass } from "./crypto/shamir"
+import {iccHcpartyApi, iccPatientApi} from "../icc-api/iccApi"
+import {AESUtils} from "./crypto/AES"
+import {RSAUtils} from "./crypto/RSA"
+import {utils, UtilsClass} from "./crypto/utils"
+import {ShamirClass} from "./crypto/shamir"
 
 import * as _ from "lodash"
 import * as models from "../icc-api/model/models"
-import { DelegationDto, HealthcarePartyDto, PatientDto } from "../icc-api/model/models"
-import { IccHcpartyXApi } from "./icc-hcparty-x-api"
+import {DelegationDto, HealthcarePartyDto, PatientDto} from "../icc-api/model/models"
+import {IccHcpartyXApi} from "./icc-hcparty-x-api"
 
 export class IccCryptoXApi {
   get shamir(): ShamirClass {
     return this._shamir
   }
+
   get utils(): UtilsClass {
     return this._utils
   }
+
   get RSA(): RSAUtils {
     return this._RSA
   }
+
   get AES(): AESUtils {
     return this._AES
   }
+
   hcPartyKeysCache: {
     [key: string]: { delegatorId: string; key: CryptoKey; rawKey: string }
   } = {}
+
+  cacheLastDeletionTimestamp: number | undefined = undefined
 
   //[delegateId][delegatorId] = delegateEncryptedHcPartyKey
   //for each delegate, it stores the list of delegators and the corresponding delegateEncryptedHcPartyKey (shared HcPartyKey, from delegator to delegate, encrypted with the RSA key of the delegate)
@@ -377,7 +383,8 @@ export class IccCryptoXApi {
   decryptAndImportAesHcPartyKeysForDelegators(
     //TODO:  suggested name: getDecryptedHcPKeysSharedBetweenDelegateAndDelegators
     delegatorsHcPartyIdsSet: Array<string>,
-    delegateHcPartyId: string
+    delegateHcPartyId: string,
+    minCacheDurationInSeconds: number = 60
   ): Promise<Array<{ delegatorId: string; key: CryptoKey; rawKey: string }>> {
     return (
       this.hcPartyKeysRequestsCache[delegateHcPartyId] ||
@@ -401,8 +408,22 @@ export class IccCryptoXApi {
             return undefined
           })
         })
-      ).then((hcPartyKeys) =>
-        hcPartyKeys.filter(<T>(hcPartyKey: T | undefined): hcPartyKey is T => !!hcPartyKey)
+      ).then((hcPartyKeys) => {
+          const filteredHcPartyKeys = hcPartyKeys.filter(<T>(hcPartyKey: T | undefined): hcPartyKey is T => !!hcPartyKey)
+
+          if (filteredHcPartyKeys.length > 0) {
+            return filteredHcPartyKeys
+          }
+
+          const nowTimestamp = +new Date()
+          if (!this.cacheLastDeletionTimestamp || ((nowTimestamp - this.cacheLastDeletionTimestamp) / 1000) >= minCacheDurationInSeconds) {
+            delete this.hcPartyKeysRequestsCache[delegateHcPartyId]
+            this.cacheLastDeletionTimestamp = nowTimestamp
+            return this.decryptAndImportAesHcPartyKeysForDelegators(delegatorsHcPartyIdsSet, delegateHcPartyId)
+          }
+
+          return filteredHcPartyKeys
+        }
       )
     })
   }
