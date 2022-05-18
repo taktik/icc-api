@@ -30,6 +30,8 @@ export class IccCryptoXApi {
       | { entityType: "patient"; entity: Promise<models.PatientDto> }
   } = {}
 
+  cacheLastDeletionTimestamp: number | undefined = undefined
+
   //[delegateId][delegatorId] = delegateEncryptedHcPartyKey
   //for each delegate, it stores the list of delegators and the corresponding delegateEncryptedHcPartyKey (shared HcPartyKey, from delegator to delegate, encrypted with the RSA key of the delegate)
   hcPartyKeysRequestsCache: {
@@ -408,7 +410,8 @@ export class IccCryptoXApi {
   decryptAndImportAesHcPartyKeysForDelegators(
     //TODO:  suggested name: getDecryptedHcPKeysSharedBetweenDelegateAndDelegators
     delegatorsHcPartyIdsSet: Array<string>,
-    delegateHcPartyId: string
+    delegateHcPartyId: string,
+    minCacheDurationInSeconds: number = 60
   ): Promise<Array<{ delegatorId: string; key: CryptoKey; rawKey: string }>> {
     return (
       this.hcPartyKeysRequestsCache[delegateHcPartyId] ||
@@ -432,8 +435,22 @@ export class IccCryptoXApi {
             return undefined
           })
         })
-      ).then(hcPartyKeys =>
-        hcPartyKeys.filter(<T>(hcPartyKey: T | undefined): hcPartyKey is T => !!hcPartyKey)
+        ).then((hcPartyKeys) => {
+          const filteredHcPartyKeys = hcPartyKeys.filter(<T>(hcPartyKey: T | undefined): hcPartyKey is T => !!hcPartyKey)
+
+          if (filteredHcPartyKeys.length > 0) {
+            return filteredHcPartyKeys
+          }
+
+          const nowTimestamp = +new Date()
+          if (!this.cacheLastDeletionTimestamp || ((nowTimestamp - this.cacheLastDeletionTimestamp) / 1000) >= minCacheDurationInSeconds) {
+            delete this.hcPartyKeysRequestsCache[delegateHcPartyId]
+            this.cacheLastDeletionTimestamp = nowTimestamp
+            return this.decryptAndImportAesHcPartyKeysForDelegators(delegatorsHcPartyIdsSet, delegateHcPartyId)
+          }
+
+          return filteredHcPartyKeys
+        }
       )
     })
   }
