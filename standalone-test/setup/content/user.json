@@ -1,0 +1,23 @@
+{
+  "_id": "4a1e806e5f702e9320c745e55400907d-test-1608210888",
+  "name": "Demo User",
+  "properties": [],
+  "permissions": [],
+  "type": "database",
+  "status": "ACTIVE",
+  "login": "demo-test-1608210888",
+  "passwordHash": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+  "secret": "TopSecret",
+  "healthcarePartyId": "4a1e806e5f702e9320c745e554006855-test-1608210888",
+  "autoDelegations": {
+    "all": [
+      "4a1e806e5f702e9320c745e554006855-test-1608210888",
+      "4a1e806e5f702e9320c745e554004c75-test-1608210888"
+    ]
+  },
+  "roles": [],
+  "email": "demo@test.com",
+  "applicationTokens": {},
+  "java_type": "org.taktik.icure.entities.User",
+  "rev_history": {}
+}
