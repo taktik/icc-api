@@ -50,8 +50,6 @@ describe('IccLocalStorage Tests', () => {
     expect(value1).to.not.equal('3')
     expect(value1).to.equal('2')
     expect(value1).to.equal(L2.getItem('a'))
-    console.log('L1.length: ', L1.length)
-    console.log('L2.length: ', L2.length)
     expect(L1.length).to.equal(L2.length)
 
     L1.clear()
@@ -133,6 +131,20 @@ describe('IccLocalStorage Tests', () => {
     expect(L.length).to.equal(1)
 
     expect(L.key(0)).to.equal('Hello,')
+    L.clear()
+  })
+
+  it('Should support special character key', async () => {
+    const L = IccLocalStorageProxy.getInstance()
+    L.setItem('**/__ A', 'Hello, world1!')
+    expect(L.getItem('**/__ A')).to.equal('Hello, world1!')
+
+    L.setItem('', 'Hello, world2!')
+    expect(L.getItem('')).to.equal('Hello, world2!')
+
+    L.setItem(' ', 'Hello, world3!')
+    expect(L.getItem(' ')).to.equal('Hello, world3!')
+
     L.clear()
   })
 })
