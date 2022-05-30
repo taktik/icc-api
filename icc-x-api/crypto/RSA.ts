@@ -1,3 +1,5 @@
+import { IccLocalStorageProxy } from 'icc-x-api/storage/icc-local-storage-proxy'
+
 export class RSAUtils {
   /********* RSA Config **********/
   //TODO bigger modulus
@@ -13,9 +15,11 @@ export class RSAUtils {
   rsaLocalStoreIdPrefix = 'org.taktik.icure.rsa.'
   rsaKeyPairs: any = {}
   private crypto: Crypto
+  private storage: IccLocalStorageProxy
 
   constructor(crypto: Crypto = typeof window !== 'undefined' ? window.crypto : typeof self !== 'undefined' ? self.crypto : ({} as Crypto)) {
     this.crypto = crypto
+    this.storage = IccLocalStorageProxy.getInstance()
   }
 
   /**
@@ -176,7 +180,7 @@ export class RSAUtils {
       throw 'Your browser does not support HTML5 Browser Local Storage !'
     }
     //TODO encryption
-    localStorage.setItem(this.rsaLocalStoreIdPrefix + id, JSON.stringify(keyPair))
+    this.storage.setItem(this.rsaLocalStoreIdPrefix + id, JSON.stringify(keyPair))
   }
 
   /**
@@ -191,7 +195,7 @@ export class RSAUtils {
       throw 'Your browser does not support HTML5 Browser Local Storage !'
     }
     //TODO decryption
-    return JSON.parse((localStorage.getItem(this.rsaLocalStoreIdPrefix + id) as string) || '{}')
+    return JSON.parse((this.storage.getItem(this.rsaLocalStoreIdPrefix + id) as string) || '{}')
   }
 
   /**
@@ -203,7 +207,7 @@ export class RSAUtils {
   loadKeyPairImported(id: string) {
     return new Promise((resolve: (value: { publicKey: CryptoKey; privateKey: CryptoKey }) => any, reject) => {
       try {
-        const jwkKey = localStorage.getItem(this.rsaLocalStoreIdPrefix + id) as string
+        const jwkKey = this.storage.getItem(this.rsaLocalStoreIdPrefix + id) as string
         if (jwkKey) {
           const jwkKeyPair = JSON.parse(jwkKey)
           if (jwkKeyPair.publicKey && jwkKeyPair.privateKey) {
