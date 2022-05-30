@@ -11,12 +11,12 @@ import { HealthcareParty } from '../icc-api/model/models'
 import { User } from '../icc-api/model/User'
 import { Api } from '../icc-x-api'
 
+//  Expose fetch globally
+;(global as any).fetch = fetch
+
 const DEFAULT_USER = require('./setup/content/user.json')
 const DEFAULT_HCP = require('./setup/content/hcp.json')
 const DEFAULT_PARENT = require('./setup/content/parent.json')
-
-//  Expose fetch globally
-;(global as any).fetch = fetch
 
 const api = Api('http://localhost:16043/rest/v1', 'demo-test-1608210888', 'test')
 
