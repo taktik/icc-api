@@ -20,7 +20,7 @@ export class IccLocalStorage implements Storage {
   }
 
   getItem(key: string): string | null {
-    return this.storage[key]
+    return this.storage[key] || null
   }
 
   key(index: number): string | null {

@@ -30,13 +30,12 @@ export class IccLocalStorageProxy implements Storage {
   private constructor() {
     if (typeof Storage !== 'undefined') {
       this.storage = localStorage
-      return
+    } else {
+      console.log('Your browser does not support HTML5 Browser Local Storage !')
+      console.log('Proxying to a in memory storage...')
+
+      this.storage = IccLocalStorage.getInstance()
     }
-
-    console.log('Your browser does not support HTML5 Browser Local Storage !')
-    console.log('Proxying to a in memory storage...')
-
-    this.storage = IccLocalStorage.getInstance()
   }
 
   public static getInstance(): IccLocalStorageProxy {
@@ -55,7 +54,9 @@ export class IccLocalStorageProxy implements Storage {
     return this.storage
   }
 
-  public length: number = this.getStorage() ? this.getStorage().length : 0
+  get length(): number {
+    return this.getStorage() ? this.getStorage().length : 0
+  }
 
   public clear(): void {
     this.getStorage().clear()
