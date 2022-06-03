@@ -1,4 +1,4 @@
-import { IccLocalStorageProxy } from 'icc-x-api/storage/icc-local-storage-proxy'
+import { IccLocalStorageProxy } from '../storage'
 
 export class RSAUtils {
   /********* RSA Config **********/
@@ -175,10 +175,6 @@ export class RSAUtils {
    * @param keyPair should be JWK
    */
   storeKeyPair(id: string, keyPair: { publicKey: any; privateKey: any }) {
-    if (typeof Storage === 'undefined') {
-      console.log('Your browser does not support HTML5 Browser Local Storage !')
-      throw 'Your browser does not support HTML5 Browser Local Storage !'
-    }
     //TODO encryption
     this.storage.setItem(this.rsaLocalStoreIdPrefix + id, JSON.stringify(keyPair))
   }
@@ -190,10 +186,6 @@ export class RSAUtils {
    * @returns {Object} it is in JWK - not imported
    */
   loadKeyPairNotImported(id: string): { publicKey: any; privateKey: any } {
-    if (typeof Storage === 'undefined') {
-      console.log('Your browser does not support HTML5 Browser Local Storage !')
-      throw 'Your browser does not support HTML5 Browser Local Storage !'
-    }
     //TODO decryption
     return JSON.parse((this.storage.getItem(this.rsaLocalStoreIdPrefix + id) as string) || '{}')
   }
