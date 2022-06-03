@@ -37,6 +37,7 @@ export * from './icc-time-table-x-api'
 export * from './icc-receipt-x-api'
 export { utils, UtilsClass } from './crypto/utils'
 export * from './utils'
+export * from './storage'
 
 export const apiHeaders = function (username: string, password: string) {
   return {

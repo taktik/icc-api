@@ -1,1 +1,1 @@
-export * from './icc-local-storage'
+export * from './icc-local-storage-proxy'

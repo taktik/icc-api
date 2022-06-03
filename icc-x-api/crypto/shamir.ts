@@ -109,7 +109,7 @@ export class ShamirClass {
       arr = new Uint32Array(elems)
 
     while (str === null) {
-      crypto.getRandomValues(arr)
+      this.crypto.getRandomValues(arr)
       str = construct(bits, arr, 8)
     }
 
