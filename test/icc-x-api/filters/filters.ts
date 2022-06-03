@@ -1,5 +1,3 @@
-import { crypto } from '../../../node-compat'
-import { ShamirClass } from '../../../icc-x-api/crypto/shamir'
 import { expect } from 'chai'
 import 'mocha'
 import { Filter } from '../../../icc-x-api/filters/filters'

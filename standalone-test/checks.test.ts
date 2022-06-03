@@ -10,15 +10,10 @@ import fetch from 'node-fetch'
 import { HealthcareParty } from '../icc-api/model/models'
 import { User } from '../icc-api/model/User'
 import { Api } from '../icc-x-api'
-
-//  Expose fetch globally
+import { HCP, ICURE_URL, PARENT, USER, USER_PASSWORD, USER_USERNAME } from './standalone-test.env'
 ;(global as any).fetch = fetch
 
-const DEFAULT_USER = require('./setup/content/user.json')
-const DEFAULT_HCP = require('./setup/content/hcp.json')
-const DEFAULT_PARENT = require('./setup/content/parent.json')
-
-const api = Api('http://localhost:16043/rest/v1', 'demo-test-1608210888', 'test')
+const api = Api(ICURE_URL, USER_USERNAME, USER_PASSWORD)
 
 describe('Do the test default objects exist in the local DB ?', () => {
   it('It should be possible to grab the current user from the local server', async () => {
@@ -40,8 +35,8 @@ describe('Do the test default objects exist in the local DB ?', () => {
 
     expect(error).to.not.exist
     expect(defaultUser!!).to.exist
-    expect(defaultUser!!.id).to.equal(DEFAULT_USER._id)
-    expect(defaultUser!!.healthcarePartyId).to.equal(DEFAULT_HCP._id)
+    expect(defaultUser!!.id).to.equal(USER._id)
+    expect(defaultUser!!.healthcarePartyId).to.equal(HCP._id)
   })
 
   it('It should be possible to grab the current user HCP the local server', async () => {
@@ -56,8 +51,8 @@ describe('Do the test default objects exist in the local DB ?', () => {
 
     expect(error).to.not.exist
     expect(defaultHcp!!).to.exist
-    expect(defaultHcp!!.id).to.equal(DEFAULT_HCP._id)
-    expect(defaultHcp!!.parentId).to.equal(DEFAULT_PARENT._id)
+    expect(defaultHcp!!.id).to.equal(HCP._id)
+    expect(defaultHcp!!.parentId).to.equal(PARENT._id)
   })
 
   it('It should be possible to grab the current user parent HCP the local server', async () => {
@@ -82,7 +77,7 @@ describe('Do the test default objects exist in the local DB ?', () => {
 
     expect(error).to.not.exist
     expect(defaultParent!!).to.exist
-    expect(defaultParent!!.id).to.equal(DEFAULT_PARENT._id)
+    expect(defaultParent!!.id).to.equal(PARENT._id)
   })
 })
 

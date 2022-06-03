@@ -1,6 +1,6 @@
 import { expect } from 'chai'
-import { IccLocalStorageProxy } from '../../../icc-x-api/storage/icc-local-storage-proxy'
 import { IccLocalStorage } from '../../../icc-x-api/storage/icc-local-storage'
+import { IccLocalStorageProxy } from '../../../icc-x-api/storage/icc-local-storage-proxy'
 
 describe('IccLocalStorage Tests', () => {
   it('Should makes the diffrence between instance and value', async () => {

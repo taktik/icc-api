@@ -1,16 +1,12 @@
 import { assert } from 'chai'
 import fetch from 'node-fetch'
+import { COUCHDB_PASSWORD, COUCHDB_URL, COUCHDB_USERNAME, HCP, PARENT, USER } from '../standalone-test.env'
 
-const DEFAULT_USER = require('./content/user.json')
-const DEFAULT_HCP = require('./content/hcp.json')
-const DEFAULT_PARENT = require('./content/parent.json')
-
-const COUCHDB_URL = 'http://localhost:5984'
-const DB_AUTHENTICATION_HEADER = `Basic ${Buffer.from('couch_user:password').toString('base64')}`
+const DB_AUTHENTICATION_HEADER = `Basic ${Buffer.from(`${COUCHDB_USERNAME}:${COUCHDB_PASSWORD}`).toString('base64')}`
 
 describe('Standalone setup should be ready', () => {
   it('Standalone USER should be found on the local CouchDB instance', async () => {
-    const defaultUser = await fetch(`${COUCHDB_URL}/icure-base/${DEFAULT_USER._id}`, {
+    const defaultUser = await fetch(`${COUCHDB_URL}/icure-base/${USER._id}`, {
       method: 'get',
       headers: { Authorization: DB_AUTHENTICATION_HEADER },
     }).then((res) => res.json())
@@ -24,10 +20,10 @@ describe('Standalone setup should be ready', () => {
     if (defaultUser.error === 'not_found') {
       console.log("Default user is missing. Let's add it...")
 
-      const addDefaultUser = await fetch(`${COUCHDB_URL}/icure-base/${DEFAULT_USER._id}`, {
+      const addDefaultUser = await fetch(`${COUCHDB_URL}/icure-base/${USER._id}`, {
         method: 'put',
         headers: { Authorization: DB_AUTHENTICATION_HEADER },
-        body: JSON.stringify(DEFAULT_USER),
+        body: JSON.stringify(USER),
       }).then((res) => res.json())
 
       assert(addDefaultUser != null)
@@ -36,12 +32,12 @@ describe('Standalone setup should be ready', () => {
       console.log('Default user added !')
     } else {
       assert(defaultUser.error == null)
-      assert(defaultUser._id === DEFAULT_USER._id)
+      assert(defaultUser._id === USER._id)
     }
   })
 
   it('Standalone HCP should be found on the local CouchDB instance', async () => {
-    const defaultHcp = await fetch(`${COUCHDB_URL}/icure-base/${DEFAULT_HCP._id}`, {
+    const defaultHcp = await fetch(`${COUCHDB_URL}/icure-base/${HCP._id}`, {
       method: 'get',
       headers: { Authorization: DB_AUTHENTICATION_HEADER },
     }).then((res) => res.json())
@@ -55,10 +51,10 @@ describe('Standalone setup should be ready', () => {
     if (defaultHcp.error === 'not_found') {
       console.log("Default hcp is missing. Let's add it...")
 
-      const addDefaultHcp = await fetch(`${COUCHDB_URL}/icure-base/${DEFAULT_HCP._id}`, {
+      const addDefaultHcp = await fetch(`${COUCHDB_URL}/icure-base/${USER._id}`, {
         method: 'put',
         headers: { Authorization: DB_AUTHENTICATION_HEADER },
-        body: JSON.stringify(DEFAULT_HCP),
+        body: JSON.stringify(USER),
       }).then((res) => res.json())
 
       assert(addDefaultHcp != null)
@@ -67,11 +63,12 @@ describe('Standalone setup should be ready', () => {
       console.log('Default hcp added !')
     } else {
       assert(defaultHcp.error == null)
-      assert(defaultHcp._id === DEFAULT_HCP._id)
+      assert(defaultHcp._id === HCP._id)
     }
   })
+
   it('Standalone PARENT_HCP should be found on the local CouchDB instance', async () => {
-    const defaultParentHcp = await fetch(`${COUCHDB_URL}/icure-base/${DEFAULT_PARENT._id}`, {
+    const defaultParentHcp = await fetch(`${COUCHDB_URL}/icure-base/${PARENT._id}`, {
       method: 'get',
       headers: { Authorization: DB_AUTHENTICATION_HEADER },
     }).then((res) => res.json())
@@ -85,10 +82,10 @@ describe('Standalone setup should be ready', () => {
     if (defaultParentHcp.error === 'not_found') {
       console.log("Default parent hcp is missing. Let's add it...")
 
-      const addDefaultParentHcp = await fetch(`${COUCHDB_URL}/icure-base/${DEFAULT_PARENT._id}`, {
+      const addDefaultParentHcp = await fetch(`${COUCHDB_URL}/icure-base/${PARENT._id}`, {
         method: 'put',
         headers: { Authorization: DB_AUTHENTICATION_HEADER },
-        body: JSON.stringify(DEFAULT_PARENT),
+        body: JSON.stringify(PARENT),
       }).then((res) => res.json())
 
       assert(addDefaultParentHcp != null)
@@ -97,7 +94,7 @@ describe('Standalone setup should be ready', () => {
       console.log('Default parent hcp added !')
     } else {
       assert(defaultParentHcp.error == null)
-      assert(defaultParentHcp._id === DEFAULT_PARENT._id)
+      assert(defaultParentHcp._id === PARENT._id)
     }
   })
 })
