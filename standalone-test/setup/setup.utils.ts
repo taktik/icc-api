@@ -1,5 +1,5 @@
 import { assert } from 'chai'
-import fetch from 'node-fetch'
+import 'isomorphic-fetch'
 import { COUCHDB_PASSWORD, COUCHDB_URL, COUCHDB_USERNAME, HCP, PARENT, USER } from '../standalone-test.env'
 
 const DB_AUTHENTICATION_HEADER = `Basic ${Buffer.from(`${COUCHDB_USERNAME}:${COUCHDB_PASSWORD}`).toString('base64')}`

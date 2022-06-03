@@ -1,4 +1,5 @@
 import { expect } from 'chai'
+import 'isomorphic-fetch'
 import * as _ from 'lodash'
 import 'mocha'
 import { HealthcareParty } from '../../../icc-api/model/models'

@@ -6,12 +6,11 @@
  */
 
 import { expect } from 'chai'
-import fetch from 'node-fetch'
+import 'isomorphic-fetch'
 import { HealthcareParty } from '../icc-api/model/models'
 import { User } from '../icc-api/model/User'
 import { Api } from '../icc-x-api'
 import { HCP, ICURE_URL, PARENT, USER, USER_PASSWORD, USER_USERNAME } from './standalone-test.env'
-;(global as any).fetch = fetch
 
 const api = Api(ICURE_URL, USER_USERNAME, USER_PASSWORD)
 
