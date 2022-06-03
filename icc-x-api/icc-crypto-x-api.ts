@@ -3,6 +3,7 @@ import { AESUtils } from './crypto/AES'
 import { RSAUtils } from './crypto/RSA'
 import { UtilsClass } from './crypto/utils'
 import { ShamirClass } from './crypto/shamir'
+import { IccLocalStorageProxy } from './storage'
 
 import * as _ from 'lodash'
 import * as models from '../icc-api/model/models'
@@ -100,6 +101,7 @@ export class IccCryptoXApi {
   private patientBaseApi: IccPatientApi
   private deviceBaseApi: IccDeviceApi
   private _crypto: Crypto
+  private _storage: IccLocalStorageProxy
 
   private generateKeyConcurrencyMap: { [key: string]: PromiseLike<HealthcareParty | Patient> }
 
@@ -120,6 +122,7 @@ export class IccCryptoXApi {
     this.patientBaseApi = patientBaseApi
     this.deviceBaseApi = deviceBaseApi
     this._crypto = crypto
+    this._storage = IccLocalStorageProxy.getInstance()
     this.generateKeyConcurrencyMap = {}
 
     this._AES = new AESUtils(crypto)
@@ -1173,14 +1176,14 @@ export class IccCryptoXApi {
 
   // noinspection JSUnusedGlobalSymbols
   saveKeychainInBrowserLocalStorage(id: string, keychain: number) {
-    localStorage.setItem(
+    this._storage.setItem(
       this.keychainLocalStoreIdPrefix + id,
       b2a(new Uint8Array(keychain).reduce((data, byte) => data + String.fromCharCode(byte), ''))
     )
   }
 
   saveKeychainInBrowserLocalStorageAsBase64(id: string, keyChainB64: string) {
-    localStorage.setItem(this.keychainLocalStoreIdPrefix + id, keyChainB64)
+    this._storage.setItem(this.keychainLocalStoreIdPrefix + id, keyChainB64)
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -1188,9 +1191,9 @@ export class IccCryptoXApi {
     if (!id) return
 
     if (!date) {
-      localStorage.removeItem(this.keychainValidityDateLocalStoreIdPrefix + id)
+      this._storage.removeItem(this.keychainValidityDateLocalStoreIdPrefix + id)
     } else {
-      localStorage.setItem(this.keychainValidityDateLocalStoreIdPrefix + id, date)
+      this._storage.setItem(this.keychainValidityDateLocalStoreIdPrefix + id, date)
     }
   }
 
@@ -1310,16 +1313,16 @@ export class IccCryptoXApi {
   }
 
   getKeychainInBrowserLocalStorageAsBase64(id: string) {
-    return localStorage.getItem(this.keychainLocalStoreIdPrefix + id)
+    return this._storage.getItem(this.keychainLocalStoreIdPrefix + id)
   }
 
   getKeychainValidityDateInBrowserLocalStorage(id: string) {
-    return localStorage.getItem(this.keychainValidityDateLocalStoreIdPrefix + id)
+    return this._storage.getItem(this.keychainValidityDateLocalStoreIdPrefix + id)
   }
 
   // noinspection JSUnusedGlobalSymbols
   loadKeychainFromBrowserLocalStorage(id: string) {
-    const lsItem = localStorage.getItem('org.taktik.icure.ehealth.keychain.' + id)
+    const lsItem = this._storage.getItem('org.taktik.icure.ehealth.keychain.' + id)
     return lsItem !== null ? b64_2uas(lsItem) : null
   }
 
