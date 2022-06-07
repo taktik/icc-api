@@ -151,7 +151,7 @@ describe('icc-x-contact-api Tests', () => {
     assert(createdContact != null)
 
     // When
-    /*
+
     const foundServices = await contactApiForHcp.filterServicesBy(
       undefined,
       undefined,
@@ -164,10 +164,8 @@ describe('icc-x-contact-api Tests', () => {
     )
 
     // Then
-
     assert(foundServices.rows!.length == 1)
     assert(foundServices.rows![0].id == createdContact.services![0].id)
     assert(foundServices.rows![0].healthElementsIds!.find((heId) => heId == healthElement!.id!) != undefined)
-    */
   })
 })

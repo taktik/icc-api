@@ -41,7 +41,7 @@ function healthElementToCreate(hElementApiForHcp: IccHelementXApi, hcpUser: User
       codes: [new Code({ system: 'LOINC', code: '95209', version: '3' })],
       note: 'SARS-V2',
     }),
-    true
+    false
   )
 }
 
@@ -111,20 +111,17 @@ describe('icc-helement-x-api Tests', () => {
     await loadPrivateKeys(api, hcpUser)
 
     const patient = (await createPatient(patientApiForHcp, hcpUser)) as Patient
+
     const createdHealthElement = await hElementApiForHcp.createHealthElementWithUser(
       hcpUser,
       await healthElementToCreate(hElementApiForHcp, hcpUser, patient)
     )
-
     // When
-    /*
-    const foundHealthElements = await hElementApiForHcp.findHealthElementsByHCPartyAndPatientWithUser(hcpUser, hcpUser.healthcarePartyId!, patient)
 
-    console.log('foundHealthElements : ', foundHealthElements)
+    const foundHealthElements = await hElementApiForHcp.findHealthElementsByHCPartyAndPatientWithUser(hcpUser, hcpUser.healthcarePartyId!, patient)
 
     // Then
     assert(foundHealthElements.length == 1)
     assert(foundHealthElements[0].id == createdHealthElement.id)
-    */
   })
 })
