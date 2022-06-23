@@ -29,7 +29,7 @@ export class IccInvoiceXApi extends IccInvoiceApi {
     this.userApi = userApi
   }
 
-  newInstance(user: models.User, patient: models.Patient, inv?: any): Promise<models.Invoice> {
+  newInstance(user: models.User, patient: models.Patient, inv: any = {}, delegates: string[] = []): Promise<models.Invoice> {
     const invoice = new models.Invoice(
       _.extend(
         {
@@ -48,7 +48,7 @@ export class IccInvoiceXApi extends IccInvoiceApi {
       )
     )
 
-    return this.initDelegationsAndEncryptionKeys(user, patient, invoice)
+    return this.initDelegationsAndEncryptionKeys(user, patient, invoice, delegates)
   }
 
   initEncryptionKeys(user: models.User, invoice: models.Invoice) {
@@ -73,7 +73,12 @@ export class IccInvoiceXApi extends IccInvoiceApi {
     })
   }
 
-  private initDelegationsAndEncryptionKeys(user: models.User, patient: models.Patient, invoice: models.Invoice): Promise<models.Invoice> {
+  private initDelegationsAndEncryptionKeys(
+    user: models.User,
+    patient: models.Patient,
+    invoice: models.Invoice,
+    delegates: string[] = []
+  ): Promise<models.Invoice> {
     const dataOwnerId = this.userApi.getDataOwnerOf(user)
     return this.crypto
       .extractDelegationsSFKs(patient, dataOwnerId)
@@ -94,7 +99,9 @@ export class IccInvoiceXApi extends IccInvoiceApi {
         })
 
         let promise = Promise.resolve(invoice)
-        ;(user.autoDelegations ? (user.autoDelegations.all || []).concat(user.autoDelegations.financialInformation || []) : []).forEach(
+        _.uniq(
+          delegates.concat(user.autoDelegations ? (user.autoDelegations.all || []).concat(user.autoDelegations.financialInformation || []) : [])
+        ).forEach(
           (delegateId) =>
             (promise = promise.then((invoice) =>
               this.crypto.addDelegationsAndEncryptionKeys(patient, invoice, dataOwnerId!, delegateId, dels.secretId, eks.secretId).catch((e) => {

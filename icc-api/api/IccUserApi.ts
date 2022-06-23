@@ -235,6 +235,21 @@ export class IccUserApi {
   }
 
   /**
+   *
+   * @summary Get the list of users by patient id
+   * @param id
+   */
+  findByPatientId(id: string): Promise<Array<string>> {
+    let _body = null
+
+    const _url = this.host + `/user/byPatientId/${encodeURIComponent(String(id))}` + '?ts=' + new Date().getTime()
+    let headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => (doc.body as Array<JSON>).map((it) => JSON.parse(JSON.stringify(it))))
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
    * Get current user.
    * @summary Get Currently logged-in user session.
    */
@@ -252,12 +267,12 @@ export class IccUserApi {
    * Get current user.
    * @summary Get presently logged-in user.
    */
-  getCurrentUser(preserveSession = false): Promise<User> {
+  getCurrentUser(): Promise<User> {
     let _body = null
 
     const _url = this.host + `/user/current` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl, undefined, !preserveSession)
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => new User(doc.body as JSON))
       .catch((err) => this.handleError(err))
   }
@@ -266,12 +281,12 @@ export class IccUserApi {
    * Get current user.
    * @summary Get presently logged-in user.
    */
-  getMatchingUsers(preserveSession = false): Promise<Array<UserGroup>> {
+  getMatchingUsers(): Promise<Array<UserGroup>> {
     let _body = null
 
     const _url = this.host + `/user/matches` + '?ts=' + new Date().getTime()
     let headers = this.headers
-    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl, undefined, !preserveSession)
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
       .then((doc) => (doc.body as Array<JSON>).map((it) => new UserGroup(it)))
       .catch((err) => this.handleError(err))
   }

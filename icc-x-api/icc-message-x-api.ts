@@ -30,7 +30,7 @@ export class IccMessageXApi extends IccMessageApi {
     return this.newInstanceWithPatient(user, null, m)
   }
 
-  newInstanceWithPatient(user: User, patient: Patient | null, m: any) {
+  newInstanceWithPatient(user: User, patient: Patient | null, m: any = {}, delegates: string[] = []) {
     const message = _.extend(
       {
         id: this.crypto.randomUuid(),
@@ -58,7 +58,9 @@ export class IccMessageXApi extends IccMessageApi {
         })
 
         let promise = Promise.resolve(message)
-        ;(user.autoDelegations ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || []) : []).forEach(
+        _.uniq(
+          delegates.concat(user.autoDelegations ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || []) : [])
+        ).forEach(
           (delegateId) =>
             (promise = promise.then((helement) =>
               this.crypto

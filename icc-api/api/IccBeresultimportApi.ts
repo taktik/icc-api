@@ -9,9 +9,9 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import {XHR} from './XHR'
-import {Contact} from '../model/Contact'
-import {ResultInfo} from '../model/ResultInfo'
+import { XHR } from './XHR'
+import { Contact } from '../model/Contact'
+import { ResultInfo } from '../model/ResultInfo'
 
 export class IccBeresultimportApi {
   host: string
@@ -76,6 +76,7 @@ export class IccBeresultimportApi {
     ctc: Contact
   ): Promise<Contact> {
     let _body = null
+    _body = ctc
 
     const _url =
       this.host +
@@ -87,8 +88,7 @@ export class IccBeresultimportApi {
       (protocolIds ? '&protocolIds=' + encodeURIComponent(String(protocolIds)) : '') +
       (formIds ? '&formIds=' + encodeURIComponent(String(formIds)) : '') +
       (planOfActionId ? '&planOfActionId=' + encodeURIComponent(String(planOfActionId)) : '') +
-      (enckeys ? '&enckeys=' + encodeURIComponent(String(enckeys)) : '') +
-      (ctc ? '&ctc=' + encodeURIComponent(String(ctc)) : '')
+      (enckeys ? '&enckeys=' + encodeURIComponent(String(enckeys)) : '')
     let headers = this.headers
     return XHR.sendCommand('POST', _url, headers, _body, this.fetchImpl)
       .then((doc) => new Contact(doc.body as JSON))

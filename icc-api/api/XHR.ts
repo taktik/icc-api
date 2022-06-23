@@ -76,8 +76,9 @@ export namespace XHR {
       ? self.fetch
       : fetch,
     contentTypeOverride?: 'application/json' | 'text/plain' | 'application/octet-stream',
-    forceSendAuthorization = false
+    forceAuthentication = false
   ): Promise<Data> {
+    const forceSendAuthorization = forceAuthentication || headers?.find((it) => it.header?.toLowerCase() === 'force-authentication')?.data === 'true'
     const contentType = headers && headers.find((it) => (it.header ? it.header.toLowerCase() === 'content-type' : false))
     const clientTimeout = headers && headers.find((it) => (it.header ? it.header.toUpperCase() === 'X-CLIENT-SIDE-TIMEOUT' : false))
     const timeout = clientTimeout ? Number(clientTimeout.data) : 600000
@@ -91,8 +92,9 @@ export namespace XHR {
             .filter(
               (h) =>
                 (forceSendAuthorization || h.header.toLowerCase() !== 'authorization') &&
-                (h.header.toLowerCase() !== 'content-type' || h.data !== 'multipart/form-data') &&
-                h.header.toUpperCase() !== 'X-CLIENT-SIDE-TIMEOUT'
+                (h.header?.toLowerCase() !== 'content-type' || h.data !== 'multipart/form-data') &&
+                h.header?.toUpperCase() !== 'X-CLIENT-SIDE-TIMEOUT' &&
+                h.header?.toLowerCase() !== 'force-authentication'
             )
             .reduce(
               (acc: { [key: string]: string }, h) => {

@@ -34,7 +34,7 @@ export class IccContactXApi extends IccContactApi {
     this.userApi = userApi
   }
 
-  newInstance(user: models.User, patient: models.Patient, c: any, confidential = false): Promise<models.Contact> {
+  newInstance(user: models.User, patient: models.Patient, c: any, confidential = false, delegates: string[] = []): Promise<models.Contact> {
     const contact = new models.Contact(
       _.extend(
         {
@@ -55,7 +55,7 @@ export class IccContactXApi extends IccContactApi {
       )
     )
 
-    return this.initDelegationsAndEncryptionKeys(user, patient, contact, confidential)
+    return this.initDelegationsAndEncryptionKeys(user, patient, contact, confidential, delegates)
   }
 
   /**
@@ -70,7 +70,8 @@ export class IccContactXApi extends IccContactApi {
     user: models.User,
     patient: models.Patient,
     contact: models.Contact,
-    confidential = false
+    confidential = false,
+    delegates: string[] = []
   ): Promise<models.Contact> {
     const dataOwnerId = this.userApi.getDataOwnerOf(user)
 
@@ -78,7 +79,7 @@ export class IccContactXApi extends IccContactApi {
       .extractPreferredSfk(patient, dataOwnerId!, confidential)
       .then((key) => {
         if (!key) {
-          console.error(`SFK cannot be found for HealthElement ${key}. The health element will not be reachable from the patient side`)
+          console.error(`SFK cannot be found for Contact ${key}. The contact will not be reachable from the patient side`)
         }
         return Promise.all([
           this.crypto.initObjectDelegations(contact, patient, dataOwnerId!, key),
@@ -94,7 +95,9 @@ export class IccContactXApi extends IccContactApi {
         })
 
         let promise = Promise.resolve(contact)
-        ;(user.autoDelegations ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || []) : []).forEach(
+        _.uniq(
+          delegates.concat(user.autoDelegations ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || []) : [])
+        ).forEach(
           (delegateId) =>
             (promise = promise.then((contact) =>
               this.crypto.addDelegationsAndEncryptionKeys(patient, contact, dataOwnerId!, delegateId, dels.secretId, eks.secretId).catch((e) => {

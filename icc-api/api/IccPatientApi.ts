@@ -381,7 +381,7 @@ export class IccPatientApi {
    * @summary Get the HcParty encrypted AES keys indexed by owner.
    * @param patientId
    */
-  getPatientAesExchangeKeysForDelegate(patientId: string): Promise<{ [key: string]: { [key: string]: string } }> {
+  getPatientAesExchangeKeysForDelegate(patientId: string): Promise<{ [key: string]: { [key: string]: { [key: string]: string } } }> {
     let _body = null
 
     const _url = this.host + `/patient/${encodeURIComponent(String(patientId))}/aesExchangeKeys` + '?ts=' + new Date().getTime()

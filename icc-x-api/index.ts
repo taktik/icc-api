@@ -16,6 +16,7 @@ import { IccAccesslogXApi } from './icc-accesslog-x-api'
 import { IccTimeTableXApi } from './icc-time-table-x-api'
 import { IccDeviceApi } from '../icc-api/api/IccDeviceApi'
 import { IccCodeXApi } from './icc-code-x-api'
+import {IccMaintenanceTaskXApi} from "./icc-maintenance-task-x-api"
 
 export * from './icc-accesslog-x-api'
 export * from './icc-bekmehr-x-api'
@@ -97,6 +98,7 @@ export const Api = function (
     fetchImpl
   )
   const messageApi = new IccMessageXApi(host, headers, cryptoApi, userApi, fetchImpl)
+  const maintenanceTaskApi = new IccMaintenanceTaskXApi(host, headers, cryptoApi, userApi, healthcarePartyApi, ['properties'], fetchImpl)
 
   return {
     cryptoApi,
@@ -122,5 +124,6 @@ export const Api = function (
     classificationApi,
     timetableApi,
     groupApi,
+    maintenanceTaskApi
   }
 }

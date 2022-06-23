@@ -34,7 +34,7 @@ export class IccHelementXApi extends IccHelementApi {
     this.encryptedKeys = encryptedKeys
   }
 
-  newInstance(user: models.User, patient: models.Patient, h: any, confidential = false) {
+  newInstance(user: models.User, patient: models.Patient, h: any, confidential = false, delegates: string[] = []) {
     const dataOwnerId = this.userApi.getDataOwnerOf(user)
     const helement = _.assign(
       {
@@ -52,14 +52,15 @@ export class IccHelementXApi extends IccHelementApi {
       h || {}
     )
 
-    return this.initDelegationsAndCryptedForeignKeys(helement, patient, user, confidential)
+    return this.initDelegationsAndCryptedForeignKeys(helement, patient, user, confidential, delegates)
   }
 
   initDelegationsAndCryptedForeignKeys(
     healthElement: models.HealthElement,
     patient: models.Patient,
     user: models.User,
-    confidential: boolean
+    confidential: boolean,
+    delegates: string[] = []
   ): Promise<models.HealthElement> {
     let dataOwnerId = this.userApi.getDataOwnerOf(user)
 
@@ -80,7 +81,9 @@ export class IccHelementXApi extends IccHelementApi {
         })
 
         let promise = Promise.resolve(healthElement)
-        ;(user.autoDelegations ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || []) : []).forEach(
+        _.uniq(
+          delegates.concat(user.autoDelegations ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || []) : [])
+        ).forEach(
           (delegateId) =>
             (promise = promise.then((helement) =>
               this.crypto

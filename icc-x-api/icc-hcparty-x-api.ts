@@ -99,6 +99,18 @@ export class IccHcpartyXApi extends IccHcpartyApi {
     return fromCache || this.putHcPartyInCache(healthcarePartyId)
   }
 
+  getHealthcarePartyHierarchyIds(healthcarePartyId: string, bypassCache = false): Promise<string[]> {
+    const fromCache = bypassCache ? undefined : this.getHcPartyFromCache(healthcarePartyId)
+    return (fromCache || this.putHcPartyInCache(healthcarePartyId))
+      .then(async (hcp: HealthcareParty) => {
+        return hcp
+          ? hcp.parentId
+            ? (await this.getHealthcarePartyHierarchyIds(hcp.parentId!, bypassCache)).concat([hcp.id!])
+            : [hcp.id!]
+          : []
+      })
+  }
+
   getHealthcareParties(healthcarePartyIds: string): Promise<Array<HealthcareParty> | any> {
     const ids = healthcarePartyIds.split(',').filter((x) => !!x)
     const cached: Array<[string, Promise<HealthcareParty> | null]> = ids.map((id) => [id, this.getHcPartyFromCache(id)])

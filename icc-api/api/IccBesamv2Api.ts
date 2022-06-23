@@ -86,6 +86,31 @@ export class IccBesamv2Api {
 
   /**
    * Returns a list of codes matched with given input. If several types are provided, paginantion is not supported
+   * @summary Finding AMPs by atc code with pagination.
+   * @param atcCode atcCode
+   * @param startKey The start key for pagination: a JSON representation of an array containing all the necessary components to form the Complex Key&#x27;s startKey
+   * @param startDocumentId A amp document ID
+   * @param limit Number of rows
+   */
+  findPaginatedAmpsByAtc1(atcCode: string, startKey?: string, startDocumentId?: string, limit?: number): Promise<PaginatedListAmp> {
+    let _body = null
+
+    const _url =
+      this.host +
+      `/be_samv2/vmp/byAtc/${encodeURIComponent(String(atcCode))}` +
+      '?ts=' +
+      new Date().getTime() +
+      (startKey ? '&startKey=' + encodeURIComponent(String(startKey)) : '') +
+      (startDocumentId ? '&startDocumentId=' + encodeURIComponent(String(startDocumentId)) : '') +
+      (limit ? '&limit=' + encodeURIComponent(String(limit)) : '')
+    let headers = this.headers
+    return XHR.sendCommand('GET', _url, headers, _body, this.fetchImpl)
+      .then((doc) => new PaginatedListAmp(doc.body as JSON))
+      .catch((err) => this.handleError(err))
+  }
+
+  /**
+   * Returns a list of codes matched with given input. If several types are provided, paginantion is not supported
    * @summary Finding AMPs by group with pagination.
    * @param vmpgCode vmpgCode
    * @param startKey The start key for pagination: a JSON representation of an array containing all the necessary components to form the Complex Key&#x27;s startKey

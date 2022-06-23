@@ -32,6 +32,7 @@ export class Medication {
   numberOfPackages?: number
   batch?: string
   instructionForPatient?: string
+  instructionForReimbursement?: string
   commentForDelivery?: string
   drugRoute?: string
   temporality?: string

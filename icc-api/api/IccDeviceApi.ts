@@ -200,7 +200,7 @@ export class IccDeviceApi {
    * @summary Get the HcParty encrypted AES keys indexed by owner.
    * @param deviceId
    */
-  getDeviceAesExchangeKeysForDelegate(deviceId: string): Promise<{ [key: string]: { [key: string]: string } }> {
+  getDeviceAesExchangeKeysForDelegate(deviceId: string): Promise<{ [key: string]: { [key: string]: { [key: string]: string } } }> {
     let _body = null
 
     const _url = this.host + `/device/${encodeURIComponent(String(deviceId))}/aesExchangeKeys` + '?ts=' + new Date().getTime()

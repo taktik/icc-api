@@ -27,7 +27,7 @@ export class IccClassificationXApi extends IccClassificationApi {
     this.userApi = userApi
   }
 
-  newInstance(user: models.User, patient: models.Patient, c: any): Promise<models.Classification> {
+  newInstance(user: models.User, patient: models.Patient, c: any = {}, delegates: string[] = []): Promise<models.Classification> {
     const classification = _.assign(
       {
         id: this.crypto.randomUuid(),
@@ -44,13 +44,14 @@ export class IccClassificationXApi extends IccClassificationApi {
       c || {}
     )
 
-    return this.initDelegationsAndEncryptionKeys(user, patient, classification)
+    return this.initDelegationsAndEncryptionKeys(user, patient, classification, delegates)
   }
 
   initDelegationsAndEncryptionKeys(
     user: models.User,
     patient: models.Patient,
-    classification: models.Classification
+    classification: models.Classification,
+    delegates: string[] = []
   ): Promise<models.Classification> {
     const dataOwnerId = this.userApi.getDataOwnerOf(user)
     return this.crypto
@@ -64,7 +65,9 @@ export class IccClassificationXApi extends IccClassificationApi {
         })
 
         let promise = Promise.resolve(classification)
-        ;(user.autoDelegations ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || []) : []).forEach(
+        _.uniq(
+          delegates.concat(user.autoDelegations ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || []) : [])
+        ).forEach(
           (delegateId) =>
             (promise = promise.then((classification) =>
               this.crypto

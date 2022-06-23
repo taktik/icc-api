@@ -27,4 +27,5 @@ export class Measure {
   unitCodes?: Array<CodeStub>
   comment?: string
   comparator?: string
+  sign?: string
 }
