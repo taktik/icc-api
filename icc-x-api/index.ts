@@ -16,7 +16,7 @@ import { IccAccesslogXApi } from './icc-accesslog-x-api'
 import { IccTimeTableXApi } from './icc-time-table-x-api'
 import { IccDeviceApi } from '../icc-api/api/IccDeviceApi'
 import { IccCodeXApi } from './icc-code-x-api'
-import {IccMaintenanceTaskXApi} from "./icc-maintenance-task-x-api"
+import { IccMaintenanceTaskXApi } from './icc-maintenance-task-x-api'
 
 export * from './icc-accesslog-x-api'
 export * from './icc-bekmehr-x-api'
@@ -48,7 +48,7 @@ export const apiHeaders = function (username: string, password: string) {
   }
 }
 
-export const Api = function (
+export const Api = async function (
   host: string,
   username: string,
   password: string,
@@ -100,6 +100,12 @@ export const Api = function (
   const messageApi = new IccMessageXApi(host, headers, cryptoApi, userApi, fetchImpl)
   const maintenanceTaskApi = new IccMaintenanceTaskXApi(host, headers, cryptoApi, userApi, healthcarePartyApi, ['properties'], fetchImpl)
 
+  try {
+    await authApi.login({ username, password })
+  } catch (e) {
+    console.error('Incorrect user and password used to instantiate Api, or network problem', e)
+  }
+
   return {
     cryptoApi,
     authApi,
@@ -124,6 +130,6 @@ export const Api = function (
     classificationApi,
     timetableApi,
     groupApi,
-    maintenanceTaskApi
+    maintenanceTaskApi,
   }
 }

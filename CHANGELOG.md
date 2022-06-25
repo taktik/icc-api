@@ -1,5 +1,9 @@
 # icc-api CHANGELOG
 
+## 4.2.29
+
+- [BREAKING] - Make Api() async so that we can call authAPi.login and clear session cookie
+
 ## 4.2.20
 
 - [FEATURE] - Add a tag to groups to differentiate root, apps and databases

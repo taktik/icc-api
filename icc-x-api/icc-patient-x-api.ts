@@ -513,82 +513,80 @@ export class IccPatientXApi extends IccPatientApi {
   decrypt(user: models.User, pats: Array<models.Patient>, fillDelegations = true): Promise<Array<models.Patient>> {
     const dataOwnerId = this.userApi.getDataOwnerOf(user)
 
-    return (
-      user.healthcarePartyId
-        ? this.hcpartyApi.getHealthcarePartyHierarchyIds(user.healthcarePartyId)
-        : Promise.resolve([dataOwnerId])
-    ).then((ids) => {
-      const hcpId = ids[0]
-      //First check that we have no dangling delegation
-      const patsWithMissingDelegations = pats.filter(
-        (p) =>
-          p.delegations &&
-          ids.some((id) => p.delegations![id!] && !p.delegations![id!].length) &&
-          !Object.values(p.delegations).some((d) => d.length > 0)
-      )
-
-      let prom: Promise<{ [key: string]: models.Patient }> = Promise.resolve({})
-      fillDelegations &&
-        patsWithMissingDelegations.forEach((p) => {
-          prom = prom.then((acc) =>
-            this.initDelegations(p, user).then((p) =>
-              this.modifyPatientWithUser(user, p).then((mp) => {
-                acc[p.id!] = mp || p
-                return acc
-              })
-            )
-          )
-        })
-
-      return prom
-        .then((acc: { [key: string]: models.Patient }) =>
-          pats.map((p) => {
-            const fixedPatient = acc[p.id!]
-            return fixedPatient || p
-          })
+    return (user.healthcarePartyId ? this.hcpartyApi.getHealthcarePartyHierarchyIds(user.healthcarePartyId) : Promise.resolve([dataOwnerId])).then(
+      (ids) => {
+        const hcpId = ids[0]
+        //First check that we have no dangling delegation
+        const patsWithMissingDelegations = pats.filter(
+          (p) =>
+            p.delegations &&
+            ids.some((id) => p.delegations![id!] && !p.delegations![id!].length) &&
+            !Object.values(p.delegations).some((d) => d.length > 0)
         )
-        .then((pats) => {
-          return Promise.all(
+
+        let prom: Promise<{ [key: string]: models.Patient }> = Promise.resolve({})
+        fillDelegations &&
+          patsWithMissingDelegations.forEach((p) => {
+            prom = prom.then((acc) =>
+              this.initDelegations(p, user).then((p) =>
+                this.modifyPatientWithUser(user, p).then((mp) => {
+                  acc[p.id!] = mp || p
+                  return acc
+                })
+              )
+            )
+          })
+
+        return prom
+          .then((acc: { [key: string]: models.Patient }) =>
             pats.map((p) => {
-              return p.encryptedSelf
-                ? this.crypto
-                    .extractKeysFromDelegationsForHcpHierarchy(hcpId!, p.id!, _.size(p.encryptionKeys) ? p.encryptionKeys! : p.delegations!)
-                    .then(({ extractedKeys: sfks }) => {
-                      if (!sfks || !sfks.length) {
-                        //console.log("Cannot decrypt contact", ctc.id)
-                        return Promise.resolve(p)
-                      }
-                      return this.crypto.AES.importKey('raw', hex2ua(sfks[0].replace(/-/g, ''))).then((key) =>
-                        utils
-                          .decrypt(p, (ec) =>
-                            this.crypto.AES.decrypt(key, ec)
-                              .then((dec) => {
-                                const jsonContent = dec && ua2utf8(dec)
-                                try {
-                                  return JSON.parse(jsonContent)
-                                } catch (e) {
-                                  console.log('Cannot parse patient', p.id, jsonContent || 'Invalid content')
-                                  return p
-                                }
-                              })
-                              .catch((err) => {
-                                console.log('Cannot decrypt patient', p.id, err)
-                                return p
-                              })
-                          )
-                          .then((p) => {
-                            if (p.picture && !(p.picture instanceof ArrayBuffer)) {
-                              p.picture = b64_2ab(p.picture)
-                            }
-                            return p
-                          })
-                      )
-                    })
-                : Promise.resolve(p)
+              const fixedPatient = acc[p.id!]
+              return fixedPatient || p
             })
           )
-        })
-    })
+          .then((pats) => {
+            return Promise.all(
+              pats.map((p) => {
+                return p.encryptedSelf
+                  ? this.crypto
+                      .extractKeysFromDelegationsForHcpHierarchy(hcpId!, p.id!, _.size(p.encryptionKeys) ? p.encryptionKeys! : p.delegations!)
+                      .then(({ extractedKeys: sfks }) => {
+                        if (!sfks || !sfks.length) {
+                          //console.log("Cannot decrypt contact", ctc.id)
+                          return Promise.resolve(p)
+                        }
+                        return this.crypto.AES.importKey('raw', hex2ua(sfks[0].replace(/-/g, ''))).then((key) =>
+                          utils
+                            .decrypt(p, (ec) =>
+                              this.crypto.AES.decrypt(key, ec)
+                                .then((dec) => {
+                                  const jsonContent = dec && ua2utf8(dec)
+                                  try {
+                                    return JSON.parse(jsonContent)
+                                  } catch (e) {
+                                    console.log('Cannot parse patient', p.id, jsonContent || 'Invalid content')
+                                    return p
+                                  }
+                                })
+                                .catch((err) => {
+                                  console.log('Cannot decrypt patient', p.id, err)
+                                  return p
+                                })
+                            )
+                            .then((p) => {
+                              if (p.picture && !(p.picture instanceof ArrayBuffer)) {
+                                p.picture = b64_2ab(p.picture)
+                              }
+                              return p
+                            })
+                        )
+                      })
+                  : Promise.resolve(p)
+              })
+            )
+          })
+      }
+    )
   }
 
   initEncryptionKeys(user: models.User, pat: models.Patient): Promise<models.Patient> {
