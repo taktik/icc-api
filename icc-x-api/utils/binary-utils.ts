@@ -1,8 +1,9 @@
-import { ua2string, string2ua, string2ab, ua2ab, b64_2ab, b64_2ua, ua2b64, b2a, a2b } from '../../icc-api/model/ModelHelper'
+import * as encoding from 'text-encoding'
+import { a2b, b2a, b64_2ab, b64_2ua, string2ab, string2ua, ua2ab, ua2b64, ua2string } from '../../icc-api/model/ModelHelper'
 export { ua2string, string2ua, string2ab, ua2ab, b64_2ab, b64_2ua, ua2b64, b2a, a2b }
 
-const textDecoder = typeof TextDecoder !== 'undefined' ? new TextDecoder() : null
-const textEncoder = typeof TextEncoder !== 'undefined' ? new TextEncoder() : null
+const textDecoder = typeof TextDecoder !== 'undefined' ? new TextDecoder() : new encoding.TextDecoder()
+const textEncoder = typeof TextEncoder !== 'undefined' ? new TextEncoder() : new encoding.TextEncoder()
 
 export function utf8_2ua(str: string): Uint8Array {
   if (textEncoder) {
