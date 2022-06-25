@@ -20,7 +20,6 @@ import { PatientByHcPartyGenderEducationProfession } from './PatientByHcPartyGen
 import { PatientByIdsFilter } from './PatientByIdsFilter'
 import { PatientByHcPartyNameContainsFuzzyFilter } from './PatientByHcPartyNameContainsFuzzyFilter'
 
-import GenderEnum = Patient.GenderEnum
 import { ContactByHcPartyFilter } from './ContactByHcPartyFilter'
 
 export * from './AllCodesFilter'
@@ -302,7 +301,7 @@ class PatientFilterBuilder extends FilterBuilder<Patient> {
     return this.withDateOfBirthBetween(parseInt(format(add(new Date(), { years: -age }), 'yyyyMMdd')), 99991231)
   }
 
-  byGenderEducationProfession(gender?: GenderEnum, education?: string, profession?: string): PatientFilterBuilder {
+  byGenderEducationProfession(gender?: Patient.GenderEnum, education?: string, profession?: string): PatientFilterBuilder {
     return this.composer(
       this,
       new PatientFilterBuilder(

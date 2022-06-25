@@ -3,7 +3,6 @@
  */
 import { AbstractFilterPatient } from '../../icc-api/model/AbstractFilterPatient'
 import { Patient } from '../../icc-api/model/Patient'
-import GenderEnum = Patient.GenderEnum
 
 export class PatientByHcPartyGenderEducationProfession extends AbstractFilterPatient {
   constructor(json: JSON | any) {
@@ -13,7 +12,7 @@ export class PatientByHcPartyGenderEducationProfession extends AbstractFilterPat
   }
 
   healthcarePartyId?: string
-  gender?: GenderEnum
+  gender?: Patient.GenderEnum
   education?: string
   profession?: string
 
