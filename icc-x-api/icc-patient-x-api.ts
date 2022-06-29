@@ -575,12 +575,20 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   encrypt(user: models.UserDto, pats: Array<models.PatientDto>): Promise<Array<models.PatientDto>> {
+    const fixEncryptionKeys = (p: models.PatientDto) => {
+      if (p.delegations && p.delegations[(user.healthcarePartyId || user.patientId)!])
+        return this.initEncryptionKeys(user, p) as Promise<any>
+      throw new Error(
+        `Patient ${p.id} has no delegation or encryption key for hcp ${
+          user.healthcarePartyId || user.patientId
+        }`
+      )
+    }
     return Promise.all(
       pats.map((p) =>
-        (p.encryptionKeys &&
-        Object.keys(p.encryptionKeys).some((k) => !!p.encryptionKeys![k].length)
+        (p.encryptionKeys && p.encryptionKeys[(user.healthcarePartyId || user.patientId)!]?.length
           ? Promise.resolve(p)
-          : (this.initEncryptionKeys(user, p) as Promise<any>)
+          : fixEncryptionKeys(p)
         )
           .then((p: any) =>
             this.crypto.extractKeysFromDelegationsForHcpHierarchy(
