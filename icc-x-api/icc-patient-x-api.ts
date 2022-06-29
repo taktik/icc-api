@@ -577,7 +577,11 @@ export class IccPatientXApi extends iccPatientApi {
   encrypt(user: models.UserDto, pats: Array<models.PatientDto>): Promise<Array<models.PatientDto>> {
     const fixEncryptionKeys = (p: models.PatientDto) => {
       if (p.delegations && p.delegations[(user.healthcarePartyId || user.patientId)!])
-        return this.initEncryptionKeys(user, p) as Promise<any>
+        return this.initEncryptionKeysForDelegates(
+          user,
+          p,
+          Object.keys(p.delegations)
+        ) as Promise<any>
       throw new Error(
         `Patient ${p.id} has no delegation or encryption key for hcp ${
           user.healthcarePartyId || user.patientId
@@ -701,7 +705,11 @@ export class IccPatientXApi extends iccPatientApi {
     })
   }
 
-  initEncryptionKeys(user: models.UserDto, pat: models.PatientDto) {
+  initEncryptionKeysForDelegates(
+    user: models.UserDto,
+    pat: models.PatientDto,
+    delegateIds: string[]
+  ): Promise<models.PatientDto> {
     const hcpId = user.healthcarePartyId || user.patientId
     return this.crypto.initEncryptionKeys(pat, hcpId!).then((eks) => {
       let promise = Promise.resolve(
@@ -709,10 +717,7 @@ export class IccPatientXApi extends iccPatientApi {
           encryptionKeys: eks.encryptionKeys,
         })
       )
-      ;(user.autoDelegations
-        ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
-        : []
-      ).forEach(
+      delegateIds.forEach(
         (delegateId) =>
           (promise = promise.then((patient) =>
             this.crypto
@@ -730,6 +735,16 @@ export class IccPatientXApi extends iccPatientApi {
       )
       return promise
     })
+  }
+
+  initEncryptionKeys(user: models.UserDto, pat: models.PatientDto) {
+    return this.initEncryptionKeysForDelegates(
+      user,
+      pat,
+      user.autoDelegations
+        ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
+        : []
+    )
   }
 
   share(
