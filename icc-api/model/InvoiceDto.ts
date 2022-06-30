@@ -156,6 +156,12 @@ export class InvoiceDto  {
 
   cancelDate?: number
 
+  locationNihii?: string
+
+  locationService?: number
+
+  admissionDate?: number
+
   receipts?: { [key: string]: string }
 
   idDocument?: models.IdentityDocumentReader

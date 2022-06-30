@@ -122,6 +122,8 @@ export class InvoicingCodeDto  {
 
   locationService?: number
 
+  admissionDate?: number
+
   prescriptionDate?: number
 
   status?: number

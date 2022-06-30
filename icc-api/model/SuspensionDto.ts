@@ -33,4 +33,6 @@ export class SuspensionDto  {
   endMoment?: number
 
   suspensionReason?: string
+
+  lifecycle?: string
 }
