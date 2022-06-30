@@ -89,13 +89,14 @@ export class iccBeKmehrApi {
       .then(doc =>  doc.body)
       .catch(err => this.handleError(err))
 }
-  generateMedicationSchemeExport(patientId: string, language?: string, recipientSafe?: string, version?: number, body?: models.MedicationSchemeExportInfoDto): Promise<ArrayBuffer | any> {
+  generateMedicationSchemeExport(patientId: string, language?: string, recipientSafe?: string, version?: number, xTimezoneOffset?: string, body?: models.MedicationSchemeExportInfoDto): Promise<ArrayBuffer | any> {
     let _body = null
     _body = body
     
     const _url = this.host + "/be_kmehr/medicationscheme/{patientId}/export".replace("{patientId}", patientId+"") + "?ts=" + new Date().getTime()  + (language ? "&language=" + language : "") + (recipientSafe ? "&recipientSafe=" + recipientSafe : "") + (version ? "&version=" + version : "")
     let headers = this.headers
     headers = headers.filter(h => h.header !== "Content-Type").concat(new XHR.Header("Content-Type", "application/json"))
+        xTimezoneOffset && (headers = headers.concat(new XHR.Header("X-Timezone-Offset", xTimezoneOffset)))
     return XHR.sendCommand("POST", _url, headers, _body, this.fetchImpl)
       .then(doc =>  doc.body)
       .catch(err => this.handleError(err))

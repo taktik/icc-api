@@ -40,6 +40,8 @@ export class MedicationDto  {
 
   instructionForPatient?: string
 
+  instructionForReimbursement?: string
+
   commentForDelivery?: string
 
   drugRoute?: string

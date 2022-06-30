@@ -111,6 +111,8 @@ export class HealthcarePartyDto  {
   flatRateTarifications?: Array<models.FlatRateTarificationDto>
 
   importedData?: { [key: string]: string }
+
+  descr?: { [key: string]: string }
 }
 export namespace HealthcarePartyDto {
   export enum GenderEnum {
