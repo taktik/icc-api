@@ -997,7 +997,7 @@ export class IccPatientXApi extends iccPatientApi {
                           (s) =>
                             s.content &&
                             Object.values(s.content).forEach(
-                              (c) => c.documentId && (docIds[c.documentId] = 1)
+                              (c) => c && c.documentId && (docIds[c.documentId] = 1)
                             )
                         )
                     )
@@ -1412,7 +1412,7 @@ export class IccPatientXApi extends iccPatientApi {
                           (s) =>
                             s.content &&
                             Object.values(s.content).forEach(
-                              (c) => c.documentId && (docIds[c.documentId] = 1)
+                              (c) => c && c.documentId && (docIds[c.documentId] = 1)
                             )
                         )
                     )
