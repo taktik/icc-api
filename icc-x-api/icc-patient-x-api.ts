@@ -577,11 +577,7 @@ export class IccPatientXApi extends iccPatientApi {
   encrypt(user: models.UserDto, pats: Array<models.PatientDto>): Promise<Array<models.PatientDto>> {
     const fixEncryptionKeys = (p: models.PatientDto) => {
       if (p.delegations && p.delegations[(user.healthcarePartyId || user.patientId)!])
-        return this.initEncryptionKeysForDelegates(
-          user,
-          p,
-          Object.keys(p.delegations)
-        ) as Promise<any>
+        return this.initEncryptionKeys(user, p, Object.keys(p.delegations)) as Promise<any>
       throw new Error(
         `Patient ${p.id} has no delegation or encryption key for hcp ${
           user.healthcarePartyId || user.patientId
@@ -705,19 +701,24 @@ export class IccPatientXApi extends iccPatientApi {
     })
   }
 
-  initEncryptionKeysForDelegates(
+  /** By default, an encryptionKey will be added for every hcp in the autoDelegations of the provided user.
+   * In optional field additionalDelegateIds, you can ask the method to create encryptionKeys for additional hcps */
+  initEncryptionKeys(
     user: models.UserDto,
     pat: models.PatientDto,
-    delegateIds: string[]
+    additionalDelegateIds?: string[]
   ): Promise<models.PatientDto> {
     const hcpId = user.healthcarePartyId || user.patientId
+    const userAutoDelegations = user.autoDelegations
+      ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
+      : []
     return this.crypto.initEncryptionKeys(pat, hcpId!).then((eks) => {
       let promise = Promise.resolve(
         _.extend(pat, {
           encryptionKeys: eks.encryptionKeys,
         })
       )
-      delegateIds.forEach(
+      new Set([...userAutoDelegations, ...(additionalDelegateIds || [])]).forEach(
         (delegateId) =>
           (promise = promise.then((patient) =>
             this.crypto
@@ -735,16 +736,6 @@ export class IccPatientXApi extends iccPatientApi {
       )
       return promise
     })
-  }
-
-  initEncryptionKeys(user: models.UserDto, pat: models.PatientDto) {
-    return this.initEncryptionKeysForDelegates(
-      user,
-      pat,
-      user.autoDelegations
-        ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
-        : []
-    )
   }
 
   share(
