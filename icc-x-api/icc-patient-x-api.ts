@@ -578,11 +578,12 @@ export class IccPatientXApi extends iccPatientApi {
     const fixEncryptionKeys = (p: models.PatientDto) => {
       if (p.delegations && p.delegations[(user.healthcarePartyId || user.patientId)!])
         return this.initEncryptionKeys(user, p, Object.keys(p.delegations)) as Promise<any>
-      throw new Error(
-        `Patient ${p.id} has no delegation or encryption key for hcp ${
-          user.healthcarePartyId || user.patientId
-        }`
-      )
+      else
+        throw new Error(
+          `Patient ${p.id} has no delegation or encryption key for hcp ${
+            user.healthcarePartyId || user.patientId
+          }`
+        )
     }
     return Promise.all(
       pats.map((p) =>
