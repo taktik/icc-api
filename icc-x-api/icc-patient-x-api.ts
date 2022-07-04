@@ -575,12 +575,21 @@ export class IccPatientXApi extends iccPatientApi {
   }
 
   encrypt(user: models.UserDto, pats: Array<models.PatientDto>): Promise<Array<models.PatientDto>> {
+    const fixEncryptionKeys = (p: models.PatientDto) => {
+      if (p.delegations && p.delegations[(user.healthcarePartyId || user.patientId)!])
+        return this.initEncryptionKeys(user, p, Object.keys(p.delegations)) as Promise<any>
+      else
+        throw new Error(
+          `Patient ${p.id} has no delegation or encryption key for hcp ${
+            user.healthcarePartyId || user.patientId
+          }`
+        )
+    }
     return Promise.all(
       pats.map((p) =>
-        (p.encryptionKeys &&
-        Object.keys(p.encryptionKeys).some((k) => !!p.encryptionKeys![k].length)
+        (p.encryptionKeys && p.encryptionKeys[(user.healthcarePartyId || user.patientId)!]?.length
           ? Promise.resolve(p)
-          : (this.initEncryptionKeys(user, p) as Promise<any>)
+          : fixEncryptionKeys(p)
         )
           .then((p: any) =>
             this.crypto.extractKeysFromDelegationsForHcpHierarchy(
@@ -693,18 +702,24 @@ export class IccPatientXApi extends iccPatientApi {
     })
   }
 
-  initEncryptionKeys(user: models.UserDto, pat: models.PatientDto) {
+  /** By default, an encryptionKey will be added for every hcp in the autoDelegations of the provided user.
+   * In optional field additionalDelegateIds, you can ask the method to create encryptionKeys for additional hcps */
+  initEncryptionKeys(
+    user: models.UserDto,
+    pat: models.PatientDto,
+    additionalDelegateIds?: string[]
+  ): Promise<models.PatientDto> {
     const hcpId = user.healthcarePartyId || user.patientId
+    const userAutoDelegations = user.autoDelegations
+      ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
+      : []
     return this.crypto.initEncryptionKeys(pat, hcpId!).then((eks) => {
       let promise = Promise.resolve(
         _.extend(pat, {
           encryptionKeys: eks.encryptionKeys,
         })
       )
-      ;(user.autoDelegations
-        ? (user.autoDelegations.all || []).concat(user.autoDelegations.medicalInformation || [])
-        : []
-      ).forEach(
+      new Set([...userAutoDelegations, ...(additionalDelegateIds || [])]).forEach(
         (delegateId) =>
           (promise = promise.then((patient) =>
             this.crypto
