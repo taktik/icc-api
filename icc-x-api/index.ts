@@ -40,12 +40,40 @@ export { utils, UtilsClass } from './crypto/utils'
 export * from './utils'
 export * from './storage'
 
-export const apiHeaders = function (username: string, password: string) {
+export const apiHeaders = function (username: string, password: string, forceBasic: boolean = false) {
   return {
     Authorization: `Basic ${
       typeof btoa !== 'undefined' ? btoa(`${username}:${password}`) : Buffer.from(`${username}:${password}`).toString('base64')
     }`,
+    'force-authentication': forceBasic ? 'true' : 'false',
   }
+}
+
+export interface Apis {
+  authApi: IccAuthApi
+  codeApi: IccCodeXApi
+  entityReferenceApi: IccEntityrefApi
+  userApi: IccUserXApi
+  permissionApi: IccPermissionApi
+  healthcarePartyApi: IccHcpartyXApi
+  deviceApi: IccDeviceApi
+  cryptoApi: IccCryptoXApi
+  accessLogApi: IccAccesslogXApi
+  agendaApi: IccAgendaApi
+  contactApi: IccContactXApi
+  formApi: IccFormXApi
+  groupApi: IccGroupApi
+  invoiceApi: IccInvoiceXApi
+  insuranceApi: IccInsuranceApi
+  documentApi: IccDocumentXApi
+  healthcareElementApi: IccHelementXApi
+  classificationApi: IccClassificationXApi
+  calendarItemApi: IccCalendarItemXApi
+  receiptApi: IccReceiptXApi
+  timetableApi: IccTimeTableXApi
+  patientApi: IccPatientXApi
+  messageApi: IccMessageXApi
+  maintenanceTaskApi: IccMaintenanceTaskXApi
 }
 
 export const Api = async function (
@@ -57,9 +85,10 @@ export const Api = async function (
     ? window.fetch
     : typeof self !== 'undefined'
     ? self.fetch
-    : fetch
-) {
-  const headers = apiHeaders(username, password)
+    : fetch,
+  forceBasic: boolean = false
+): Promise<Apis> {
+  const headers = apiHeaders(username, password, forceBasic)
   const authApi = new IccAuthApi(host, headers, fetchImpl)
   const codeApi = new IccCodeXApi(host, headers, fetchImpl)
   const entityReferenceApi = new IccEntityrefApi(host, headers, fetchImpl)

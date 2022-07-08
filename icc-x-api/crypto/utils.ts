@@ -52,6 +52,23 @@ export class UtilsClass {
     ])
   }
 
+  jwk2pkcs1(jwk: any): string {
+    return pack([
+      0x30,
+      [
+        [0x02, '00'],
+        [0x02, ua2hex(b64Url2ua(jwk.n))],
+        [0x02, ua2hex(b64Url2ua(jwk.e))],
+        [0x02, ua2hex(b64Url2ua(jwk.d))],
+        [0x02, ua2hex(b64Url2ua(jwk.p))],
+        [0x02, ua2hex(b64Url2ua(jwk.q))],
+        [0x02, ua2hex(b64Url2ua(jwk.dp))],
+        [0x02, ua2hex(b64Url2ua(jwk.dq))],
+        [0x02, ua2hex(b64Url2ua(jwk.qi))],
+      ],
+    ])
+  }
+
   jwk2spki(jwk: any): string {
     return pack([
       0x30,
