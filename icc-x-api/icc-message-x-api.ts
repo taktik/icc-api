@@ -933,7 +933,7 @@ export class IccMessageXApi extends iccMessageApi {
                       .compact()
                       .join("; ") || undefined
 
-                  // check if it hasn't rse error
+                  // check if it has a not rse error
                   const hasANotRseError: boolean = invoicingErrors.some(
                     (it) => it.itemId === ic.id && !this.isRseError(it.error)
                   )
