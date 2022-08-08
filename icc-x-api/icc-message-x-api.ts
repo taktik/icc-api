@@ -586,7 +586,7 @@ export class IccMessageXApi extends iccMessageApi {
     const errors: ErrorDetail[] = (
       parsedRecords.et10 &&
       parsedRecords.et10.errorDetail &&
-      !this._isRseError(parsedRecords.et10.errorDetail)
+      !this.isRseError(parsedRecords.et10.errorDetail)
         ? [parsedRecords.et10.errorDetail]
         : []
     )
@@ -594,18 +594,18 @@ export class IccMessageXApi extends iccMessageApi {
         _.flatMap(parsedRecords.records as ET20_80Data[], (r) => {
           const errors: Array<ErrorDetail> = []
 
-          if (r.et20 && r.et20.errorDetail && !this._isRseError(r.et20.errorDetail)) {
+          if (r.et20 && r.et20.errorDetail && !this.isRseError(r.et20.errorDetail)) {
             errors.push(r.et20.errorDetail)
           }
           _.each(r.items, (i) => {
-            if (i.et50 && i.et50.errorDetail && !this._isRseError(i.et50.errorDetail))
+            if (i.et50 && i.et50.errorDetail && !this.isRseError(i.et50.errorDetail))
               errors.push(i.et50.errorDetail)
-            if (i.et51 && i.et51.errorDetail && !this._isRseError(i.et51.errorDetail))
+            if (i.et51 && i.et51.errorDetail && !this.isRseError(i.et51.errorDetail))
               errors.push(i.et51.errorDetail)
-            if (i.et52 && i.et52.errorDetail && !this._isRseError(i.et52.errorDetail))
+            if (i.et52 && i.et52.errorDetail && !this.isRseError(i.et52.errorDetail))
               errors.push(i.et52.errorDetail)
           })
-          if (r.et80 && r.et80.errorDetail && !this._isRseError(r.et80.errorDetail)) {
+          if (r.et80 && r.et80.errorDetail && !this.isRseError(r.et80.errorDetail)) {
             errors.push(r.et80.errorDetail)
           }
           return errors
@@ -614,7 +614,7 @@ export class IccMessageXApi extends iccMessageApi {
       .concat(
         parsedRecords.et90 &&
           parsedRecords.et90.errorDetail &&
-          !this._isRseError(parsedRecords.et90.errorDetail)
+          !this.isRseError(parsedRecords.et90.errorDetail)
           ? [parsedRecords.et90.errorDetail]
           : []
       )
@@ -622,7 +622,7 @@ export class IccMessageXApi extends iccMessageApi {
     return _.compact(_.map(errors, (error) => this.extractErrorMessage(error)))
   }
 
-  _isRseError(errorDetail: ErrorDetail): boolean {
+  isRseError(errorDetail: ErrorDetail): boolean {
     const rse = ["R", "S", "E"]
     if (
       errorDetail?.rejectionLetter1 &&
@@ -935,7 +935,7 @@ export class IccMessageXApi extends iccMessageApi {
 
                   // check if it hasn't rse error
                   const hasANotRseError: boolean = invoicingErrors.some(
-                    (it) => it.itemId === ic.id && !this._isRseError(it.error)
+                    (it) => it.itemId === ic.id && !this.isRseError(it.error)
                   )
 
                   const record50: ET50Data | false =
